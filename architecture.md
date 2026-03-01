@@ -1,6 +1,6 @@
 # Architecture
 
-Reference document for the [project name] codebase. Load this alongside `CONTRIBUTING.md` at the start of any AI-assisted session.
+Reference document for the Multi-Driver Stochastic Weather Generator codebase. Load this alongside `CONTRIBUTING.md` at the start of any AI-assisted session.
 
 ---
 

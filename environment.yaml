@@ -7,6 +7,7 @@
 name: multidriver_swg
 channels:
   - conda-forge
+  - bioconda
 dependencies:
   - python=3.11
   - pip
@@ -15,5 +16,32 @@ dependencies:
   - pytest
   - coverage
   - ipdb
+  # old codebase dependencies (added by refactor-plan audit 2026-03-01)
+  - numpy
+  - pandas
+  - xarray
+  - scipy
+  - matplotlib
+  - seaborn
+  - geopandas
+  - scikit-learn
+  - dask
+  - tqdm
+  - zarr
+  - rioxarray
+  - fsspec
+  - s3fs
+  - pyvinecopulib
+  - netcdf4
+  # refactored architecture dependencies (added by refactor-plan audit 2026-03-01)
+  - pydantic>=2
+  - pyyaml
+  - pre-commit
+  - snakemake=9.15.0
+  - snakemake-executor-plugin-slurm
+  - snakemake-storage-plugin-fs
   - pip:
       - -e .
+      # pip-only old codebase dependencies (added by refactor-plan audit 2026-03-01)
+      - noaa-coops
+      - copulas
