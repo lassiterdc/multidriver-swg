@@ -283,9 +283,9 @@ Decisions that affect multiple work chunks are tracked here. Each entry links to
 
 **Status**: Resolved 2026-03-01
 
-The old code uses "compound" in variable names and file names (e.g., `dir_compound_events`, `f_combined_event_summaries`). The ss-fha refactor resolved this as:
-- "combined" = simulation type (both drivers present)
-- "compound" = phenomenon (flooding worsened by multiple drivers)
+The old code uses "compound" in variable names and file names (e.g., `dir_compound_events`, `f_combined_event_summaries`). The canonical definitions are now in the shared glossary:
+- See `~/dev/claude-workspace/glossary/flood_risk_management.md` — entries for **combined** and **compound**
+- Summary: "combined" = simulation type (both drivers present); "compound" = phenomenon (flooding worsened by multiple drivers)
 
 **Affected chunks**: 00, 01B, 02B, 02C
 **Recommendation**: Adopt the same convention as ss-fha for consistency across the ecosystem.

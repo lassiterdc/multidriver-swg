@@ -32,7 +32,13 @@ This project uses a conda environment named `multidriver_swg`.
 
 ## Terminology
 
-<!-- Populate with project-specific terms that have precise meanings in this codebase. -->
+See domain glossaries for precise definitions:
+- `~/dev/claude-workspace/glossary/flood_risk_management.md` — combined, compound, rain-only, surge-only, multi-driver, BDS, SSFHA, MCDS, event_iloc
+- `~/dev/claude-workspace/glossary/hydrology.md` — storm surge, storm tide, tidal phase, return period, AEP, watershed
+- `~/dev/claude-workspace/glossary/statistics.md` — marginal distribution, copula, vine copula, KNN resampling, Poisson process
+
+Project-specific terms (accumulating during refactor):
+- (none yet — add here as the refactor establishes canonical strings and variable conventions)
 
 ---
 
