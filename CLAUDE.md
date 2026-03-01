@@ -13,6 +13,15 @@ Read `~/dev/claude-workspace/specialist_agent_docs/planning-document-lifecycle.m
 
 ---
 
+## Environment
+
+This project uses a conda environment named `multidriver_swg`.
+
+- **Running tools**: Use `conda run -n multidriver_swg <command>` or activate the environment first with `conda activate multidriver_swg`.
+- **Copier updates**: When running `copier update` through `conda run`, pass `--defaults` since there is no interactive terminal: `conda run -n multidriver_swg copier update --trust --skip-tasks --defaults`.
+
+---
+
 ## Code Style
 
 - **Python**: ≥3.10, target 3.12+
