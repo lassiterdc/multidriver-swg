@@ -1,0 +1,17 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Uncomment to enable doc freshness checks once scripts/check_doc_freshness.py is populated:
+  # - repo: local
+  #   hooks:
+  #     - id: check-claude-docs
+  #       name: Check Claude doc freshness
+  #       entry: python scripts/check_doc_freshness.py
+  #       language: python
+  #       pass_filenames: false
+  #       always_run: true

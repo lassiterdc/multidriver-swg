@@ -1,0 +1,13 @@
+# Changes here will be overwritten by Copier; DO NOT EDIT
+_commit: v1.0.0
+_src_path: /home/dcl3nd/dev/copier-python-template
+author_email: daniel.lassiter@outlook.com
+author_name: Daniel Lassiter
+description: Stochastic weather generator producing multi-driver flood forcing (rainfall
+    + storm surge + tidal phase) by resampling and rescaling historic events to match
+    randomly generated event statistics.
+github_username: lassiterdc
+package_name: multidriver_swg
+project_name: Multi-Driver Stochastic Weather Generator
+project_slug: multidriver-swg
+python_version: '3.11'
