@@ -37,4 +37,4 @@ docs/planning/features/2026-01-15_my_feature/
 └── implemented/
 ```
 
-See `.prompts/conventions.md` for the full lifecycle rules.
+See `CLAUDE.md` for the full lifecycle rules.

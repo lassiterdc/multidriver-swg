@@ -1,5 +1,5 @@
 site_name: "Multi-Driver Stochastic Weather Generator"
-site_description: "Stochastic weather generator producing multi-driver flood forcing (rainfall + storm surge + tidal phase) by resampling and rescaling historic events to match randomly generated event statistics."
+site_description: "Stochastic weather generator producing multi-driver flood forcing (rainfall + storm surge + tidal phase) by resampling and rescaling historic events to match randomly generated event statistics"
 site_author: "Daniel Lassiter"
 repo_url: "https://github.com/lassiterdc/multidriver-swg"
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "multidriver-swg"
 version = "0.1.0"
-description = "Stochastic weather generator producing multi-driver flood forcing (rainfall + storm surge + tidal phase) by resampling and rescaling historic events to match randomly generated event statistics."
+description = "Stochastic weather generator producing multi-driver flood forcing (rainfall + storm surge + tidal phase) by resampling and rescaling historic events to match randomly generated event statistics"
 authors = [
     {name = "Daniel Lassiter", email = "daniel.lassiter@outlook.com"},
 ]

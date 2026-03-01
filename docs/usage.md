@@ -24,10 +24,10 @@ sequenceDiagram
     D->>C: Describe task
     C->>P: Write implementation plan
     P-->>D: Review and approve
-    D->>C: @.prompts/proceed_with_implementation.md
+    D->>C: /proceed-with-implementation
     C->>C: Preflight check
     D->>C: Approve
     C->>C: Implement
-    C->>C: @.prompts/qaqc_and_commit.md
+    C->>C: /qaqc-and-commit
     C-->>D: QA report + commit
 ```
