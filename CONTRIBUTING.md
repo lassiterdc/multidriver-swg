@@ -96,7 +96,7 @@ System-specific information belongs in user-defined configuration files. Avoid h
 
 ### Track project-agnostic utility candidates
 
-When writing utility functions that could plausibly belong in a shared library (e.g., general-purpose file I/O helpers, generic array operations), note them in a dedicated tracking document. Do not extract them immediately — track them so they can be evaluated together.
+When writing utility functions that could plausibly belong in a shared library (e.g., general-purpose file I/O helpers, generic array operations), note them in the ecosystem-level tracking document at `~/dev/dcl-utils/docs/planning/utility_package_candidates.md` (GitHub: https://github.com/lassiterdc/dcl-utils). Do not extract them immediately — track them so they can be evaluated together.
 
 ---
 
