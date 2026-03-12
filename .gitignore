@@ -216,3 +216,5 @@ __marimo__/
 *.nc4
 *.zarr
 *.h5
+
+/AGENTS.md
