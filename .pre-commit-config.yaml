@@ -5,3 +5,21 @@ repos:
       - id: ruff
         args: [--fix]
       - id: ruff-format
+
+  # Anonymization guard (scripts/check_anonymization.py)
+  # Fails if any tracked file contains a genuinely-private identifier listed in
+  # scripts/anonymization_blocklist.txt. Working-tree-only; git HISTORY exposure
+  # is a separate concern.
+  #
+  # language: script (not system) is deliberate. A `system` hook with
+  # `entry: python ...` resolves `python` from the ambient PATH at COMMIT time,
+  # so the interpreter is whichever env happens to be active — and fails
+  # outright where `python` is unset. The guard carries its own shebang instead.
+  - repo: local
+    hooks:
+      - id: anonymization-guard
+        name: anonymization blocklist guard
+        entry: scripts/check_anonymization.py
+        language: script
+        pass_filenames: false
+        always_run: true

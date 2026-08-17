@@ -1,0 +1,51 @@
+# Independent ground-truth blocklist for the anonymization guard.
+#
+# INDEPENDENCE INVARIANT: this file is HAND-AUTHORED and is the SOLE source of
+# truth for the guard. It MUST NOT be generated from any code the scrub edits —
+# a derived blocklist silently weakens with every scrub, losing a token at the
+# same moment it helps remove it, while continuing to report green.
+#
+# Format: one token per line. Blank lines and '#' lines ignored. Matching is
+# case-insensitive, whole-word (\b...\b), literal (re.escape). Author PLAIN
+# tokens, never regex.
+#
+# TRIAGE RULE (what belongs here): list ONLY genuinely-private identifiers —
+# anything that CANNOT be found by reading public documentation. Public,
+# doc-derivable, or functionally required identifiers are KEPT in the source and
+# MUST NOT be listed here; blocklisting one breaks the thing it names.
+#
+# ADMISSION RULE (when a token ships): a token ships only if the identifier
+# could plausibly appear in THIS repo's future content. A token that could never
+# appear is not free — a blocklist that accretes by "it costs nothing" logic
+# eventually becomes unreviewable, and an unreviewable control is not a control.
+# Under this rule `quinnlab` ships (HPC allocations are coming to the estate)
+# while other installations' Globus endpoint UUIDs do not.
+#
+# DISCRIMINATION RULE (how a token is chosen): prefer the narrowest segment that
+# cannot occur in legitimate prose. Common words are rejected even when they
+# appear in the violation — a guard that fires on documentation is a guard that
+# gets bypassed. `Dropbox` is rejected for this reason; `_GradSchool` and
+# `norfolk_ffa` are the discriminating segments of the same path and neither
+# occurs in legitimate public text. Tokens containing `:` or `/` are rejected
+# because `\b` does not behave around them the way an author expects.
+
+# --- Developer identity + home paths ---
+dcl3nd
+
+# --- Allocation accounts ---
+quinnlab
+
+# --- Local out-of-repo data root markers ---
+# The measured live violation these were chosen against:
+#   _old_code_to_refactor/_inputs.py:201
+#   dir_hrsd = "D:/Dropbox/_GradSchool/_norfolk/norfolk_ffa/data/processed/..."
+_GradSchool
+norfolk_ffa
+
+# --- Private-estate companion repo name ---
+# Blocklisting the estate's NAME enforces the one-way reference invariant: the
+# public repo carries no reference to the private estate, so a leak of this repo
+# discloses nothing about it — not even that it exists. Whole-word matching on
+# the longer literal provably never false-positives the public `multidriver-swg`
+# prefix, which appears throughout this repo as the package and repo name.
+multidriver-swg_projects
