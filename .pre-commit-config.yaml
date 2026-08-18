@@ -11,15 +11,23 @@ repos:
   # scripts/anonymization_blocklist.txt. Working-tree-only; git HISTORY exposure
   # is a separate concern.
   #
-  # language: script (not system) is deliberate. A `system` hook with
-  # `entry: python ...` resolves `python` from the ambient PATH at COMMIT time,
-  # so the interpreter is whichever env happens to be active — and fails
-  # outright where `python` is unset. The guard carries its own shebang instead.
+  # entry names `python3` explicitly, NOT bare `python` and NOT a shebang.
+  #   - bare `python` is unset on stock Ubuntu and otherwise resolves to whatever
+  #     env is active at COMMIT time.
+  #   - `language: script` would make the FILE MODE load-bearing, and ruff-format
+  #     runs two hooks upstream: it rewrites this file and its temp-file replace
+  #     drops the exec bit, leaving a hook that exits 1 without ever scanning
+  #     (measured 2026-08-17; the mode could not then be restored, because a
+  #     mode-only change cannot commit through git_stage's ephemeral-worktree
+  #     path -- shutil.copyfile copies content, not permission bits).
+  # `python3` is present on stock Ubuntu and in every conda env here, and the
+  # guard imports only the standard library, so no project env is required --
+  # which matters, because repo scaffolding is exactly when private paths land.
   - repo: local
     hooks:
       - id: anonymization-guard
         name: anonymization blocklist guard
-        entry: scripts/check_anonymization.py
-        language: script
+        entry: python3 scripts/check_anonymization.py
+        language: system
         pass_filenames: false
         always_run: true

@@ -51,13 +51,25 @@ class Hit:
 
 
 def load_blocklist(blocklist_path: Path) -> list[str]:
-    """One token per non-blank, non-comment line."""
+    """One token per non-blank, non-comment line.
+
+    Raises on an EMPTY token set. A blocklist reduced to comments makes every
+    scan match nothing and exit 0 -- a guard that reports green while checking
+    for no identifiers at all. That is the same vacuous-control failure this
+    guard exists to prevent, so it fails closed rather than passing quietly.
+    """
     tokens: list[str] = []
     for raw in blocklist_path.read_text(encoding="utf-8").splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
         tokens.append(line)
+    if not tokens:
+        raise SystemExit(
+            f"check_anonymization: blocklist {blocklist_path} defines ZERO tokens. "
+            "A guard with an empty blocklist passes everything; refusing to report "
+            "green. Restore the tokens, or delete the guard deliberately."
+        )
     return tokens
 
 
