@@ -137,7 +137,13 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+# .env* not .env -- `.env.local`, `.env.production` etc. are NOT covered by the
+# bare form (measured: `git check-ignore .env.local` returned no match), and
+# .env contents are the never-tolerated class under R32. Prevention at the
+# ignore layer is the primary control: no secret scanner in the field ships a
+# dedicated .env content rule, and dotenv values are conventionally unquoted,
+# so the quotes-required generic-secret patterns are systematically blind here.
+.env*
 .envrc
 .venv
 env/

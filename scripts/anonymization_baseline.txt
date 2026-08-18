@@ -1,0 +1,37 @@
+# Accepted anonymization findings — pre-existing, reviewed, tolerated under R32.
+#
+# Format: {sha256-of-stripped-line}  {repo-relative-path}  {token}
+# One row per accepted (path, token) finding. Blank lines and '#' lines ignored.
+#
+# The hash pins the acceptance to the LINE CONTENT, not to a line number.
+#   - Editing anything ELSEWHERE in the file does not disturb the acceptance.
+#   - Editing the ACCEPTED LINE ITSELF voids it: the guard goes red again.
+#   - A row whose line no longer matches is reported as STALE and fails the
+#     guard, so this file cannot accumulate entries that protect nothing.
+#
+# This file is line-number-free on purpose. gitleaks pins fingerprints to
+# commit:file:rule:line and the resulting churn on rebase and ordinary edits
+# is what pushes projects toward blunt directory exclusions instead.
+#
+# R32: non-sensitive personal detail (a local filepath, a username in a
+# generator receipt) is TOLERATED. Credentials, tokens, keys and .env contents
+# are NEVER tolerated and must never be added here.
+
+# .copier-answers.yml:3 -- _src_path records the LOCAL path of the copier
+# template. Generator-owned: the file's own first line reads "Changes here will
+# be overwritten by Copier; DO NOT EDIT", so in-file remediation is reverted by
+# the next `copier update`. The durable fix is upstream -- reference the
+# template by its public URL (https://github.com/lassiterdc/copier-templates)
+# so _src_path becomes reproducible for a third party. When that lands the line
+# changes and this row lapses on its own.
+f72b3ee9ab78ad45464a052563351c144631ccb32c1144b2d593a4285c85bc87  .copier-answers.yml  dcl3nd
+
+# _old_code_to_refactor/_inputs.py:201 -- a Windows Dropbox data root in a
+# frozen upstream snapshot. Per _old_code_to_refactor/README.md the 15 files are
+# byte-identical to stormy@c74c8a4052efcbb1345981721532f462090d1a12, verified
+# per-file with `git show` + `cmp`. Editing the line to satisfy the guard would
+# falsify that provenance claim, which is the archive's entire value. Both rows
+# below are the same line; the directory is slated for deletion by the refactor,
+# at which point both rows go stale and the guard will say so.
+d2cf962b43ed0122c8218fed17cd086130a993e9dbe4391820b7f671f490025a  _old_code_to_refactor/_inputs.py  _GradSchool
+d2cf962b43ed0122c8218fed17cd086130a993e9dbe4391820b7f671f490025a  _old_code_to_refactor/_inputs.py  norfolk_ffa

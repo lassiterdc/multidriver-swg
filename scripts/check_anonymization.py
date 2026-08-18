@@ -22,6 +22,7 @@ Matching: case-insensitive, whole-word (\\b...\\b), tokens matched literally
 from __future__ import annotations
 
 import argparse
+import hashlib
 import re
 import subprocess
 import sys
@@ -34,6 +35,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 _SELF_EXCLUDE = frozenset(
     {
         "scripts/anonymization_blocklist.txt",
+        "scripts/anonymization_baseline.txt",
         "scripts/check_anonymization.py",
         "tests/test_check_anonymization.py",
     }
@@ -113,8 +115,49 @@ def _read_text_or_none(path: Path) -> str | None:
         return None
 
 
-def scan(root: Path, blocklist_path: Path) -> list[Hit]:
+def line_fingerprint(line: str) -> str:
+    """sha256 of the stripped line -- the content the acceptance is pinned to.
+
+    The LINE is hashed rather than the token because the tokens are fixed
+    literals from a hand-authored blocklist. Hashing the token would hash a
+    constant and carry no information, degrading the entry to "accept this
+    token anywhere in this file, forever" -- a path exclusion with extra steps.
+    """
+    return hashlib.sha256(line.strip().encode("utf-8")).hexdigest()
+
+
+def load_baseline(baseline_path: Path) -> set[tuple[str, str, str]]:
+    """Accepted findings as {(path, token, fingerprint)}. Absent file = empty set."""
+    accepted: set[tuple[str, str, str]] = set()
+    if not baseline_path.exists():
+        return accepted
+    for raw in baseline_path.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if not line:
+            continue
+        parts = line.split()
+        if len(parts) != 3:
+            raise SystemExit(
+                f"check_anonymization: malformed baseline row in {baseline_path}: {raw!r}. "
+                "Expected: {sha256}  {path}  {token}"
+            )
+        fp, rel, token = parts
+        accepted.add((rel, token, fp))
+    return accepted
+
+
+def scan(
+    root: Path, blocklist_path: Path, baseline_path: Path | None = None
+) -> tuple[list[Hit], set[tuple[str, str, str]]]:
+    """Return (unaccepted hits, stale baseline rows).
+
+    A stale row is one that matched nothing this scan -- its line changed, moved
+    file, or was deleted. Stale rows fail the guard rather than being silently
+    pruned, so the baseline cannot accumulate entries that protect nothing.
+    """
     patterns = compile_patterns(load_blocklist(blocklist_path))
+    accepted = load_baseline(baseline_path) if baseline_path is not None else set()
+    matched: set[tuple[str, str, str]] = set()
     hits: list[Hit] = []
     for rel in tracked_files(root):
         if rel in _SELF_EXCLUDE:
@@ -125,8 +168,12 @@ def scan(root: Path, blocklist_path: Path) -> list[Hit]:
         for lineno, line in enumerate(text.splitlines(), start=1):
             for token, pat in patterns:
                 if pat.search(line):
+                    key = (rel, token, line_fingerprint(line))
+                    if key in accepted:
+                        matched.add(key)
+                        continue
                     hits.append(Hit(rel, lineno, token))
-    return hits
+    return hits, accepted - matched
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -145,6 +192,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="print blocklist + scan scope and exit 0 without failing",
     )
+    parser.add_argument(
+        "--baseline",
+        type=Path,
+        default=None,
+        help="baseline file of accepted findings (default: <root>/scripts/anonymization_baseline.txt)",
+    )
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args(argv)
 
@@ -162,13 +215,21 @@ def main(argv: list[str] | None = None) -> int:
         print(f"would scan {len(files)} tracked file(s) (minus {len(_SELF_EXCLUDE)} self-excluded)")
         return 0
 
-    hits = scan(args.root, blocklist)
+    baseline = args.baseline or (args.root / "scripts" / "anonymization_baseline.txt")
+    hits, stale = scan(args.root, blocklist, baseline)
+    if stale:
+        print(
+            "Anonymization guard FAILED (stale baseline entries — the accepted line changed or moved):",
+            file=sys.stderr,
+        )
+        for rel, token, fp in sorted(stale):
+            print(f"  {rel}: accepted token {token!r} (fingerprint {fp[:12]}...) no longer matches", file=sys.stderr)
     if hits:
         print("Anonymization guard FAILED (blocklisted identifiers in tracked files):", file=sys.stderr)
         for h in hits:
             print(f"  {h.render()}", file=sys.stderr)
         return 1
-    return 0
+    return 1 if stale else 0
 
 
 if __name__ == "__main__":

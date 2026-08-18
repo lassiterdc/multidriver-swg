@@ -112,3 +112,47 @@ def test_hook_entry_is_invocable_as_configured() -> None:
         )
     else:
         raise AssertionError(f"unhandled hook language {language!r} — extend this test")
+
+
+def _baseline_repo(tmp_path: Path) -> Path:
+    """A repo with one accepted finding already in the baseline."""
+    root = _init_repo(tmp_path, {"src/leak.py": "acct = 'quinnlab'\n"})
+    line = "acct = 'quinnlab'"
+    fp = guard.line_fingerprint(line)
+    (root / "scripts" / "anonymization_baseline.txt").write_text(f"{fp}  src/leak.py  quinnlab\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+    return root
+
+
+def test_baseline_accepts_the_recorded_finding(tmp_path: Path) -> None:
+    root = _baseline_repo(tmp_path)
+    baseline = root / "scripts" / "anonymization_baseline.txt"
+    assert guard.main(["--root", str(root), "--baseline", str(baseline)]) == 0
+
+
+def test_baseline_does_not_leak_to_another_path(tmp_path: Path) -> None:
+    # The acceptance is scoped to one path. The same token elsewhere still fires.
+    root = _baseline_repo(tmp_path)
+    (root / "src" / "other.py").write_text("acct = 'quinnlab'\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+    baseline = root / "scripts" / "anonymization_baseline.txt"
+    assert guard.main(["--root", str(root), "--baseline", str(baseline)]) == 1
+
+
+def test_acceptance_lapses_when_the_line_changes(tmp_path: Path) -> None:
+    # The property that distinguishes a content-pinned baseline from a path
+    # exclusion: edit the accepted line and the acceptance dies with it.
+    root = _baseline_repo(tmp_path)
+    (root / "src" / "leak.py").write_text("acct = 'quinnlab'  # moved\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+    baseline = root / "scripts" / "anonymization_baseline.txt"
+    assert guard.main(["--root", str(root), "--baseline", str(baseline)]) == 1
+
+
+def test_stale_baseline_entry_fails_closed(tmp_path: Path) -> None:
+    # A row protecting nothing is reported, not silently kept.
+    root = _baseline_repo(tmp_path)
+    (root / "src" / "leak.py").write_text("acct = 'redacted'\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+    baseline = root / "scripts" / "anonymization_baseline.txt"
+    assert guard.main(["--root", str(root), "--baseline", str(baseline)]) == 1
