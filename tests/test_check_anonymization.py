@@ -12,7 +12,7 @@ def _init_repo(tmp_path: Path, files: dict[str, str]) -> Path:
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
     (tmp_path / "scripts").mkdir(parents=True, exist_ok=True)
     (tmp_path / "scripts" / "anonymization_blocklist.txt").write_text(
-        "# test blocklist\nquinnlab\nmultidriver-swg_projects\n",
+        "# test blocklist\nzzsynthacct\nzz-synthetic-estate-repo\n",
         encoding="utf-8",
     )
     for rel, content in files.items():
@@ -24,12 +24,16 @@ def _init_repo(tmp_path: Path, files: dict[str, str]) -> Path:
 
 
 def test_planted_token_fails(tmp_path: Path, capsys) -> None:
-    root = _init_repo(tmp_path, {"src/leak.py": "account = 'quinnlab'\n"})
+    root = _init_repo(tmp_path, {"src/leak.py": "account = 'zzsynthacct'\n"})
     rc = guard.main(["--root", str(root)])
     err = capsys.readouterr().err
     assert rc == 1
-    assert "quinnlab" in err
     assert "src/leak.py" in err
+    # The finding is reported by blocklist INDEX, never by the token text: a
+    # failing run of this guard is public (the workflow's logs are), so printing
+    # the identifier would disclose the very string the guard exists to suppress.
+    assert "blocklist entry #" in err
+    assert "zzsynthacct" not in err
 
 
 def test_clean_tree_passes(tmp_path: Path) -> None:
@@ -53,12 +57,14 @@ def test_estate_name_is_caught(tmp_path: Path, capsys) -> None:
     # appear, must fail. This is what enforces the one-way reference invariant.
     root = _init_repo(
         tmp_path,
-        {"src/leak.py": "DATA_ROOT = '~/dev/multidriver-swg_projects/configs'\n"},
+        {"src/leak.py": "DATA_ROOT = '~/dev/zz-synthetic-estate-repo/configs'\n"},
     )
     rc = guard.main(["--root", str(root)])
     err = capsys.readouterr().err
     assert rc == 1
-    assert "multidriver-swg_projects" in err
+    assert "src/leak.py" in err
+    assert "blocklist entry #" in err
+    assert "zz-synthetic-estate-repo" not in err
 
 
 def test_guard_imports_nothing_from_src() -> None:
@@ -116,10 +122,10 @@ def test_hook_entry_is_invocable_as_configured() -> None:
 
 def _baseline_repo(tmp_path: Path) -> Path:
     """A repo with one accepted finding already in the baseline."""
-    root = _init_repo(tmp_path, {"src/leak.py": "acct = 'quinnlab'\n"})
-    line = "acct = 'quinnlab'"
+    root = _init_repo(tmp_path, {"src/leak.py": "acct = 'zzsynthacct'\n"})
+    line = "acct = 'zzsynthacct'"
     fp = guard.line_fingerprint(line)
-    (root / "scripts" / "anonymization_baseline.txt").write_text(f"{fp}  src/leak.py  quinnlab\n", encoding="utf-8")
+    (root / "scripts" / "anonymization_baseline.txt").write_text(f"{fp}  src/leak.py  zzsynthacct\n", encoding="utf-8")
     subprocess.run(["git", "add", "-A"], cwd=root, check=True)
     return root
 
@@ -133,7 +139,7 @@ def test_baseline_accepts_the_recorded_finding(tmp_path: Path) -> None:
 def test_baseline_does_not_leak_to_another_path(tmp_path: Path) -> None:
     # The acceptance is scoped to one path. The same token elsewhere still fires.
     root = _baseline_repo(tmp_path)
-    (root / "src" / "other.py").write_text("acct = 'quinnlab'\n", encoding="utf-8")
+    (root / "src" / "other.py").write_text("acct = 'zzsynthacct'\n", encoding="utf-8")
     subprocess.run(["git", "add", "-A"], cwd=root, check=True)
     baseline = root / "scripts" / "anonymization_baseline.txt"
     assert guard.main(["--root", str(root), "--baseline", str(baseline)]) == 1
@@ -143,7 +149,7 @@ def test_acceptance_lapses_when_the_line_changes(tmp_path: Path) -> None:
     # The property that distinguishes a content-pinned baseline from a path
     # exclusion: edit the accepted line and the acceptance dies with it.
     root = _baseline_repo(tmp_path)
-    (root / "src" / "leak.py").write_text("acct = 'quinnlab'  # moved\n", encoding="utf-8")
+    (root / "src" / "leak.py").write_text("acct = 'zzsynthacct'  # moved\n", encoding="utf-8")
     subprocess.run(["git", "add", "-A"], cwd=root, check=True)
     baseline = root / "scripts" / "anonymization_baseline.txt"
     assert guard.main(["--root", str(root), "--baseline", str(baseline)]) == 1

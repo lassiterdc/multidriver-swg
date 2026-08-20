@@ -2,15 +2,21 @@
 # genuinely-private identifier (scripts/anonymization_blocklist.txt).
 # Working-tree scrub enforcement; git HISTORY exposure is a separate concern.
 #
-# NOTE: this repository is PUBLIC, so this workflow's logs are public. The guard
-# prints the offending path, line, and token — so a FAILING run here discloses
-# the very identifier it guards. The pre-commit hook is therefore the primary
-# gate; this workflow is the backstop for commits that bypass it.
+# The guard reports a finding by BLOCKLIST INDEX rather than by token text, so
+# a failing run here no longer discloses the identifier. The tracked blocklist
+# additionally carries only tokens that already occur in this public tree; the
+# prophylactic half lives outside the repo and is absent in CI by design.
 name: Anonymization guard
 
 on:
+  # Every branch, not just the integration branches. A push to ANY branch of a
+  # public repo is the moment content becomes public, so a backstop that only
+  # watches main/develop does not cover the branch where most work is pushed.
+  # This does not make the control preventive -- nothing CI-side can be, given
+  # the ordering -- but detection within a minute on every branch beats
+  # detection only on arrival at develop.
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "**" ]
   pull_request:
     branches: [ "main", "develop" ]
 

@@ -230,3 +230,11 @@ __marimo__/
 /AGENTS.md
 /CLAUDE.md
 # <<< agentic-workspace managed <<<
+
+# Anonymization blocklist -- PRIVATE SUPPLEMENT (split blocklist, private half).
+# The tracked blocklist carries only tokens that ALREADY occur in this public
+# tree. Tokens that do not yet occur here live outside this repo, because
+# listing one here would be its FIRST publication. This path is created as a
+# symlink by a per-machine setup step and must never be committed: its blob
+# would be the target path, which names a private location.
+/scripts/anonymization_blocklist.local.txt

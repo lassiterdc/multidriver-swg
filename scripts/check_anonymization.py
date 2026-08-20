@@ -37,7 +37,6 @@ _SELF_EXCLUDE = frozenset(
         "scripts/anonymization_blocklist.txt",
         "scripts/anonymization_baseline.txt",
         "scripts/check_anonymization.py",
-        "tests/test_check_anonymization.py",
     }
 )
 
@@ -48,8 +47,19 @@ class Hit:
     line: int
     token: str
 
-    def render(self) -> str:
-        return f"{self.path}:{self.line}: blocklisted token {self.token!r}"
+    def render(self, index: int | None = None) -> str:
+        """Path, line, and either the literal token or its blocklist INDEX.
+
+        The index carries ZERO token-derived bytes, so there is nothing to
+        invert. A truncated digest would not do: the candidate set is small and
+        low-entropy, and while the tracked list is public a reader could hash
+        every entry and read off the match -- a confirmation oracle wearing a
+        redaction's clothes. An ordinal is exactly as informative as the token
+        to someone holding the list, and exactly as informative as nothing to
+        someone who is not.
+        """
+        who = f"blocklist entry #{index}" if index is not None else f"blocklisted token {self.token!r}"
+        return f"{self.path}:{self.line}: {who}"
 
 
 def load_blocklist(blocklist_path: Path) -> list[str]:
@@ -73,6 +83,34 @@ def load_blocklist(blocklist_path: Path) -> list[str]:
             "green. Restore the tokens, or delete the guard deliberately."
         )
     return tokens
+
+
+LOCAL_SUPPLEMENT = "anonymization_blocklist.local.txt"
+
+
+def load_local_supplement(blocklist_path: Path) -> list[str]:
+    """Optional PRIVATE half of a split blocklist; absent is legal.
+
+    The tracked list carries only tokens that already occur in this public
+    tree. Prophylactic tokens -- ones that do not yet occur here -- live
+    outside the repo, because listing them here would be their first
+    publication. This reads an optional plain file with no import, no
+    dependency and no secret, so the guard's pure-stdlib,
+    runs-without-the-project-environment property is preserved.
+
+    The file is a gitignored symlink created by a per-machine setup step. This
+    repo deliberately does NOT name where it points: the public tree carries no
+    reference to any private location, so resolving it here by path or by
+    environment variable would move a disclosure rather than remove one.
+    """
+    supp = blocklist_path.parent / LOCAL_SUPPLEMENT
+    if not supp.exists():
+        return []
+    return [
+        line
+        for raw in supp.read_text(encoding="utf-8").splitlines()
+        if (line := raw.strip()) and not line.startswith("#")
+    ]
 
 
 def compile_patterns(tokens: list[str]) -> list[tuple[str, re.Pattern[str]]]:
@@ -148,14 +186,21 @@ def load_baseline(baseline_path: Path) -> set[tuple[str, str, str]]:
 
 def scan(
     root: Path, blocklist_path: Path, baseline_path: Path | None = None
-) -> tuple[list[Hit], set[tuple[str, str, str]]]:
-    """Return (unaccepted hits, stale baseline rows).
+) -> tuple[list[Hit], set[tuple[str, str, str]], list[str]]:
+    """Return (unaccepted hits, stale baseline rows, the loaded token order).
+
+    The token order is returned so the caller can report a finding by its
+    1-based INDEX rather than by its literal text. Tracked entries occupy
+    1..len(tracked); supplement entries follow.
 
     A stale row is one that matched nothing this scan -- its line changed, moved
     file, or was deleted. Stale rows fail the guard rather than being silently
     pruned, so the baseline cannot accumulate entries that protect nothing.
     """
-    patterns = compile_patterns(load_blocklist(blocklist_path))
+    tracked = load_blocklist(blocklist_path)
+    supplement = load_local_supplement(blocklist_path)
+    tokens = tracked + supplement
+    patterns = compile_patterns(tokens)
     accepted = load_baseline(baseline_path) if baseline_path is not None else set()
     matched: set[tuple[str, str, str]] = set()
     hits: list[Hit] = []
@@ -173,7 +218,7 @@ def scan(
                         matched.add(key)
                         continue
                     hits.append(Hit(rel, lineno, token))
-    return hits, accepted - matched
+    return hits, accepted - matched, tokens
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -190,13 +235,31 @@ def main(argv: list[str] | None = None) -> int:
         "--dry-run",
         dest="list_only",
         action="store_true",
-        help="print blocklist + scan scope and exit 0 without failing",
+        help=(
+            "print blocklist + scan scope and exit 0 without failing. --list does not "
+            "fail on FINDINGS; --require-supplement still applies, because a missing "
+            "supplement is a coverage fact, not a finding"
+        ),
     )
     parser.add_argument(
         "--baseline",
         type=Path,
         default=None,
         help="baseline file of accepted findings (default: <root>/scripts/anonymization_baseline.txt)",
+    )
+    parser.add_argument(
+        "--reveal",
+        action="store_true",
+        help="with --list, print token TEXT as well as indices (never use in CI: the logs are public)",
+    )
+    parser.add_argument(
+        "--require-supplement",
+        action="store_true",
+        help=(
+            "exit 2 if the private supplement is absent. For a caller that has just "
+            "established it (the estate's setup.sh); NOT for the tracked pre-commit "
+            "config, which every clone shares and no third party can satisfy"
+        ),
     )
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args(argv)
@@ -206,28 +269,72 @@ def main(argv: list[str] | None = None) -> int:
 
     blocklist = args.blocklist or (args.root / "scripts" / "anonymization_blocklist.txt")
 
+    if args.require_supplement and not load_local_supplement(blocklist):
+        # Checked BEFORE the scan on purpose. A missing supplement is a statement
+        # about COVERAGE, not a finding, and a clean scan printed above a fatal
+        # error invites the reader to believe the clean result meant something.
+        # Exit 2, not 1: 1 is this module's scan verdict ("something was found"),
+        # and a caller needs to tell a dirty tree from a misconfigured machine.
+        print(
+            f"check_anonymization: FAILED -- --require-supplement was passed but no "
+            f"{LOCAL_SUPPLEMENT} was found. The prophylactic tokens are NOT being "
+            "checked. On a developer machine, run the estate's setup.sh to link it. "
+            "If you are seeing this in CI, the flag is mis-wired: CI legitimately "
+            "has no supplement and must not pass this flag.",
+            file=sys.stderr,
+        )
+        return 2
+
     if args.list_only:
         tokens = load_blocklist(blocklist)
         files = tracked_files(args.root)
-        print(f"blocklist: {len(tokens)} token(s) from {blocklist}")
-        for t in tokens:
-            print(f"  {t}")
+        supplement = load_local_supplement(blocklist)
+        print(
+            f"blocklist: {len(tokens)} tracked token(s) from {blocklist}; "
+            f"{len(supplement)} supplement token(s) from {LOCAL_SUPPLEMENT}"
+        )
+        if args.reveal:
+            for i, t in enumerate(tokens + supplement, start=1):
+                print(f"  #{i} {t}")
+        else:
+            # Indices only by default. --list is one paste away from a CI
+            # workflow, and rendering token text there would publish the whole
+            # list into a public log. The debugging affordance people actually
+            # want ("does the guard see my list?") is answered by the counts.
+            for i in range(1, len(tokens) + len(supplement) + 1):
+                print(f"  #{i} (text hidden; pass --reveal to print it)")
         print(f"would scan {len(files)} tracked file(s) (minus {len(_SELF_EXCLUDE)} self-excluded)")
         return 0
 
     baseline = args.baseline or (args.root / "scripts" / "anonymization_baseline.txt")
-    hits, stale = scan(args.root, blocklist, baseline)
+    hits, stale, tokens = scan(args.root, blocklist, baseline)
+    index_of = {t: i for i, t in enumerate(tokens, start=1)}
+    if len(tokens) == len(load_blocklist(blocklist)):
+        # Absence is legal (CI never has it) but must not be SILENT: on a
+        # developer machine it means the per-machine setup step has not run and
+        # the prophylactic tokens are unguarded. Exit code deliberately
+        # unchanged -- this is visibility, not a gate.
+        print(
+            f"check_anonymization: NOTE -- no {LOCAL_SUPPLEMENT} found; scanning "
+            f"{len(tokens)} tracked token(s) only. On a developer machine, run the "
+            "estate's setup.sh to link the private supplement.",
+            file=sys.stderr,
+        )
     if stale:
         print(
             "Anonymization guard FAILED (stale baseline entries — the accepted line changed or moved):",
             file=sys.stderr,
         )
         for rel, token, fp in sorted(stale):
-            print(f"  {rel}: accepted token {token!r} (fingerprint {fp[:12]}...) no longer matches", file=sys.stderr)
+            print(
+                f"  {rel}: accepted blocklist entry #{index_of.get(token, '?')} "
+                f"(fingerprint {fp[:12]}...) no longer matches",
+                file=sys.stderr,
+            )
     if hits:
         print("Anonymization guard FAILED (blocklisted identifiers in tracked files):", file=sys.stderr)
         for h in hits:
-            print(f"  {h.render()}", file=sys.stderr)
+            print(f"  {h.render(index_of.get(h.token))}", file=sys.stderr)
         return 1
     return 1 if stale else 0
 

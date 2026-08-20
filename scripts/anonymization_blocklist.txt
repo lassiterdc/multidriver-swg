@@ -18,8 +18,8 @@
 # could plausibly appear in THIS repo's future content. A token that could never
 # appear is not free — a blocklist that accretes by "it costs nothing" logic
 # eventually becomes unreviewable, and an unreviewable control is not a control.
-# Under this rule `quinnlab` ships (HPC allocations are coming to the estate)
-# while other installations' Globus endpoint UUIDs do not.
+# Under this rule an allocation-account identifier for a cluster this project
+# is moving toward ships, while another installation's endpoint UUIDs do not.
 #
 # DISCRIMINATION RULE (how a token is chosen): prefer the narrowest segment that
 # cannot occur in legitimate prose. Common words are rejected even when they
@@ -32,9 +32,6 @@
 # --- Developer identity + home paths ---
 dcl3nd
 
-# --- Allocation accounts ---
-quinnlab
-
 # --- Local out-of-repo data root markers ---
 # The measured live violation these were chosen against:
 #   _old_code_to_refactor/_inputs.py:201
@@ -42,10 +39,19 @@ quinnlab
 _GradSchool
 norfolk_ffa
 
-# --- Private-estate companion repo name ---
-# Blocklisting the estate's NAME enforces the one-way reference invariant: the
-# public repo carries no reference to the private estate, so a leak of this repo
-# discloses nothing about it — not even that it exists. Whole-word matching on
-# the longer literal provably never false-positives the public `multidriver-swg`
-# prefix, which appears throughout this repo as the package and repo name.
-multidriver-swg_projects
+# PUBLICATION RULE (added 2026-08-20).
+# A token belongs in THIS tracked file only if it ALREADY occurs somewhere in
+# this repository's tracked tree. A token that does not yet occur here is
+# PROPHYLACTIC, and listing it here would be its FIRST publication -- the guard
+# would become the sole publisher of the string it exists to suppress. Those
+# live in the private supplement instead, loaded from
+# scripts/anonymization_blocklist.local.txt when present.
+#
+# RECONSTRUCTION RULE (added 2026-08-20). Removing a token's TEXT from this file
+# is not enough. Prose that says what KIND of identifier an entry was, how it was
+# chosen, or what public string it extends can reconstruct it well enough to
+# guess, while passing every literal check -- including the guard's own, because
+# this file is self-excluded and can never report itself. Explanatory prose about
+# a supplement entry therefore belongs in the supplement, which is private and is
+# the safe place to record why a token was chosen. Say nothing here about an
+# entry that does not live here.
