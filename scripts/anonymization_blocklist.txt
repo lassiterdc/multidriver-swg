@@ -1,57 +1,36 @@
-# Independent ground-truth blocklist for the anonymization guard.
+# Anonymization policy — THE CARRIER IS NOT HERE.
 #
-# INDEPENDENCE INVARIANT: this file is HAND-AUTHORED and is the SOLE source of
-# truth for the guard. It MUST NOT be generated from any code the scrub edits —
-# a derived blocklist silently weakens with every scrub, losing a token at the
-# same moment it helps remove it, while continuing to report green.
+# WHAT THIS IS FOR. None of the strings this guard looks for is a secret, a
+# credential or sensitive personal data. They are crufty developer and machine
+# detail that simply should not appear anywhere in this public tree. The guard
+# exists to keep that cruft out, not to protect anything.
 #
-# Format: one token per line. Blank lines and '#' lines ignored. Matching is
-# case-insensitive, whole-word (\b...\b), literal (re.escape). Author PLAIN
-# tokens, never regex.
+# This repository tracks NO such strings. The blocklist the guard reads lives
+# outside this repository, in the developer's private companion repo, and reaches
+# the guard as scripts/anonymization_blocklist.local.txt — a gitignored symlink
+# created by a per-machine setup step. This file records the POLICY that governs
+# what belongs in that carrier; it is not itself a carrier and defines no tokens.
 #
-# TRIAGE RULE (what belongs here): list ONLY genuinely-private identifiers —
-# anything that CANNOT be found by reading public documentation. Public,
-# doc-derivable, or functionally required identifiers are KEPT in the source and
-# MUST NOT be listed here; blocklisting one breaks the thing it names.
+# TRIAGE RULE: list ONLY strings that are crufty developer or machine detail —
+# things with no business in a public tree. Public, doc-derivable, or functionally
+# required identifiers are KEPT in the source and MUST NOT be listed; blocklisting
+# one breaks the thing it names.
 #
-# ADMISSION RULE (when a token ships): a token ships only if the identifier
-# could plausibly appear in THIS repo's future content. A token that could never
-# appear is not free — a blocklist that accretes by "it costs nothing" logic
-# eventually becomes unreviewable, and an unreviewable control is not a control.
-# Under this rule an allocation-account identifier for a cluster this project
-# is moving toward ships, while another installation's endpoint UUIDs do not.
+# ADMISSION RULE: a token ships only if the string could plausibly appear in
+# this repository's future content. A list that accretes by "it costs nothing"
+# logic becomes unreviewable, and an unreviewable control is not a control.
 #
-# DISCRIMINATION RULE (how a token is chosen): prefer the narrowest segment that
-# cannot occur in legitimate prose. Common words are rejected even when they
-# appear in the violation — a guard that fires on documentation is a guard that
-# gets bypassed. `Dropbox` is rejected for this reason; `_GradSchool` and
-# `norfolk_ffa` are the discriminating segments of the same path and neither
-# occurs in legitimate public text. Tokens containing `:` or `/` are rejected
-# because `\b` does not behave around them the way an author expects.
-
-# --- Developer identity + home paths ---
-dcl3nd
-
-# --- Local out-of-repo data root markers ---
-# The measured live violation these were chosen against:
-#   _old_code_to_refactor/_inputs.py:201
-#   dir_hrsd = "D:/Dropbox/_GradSchool/_norfolk/norfolk_ffa/data/processed/..."
-_GradSchool
-norfolk_ffa
-
-# PUBLICATION RULE (added 2026-08-20).
-# A token belongs in THIS tracked file only if it ALREADY occurs somewhere in
-# this repository's tracked tree. A token that does not yet occur here is
-# PROPHYLACTIC, and listing it here would be its FIRST publication -- the guard
-# would become the sole publisher of the string it exists to suppress. Those
-# live in the private supplement instead, loaded from
-# scripts/anonymization_blocklist.local.txt when present.
+# DISCRIMINATION RULE: prefer the narrowest segment that cannot occur in
+# legitimate prose. Common words are rejected even when they appear in the
+# violation — a guard that fires on documentation is a guard that gets bypassed.
+# Tokens containing a colon or a slash are rejected because a word boundary does
+# not behave around them the way an author expects.
 #
-# RECONSTRUCTION RULE (added 2026-08-20). Removing a token's TEXT from this file
-# is not enough. Prose that says what KIND of identifier an entry was, how it was
-# chosen, or what public string it extends can reconstruct it well enough to
-# guess, while passing every literal check -- including the guard's own, because
-# this file is self-excluded and can never report itself. Explanatory prose about
-# a supplement entry therefore belongs in the supplement, which is private and is
-# the safe place to record why a token was chosen. Say nothing here about an
-# entry that does not live here.
+# RECONSTRUCTION RULE: prose that says what KIND of string an entry is, how it
+# was chosen, or what public string it extends can reconstruct it while passing
+# every literal check. Such prose belongs in the private carrier, never here.
+#
+# RE-TRIAGE TRIGGER: the triage record is why each entry is there. If that
+# judgment is ever in doubt, the OWNER may inspect the carrier and re-triage. A
+# rule whose justification is a property of what it withholds cannot be falsified
+# from inside the rule; this sentence is the falsification path.

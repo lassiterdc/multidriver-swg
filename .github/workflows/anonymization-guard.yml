@@ -32,5 +32,29 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run anonymization guard
-        run: python scripts/check_anonymization.py
+      - name: Assert the public surface carries no developer cruft
+        shell: bash
+        run: |
+          set -uo pipefail
+          fail=0
+          for f in scripts/anonymization_blocklist.txt scripts/anonymization_baseline.txt; do
+            [ -f "$f" ] || continue
+            n=$(grep -cvE '^[[:space:]]*(#|$)' "$f")
+            if [ "$n" -ne 0 ]; then
+              echo "public-surface: $f carries $n non-comment line(s); it must be prose-only" >&2
+              fail=1
+            fi
+          done
+          allow='^(\.copier-answers\.yml|_old_code_to_refactor/_inputs\.py)$'
+          pat='(/home/[A-Za-z0-9._-]+|/Users/[A-Za-z0-9._-]+|\b[A-Za-z]:[\\/]|Dropbox|OneDrive|Google Drive|iCloud)'
+          hits=0
+          while IFS= read -r -d '' f; do
+            printf '%s' "$f" | grep -qE "$allow" && continue
+            if grep -aqE "$pat" "$f" 2>/dev/null; then
+              echo "public-surface: $f matches a local-path pattern" >&2
+              hits=$((hits+1))
+            fi
+          done < <(git ls-files -z)
+          [ "$hits" -eq 0 ] || fail=1
+          echo "public-surface: control-file token lines checked; $hits pattern finding(s) outside the allowlist"
+          exit $fail

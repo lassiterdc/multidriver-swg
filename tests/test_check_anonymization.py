@@ -11,7 +11,8 @@ import scripts.check_anonymization as guard  # repo root is on sys.path under py
 def _init_repo(tmp_path: Path, files: dict[str, str]) -> Path:
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
     (tmp_path / "scripts").mkdir(parents=True, exist_ok=True)
-    (tmp_path / "scripts" / "anonymization_blocklist.txt").write_text(
+    (tmp_path / ".gitignore").write_text("/scripts/anonymization_blocklist.local.txt\n", encoding="utf-8")
+    (tmp_path / "scripts" / "anonymization_blocklist.local.txt").write_text(
         "# test blocklist\nzzsynthacct\nzz-synthetic-estate-repo\n",
         encoding="utf-8",
     )
@@ -32,7 +33,7 @@ def test_planted_token_fails(tmp_path: Path, capsys) -> None:
     # The finding is reported by blocklist INDEX, never by the token text: a
     # failing run of this guard is public (the workflow's logs are), so printing
     # the identifier would disclose the very string the guard exists to suppress.
-    assert "blocklist entry #" in err
+    assert "carrier entry #" in err
     assert "zzsynthacct" not in err
 
 
@@ -63,7 +64,7 @@ def test_estate_name_is_caught(tmp_path: Path, capsys) -> None:
     err = capsys.readouterr().err
     assert rc == 1
     assert "src/leak.py" in err
-    assert "blocklist entry #" in err
+    assert "carrier entry #" in err
     assert "zz-synthetic-estate-repo" not in err
 
 
@@ -74,13 +75,25 @@ def test_guard_imports_nothing_from_src() -> None:
     assert "from multidriver_swg" not in src
 
 
-def test_blocklist_is_not_empty() -> None:
-    # Vacuous-control guard: a blocklist reduced to comments makes every scan
-    # match nothing and exit 0. Measured 2026-08-17 before load_blocklist began
-    # failing closed. This pins the real blocklist, not a fixture.
+def test_tracked_control_files_carry_no_tokens() -> None:
+    # INVERTED from the pre-consolidation vacuous-control test. That test pinned
+    # "the carrier is non-empty"; after consolidation the carrier is private, that
+    # invariant is enforced at runtime by load_carrier's exit-2 path (which fires
+    # per scan rather than per suite run), and a test following the carrier could
+    # only run where the carrier exists -- so in CI it would SKIP, which is a green
+    # that means nothing. This pins the invariant that has no other pin in pytest:
+    # the two tracked control files carry prose and nothing else.
     repo_root = Path(guard.__file__).resolve().parent.parent
-    tokens = guard.load_blocklist(repo_root / "scripts" / "anonymization_blocklist.txt")
-    assert tokens, "anonymization blocklist defines zero tokens — the guard would pass everything"
+    for rel in ("scripts/anonymization_blocklist.txt", "scripts/anonymization_baseline.txt"):
+        path = repo_root / rel
+        if not path.is_file():
+            continue
+        payload = [
+            line
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        assert not payload, f"{rel} carries {len(payload)} non-comment line(s); it must be prose-only"
 
 
 def test_hook_entry_is_invocable_as_configured() -> None:
@@ -125,7 +138,7 @@ def _baseline_repo(tmp_path: Path) -> Path:
     root = _init_repo(tmp_path, {"src/leak.py": "acct = 'zzsynthacct'\n"})
     line = "acct = 'zzsynthacct'"
     fp = guard.line_fingerprint(line)
-    (root / "scripts" / "anonymization_baseline.txt").write_text(f"{fp}  src/leak.py  zzsynthacct\n", encoding="utf-8")
+    (root / "scripts" / "anonymization_baseline.txt").write_text(f"{fp}  src/leak.py  1\n", encoding="utf-8")
     subprocess.run(["git", "add", "-A"], cwd=root, check=True)
     return root
 

@@ -238,3 +238,4 @@ __marimo__/
 # symlink by a per-machine setup step and must never be committed: its blob
 # would be the target path, which names a private location.
 /scripts/anonymization_blocklist.local.txt
+/scripts/anonymization_ledger.local.txt

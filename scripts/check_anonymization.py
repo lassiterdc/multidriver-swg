@@ -2,8 +2,9 @@
 """CI check enforcing the anonymization blocklist.
 
 Enumerates the git-tracked set (`git ls-files`) and fails if any tracked text
-file contains a genuinely-private identifier listed in the INDEPENDENT
-ground-truth blocklist `scripts/anonymization_blocklist.txt`. Working-tree scrub
+file contains a crufty developer or machine string listed in the INDEPENDENT
+ground-truth CARRIER, a gitignored file this repository does not track and
+reaches as `scripts/anonymization_blocklist.local.txt`. Working-tree scrub
 enforcement only; git HISTORY exposure is a separate concern. Pure-stdlib by
 design: this guard must remain runnable when the project environment does not
 exist, because repo scaffolding — the window in which private paths are most
@@ -32,13 +33,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Files that legitimately CONTAIN blocklisted tokens and must never self-match.
-_SELF_EXCLUDE = frozenset(
-    {
-        "scripts/anonymization_blocklist.txt",
-        "scripts/anonymization_baseline.txt",
-        "scripts/check_anonymization.py",
-    }
-)
+_SELF_EXCLUDE: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -58,7 +53,7 @@ class Hit:
         to someone holding the list, and exactly as informative as nothing to
         someone who is not.
         """
-        who = f"blocklist entry #{index}" if index is not None else f"blocklisted token {self.token!r}"
+        who = f"carrier entry #{index}" if index is not None else f"blocklisted token {self.token!r}"
         return f"{self.path}:{self.line}: {who}"
 
 
@@ -86,6 +81,7 @@ def load_blocklist(blocklist_path: Path) -> list[str]:
 
 
 LOCAL_SUPPLEMENT = "anonymization_blocklist.local.txt"
+LOCAL_LEDGER = "anonymization_ledger.local.txt"
 
 
 def load_local_supplement(blocklist_path: Path) -> list[str]:
@@ -111,6 +107,29 @@ def load_local_supplement(blocklist_path: Path) -> list[str]:
         for raw in supp.read_text(encoding="utf-8").splitlines()
         if (line := raw.strip()) and not line.startswith("#")
     ]
+
+
+def load_carrier(blocklist_path: Path) -> list[str]:
+    """The carrier is the PRIVATE file only; this repository tracks no tokens.
+
+    Fails closed when the carrier is unreachable or defines no tokens, because a
+    guard with no ground truth that reports green is the vacuous control this
+    module already refuses. Exits 2, not 1: 1 is this module's scan verdict, and
+    a caller must tell a dirty tree from a machine that never linked the carrier.
+    """
+    tokens = load_local_supplement(blocklist_path)
+    if not tokens:
+        print(
+            f"check_anonymization: no carrier is reachable at "
+            f"{blocklist_path.parent / LOCAL_SUPPLEMENT}, or it defines ZERO tokens. "
+            "This repository tracks no blocklist; the carrier lives in the private "
+            "companion repo and reaches this tree as a gitignored symlink. Run the "
+            "companion repo's setup.sh to link it. CI legitimately has no carrier "
+            "and does not run this content scan.",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
+    return tokens
 
 
 def compile_patterns(tokens: list[str]) -> list[tuple[str, re.Pattern[str]]]:
@@ -164,9 +183,9 @@ def line_fingerprint(line: str) -> str:
     return hashlib.sha256(line.strip().encode("utf-8")).hexdigest()
 
 
-def load_baseline(baseline_path: Path) -> set[tuple[str, str, str]]:
-    """Accepted findings as {(path, token, fingerprint)}. Absent file = empty set."""
-    accepted: set[tuple[str, str, str]] = set()
+def load_baseline(baseline_path: Path) -> set[tuple[str, int, str]]:
+    """Accepted findings as {(path, carrier-ordinal, fingerprint)}. Absent file = empty set."""
+    accepted: set[tuple[str, int, str]] = set()
     if not baseline_path.exists():
         return accepted
     for raw in baseline_path.read_text(encoding="utf-8").splitlines():
@@ -177,16 +196,16 @@ def load_baseline(baseline_path: Path) -> set[tuple[str, str, str]]:
         if len(parts) != 3:
             raise SystemExit(
                 f"check_anonymization: malformed baseline row in {baseline_path}: {raw!r}. "
-                "Expected: {sha256}  {path}  {token}"
+                "Expected: {sha256}  {path}  {carrier-ordinal}"
             )
-        fp, rel, token = parts
-        accepted.add((rel, token, fp))
+        fp, rel, ordinal = parts
+        accepted.add((rel, int(ordinal), fp))
     return accepted
 
 
 def scan(
     root: Path, blocklist_path: Path, baseline_path: Path | None = None
-) -> tuple[list[Hit], set[tuple[str, str, str]], list[str]]:
+) -> tuple[list[Hit], set[tuple[str, int, str]], list[str]]:
     """Return (unaccepted hits, stale baseline rows, the loaded token order).
 
     The token order is returned so the caller can report a finding by its
@@ -197,12 +216,11 @@ def scan(
     file, or was deleted. Stale rows fail the guard rather than being silently
     pruned, so the baseline cannot accumulate entries that protect nothing.
     """
-    tracked = load_blocklist(blocklist_path)
-    supplement = load_local_supplement(blocklist_path)
-    tokens = tracked + supplement
+    tokens = load_carrier(blocklist_path)
     patterns = compile_patterns(tokens)
     accepted = load_baseline(baseline_path) if baseline_path is not None else set()
-    matched: set[tuple[str, str, str]] = set()
+    ordinal_of = {t: i for i, t in enumerate(tokens, start=1)}
+    matched: set[tuple[str, int, str]] = set()
     hits: list[Hit] = []
     for rel in tracked_files(root):
         if rel in _SELF_EXCLUDE:
@@ -213,7 +231,7 @@ def scan(
         for lineno, line in enumerate(text.splitlines(), start=1):
             for token, pat in patterns:
                 if pat.search(line):
-                    key = (rel, token, line_fingerprint(line))
+                    key = (rel, ordinal_of[token], line_fingerprint(line))
                     if key in accepted:
                         matched.add(key)
                         continue
@@ -228,7 +246,7 @@ def main(argv: list[str] | None = None) -> int:
         "--blocklist",
         type=Path,
         default=None,
-        help="blocklist file (default: <root>/scripts/anonymization_blocklist.txt)",
+        help="directory anchor for the carrier and ledger (default: <root>/scripts/)",
     )
     parser.add_argument(
         "--list",
@@ -245,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         "--baseline",
         type=Path,
         default=None,
-        help="baseline file of accepted findings (default: <root>/scripts/anonymization_baseline.txt)",
+        help=f"acceptance ledger (default: the gitignored {LOCAL_LEDGER} beside the carrier)",
     )
     parser.add_argument(
         "--reveal",
@@ -286,49 +304,33 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     if args.list_only:
-        tokens = load_blocklist(blocklist)
+        tokens = load_carrier(blocklist)
         files = tracked_files(args.root)
-        supplement = load_local_supplement(blocklist)
-        print(
-            f"blocklist: {len(tokens)} tracked token(s) from {blocklist}; "
-            f"{len(supplement)} supplement token(s) from {LOCAL_SUPPLEMENT}"
-        )
+        print(f"carrier: {len(tokens)} token(s) from {LOCAL_SUPPLEMENT}")
         if args.reveal:
-            for i, t in enumerate(tokens + supplement, start=1):
+            for i, t in enumerate(tokens, start=1):
                 print(f"  #{i} {t}")
         else:
             # Indices only by default. --list is one paste away from a CI
             # workflow, and rendering token text there would publish the whole
             # list into a public log. The debugging affordance people actually
             # want ("does the guard see my list?") is answered by the counts.
-            for i in range(1, len(tokens) + len(supplement) + 1):
+            for i in range(1, len(tokens) + 1):
                 print(f"  #{i} (text hidden; pass --reveal to print it)")
         print(f"would scan {len(files)} tracked file(s) (minus {len(_SELF_EXCLUDE)} self-excluded)")
         return 0
 
-    baseline = args.baseline or (args.root / "scripts" / "anonymization_baseline.txt")
+    baseline = args.baseline or (blocklist.parent / LOCAL_LEDGER)
     hits, stale, tokens = scan(args.root, blocklist, baseline)
     index_of = {t: i for i, t in enumerate(tokens, start=1)}
-    if len(tokens) == len(load_blocklist(blocklist)):
-        # Absence is legal (CI never has it) but must not be SILENT: on a
-        # developer machine it means the per-machine setup step has not run and
-        # the prophylactic tokens are unguarded. Exit code deliberately
-        # unchanged -- this is visibility, not a gate.
-        print(
-            f"check_anonymization: NOTE -- no {LOCAL_SUPPLEMENT} found; scanning "
-            f"{len(tokens)} tracked token(s) only. On a developer machine, run the "
-            "estate's setup.sh to link the private supplement.",
-            file=sys.stderr,
-        )
     if stale:
         print(
             "Anonymization guard FAILED (stale baseline entries — the accepted line changed or moved):",
             file=sys.stderr,
         )
-        for rel, token, fp in sorted(stale):
+        for rel, ordinal, fp in sorted(stale):
             print(
-                f"  {rel}: accepted blocklist entry #{index_of.get(token, '?')} "
-                f"(fingerprint {fp[:12]}...) no longer matches",
+                f"  {rel}: accepted carrier entry #{ordinal} (fingerprint {fp[:12]}...) no longer matches",
                 file=sys.stderr,
             )
     if hits:
