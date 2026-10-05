@@ -231,11 +231,11 @@ __marimo__/
 /CLAUDE.md
 # <<< agentic-workspace managed <<<
 
-# Anonymization blocklist -- PRIVATE SUPPLEMENT (split blocklist, private half).
-# The tracked blocklist carries only tokens that ALREADY occur in this public
-# tree. Tokens that do not yet occur here live outside this repo, because
-# listing one here would be its FIRST publication. This path is created as a
-# symlink by a per-machine setup step and must never be committed: its blob
-# would be the target path, which names a private location.
+# Anonymization carrier and ledger -- PRIVATE, never tracked here.
+# The token list and the accepted-findings list live outside this repo, because
+# listing a token here would be its FIRST publication. On a developer machine
+# each path is a symlink made by a per-machine setup step, whose blob would be
+# the target path, which names a private location; in CI each is a file the
+# workflow writes from an encrypted repository secret. Never commit either.
 /scripts/anonymization_blocklist.local.txt
 /scripts/anonymization_ledger.local.txt

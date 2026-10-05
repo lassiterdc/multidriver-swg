@@ -1,11 +1,21 @@
 # Anonymization guard. On every push to every branch, and on pull requests to
-# main and develop, this job runs two checks:
+# main and develop, this job runs three checks in order:
 #   1. the public surface: the two tracked control files under scripts/ carry
 #      prose only, and no tracked file outside a two-file allowlist matches a
 #      local-path pattern;
 #   2. a self-test proving that the guard prints counts only on this runner,
-#      never a path, a line or a token, run against a synthetic token list.
-# Working-tree enforcement only; git HISTORY exposure is a separate concern.
+#      run against a synthetic token list before any real one is loaded;
+#   3. the content scan: every tracked file against the private token list (the
+#      carrier) and the accepted-findings list (the ledger), which this
+#      repository does not track. Both reach this job as encrypted repository
+#      secrets that the repository's owner sets. The guard reports counts only,
+#      never a path, a line or a token, because this log is public.
+# Check 3 runs only when check 2 passed. A pull request from a fork receives no
+# secrets, so its run FAILS at check 3 rather than skipping green. Check 3's
+# count line also states how many carrier tokens and ledger rows it loaded, so
+# whoever sets the secrets can compare those numbers with the files they set
+# them from. Working-tree enforcement only; git HISTORY exposure is a separate
+# concern.
 name: Anonymization guard
 
 on:
@@ -93,3 +103,26 @@ jobs:
             exit 1
           fi
           echo "count-only self-test: PASS"
+      - name: Write the carrier and ledger from the repository secrets
+        id: writecarrier
+        if: ${{ !cancelled() && steps.selftest.outcome == 'success' }}
+        shell: bash
+        env:
+          ANON_CARRIER: ${{ secrets.ANONYMIZATION_CARRIER }}
+          ANON_LEDGER: ${{ secrets.ANONYMIZATION_LEDGER }}
+        run: |
+          set +x
+          # The carrier is required: a pull request from a fork gets no secret value.
+          # The ledger secret is absent when the ledger has no rows, and an empty
+          # ledger is legal: a missing row then shows up as a finding, never as a pass.
+          if [ -z "${ANON_CARRIER:-}" ]; then
+            echo "content scan: the carrier secret is empty or absent (a pull request from a fork receives no secrets); failing rather than skipping" >&2
+            exit 1
+          fi
+          umask 077
+          printf '%s\n' "$ANON_CARRIER" > scripts/anonymization_blocklist.local.txt
+          printf '%s\n' "${ANON_LEDGER:-}" > scripts/anonymization_ledger.local.txt
+      - name: Scan tracked content against the carrier (counts only)
+        if: ${{ !cancelled() && steps.writecarrier.outcome == 'success' }}
+        shell: bash
+        run: python3 -B scripts/check_anonymization.py --count-only

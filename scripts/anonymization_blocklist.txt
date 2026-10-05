@@ -7,9 +7,11 @@
 #
 # This repository tracks NO such strings. The blocklist the guard reads lives
 # outside this repository, in the developer's private companion repo, and reaches
-# the guard as scripts/anonymization_blocklist.local.txt — a gitignored symlink
-# created by a per-machine setup step. This file records the POLICY that governs
-# what belongs in that carrier; it is not itself a carrier and defines no tokens.
+# the guard as scripts/anonymization_blocklist.local.txt — on a developer machine
+# a gitignored symlink created by a per-machine setup step, and in CI a file the
+# workflow writes from an encrypted repository secret. This file records the
+# POLICY that governs what belongs in that carrier; it is not itself a carrier
+# and defines no tokens.
 #
 # TRIAGE RULE: list ONLY strings that are crufty developer or machine detail —
 # things with no business in a public tree. Public, doc-derivable, or functionally
