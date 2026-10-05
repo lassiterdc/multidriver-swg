@@ -7,9 +7,10 @@ repos:
       - id: ruff-format
 
   # Anonymization guard (scripts/check_anonymization.py)
-  # Fails if any tracked file contains a genuinely-private identifier listed in
-  # scripts/anonymization_blocklist.txt. Working-tree-only; git HISTORY exposure
-  # is a separate concern.
+  # Fails if any tracked file contains an identifier listed in the private
+  # carrier, which reaches this tree as scripts/anonymization_blocklist.local.txt
+  # (scripts/anonymization_blocklist.txt states the policy and lists nothing).
+  # Working-tree-only; git HISTORY exposure is a separate concern.
   #
   # entry names `python3` explicitly, NOT bare `python` and NOT a shebang.
   #   - bare `python` is unset on stock Ubuntu and otherwise resolves to whatever

@@ -126,8 +126,8 @@ def load_carrier(blocklist_path: Path) -> list[str]:
             f"{blocklist_path.parent / LOCAL_SUPPLEMENT}, or it defines ZERO tokens. "
             "This repository tracks no blocklist; the carrier lives in the private "
             "companion repo and reaches this tree as a gitignored symlink. Run the "
-            "companion repo's setup.sh to link it. CI legitimately has no carrier "
-            "and does not run this content scan.",
+            "companion repo's setup.sh to link it. In CI the workflow writes it from a "
+            "repository secret before the scan.",
             file=sys.stderr,
         )
         raise SystemExit(2)
@@ -352,8 +352,8 @@ def main(argv: list[str] | None = None) -> int:
             f"check_anonymization: FAILED -- --require-supplement was passed but no "
             f"{LOCAL_SUPPLEMENT} was found. The prophylactic tokens are NOT being "
             "checked. On a developer machine, run the estate's setup.sh to link it. "
-            "If you are seeing this in CI, the flag is mis-wired: CI legitimately "
-            "has no supplement and must not pass this flag.",
+            "CI does not pass this flag: its workflow writes the carrier from a "
+            "repository secret and checks it is non-empty first.",
             file=sys.stderr,
         )
         return 2
