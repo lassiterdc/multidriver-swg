@@ -39,14 +39,25 @@ jobs:
           fail=0
           for f in scripts/anonymization_blocklist.txt scripts/anonymization_baseline.txt; do
             [ -f "$f" ] || continue
-            n=$(grep -cvE '^[[:space:]]*(#|$)' "$f")
+            # grep -c exits 1 when it counts no line, and this shell's -e would end
+            # the step on that status before any output; read the status instead.
+            rc=0
+            n=$(grep -cvE '^[[:space:]]*(#|$)' "$f") || rc=$?
+            if [ "$rc" -gt 1 ]; then
+              echo "public-surface: $f could not be read (grep exit $rc)" >&2
+              fail=1
+              continue
+            fi
+            echo "public-surface: $f carries $n non-comment line(s)"
             if [ "$n" -ne 0 ]; then
-              echo "public-surface: $f carries $n non-comment line(s); it must be prose-only" >&2
+              echo "public-surface: $f must be prose-only" >&2
               fail=1
             fi
           done
+          # Each brand name carries one bracketed letter so that this file, which the
+          # loop below also scans, does not match its own pattern.
           allow='^(\.copier-answers\.yml|_old_code_to_refactor/_inputs\.py)$'
-          pat='(/home/[A-Za-z0-9._-]+|/Users/[A-Za-z0-9._-]+|\b[A-Za-z]:[\\/]|Dropbox|OneDrive|Google Drive|iCloud)'
+          pat='(/home/[A-Za-z0-9._-]+|/Users/[A-Za-z0-9._-]+|\b[A-Za-z]:[\\/]|Drop[b]ox|One[D]rive|Google [D]rive|i[C]loud)'
           hits=0
           while IFS= read -r -d '' f; do
             printf '%s' "$f" | grep -qE "$allow" && continue
