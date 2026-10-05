@@ -24,9 +24,11 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import re
 import subprocess
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -239,6 +241,48 @@ def scan(
     return hits, accepted - matched, tokens
 
 
+COUNT_ONLY_PREFIX = "anonymization-guard:"
+
+
+def count_only_in_force(flag: bool, environ: Mapping[str, str] | None = None) -> bool:
+    """Count-only reporting is in force when asked for, and always on a GitHub runner.
+
+    A CI log of this public repository is public, and a finding's path and line
+    point at a public line that holds the private token -- so in CI the guard
+    reports numbers only. GitHub sets GITHUB_ACTIONS=true on every runner; reading
+    it means a workflow that forgets the flag still cannot print a location.
+    """
+    env = os.environ if environ is None else environ
+    return flag or env.get("GITHUB_ACTIONS") == "true"
+
+
+def _count_only_main(args: argparse.Namespace, blocklist: Path) -> int:
+    """Scan and print ONE line of counts; never a path, a line number or a token."""
+    if args.list_only or args.reveal:
+        print(f"{COUNT_ONLY_PREFIX} --list and --reveal are refused in count-only mode", file=sys.stderr)
+        return 2
+    baseline = args.baseline or (blocklist.parent / LOCAL_LEDGER)
+    # Every failure below is reported by a FIXED sentence. An exception's own text can
+    # quote a carrier or ledger cell (a malformed ordinal raises ValueError naming it),
+    # and in CI that text would land in a public log.
+    try:
+        if not load_local_supplement(blocklist):
+            print(f"{COUNT_ONLY_PREFIX} no carrier is reachable, or it defines zero tokens", file=sys.stderr)
+            return 2
+        ledger_rows = len(load_baseline(baseline))
+        hits, stale, tokens = scan(args.root, blocklist, baseline)
+    except (SystemExit, Exception):
+        print(
+            f"{COUNT_ONLY_PREFIX} the carrier, the ledger or the tracked-file list could not be read", file=sys.stderr
+        )
+        return 2
+    print(
+        f"{COUNT_ONLY_PREFIX} {len(hits)} finding(s), {len(stale)} stale ledger row(s); "
+        f"carrier {len(tokens)} token(s), ledger {ledger_rows} row(s)"
+    )
+    return 1 if hits or stale else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=REPO_ROOT, help="repo root to scan")
@@ -279,6 +323,14 @@ def main(argv: list[str] | None = None) -> int:
             "config, which every clone shares and no third party can satisfy"
         ),
     )
+    parser.add_argument(
+        "--count-only",
+        action="store_true",
+        help=(
+            "print one line of counts and nothing that locates a finding; always in force "
+            "when GITHUB_ACTIONS=true. Refuses --list and --reveal"
+        ),
+    )
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args(argv)
 
@@ -286,6 +338,9 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("check_anonymization: --format json not yet implemented")
 
     blocklist = args.blocklist or (args.root / "scripts" / "anonymization_blocklist.txt")
+
+    if count_only_in_force(args.count_only):
+        return _count_only_main(args, blocklist)
 
     if args.require_supplement and not load_local_supplement(blocklist):
         # Checked BEFORE the scan on purpose. A missing supplement is a statement

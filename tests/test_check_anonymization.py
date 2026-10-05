@@ -5,6 +5,8 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+import pytest
+
 import scripts.check_anonymization as guard  # repo root is on sys.path under pytest
 
 
@@ -175,3 +177,163 @@ def test_stale_baseline_entry_fails_closed(tmp_path: Path) -> None:
     subprocess.run(["git", "add", "-A"], cwd=root, check=True)
     baseline = root / "scripts" / "anonymization_baseline.txt"
     assert guard.main(["--root", str(root), "--baseline", str(baseline)]) == 1
+
+
+# --- count-only report mode ---------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _no_runner_env(monkeypatch) -> None:
+    # The guard forces count-only output whenever GITHUB_ACTIONS=true. Clear it so
+    # every test states its mode itself and the suite reads the same on a runner.
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+
+
+def _lines(captured) -> list[str]:
+    return [ln for ln in (captured.out + captured.err).splitlines() if ln]
+
+
+def test_count_only_flag_prints_one_count_line(tmp_path: Path, capsys) -> None:
+    """A finding under --count-only prints one line of counts and exits 1.
+
+    Class: a tree with findings, asked for count-only output by the flag. Required
+    because a CI log of a public repository is public, and a finding's path and line
+    point at the public line holding the private token. Killed by printing any
+    located line in count-only mode. A second correct implementation, one that
+    writes the count line to stderr instead of stdout, still passes.
+    """
+    root = _init_repo(tmp_path, {"src/leak.py": "account = 'zzsynthacct'\n"})
+    rc = guard.main(["--root", str(root), "--count-only"])
+    assert rc == 1
+    assert _lines(capsys.readouterr()) == [
+        "anonymization-guard: 1 finding(s), 0 stale ledger row(s); carrier 2 token(s), ledger 0 row(s)"
+    ]
+
+
+def test_runner_env_alone_forces_count_only(tmp_path: Path, capsys, monkeypatch) -> None:
+    """GITHUB_ACTIONS=true alone forces count-only output, with no flag given.
+
+    Class: an invocation on a GitHub runner that omits --count-only. Required because
+    a workflow that forgets the flag would otherwise print locations into a public
+    log. Killed by reading only the flag. A second correct implementation, one that
+    also honours another runner variable, still passes.
+    """
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    root = _init_repo(tmp_path, {"src/leak.py": "account = 'zzsynthacct'\n"})
+    rc = guard.main(["--root", str(root)])
+    text = "\n".join(_lines(capsys.readouterr()))
+    assert rc == 1
+    assert "src/leak.py" not in text
+    assert "carrier entry #" not in text
+    assert "zzsynthacct" not in text
+
+
+def test_count_only_clean_tree_exits_zero(tmp_path: Path, capsys) -> None:
+    """A clean tree under --count-only prints its zero counts and exits 0.
+
+    Class: no finding and no stale ledger row. Required so a green CI run still shows
+    how many carrier tokens and ledger rows it loaded. Killed by printing nothing on
+    a clean scan, or by exiting non-zero. A second correct implementation that
+    builds the same line by a template string still passes.
+    """
+    root = _init_repo(tmp_path, {"src/ok.py": "x = 1\n"})
+    assert guard.main(["--root", str(root), "--count-only"]) == 0
+    assert _lines(capsys.readouterr()) == [
+        "anonymization-guard: 0 finding(s), 0 stale ledger row(s); carrier 2 token(s), ledger 0 row(s)"
+    ]
+
+
+def test_count_only_stale_row_names_no_path(tmp_path: Path, capsys) -> None:
+    """A stale ledger row under --count-only is counted, never named, and exits 1.
+
+    Class: a ledger row whose accepted line no longer matches. Required because the
+    detail-mode stale report prints the row's path and fingerprint. Killed by
+    reporting stale rows as a located line, or by treating stale rows as clean. A
+    second correct implementation that counts stale rows before scanning findings
+    still passes.
+    """
+    root = _baseline_repo(tmp_path)
+    (root / "src" / "leak.py").write_text("acct = 'redacted'\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+    baseline = root / "scripts" / "anonymization_baseline.txt"
+    rc = guard.main(["--root", str(root), "--baseline", str(baseline), "--count-only"])
+    lines = _lines(capsys.readouterr())
+    assert rc == 1
+    assert lines == ["anonymization-guard: 0 finding(s), 1 stale ledger row(s); carrier 2 token(s), ledger 1 row(s)"]
+
+
+def test_count_only_missing_carrier_exits_two_naming_no_path(tmp_path: Path, capsys) -> None:
+    """A missing carrier under --count-only exits 2 with a fixed sentence and no path.
+
+    Class: a run with no reachable carrier, which is what a fork's CI run presents.
+    Required because exit 2 separates "cannot report" from a finding, and the
+    detail-mode message names the carrier's path. Killed by exiting 0 or 1, or by
+    printing the path. A second correct implementation that checks the carrier
+    inside the scan rather than before it still passes.
+    """
+    root = _init_repo(tmp_path, {"src/ok.py": "x = 1\n"})
+    (root / "scripts" / "anonymization_blocklist.local.txt").unlink()
+    rc = guard.main(["--root", str(root), "--count-only"])
+    text = "\n".join(_lines(capsys.readouterr()))
+    assert rc == 2
+    assert str(tmp_path) not in text
+    assert text.startswith("anonymization-guard: ")
+
+
+@pytest.mark.parametrize(
+    ("source", "content"),
+    [
+        ("ledger, a malformed ordinal", "abc123  src/ok.py  zzcanaryordinal\n"),
+        ("ledger, a row short of three fields", "zzcanaryfingerprint  src/zzcanarypath.py\n"),
+        ("carrier, undecodable", None),
+        ("tracked-file list, root not a repository", None),
+    ],
+)
+def test_count_only_unreadable_input_prints_one_fixed_line(tmp_path: Path, capsys, source, content) -> None:
+    """Every unreadable input under --count-only prints one fixed sentence and exits 2.
+
+    Class: each exception source behind that sentence (a malformed ordinal, a ledger
+    row short of three fields, an undecodable carrier, a root that is not a
+    repository), each carrying a canary cell. Required because an exception's own
+    text can quote a carrier or ledger cell into a public log. A row short of three
+    fields raises SystemExit quoting the raw row, not an Exception, so this pins the
+    SystemExit member of the guard's except clause; narrowing it to Exception kills
+    two arms. A second correct implementation that validates each input before
+    reading it, raising nothing, still passes.
+    """
+    if source.startswith("tracked-file list"):
+        root = tmp_path
+        (root / "scripts").mkdir()
+        (root / "scripts" / "anonymization_blocklist.local.txt").write_text("zzsynthacct\n", encoding="utf-8")
+        argv = ["--root", str(root), "--count-only"]
+    else:
+        root = _init_repo(tmp_path, {"src/ok.py": "x = 1\n"})
+        argv = ["--root", str(root), "--count-only"]
+        if source.startswith("carrier"):
+            (root / "scripts" / "anonymization_blocklist.local.txt").write_bytes(b"zzsynthacct\n\xffzzcanary\n")
+        else:
+            bad = root / "scripts" / "bad_ledger.txt"
+            bad.write_text(content, encoding="utf-8")
+            argv += ["--baseline", str(bad)]
+    rc = guard.main(argv)
+    assert rc == 2
+    assert _lines(capsys.readouterr()) == [
+        "anonymization-guard: the carrier, the ledger or the tracked-file list could not be read"
+    ]
+
+
+@pytest.mark.parametrize("extra", [["--list"], ["--list", "--reveal"]])
+def test_count_only_refuses_list_and_reveal(tmp_path: Path, capsys, extra) -> None:
+    """--list and --list --reveal are refused in count-only mode, exit 2, no token.
+
+    Class: the listing options combined with count-only. Required because --reveal
+    prints token text, and the CI job must run the guard in scan mode only. Killed
+    by honouring --list in count-only mode. A second correct implementation that
+    refuses only --reveal and makes --list print counts would fail this test, so
+    the refusal of --list is part of the contract, not an implementation choice.
+    """
+    root = _init_repo(tmp_path, {"src/ok.py": "x = 1\n"})
+    rc = guard.main(["--root", str(root), "--count-only", *extra])
+    text = "\n".join(_lines(capsys.readouterr()))
+    assert rc == 2
+    assert "zzsynthacct" not in text
