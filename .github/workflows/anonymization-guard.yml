@@ -1,11 +1,11 @@
-# Anonymization guard: fails if any tracked file contains a blocklisted
-# genuinely-private identifier (scripts/anonymization_blocklist.txt).
-# Working-tree scrub enforcement; git HISTORY exposure is a separate concern.
-#
-# The guard reports a finding by BLOCKLIST INDEX rather than by token text, so
-# a failing run here no longer discloses the identifier. The tracked blocklist
-# additionally carries only tokens that already occur in this public tree; the
-# prophylactic half lives outside the repo and is absent in CI by design.
+# Anonymization guard. On every push to every branch, and on pull requests to
+# main and develop, this job runs two checks:
+#   1. the public surface: the two tracked control files under scripts/ carry
+#      prose only, and no tracked file outside a two-file allowlist matches a
+#      local-path pattern;
+#   2. a self-test proving that the guard prints counts only on this runner,
+#      never a path, a line or a token, run against a synthetic token list.
+# Working-tree enforcement only; git HISTORY exposure is a separate concern.
 name: Anonymization guard
 
 on:
@@ -69,3 +69,27 @@ jobs:
           [ "$hits" -eq 0 ] || fail=1
           echo "public-surface: control-file token lines checked; $hits pattern finding(s) outside the allowlist"
           exit $fail
+      - name: Self-test count-only output on this runner
+        id: selftest
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          # The synthetic carrier lists a public word that occurs in this tree, so
+          # the scan has findings to report, and a guard that printed locations
+          # would print public lines only. Run WITHOUT --count-only on purpose: this
+          # measures that the runner's GITHUB_ACTIONS variable alone forces it.
+          set +e
+          d="$RUNNER_TEMP/count-only-self-test"
+          mkdir -p "$d"
+          printf '%s\n' 'multidriver_swg' > "$d/anonymization_blocklist.local.txt"
+          printf '%s\n' '0000000000000000000000000000000000000000000000000000000000000000  no/such/file.py  1' > "$d/anonymization_ledger.local.txt"
+          out=$(python3 -B scripts/check_anonymization.py --blocklist "$d/anonymization_blocklist.txt" 2>&1)
+          rc=$?
+          set -e
+          printf '%s\n' "$out"
+          n=$(printf '%s\n' "$out" | wc -l)
+          if [ "$rc" -ne 1 ] || [ "$n" -ne 1 ] || ! printf '%s\n' "$out" | grep -qE '^anonymization-guard: [1-9][0-9]* finding\(s\), 1 stale ledger row\(s\); carrier 1 token\(s\), ledger 1 row\(s\)$'; then
+            echo "count-only self-test: FAILED (exit $rc, $n line(s))" >&2
+            exit 1
+          fi
+          echo "count-only self-test: PASS"
