@@ -298,3 +298,18 @@ def test_a_misspelled_guard_literal_is_named_with_the_slug_it_displaced(tmp_path
     misspelled = displaced + "x"
     guard = _guard_file(tmp_path, [misspelled if s == displaced else s for s in systems])
     assert {displaced, misspelled} <= _quoted(partition_copy.guard_case_findings(guard))
+
+
+def test_the_real_guard_cases_equal_the_copy():
+    """Property: the real guard file's `system=` literals equal the committed copy's slugs, in both directions.
+
+    Class: the guard file at every edit of the partition. Why: the guard cases are twenty hand-
+    written functions, so a system added to, removed from or renamed in the partition copy without
+    the matching guard-case edit must fail by name here, in the State check job, rather than leave
+    a system with no guard case or a guard case naming no system. Killed by: a guard file whose
+    literals differ from the copy's slugs (the misspelled-literal arm above runs that input).
+    Second correct implementation: comparing the slugs of the copy with the decorator literals
+    read by a regular expression, as two sets.
+    """
+    findings = partition_copy.guard_case_findings(partition_copy.REPO_ROOT / "tests/correspondence/test_guard_cases.py")
+    assert not findings, "\n".join(findings)
