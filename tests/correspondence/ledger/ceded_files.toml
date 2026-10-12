@@ -1,0 +1,31 @@
+[[ceded_file]]
+legacy_file = "_a2_dwnld_aorc_pre_mrms.py"
+disposition = "scope-out"
+destination = "hydro-fetch"
+destination_kind = "member"
+acceptance = "OPEN"
+reason = "Ruled by the developer on 2026-08-17: hydro-fetch absorbed this file's capabilities."
+
+[[ceded_file]]
+legacy_file = "_a_dwnld_and_process_water-level-data.py"
+disposition = "scope-out"
+destination = "hydro-fetch"
+destination_kind = "member"
+acceptance = "OPEN"
+reason = "Ruled by the developer on 2026-08-17: hydro-fetch absorbed this file's capabilities."
+
+[[ceded_file]]
+legacy_file = "_b_gen_wshed-precip-tseries-from-mrms.py"
+disposition = "scope-out"
+destination = "hydro-fetch"
+destination_kind = "member"
+acceptance = "OPEN"
+reason = "Ruled by the developer on 2026-08-17: hydro-fetch absorbed this file's capabilities."
+
+[[ceded_file]]
+legacy_file = "_c_gen_ncei_hrly_and_daily_data.py"
+disposition = "scope-out"
+destination = "hydro-fetch"
+destination_kind = "member"
+acceptance = "OPEN"
+reason = "Ruled by the developer on 2026-08-17: hydro-fetch absorbed this file's capabilities."
