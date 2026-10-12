@@ -1,0 +1,233 @@
+# The corpus record of the pre-refactor correspondence: one section per upstream source of legacy code.
+# Fields marked derived are recomputed from the files git tracks on every test run (tests/correspondence/corpus_record.py);
+# the others are written by hand and checked for presence and form only.
+
+rule = "corpus-record:1"
+
+[[section]]
+name = "stormy"
+directory = "_old_code_to_refactor"
+upstream = "https://github.com/lassiterdc/stormy"
+upstream_branch = "working-ornl-hpc11"
+revision = "c74c8a4052efcbb1345981721532f462090d1a12"
+upstream_path = "stochastic_storm_rescaling"
+candidate_rule = "A tracked top-level file of the directory whose name ends in .py is a candidate for unit extraction; every other tracked file of the directory is NOT A UNIT SOURCE."
+extent_rule = "ADR-1 of the pre-refactor-correspondence design, six parts; lines counted by str.splitlines()"
+set_digest = "sha256-manifest:1:a8506a62408610d42f570a7f0fd917db5abf89370830ba085d85a4ca85afedde"  # derived
+unparseable_candidate_files = 0  # derived
+verification_date = "2026-10-12"
+verification_command = '''n=0; for f in _old_code_to_refactor/*.py; do gh api -H "Accept: application/vnd.github.raw" "repos/lassiterdc/stormy/contents/stochastic_storm_rescaling/$(basename "$f")?ref=c74c8a4052efcbb1345981721532f462090d1a12" | cmp -s - "$f" && n=$((n+1)); done; gh api -H "Accept: application/vnd.github.raw" "repos/lassiterdc/stormy/contents/LICENSE?ref=c74c8a4052efcbb1345981721532f462090d1a12" | cmp -s - _old_code_to_refactor/LICENSE && n=$((n+1)); echo "$n of 16 upstream-sourced files byte-identical"'''
+verification_result = "16 of 16 upstream-sourced files byte-identical"
+
+[[section.file]]
+path = "LICENSE"  # derived
+role = "NOT A UNIT SOURCE"  # derived
+upstream_sourced = true
+sha256 = "d258c2e0a0bf018bde23e0f768a61fd5fc69f8b6842e3b95cdbd528ced050170"  # derived
+lines = 21  # derived
+
+[[section.file]]
+path = "NOTICE.md"  # derived
+role = "NOT A UNIT SOURCE"  # derived
+upstream_sourced = false
+sha256 = "e0f06541300e60cf6e38f399c55abfd1eac09f55ce7d7039d1b96cbe68ded5b4"  # derived
+lines = 41  # derived
+
+[[section.file]]
+path = "README.md"  # derived
+role = "NOT A UNIT SOURCE"  # derived
+upstream_sourced = false
+sha256 = "267d80e480f4d24106ba1066652ef2796d884f2be30a9248d794a14d5a95405a"  # derived
+lines = 64  # derived
+
+[[section.file]]
+path = "__ref_ams_functions.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "38f9ed1398465c7f04d4212ae7c9b464c12bc93cad211f0d39ff1eff7745713a"  # derived
+lines = 387  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_a2_dwnld_aorc_pre_mrms.py"  # derived
+role = "candidate"  # derived
+group = "ceded"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "b1cf3243eeb7affe55b23a45bb16aa74255220f3ba4e1fd925897077a5a2bf96"  # derived
+lines = 95  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_a_dwnld_and_process_water-level-data.py"  # derived
+role = "candidate"  # derived
+group = "ceded"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "8082d1d0106127c382c1e619907c37c3b745988282c0387ce8b9265ca3fe9d4a"  # derived
+lines = 487  # derived
+runs = "DOES-NOT-RUN"
+runs_ground = "NameError: it calls wlevel_event_selection, which is defined nowhere."
+
+[[section.file]]
+path = "_b2_event_selection.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "3d5b1f4b7f70b439c690bd1f8dc1c0220927c65e98d6df5a648d398a49c9264c"  # derived
+lines = 617  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_b3_event_analysis.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "d726edde27b938791b673e8cf53ec944829adcba728ef7dd5cd79e7f174b7fe0"  # derived
+lines = 668  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_b4_selecting_marginals.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "c6c0872c4cbae97fb2ce8bb47c20ca2244f4b7ac275862f85f5cc28c2c4de7e7"  # derived
+lines = 316  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_b5_fit_vine_copulas.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "c89098bfc0ecfcbc8514730217f62e1664156ee4d2b375139d746d7a0224b267"  # derived
+lines = 328  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_b6_simulate_from_vincop.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "cb6e8f975ef13d8e85444ac52313fe7c1d6a8fac68118fce6b57798090a154f1"  # derived
+lines = 770  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_b7.1_qaqc_simulated_events.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "0eea3a21ac0c827f16917d470a8217471560be65d242b5bd529776f88d0cf9e3"  # derived
+lines = 768  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_b7_generate_time_series_from_event_stats.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "b32bc5bdb530b411cd78019e26341fbe6ea7ccfb483e82b3ca7021245ac0ac6f"  # derived
+lines = 969  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_b_gen_wshed-precip-tseries-from-mrms.py"  # derived
+role = "candidate"  # derived
+group = "ceded"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "5fcd19aea2cf5a92acacbf783960c07235eed19b0582c5c54806c146059afbde"  # derived
+lines = 333  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_c_gen_ncei_hrly_and_daily_data.py"  # derived
+role = "candidate"  # derived
+group = "ceded"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "16b801e61f8af679036d39f78428394a03c0760453b0eabb82766fa08a102122"  # derived
+lines = 84  # derived
+runs = "DOES-NOT-RUN"
+runs_ground = "ImportError at line 2 (from _inputs import def_inputs_for_c); its entire upstream history is one commit, 'initial commit (script is incomplete)'."
+
+[[section.file]]
+path = "_d_build_water_level_generator.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "2cca7fba3051b4be9d83df39a91a9a230bea381a0b4f84058d17bd8ec7e42a80"  # derived
+lines = 601  # derived
+runs = "DOES-NOT-RUN"
+runs_ground = "ImportError at line 12 (from _inputs import def_inputs_for_d): no file in this directory defines def_inputs_for_d."
+
+[[section.file]]
+path = "_inputs.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "a5131404298ce8c0dd0a57e87b648cbf2963791cdc5250f7bd3a8ad493d7198f"  # derived
+lines = 203  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.file]]
+path = "_utils.py"  # derived
+role = "candidate"  # derived
+group = "retained"  # the one source of the retained/ceded split
+upstream_sourced = true
+sha256 = "a90e72ac68520370e73f36dbb5341d14619aa25e39a52f29a466c949f05f516d"  # derived
+lines = 2393  # derived
+runs = "UNESTABLISHED"
+runs_ground = "no import of a name defined nowhere in the corpus is known for this file"
+
+[[section.site]]  # derived
+path = "_b4_selecting_marginals.py"
+line = 67
+runs = "DOES-NOT-RUN-PAST"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+
+[[section.site]]  # derived
+path = "_b5_fit_vine_copulas.py"
+line = 48
+runs = "DOES-NOT-RUN-PAST"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+
+[[section.site]]  # derived
+path = "_b5_fit_vine_copulas.py"
+line = 78
+runs = "DOES-NOT-RUN-PAST"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+
+[[section.site]]  # derived
+path = "_b7.1_qaqc_simulated_events.py"
+line = 72
+runs = "DOES-NOT-RUN-PAST"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+
+[[section.site]]  # derived
+path = "_b7_generate_time_series_from_event_stats.py"
+line = 155
+runs = "DOES-NOT-RUN-PAST"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+
+[[section.site]]  # derived
+path = "_utils.py"
+line = 1274
+runs = "DOES-NOT-RUN-PAST"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+
+[[section.site]]  # derived
+path = "_utils.py"
+line = 1563
+runs = "DOES-NOT-RUN-PAST"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
