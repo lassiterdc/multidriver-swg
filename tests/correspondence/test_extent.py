@@ -107,3 +107,35 @@ def test_a_failed_extent_check_skips_dependents_in_its_own_name(tmp_path):
     with pytest.raises(pytest.skip.Exception) as skipped:
         extent.require_extent(root)
     assert str(skipped.value).startswith(extent.NOT_MEASURED)
+
+
+M11_KEYS = {
+    f"{D_FILE}:{ranges}"
+    for ranges in (
+        "1-18 19-27 28-79 80-85 86-100 101-104 105-116 117-127,131-136 128-130 137-144 145-153 154-216 "
+        "217-241 242-251 252-265 266-271 272-292 293-350 351-363 364-375 376-377 378-381 382-385 386-392 "
+        "393-396 397-426 427-443 444-449 450-457 458-580 581-601"
+    ).split()
+}
+
+
+def test_the_d_file_keys_equal_the_independently_computed_keys():
+    """Property: the 31 unit keys the extent rule gives `_d_build_water_level_generator.py` equal the 31 keys of an independent oracle.
+
+    The oracle is the list of keys in the approved shape's measurement record (its M11), which
+    were produced by the design master's own K-14 construction, written independently of this
+    module.
+    Class (i): every unit key of that file, i.e. which line belongs to which unit, not only whether
+    every line belongs to exactly one.
+    Why (iii): the partition's totals stay 8,020 lines, 188 units, 0 unowned and 0 doubly owned under
+    a change to which unit a blank or comment line joins (part 1 of the rule), yet such a change
+    moves 93 of the 188 keys. The ledger's rows and every later test cite these keys and are computed
+    from this same module, so without an independent oracle the change agrees with itself everywhere.
+    Killed by (iv): removing part 1 of the rule (blank and comment lines above a unit joining that
+    unit), which moves keys of this file while every total is unchanged.
+    Second correct implementation: one that builds the partition in a single pass, assigning each
+    line by scanning to the nearest unit in its own cell, still produces these keys and passes.
+    """
+    found, _counts = extent.extents(D_FILE, extent._read(extent.REPO_ROOT, D_FILE))
+    keys = {f["key"] for f in found}
+    assert keys == M11_KEYS, "\n".join(sorted(keys ^ M11_KEYS))
