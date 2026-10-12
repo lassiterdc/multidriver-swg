@@ -37,3 +37,4 @@ norecursedirs = [".git", "build", "dist", "*.egg-info"]
 markers = [
     "state_check: a check of the pre-refactor correspondence that the State check CI job runs; carrying this marker is all a check needs to join that job",
 ]
+strict_markers = true
