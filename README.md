@@ -20,6 +20,17 @@ import multidriver_swg
 
 Full documentation at [ReadTheDocs](https://multidriver-swg.readthedocs.io/).
 
+## Licence
+
+The toolkit is licensed under the PolyForm Noncommercial License 1.0.0 (`LICENSE`).
+That licence does not cover `_old_code_to_refactor/`, which is MIT-licensed
+(`_old_code_to_refactor/LICENSE`) and a byte-identical copy of files of
+`stormy@c74c8a4` (<https://github.com/lassiterdc/stormy>). One block of
+`_old_code_to_refactor/_d_build_water_level_generator.py` is attributed to a third
+party, whose notice is `_old_code_to_refactor/NOTICE.md`. Text copied from that
+directory into the test tree carries the same MIT notice beside it, in
+`tests/correspondence/extractions/LICENSE`.
+
 ## Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and contribution guidelines.
