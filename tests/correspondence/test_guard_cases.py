@@ -8,15 +8,19 @@ copy's slugs: a `system=` value carried through a parametrize case is unreadable
 `test_partition_copy.py` checks that these literals equal the partition copy's slugs, in both
 directions, so a change of the partition that is not made here fails by name.
 
+Every case runs the same check today, so the per-system split adds no coverage. It exists so that
+work on one system has a selection point of its own: that work runs its system's case by slug,
+and does not have to select every other system's case to get the whole check.
+
 Every case calls one helper, `run_guard_case`, which runs the extent check and every callable of
 `ledger.WHOLE_LEDGER_CHECKS`, collects all of their findings, and only then fails, once, with a
 message naming each failing check. Deliberately NOT one assertion per check: check 1 is red until
-the crawl has ruled every unit, so a per-check assertion would stop there and leave every later
-check unevaluated in every guard case for that whole window.
+the ledger holds a row for every retained unit, so a per-check assertion would stop there and leave
+every later check unevaluated in every guard case for as long as any unit has no row.
 
-The `guard` marker is not registered here (a later plan registers it when it turns on strict
-markers), so pytest emits one unknown-marker warning per guard case. This module does not carry the
-`state_check` marker as a whole: the State check job does not select the guard cases.
+The `guard` marker is not in `pyproject.toml`'s `markers` list and strict markers are off, so
+pytest emits one unknown-marker warning per guard case rather than an error. This module does not
+carry the `state_check` marker as a whole: the State check job does not select the guard cases.
 """
 
 import shutil
@@ -46,13 +50,15 @@ def run_guard_case(root: Path = extent.REPO_ROOT) -> None:
 
 @pytest.mark.state_check
 def test_the_helper_names_every_failing_check(tmp_path):
-    """Property: when two checks fail at once, the helper's one failure names both (arm row 28).
+    """Property: when two checks fail at once, the helper's one failure names both.
 
     Class: any ledger failing two or more whole-ledger checks. Why: a guard case that stopped at
-    the first failing check would hide every later check's regression behind check 1's designed
-    red. Killed by: asserting each check in turn. Second correct implementation: raising one
-    exception that carries a list of (check, findings) pairs. This arm carries `state_check` by
-    its own decorator, so the State check job grades the helper although it selects no guard case.
+    the first failing check would hide every later check's regression behind check 1, which is red
+    while any retained unit has no ledger row. Killed by: asserting each check in turn. Second
+    correct implementation: raising one `AssertionError` whose message is built from a list of
+    (check, findings) pairs and still names each failing check, as a bare word, on its first line.
+    This test carries `state_check` by its own decorator, so the State check job grades the helper
+    although it selects no guard case.
     """
     root = corpus_record.REPO_ROOT
     listed = subprocess.run(
