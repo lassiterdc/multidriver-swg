@@ -23,7 +23,9 @@ REPO_ROOT = extent.REPO_ROOT
 LEDGER_DIR = Path("tests") / "correspondence" / "ledger"
 CEDED_FILE = "ceded_files.toml"
 DISPOSITIONS = ("scope-in", "scope-out", "discard")
-KEY_RE = re.compile(r"^(?P<file>[^:]+):(?P<ranges>\d+-\d+(?:,\d+-\d+)*)$")
+# Anchored with \Z rather than $, because $ also matches just before a final newline, so
+# "x.py:1-18\n" would read as canonical; and the file part admits no whitespace at all.
+KEY_RE = re.compile(r"^(?P<file>[^:\s]+):(?P<ranges>\d+-\d+(?:,\d+-\d+)*)\Z")
 
 
 def _canonical(key: str) -> bool:
@@ -158,11 +160,11 @@ WHOLE_LEDGER_CHECKS = (check_format, check_1, check_2, check_3)
 
 
 def main(root: Path = REPO_ROOT) -> int:
-    """Print § 4.8's summary line; return 0 when every whole-ledger check is clean, 1 otherwise."""
+    """Print the ledger's summary line; return 0 when every whole-ledger check is clean, 1 otherwise."""
     rows, ceded, _ = load(root)
     unit_count = sum(len(extent.extents(n, extent._read(root, n))[0]) for n in extent.retained_files(root))
     one = check_1(root)
-    ceded_units = sum(extent.d1_unit_count(extent._read(root, r["legacy_file"])) for r in ceded)
+    ceded_units = sum(extent.unit_count_without_preamble(extent._read(root, r["legacy_file"])) for r in ceded)
     outs, open_outs = scope_out_counts(root)
     print(
         f"units enumerated: {unit_count}; rows: {len(rows)}; "
