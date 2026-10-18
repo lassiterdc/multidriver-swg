@@ -23,7 +23,7 @@ def pytest_configure(config):
     """Register the three marker names and the harness plugins on every run of the test tree."""
     for line in MARKERS:
         config.addinivalue_line("markers", line)
-    from tests.correspondence import markers
+    from tests.correspondence import inventory, markers
 
-    for plugin in (markers,):
+    for plugin in (markers, inventory):
         config.pluginmanager.register(plugin, f"correspondence-{plugin.__name__.rsplit('.', 1)[-1]}")
