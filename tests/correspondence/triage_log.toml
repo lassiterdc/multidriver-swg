@@ -1,0 +1,9 @@
+rule = "triage-log:1"
+halt_condition = "work on a failing equivalence test stops and goes to the developer when the failure's finding is undecided, or when the test cannot pass against correctly written new code"
+statement = "One row per closed equivalence failure, written by whoever closes it. Work on a failing test stops and goes to the developer under the halt condition named above."
+# [[row]]
+# test = "{family}:{unit key}" or "{family}:{unit key}:{part}", finding = 1 | 2 | 3 | 4,
+# artifact = "{the artifact that changed}", commit = "{40 hex}",
+# finding 3 and 4: departure = { unit = "{unit key}", site = {line} },
+# finding 3: ruled_outcome = "{what the old logic got wrong and what the reference value now asserts, in the toolkit's own words}",
+# finding 4: state = "fork ruled, method not built" | "pair registered"
