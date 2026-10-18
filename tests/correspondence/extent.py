@@ -57,7 +57,7 @@ def units(text: str) -> list[tuple[int, set[int], str | None]]:
     The units are the four kinds the module docstring lists, plus a preamble unit (part 4)
     for column-0 code above the first cell marker, whose cell index is -1. The preamble is
     an owner for those lines and not one of the four kinds, so a count of the four kinds
-    alone leaves it out; `d1_unit_count` returns that count.
+    alone leaves it out; `unit_count_without_preamble` returns that count.
     """
     lines, tree = text.splitlines(), ast.parse(text)
     cuts = [i for i, line in enumerate(lines) if line.startswith(MARKER)]
@@ -91,7 +91,7 @@ def units(text: str) -> list[tuple[int, set[int], str | None]]:
     return found
 
 
-def d1_unit_count(text: str) -> int:
+def unit_count_without_preamble(text: str) -> int:
     """Return a file's count of the four kinds of unit, without the preamble unit.
 
     Its reader is `ledger.main`, which sums it over the ceded files and prints the total as
@@ -100,10 +100,11 @@ def d1_unit_count(text: str) -> int:
     `ceded_files.toml`, rather than unit by unit, so this count is how the ledger reports
     the units such a record stands for.
 
-    It leaves out every unit whose cell index is -1, so a definition above a file's first
-    cell marker would be left out with the preamble; no retained or ceded file has one.
+    Only the preamble is left out: the unit at cell index -1 that carries no definition name.
+    A top-level definition above the first cell marker, or in a file with no cell marker at
+    all, also sits at cell index -1, and it is counted, because it is a unit like any other.
     """
-    return sum(1 for u in units(text) if u[0] != -1)
+    return sum(1 for cell, _lines, name in units(text) if not (cell == -1 and name is None))
 
 
 def _assign_leading_and_markers(lines: list[str], cuts: list[int], base: list[list[int]], cell) -> list[list[int]]:
