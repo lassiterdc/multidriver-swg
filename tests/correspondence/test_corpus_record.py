@@ -128,6 +128,34 @@ def test_a_dependent_check_reports_not_measured(tmp_path):
     assert str(raised.value).startswith(corpus_record.NOT_MEASURED)
 
 
+@pytest.mark.parametrize("ground", ["", "   "], ids=["empty", "whitespace"])
+def test_a_blank_site_runs_ground_is_named_by_its_site(tmp_path, ground):
+    """Property: a stop-marker site row whose `runs_ground` is empty or only whitespace is named by its file and line.
+
+    Class: any site row whose `runs_ground` is blank — empty or only whitespace, so that
+    `str.strip()` leaves nothing — the rule a file row's `runs_ground` already follows. A string of
+    invisible characters that are not whitespace, such as a zero-width space, is not blank under
+    that rule and is accepted. Why: the ground is the only statement of why the script does not run
+    past that line, and a file row's ground is already refused when blank, so a blank site ground
+    would pass where the same blank in a file row fails. Killed by: testing only that the site's
+    `runs_ground` is a string, without checking that it holds text, which both items catch; and
+    testing truthiness alone, which refuses the empty ground and accepts the whitespace one, so
+    the whitespace item catches it and the empty item alone would not. Second correct
+    implementation: `bool(re.search(r"\\S", ground))` in place of `ground.strip()`.
+    """
+    root = _corpus_fixture(tmp_path)
+    path = root / corpus_record.RECORD_NAME
+    text = path.read_text(encoding="utf-8")
+    site = 'path = "_b4_selecting_marginals.py"\nline = 67\nruns = "DOES-NOT-RUN-PAST"\nruns_ground = "'
+    start = text.index(site) + len(site)
+    end = text.index('"\n', start)
+    assert text.count(site) == 1
+    path.write_text(text[:start] + ground + text[end:], encoding="utf-8")
+    findings = corpus_record.record_findings(root)
+    words = {word.strip(":") for finding in findings for word in finding.split()}
+    assert len(findings) == 1 and "_b4_selecting_marginals.py:67" in words, "\n".join(findings)
+
+
 def test_a_tracked_file_missing_from_the_tree_is_reported_not_raised(tmp_path):
     """A tracked corpus file that cannot be read from the working tree.
 

@@ -195,7 +195,11 @@ def _section_findings(root: Path, section: dict, tracked: list[str]) -> tuple[li
     recorded_sites = set()
     for site in section.get("site", []):
         recorded_sites.add((site.get("path"), site.get("line")))
-        if site.get("runs") != SITE_RUNS or not isinstance(site.get("runs_ground"), str):
+        if (
+            site.get("runs") != SITE_RUNS
+            or not isinstance(site.get("runs_ground"), str)
+            or not site["runs_ground"].strip()
+        ):
             findings.append(f"{site.get('path')}:{site.get('line')}: site runs must be {SITE_RUNS} with a runs_ground")
     for path, line in sorted(sites - recorded_sites):
         findings.append(f"{path}:{line}: stop-marker site not in the record")
