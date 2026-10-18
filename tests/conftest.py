@@ -25,7 +25,14 @@ def pytest_configure(config):
     """Register the three marker names and the harness plugins on every run of the test tree."""
     for line in MARKERS:
         config.addinivalue_line("markers", line)
-    from tests.correspondence import inventory, markers
+    from tests.correspondence import inventory, markers, proofs
 
-    for plugin in (markers, inventory):
+    for plugin in (markers, inventory, proofs):
         config.pluginmanager.register(plugin, f"correspondence-{plugin.__name__.rsplit('.', 1)[-1]}")
+
+
+def pytest_addoption(parser):
+    """Add the proof recorder's two opt-in record options."""
+    from tests.correspondence import proofs
+
+    proofs.add_options(parser)
