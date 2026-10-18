@@ -1,26 +1,27 @@
-"""The guard cases: one test per system of the partition, each running the whole correspondence check.
+"""The guard cases: one test per system of the project, each running the whole correspondence check.
 
-Each system of the project's partition gets one test function, decorated
+Each of the project's systems gets one test function, decorated
 `@pytest.mark.guard(system="{slug}")` with the slug written as a literal, so that
 `pytest -m 'guard(system="...")'` runs one system's case and a static scan of the decorators can
 read every slug without importing this file. Deliberately NOT one parametrized function over the
 system-scope file's slugs: a `system=` value carried through a parametrize case is unreadable to that scan.
 `test_system_scope.py` checks that these literals equal the system-scope file's slugs, in both
-directions, so a change of the partition that is not made here fails by name.
+directions, so a change to the project's systems that is not made here fails by name.
 
 Every case runs the same check today, so the per-system split adds no coverage. It exists so that
 work on one system has a selection point of its own: that work runs its system's case by slug,
 and does not have to select every other system's case to get the whole check.
 
 Every case calls one helper, `run_guard_case`, which runs the extent check and every callable of
-`ledger.WHOLE_LEDGER_CHECKS`, collects all of their findings, and only then fails, once, with a
+`ownership.WHOLE_LEDGER_CHECKS`, collects all of their findings, and only then fails, once, with a
 message naming each failing check. Deliberately NOT one assertion per check: check 1 is red until
 the ledger holds a row for every retained unit, so a per-check assertion would stop there and leave
 every later check unevaluated in every guard case for as long as any unit has no row.
 
-The `guard` marker is not in `pyproject.toml`'s `markers` list and strict markers are off, so
-pytest emits one unknown-marker warning per guard case rather than an error. This module does not
-carry the `state_check` marker as a whole: the State check job does not select the guard cases.
+The `guard` marker is registered by `tests/conftest.py` (its `MARKERS` tuple), and `pyproject.toml`
+sets `strict_markers = true`, so a misspelt marker on a guard case fails collection instead of
+running unmarked. This module does not carry the `state_check` marker as a whole: the State check
+job does not select the guard cases.
 """
 
 import shutil
@@ -29,13 +30,13 @@ from pathlib import Path
 
 import pytest
 
-from tests.correspondence import corpus_record, extent, ledger, system_scope
+from tests.correspondence import corpus_record, extent, ledger, ownership, system_scope
 
 
 def guard_findings(root: Path = extent.REPO_ROOT) -> dict[str, list[str]]:
     """Run the extent check and every whole-ledger check under `root`; return each failing check's findings by name."""
     results = {"extent": extent.check(root)[0]}
-    for check in ledger.WHOLE_LEDGER_CHECKS:
+    for check in ownership.WHOLE_LEDGER_CHECKS:
         results[check.__name__] = check(root)
     return {name: found for name, found in results.items() if found}
 
