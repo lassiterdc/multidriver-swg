@@ -2,8 +2,9 @@
 
 Each ledger row must acknowledge every commented-out run inside its unit, so the runs have to
 be found the same way every time and the rule that finds them has to be stated where a reader
-sees it: different predicates count different runs (87, 94 and 97 were measured on the same
-files), so a count means nothing without its predicate. The predicate is `PREDICATE` below,
+sees it: different predicates count different runs (on the same files, this predicate finds 87;
+without its single-identifier exclusion it finds 93, and without its parses-as-Python condition,
+117), so a count means nothing without its predicate. The predicate is `PREDICATE` below,
 verbatim. Runs it misses are not counted, and nothing here claims to find them.
 
 The module also asserts that every run lies inside one unit's extent; a run spanning two units
@@ -58,7 +59,12 @@ def find_runs(text: str) -> list[tuple[int, int]]:
 
 
 def runs(name: str, root: Path = REPO_ROOT) -> list[tuple[int, int]]:
-    """Return the runs of one retained file, read through the tracked set."""
+    """Return the runs of one file in the corpus directory, read by path from the working tree.
+
+    Nothing here checks that git tracks the file. Its one caller in this package, `runs_in`,
+    passes only a name whose key resolves to a unit, which `extent.resolve` allows only for a
+    retained file.
+    """
     return find_runs(extent._read(root, name))
 
 
