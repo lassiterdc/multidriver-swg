@@ -1,12 +1,12 @@
-"""The guard cases: one test per system of the partition, each running the whole correspondence check.
+"""The guard cases: one test per system of the project, each running the whole correspondence check.
 
-Each system of the project's partition gets one test function, decorated
+Each of the project's systems gets one test function, decorated
 `@pytest.mark.guard(system="{slug}")` with the slug written as a literal, so that
 `pytest -m 'guard(system="...")'` runs one system's case and a static scan of the decorators can
 read every slug without importing this file. Deliberately NOT one parametrized function over the
 system-scope file's slugs: a `system=` value carried through a parametrize case is unreadable to that scan.
 `test_system_scope.py` checks that these literals equal the system-scope file's slugs, in both
-directions, so a change of the partition that is not made here fails by name.
+directions, so a change to the project's systems that is not made here fails by name.
 
 Every case runs the same check today, so the per-system split adds no coverage. It exists so that
 work on one system has a selection point of its own: that work runs its system's case by slug,

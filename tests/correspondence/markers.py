@@ -3,9 +3,10 @@
 Each equivalence or refactor-reminder test names its unit and its owning system in a marker
 on the test function, and each guard case names its system the same way. A run selecting one
 system's tests by `-m` relies on those markers, so a marker that is duplicated, names a
-system outside the partition, or does not come from the function's own decorator would make
-the selection wrong without any test failing. This plugin stops collection on any of them,
-with `pytest.UsageError` (exit 4) and a message naming each offending test.
+system that is not one of the project's systems, or does not come from the function's own
+decorator would make the selection wrong without any test failing. This plugin stops
+collection on any of them, with `pytest.UsageError` (exit 4) and a message naming each
+offending test.
 
 Deliberately NOT a failing test: a test runs after selection, so it would not see the tests
 a `-m` expression deselected, and a duplicate must stop the whole collection rather than fail one test.

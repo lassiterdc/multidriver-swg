@@ -46,12 +46,13 @@ def test_a_duplicate_test_identifier_stops_collection(pytester):
     assert {"test_probe.py::test_one", "test_probe.py::test_two"} <= words, result.stderr.str()
 
 
-def test_an_owner_outside_the_partition_stops_collection(pytester):
-    """Property: a `system=` naming no system of the partition stops collection, naming the test and the slug.
+def test_an_owner_outside_the_projects_systems_stops_collection(pytester):
+    """Property: a `system=` naming none of the project's systems stops collection, naming the test and the slug.
 
-    Class: any marker of the three names whose system is not a partition slug. Why: such a test is
-    selected by no system's expression and owned by nobody. Killed by: dropping the slug check.
-    Second correct implementation: a set difference of the marker systems against the slugs.
+    Class: any marker of the three names whose system is not the slug of one of the project's
+    systems. Why: such a test is selected by no system's expression and owned by nobody. Killed
+    by: dropping the slug check. Second correct implementation: a set difference of the marker
+    systems against the slugs.
     """
     result = _refused(
         pytester,

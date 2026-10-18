@@ -199,9 +199,10 @@ def test_an_owner_outside_the_system_scope_file_is_named(tmp_path):
     """Property: check 6 names a test whose owning system is not a system of the system-scope file.
 
     Class: any family test's `system=` value outside the file's slugs, as the static inventory reads
-    it. Why: an owner outside the partition is owned by nobody, and selecting tests by system would
-    never select it. Killed by: dropping the slug test. Second correct implementation: a set
-    difference of the tests' systems minus the file's slugs, reported per test.
+    it. Why: an owner that is not one of the project's systems is owned by nobody, and selecting
+    tests by system would never select it. Killed by: dropping the slug test. Second correct
+    implementation: a set difference of the tests' systems minus the file's slugs, reported per
+    test.
     """
     root = _fixture(tmp_path)
     _scope_in(root, "dependence-modelling")
