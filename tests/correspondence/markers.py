@@ -8,14 +8,14 @@ the selection wrong without any test failing. This plugin stops collection on an
 with `pytest.UsageError` (exit 4) and a message naming each offending test.
 
 Deliberately NOT a failing test: a test runs after selection, so it would not see the tests
-a `-m` expression deselected, and ADR-14 asks that a duplicate stops collection.
+a `-m` expression deselected, and a duplicate must stop the whole collection rather than fail one test.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from tests.correspondence import partition_copy
+from tests.correspondence import system_scope
 
 FAMILIES = ("equivalence", "refactor_reminder")
 NAMES = (*FAMILIES, "guard")
@@ -69,7 +69,7 @@ def refusals(found: list[dict], slugs: set[str]) -> list[str]:
             first.setdefault(key, record["nodeid"])
         if record["system"] not in slugs:
             findings.append(
-                f"{record['nodeid']}: owning system {record['system']} is not a system of the partition copy"
+                f"{record['nodeid']}: owning system {record['system']} is not a system of the system-scope file"
             )
         if record["origin"] == "parametrize":
             findings.append(f"{record['nodeid']}: marker {record['name']} is carried by a parametrize case")
@@ -83,6 +83,6 @@ def refusals(found: list[dict], slugs: set[str]) -> list[str]:
 @pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(session, config, items):
     """Stop collection, before any `-m` deselection, when a marker record is refused."""
-    findings = refusals([r for item in items for r in records(item)], set(partition_copy.slugs()))
+    findings = refusals([r for item in items for r in records(item)], set(system_scope.slugs()))
     if findings:
         raise pytest.UsageError("collection refused:\n" + "\n".join(findings))

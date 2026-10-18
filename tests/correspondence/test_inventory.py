@@ -14,11 +14,11 @@ import sys
 
 import pytest
 
-from tests.correspondence import inventory, partition_copy
+from tests.correspondence import inventory, system_scope
 
 pytestmark = pytest.mark.state_check
 
-SLUG = partition_copy.slugs()[0]
+SLUG = system_scope.slugs()[0]
 CROSS_CHECK = "test_the_inventory_equals_collection"
 JOB_EXPRESSION = "state_check and not equivalence and not refactor_reminder"  # the State check job's `-m`
 LANDING = "test inventory: 0 tests in 0 files over families equivalence, refactor_reminder; reminders per system: none"

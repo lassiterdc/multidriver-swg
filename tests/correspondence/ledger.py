@@ -17,7 +17,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-from tests.correspondence import commented_runs, extent, partition_copy
+from tests.correspondence import commented_runs, extent, system_scope
 
 REPO_ROOT = extent.REPO_ROOT
 LEDGER_DIR = Path("tests") / "correspondence" / "ledger"
@@ -85,12 +85,23 @@ def _row_format_findings(row: dict, legacy: str | None, root: Path) -> list[str]
     if not isinstance(row.get("commented_out_runs"), list):
         findings.append(f"row {key}: commented_out_runs is absent")
     if row.get("disposition") == "scope-in":
-        found = partition_copy.clause(row.get("routing_clause", ""), root)
-        if found is None or found["polarity"] != "belongs":
-            findings.append(
-                f"row {key}: routing_clause {row.get('routing_clause')!r} is not a belongs clause of the partition copy"
-            )
+        findings += _scope_missing_findings(row, root) + _scope_excludes_findings(row, root)
     return findings
+
+
+def _scope_missing_findings(row: dict, root: Path) -> list[str]:
+    """Name a scope-in row whose `scope` names no statement of the system-scope file."""
+    if system_scope.statement(row.get("scope", ""), root) is None:
+        return [f"row {row.get('key')}: scope {row.get('scope')!r} names no statement of the system-scope file"]
+    return []
+
+
+def _scope_excludes_findings(row: dict, root: Path) -> list[str]:
+    """Name a scope-in row whose `scope` names an excludes statement, which says what a system does not own."""
+    cited = system_scope.statement(row.get("scope", ""), root)
+    if cited is not None and cited.get("mark") == "excludes":
+        return [f"row {row.get('key')}: scope {row.get('scope')!r} names an excludes statement, not a covers one"]
+    return []
 
 
 def check_1(root: Path = REPO_ROOT) -> list[str]:

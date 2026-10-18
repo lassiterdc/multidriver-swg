@@ -4,8 +4,8 @@ Each system of the project's partition gets one test function, decorated
 `@pytest.mark.guard(system="{slug}")` with the slug written as a literal, so that
 `pytest -m 'guard(system="...")'` runs one system's case and a static scan of the decorators can
 read every slug without importing this file. Deliberately NOT one parametrized function over the
-copy's slugs: a `system=` value carried through a parametrize case is unreadable to that scan.
-`test_partition_copy.py` checks that these literals equal the partition copy's slugs, in both
+system-scope file's slugs: a `system=` value carried through a parametrize case is unreadable to that scan.
+`test_system_scope.py` checks that these literals equal the system-scope file's slugs, in both
 directions, so a change of the partition that is not made here fails by name.
 
 Every case runs the same check today, so the per-system split adds no coverage. It exists so that
@@ -29,7 +29,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.correspondence import corpus_record, extent, ledger, partition_copy
+from tests.correspondence import corpus_record, extent, ledger, system_scope
 
 
 def guard_findings(root: Path = extent.REPO_ROOT) -> dict[str, list[str]]:
@@ -65,7 +65,7 @@ def test_the_helper_names_every_failing_check(tmp_path):
         ["git", "ls-files", "-z", "--", "_old_code_to_refactor"], cwd=root, capture_output=True, check=True
     ).stdout.decode("utf-8")
     paths = [p for p in listed.split("\0") if p]
-    paths += [corpus_record.RECORD_NAME, str(partition_copy.COPY_PATH)]
+    paths += [corpus_record.RECORD_NAME, str(system_scope.SCOPE_PATH)]
     paths += [str(p.relative_to(root)) for p in (root / ledger.LEDGER_DIR).glob("*.toml")]
     for rel in paths:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)

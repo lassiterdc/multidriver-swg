@@ -3,25 +3,25 @@ legacy_file = "_d_build_water_level_generator.py"
 [[row]]
 key = "_d_build_water_level_generator.py:1-18"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:19-27"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:28-79"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:80-85"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = [
   { lines = "82-84", treatment = "discarded with the unit" },
 ]
@@ -29,7 +29,7 @@ commented_out_runs = [
 [[row]]
 key = "_d_build_water_level_generator.py:86-100"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = [
   { lines = "89-92", treatment = "discarded with the unit" },
   { lines = "98-100", treatment = "discarded with the unit" },
@@ -38,44 +38,44 @@ commented_out_runs = [
 [[row]]
 key = "_d_build_water_level_generator.py:101-104"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:105-116"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:117-127,131-136"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:128-130"
 name = "fxn"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:137-144"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:145-153"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:154-216"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = [
   { lines = "155-158", treatment = "discarded with the unit" },
   { lines = "161-163", treatment = "discarded with the unit" },
@@ -92,7 +92,7 @@ commented_out_runs = [
 key = "_d_build_water_level_generator.py:217-241"
 name = "scatter_3d"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = [
   { lines = "232-234", treatment = "discarded with the unit" },
 ]
@@ -101,111 +101,111 @@ commented_out_runs = [
 key = "_d_build_water_level_generator.py:242-251"
 name = "plot_snth_vs_real"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:252-265"
 name = "gen_conditioned_samples"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:266-271"
 name = "plot_hist_of_each_var"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:272-292"
 name = "comp_hists"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:293-350"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:351-363"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:364-375"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:376-377"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:378-381"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:382-385"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:386-392"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:393-396"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:397-426"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:427-443"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:444-449"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:450-457"
 name = "get_storm_to_rescale"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:458-580"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []
 
 [[row]]
 key = "_d_build_water_level_generator.py:581-601"
 disposition = "discard"
-reason = "project ADR-s: \"The module implements a superseded generative architecture and enters neither the partition nor either test corpus.\""
+reason = "Part of the legacy water-level generator script, which cannot run: it imports def_inputs_for_d, a name no file of the legacy corpus defines, so no unit of it ever computed a value to port."
 commented_out_runs = []

@@ -1,7 +1,7 @@
 """Tests of the disposition ledger: check 1 on the real tree, red while any unit has no row, and one violating case per ledger refusal.
 
-Fixtures copy the record, the tracked corpus, the ledger and the partition copy into a git
-repository inside `tmp_path` (staged, never committed), then edit one ledger file.
+Fixtures copy the record, the tracked corpus, the ledger and the system-scope file into a
+git repository inside `tmp_path` (staged, never committed), then edit one ledger file.
 """
 
 import shutil
@@ -24,7 +24,7 @@ def _ledger_fixture(tmp_path: Path) -> Path:
         ["git", "ls-files", "-z", "--", "_old_code_to_refactor"], cwd=root, capture_output=True, check=True
     ).stdout.decode("utf-8")
     paths = [p for p in listed.split("\0") if p]
-    paths += [corpus_record.RECORD_NAME, "tests/correspondence/partition_copy.json"]
+    paths += [corpus_record.RECORD_NAME, "tests/correspondence/system_scope.toml"]
     paths += [str(p.relative_to(root)) for p in (root / ledger.LEDGER_DIR).glob("*.toml")]
     for rel in paths:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
@@ -102,25 +102,42 @@ def test_a_non_canonical_key_is_named(tmp_path):
     )
 
 
-def test_a_scope_in_row_citing_a_does_not_belong_clause_is_named(tmp_path):
-    """Property: a scope-in row whose routing clause is a does-not-belong clause is named with that id.
-
-    Class: any routing clause not a belongs clause. Killed by: resolving against every clause.
-    Second correct implementation: a set of belongs ids built once.
-    """
-    root = _ledger_fixture(tmp_path)
-    from tests.correspondence import partition_copy
-
-    against = next(
-        c["id"] for s in partition_copy.load(root)["systems"] for c in s["clauses"] if c["polarity"] != "belongs"
-    )
+def _cite(root, scope_id: str) -> list[str]:
+    """Make the fixture's first row scope-in, citing `scope_id`, and return the ledger's format findings."""
     _edit(
         root,
         D_TOML,
         'key = "_d_build_water_level_generator.py:1-18"\ndisposition = "discard"',
-        f'key = "_d_build_water_level_generator.py:1-18"\ndisposition = "scope-in"\nrouting_clause = "{against}"',
+        f'key = "_d_build_water_level_generator.py:1-18"\ndisposition = "scope-in"\nscope = "{scope_id}"',
     )
-    assert any(_names(f, "_d_build_water_level_generator.py:1-18", against) for f in ledger.load(root)[2])
+    return ledger.load(root)[2]
+
+
+def test_a_scope_in_row_citing_no_statement_is_named(tmp_path):
+    """Property: a scope-in row whose `scope` names no statement of the system-scope file is named by its key.
+
+    Class: any identifier no statement carries. Why: such a row claims an owning scope that does
+    not exist, so nothing could check the tests it is routed to. Killed by: skipping the citation
+    check. Second correct implementation: a set of the file's identifiers built once per load.
+    """
+    root = _ledger_fixture(tmp_path)
+    findings = _cite(root, "dependence-modelling/00000000")
+    assert any(_names(f, "_d_build_water_level_generator.py:1-18") and "names no statement" in f for f in findings)
+
+
+def test_a_scope_in_row_citing_an_excludes_statement_is_named(tmp_path):
+    """Property: a scope-in row whose `scope` names an excludes statement is named by its key.
+
+    Class: any excludes statement of any system. Why: an excludes statement says what a system
+    does not own, so it cannot be the scope a unit is routed into. Killed by: accepting an
+    excludes citation. Second correct implementation: a set of covers identifiers built once.
+    """
+    root = _ledger_fixture(tmp_path)
+    from tests.correspondence import system_scope
+
+    against = next(e["id"] for s in system_scope.load(root)[0] for e in s["statement"] if e["mark"] == "excludes")
+    findings = _cite(root, against)
+    assert any(_names(f, "_d_build_water_level_generator.py:1-18") and "excludes statement" in f for f in findings)
 
 
 def test_a_ceded_group_without_its_record_is_named(tmp_path):
