@@ -58,7 +58,7 @@ def _synthetic_record(digest: str, lines: int, set_digest: str) -> str:
             ("revision", "0" * 40),
             ("upstream_path", "synthetic"),
             ("candidate_rule", "top-level .py files"),
-            ("extent_rule", "ADR-1, six parts"),
+            ("extent_rule", "a synthetic six-part rule"),
             ("set_digest", set_digest),
             ("verification_date", "2026-10-12"),
             ("verification_command", "none"),
