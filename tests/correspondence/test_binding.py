@@ -152,6 +152,45 @@ def test_the_static_reader_refuses_a_registration_whose_unit_is_not_a_literal(tm
     assert units == [] and any(f"{path}:6:" in f.split() for f in findings), (units, findings)
 
 
+def test_every_registers_call_the_reader_cannot_read_is_named(tmp_path):
+    """Property: a `registers(...)` call outside a top-level function's decorator list is named by its file and line.
+
+    Class: calls of `registers` by its bare name or as an attribute (`binding.registers`, and
+    `b.registers` when `binding` is imported as `b`), in any position other than a module-level
+    function decorator: under an `if`, on a class, applied by hand, or on a nested function. Why:
+    each such call still registers at import, so a static list that skipped it would silently
+    miss a unit; and a form the module-level read lists as a unit must not pass in silence under
+    an `if`, or the list is silently incomplete for a form the reader itself recognises. Killed
+    by: reading only module-level function decorators; or naming only the `binding.registers`
+    spelling outside the decorator list while the module-level read lists any attribute named
+    `registers`. Second correct implementation: comparing the units an import registers with the
+    units the static read lists; for the alias pair, a module-level read that does not list the
+    `b.registers` form either.
+    """
+    head = "from tests.correspondence import binding\nfrom tests.correspondence.binding import registers\n\n\n"
+    modules = {
+        "in_if.py": (head + "if True:\n\n    @registers(unit='a.py:1-2')\n    def side(x):\n        return x\n", 7),
+        "on_class.py": (head + "@registers(unit='a.py:1-2')\nclass Side:\n    pass\n", 5),
+        "by_hand.py": (head + "def side(x):\n    return x\n\n\nregisters(unit='a.py:1-2')(side)\n", 9),
+        "attr_by_hand.py": (head + "def side(x):\n    return x\n\n\nbinding.registers(unit='a.py:1-2')(side)\n", 9),
+        "nested.py": (head + "def outer():\n    @registers(unit='a.py:1-2')\n    def side(x):\n        return x\n", 6),
+    }
+    for name, (text, line) in modules.items():
+        path = tmp_path / name
+        path.write_text(text)
+        units, findings = binding.registered_units(path)
+        assert units == [], (name, units)
+        assert len(findings) == 1 and f"{path}:{line}:" in findings[0].split(), (name, findings)
+    alias = "from tests.correspondence import binding as b\n\n\n"
+    top = tmp_path / "alias_top.py"
+    top.write_text(alias + "@b.registers(unit='a.py:1-2')\ndef side(x):\n    return x\n")
+    nested = tmp_path / "alias_in_if.py"
+    nested.write_text(alias + "if True:\n\n    @b.registers(unit='a.py:1-2')\n    def side(x):\n        return x\n")
+    read_at_top = bool(binding.registered_units(top)[0])
+    named_when_nested = bool(binding.registered_units(nested)[1])
+    assert read_at_top == named_when_nested, (read_at_top, named_when_nested)
+
+
 def test_a_registered_callables_value_is_returned(pytester, monkeypatch, request):
     """Property: when the unit is registered, the test receives the registered callable's value and can pass.
 
@@ -170,10 +209,10 @@ def test_a_registered_callables_value_is_returned(pytester, monkeypatch, request
 
 
 SAME_LICENCE = (
-    "from array import array\n\nimport pytest\n\n\n"
+    "import numpy\nimport pytest\n\n\n"
     "class Same:\n"
     "    def admits(self, reference, value):\n"
-    "        return value == reference\n"
+    "        return numpy.array_equal(value, reference)\n"
     "\n"
     "    def outside(self, reference):\n"
     "        return reference\n"
@@ -191,8 +230,9 @@ def test_a_placeholder_its_own_licence_admits_is_refused(pytester, monkeypatch, 
     """
     body = (
         f"{SAME_LICENCE}\n\n@pytest.mark.equivalence(unit='{UNIT}', system='unregistered-system')\n"
-        "def test_one(new_side):\n    value = new_side(reference=array('d'), licence=Same())\n"
-        "    assert Same().admits(array('d'), value)\n"
+        "def test_one(new_side):\n    reference = numpy.empty(0, dtype='float64')\n"
+        "    value = new_side(reference=reference, licence=Same())\n"
+        "    assert Same().admits(reference, value)\n"
     )
     reports = _inner_reports(pytester, monkeypatch, request, body)
     call = [r for r in reports if r.when == "call"]
