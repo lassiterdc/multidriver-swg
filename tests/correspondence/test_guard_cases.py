@@ -18,9 +18,10 @@ message naming each failing check. Deliberately NOT one assertion per check: che
 the ledger holds a row for every retained unit, so a per-check assertion would stop there and leave
 every later check unevaluated in every guard case for as long as any unit has no row.
 
-The `guard` marker is not in `pyproject.toml`'s `markers` list and strict markers are off, so
-pytest emits one unknown-marker warning per guard case rather than an error. This module does not
-carry the `state_check` marker as a whole: the State check job does not select the guard cases.
+The `guard` marker is registered by `tests/conftest.py` (its `MARKERS` tuple), and `pyproject.toml`
+sets `strict_markers = true`, so a misspelt marker on a guard case fails collection instead of
+running unmarked. This module does not carry the `state_check` marker as a whole: the State check
+job does not select the guard cases.
 """
 
 import shutil
