@@ -2,6 +2,6 @@ rule = "known-defect-register:1"
 examined_scope = "UNEXAMINED"
 examination_command = "UNEXAMINED"
 statement = "No part of the legacy corpus has yet been examined for defects. While examined_scope reads UNEXAMINED, an empty entry list means unexamined, not free of defects."
-# one [[entry]] per defect, none at landing:
+# one [[entry]] per defect; none yet, since nothing has been examined:
 # key = "{unit key}", line = {line inside the unit}, defect = "{text}", kind = "{text}",
-# ruling = "OBLIGED" | "LICENSED" | "UNRULED", reason = "{text}", equation = "{system 2 identifier, optional}"
+# ruling = "OBLIGED" | "LICENSED" | "UNRULED", reason = "{text}", equation = "{the publication-math-conformance system's identifier for the equation, optional}"
