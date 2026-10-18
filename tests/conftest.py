@@ -12,6 +12,8 @@ pytest_plugins = ["pytester"]  # the harness tests drive inner pytest runs
 
 pytest.register_assert_rewrite("tests.correspondence.compare")
 
+from tests.correspondence.binding import new_side  # noqa: E402, F401  (the fixture, exported to every test)
+
 MARKERS = (
     "guard(system): a guard case of one system; runs the whole-ledger checks when that system's tests are selected",
     "equivalence(unit, system, part): an equivalence test of one legacy unit, owned by one system",
