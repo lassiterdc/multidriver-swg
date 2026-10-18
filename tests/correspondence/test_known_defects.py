@@ -1,4 +1,4 @@
-"""Tests of the known-defect register: the real register is clean, and one violating arm per refusal.
+"""Tests of the known-defect register: the real register is clean, and one failing case per refusal.
 
 Fixtures copy the record, the tracked corpus and a register written by the test into a git
 repository inside `tmp_path` (staged, never committed), so key resolution meets a real
@@ -52,11 +52,12 @@ def _names(finding: str, *tokens: str) -> bool:
 def test_the_real_register_has_no_finding():
     """Property: the committed register loads with no form or key finding.
 
-    Class: the register at every stage — unexamined and empty at landing, later examined, later
-    with entries. Why: the State check job runs this module only through this test, so a register
-    the crawl breaks would otherwise fail nothing. Killed by: any change that reports a finding on a
-    well-formed register, for example refusing a register with no entry, which is the committed
-    register's state. Second correct implementation: a schema-validating reader that checks the
+    Class: the register at every stage — unexamined and empty as committed now, later examined,
+    later with entries. Why: this is the one test that loads the committed register — the others
+    load registers written into `tmp_path` — so a committed register that a later edit breaks
+    would otherwise fail nothing in the State check job. Killed by: any change that reports a
+    finding on a well-formed register, for example refusing a register with no entry, which is
+    the committed register's state. Second correct implementation: a schema-validating reader that checks the
     scope pair before reading any entry.
     """
     extent.require_extent()
@@ -65,7 +66,7 @@ def test_the_real_register_has_no_finding():
 
 
 def test_an_entry_whose_key_names_no_unit_is_named(tmp_path):
-    """Property: an entry keyed to no unit is named by its key (arm row 22).
+    """Property: an entry keyed to no unit is named by its key.
 
     Class: any entry key that no unit of the extent partition carries, including a key one range
     off a real unit. Why: an entry whose key names no unit cannot be consulted when a test of that
@@ -79,11 +80,11 @@ def test_an_entry_whose_key_names_no_unit_is_named(tmp_path):
 
 
 def test_the_scope_fields_must_agree_and_an_examined_empty_register_is_clean(tmp_path):
-    """Property: the two scope fields must both read UNEXAMINED or both be stated — and nothing else (arm row 23).
+    """Property: the two scope fields must both read UNEXAMINED or both be stated — and nothing else.
 
-    Class: the violating arm is any register whose scope is UNEXAMINED while its command is
-    stated (or the reverse); the satisfying arm is an examined register with no entry, which must
-    load with no finding. Why: the two fields are what separate an empty register from an
+    Class: the `violating` fixture stands for any register whose scope is UNEXAMINED while its
+    command is stated (or the reverse); the `satisfying` fixture is an examined register with no
+    entry, which must load with no finding. Why: the two fields are what separate an empty register from an
     unexamined corpus, so they must agree; whether the entry list is empty separates nothing.
     Killed by: keying the check on whether the entry list is empty. Second correct implementation:
     a check comparing `examined_scope == "UNEXAMINED"` with `examination_command == "UNEXAMINED"`.
@@ -97,10 +98,10 @@ def test_the_scope_fields_must_agree_and_an_examined_empty_register_is_clean(tmp
 
 
 def test_a_ruling_outside_the_three_is_named(tmp_path):
-    """Property: an entry whose ruling is not OBLIGED, LICENSED or UNRULED is named with its key and the ruling (arm row 24).
+    """Property: an entry whose ruling is not OBLIGED, LICENSED or UNRULED is named with its key and the ruling.
 
-    Class: any ruling string outside the three. Why: "a test cannot be authored over an entry that
-    has no ruling" must read a value, so an unknown word must not pass as one. Killed by: accepting
+    Class: any ruling string outside the three. Why: the ruling is what says whether a test may
+    reproduce the defect, so an unknown word must not pass as a ruling. Killed by: accepting
     any string. Second correct implementation: an enum lookup that raises and is caught per entry.
     """
     found, _counts = extent.extents("_utils.py", extent._read(corpus_record.REPO_ROOT, "_utils.py"))

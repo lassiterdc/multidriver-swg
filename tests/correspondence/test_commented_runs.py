@@ -1,4 +1,4 @@
-"""Tests of the commented-out run detector: its count on the real tree under the published predicate, and the one-unit property."""
+"""Tests of the commented-out run detector: its count on the real tree under the published predicate (`commented_runs.PREDICATE`), and the one-unit property."""
 
 import pytest
 
@@ -13,10 +13,15 @@ STRADDLE = "#%%\ndef f():\n    s = '''\n# a = 1\n# b = 2 #'''\n# c = 3\n# d = 4\
 
 
 def test_the_real_tree_has_87_runs_in_418_lines_none_spanning_two_units():
-    """Property: under the published predicate the retained files hold 87 runs in 418 lines, each inside one unit (satisfying arm for row 6).
+    """Property: under the published predicate the retained files hold 87 runs in 418 lines, each inside one unit.
+
+    This is the passing half of the one-unit property on the real tree; the next test shows,
+    on a synthetic file, that a run spanning two units would be reported.
 
     Class: the real retained files. Why: the ledger's check 3 acknowledges these runs row by
-    row. Killed by: any change of the per-line condition (another predicate counts 94 or 97).
+    row. Killed by: a change to the per-line condition in `_is_code_comment` that moves the count
+    off 87, as each single-condition removal tried does (dropping the single-identifier
+    exclusion gives 93 runs; dropping the parses-as-Python condition gives 117).
     Second correct implementation: a scanner that collects runs per file with a regular
     expression for the comment prefix still returns 87 and 418.
     """
@@ -26,7 +31,10 @@ def test_the_real_tree_has_87_runs_in_418_lines_none_spanning_two_units():
 
 
 def test_a_run_spanning_two_units_is_named_with_both(tmp_path):
-    """Property: a run lying in two units' extents is reported, naming the run and both units (arm row 6).
+    """Property: a run lying in two units' extents is reported, naming the run and both units.
+
+    This is the failing half of the one-unit property: the real-tree test above holds only if
+    this detection works, since a detector that never reported a straddle would pass it too.
 
     Class: any run whose lines fall in more than one unit. Why: one ledger row cannot
     acknowledge a run another row's unit also holds. Killed by: deleting the straddle
