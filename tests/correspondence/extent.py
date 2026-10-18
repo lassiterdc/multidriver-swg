@@ -1,11 +1,11 @@
 """Assign every line of every retained legacy file to exactly one legacy unit, and check that it is so.
 
-The refactor rules on each legacy unit and cites it by a key naming its file and line
-ranges (`_utils.py:1991-2075`). A key means something only if every line of a retained file
-belongs to exactly one unit, so this module cuts each retained file into units — the
-project's D-1 cut: each top-level definition, each code cell without one, the column-0 code
-of a cell that has definitions, and each comment-only cell — and then gives every remaining
-line an owner by the six-part extent rule of the design's ADR-1:
+The disposition ledger under `tests/correspondence/ledger/` records one disposition for each
+retained legacy unit and cites the unit by a key naming its file and line ranges (`_utils.py:1991-2075`).
+A key means something only if every line of a retained file belongs to exactly one unit, so
+this module cuts each retained file into four kinds of unit — each top-level definition, each
+code cell without one, the column-0 code of a cell that has definitions, and each
+comment-only cell — and then gives every remaining line an owner by a six-part extent rule:
 
 1. blank and comment lines above a unit, back to the previous unit or the cell marker, are its;
 2. a cell marker line (`#` followed by two `%`) is the first unit of its cell's;
@@ -52,10 +52,12 @@ def _read(root: Path, name: str) -> str:
 
 
 def units(text: str) -> list[tuple[int, set[int], str | None]]:
-    """Cut one file's text into D-1 units: (cell index, 0-based line set, definition name or None).
+    """Cut one file's text into units: (cell index, 0-based line set, definition name or None).
 
-    A preamble unit (part 4) is added for column-0 code above the first cell marker; the
-    ceded-file count of the design uses the cut WITHOUT it, which `d1_unit_count` returns.
+    The units are the four kinds the module docstring lists, plus a preamble unit (part 4)
+    for column-0 code above the first cell marker, whose cell index is -1. The preamble is
+    an owner for those lines and not one of the four kinds, so a count of the four kinds
+    alone leaves it out; `d1_unit_count` returns that count.
     """
     lines, tree = text.splitlines(), ast.parse(text)
     cuts = [i for i, line in enumerate(lines) if line.startswith(MARKER)]
@@ -90,7 +92,17 @@ def units(text: str) -> list[tuple[int, set[int], str | None]]:
 
 
 def d1_unit_count(text: str) -> int:
-    """Return the D-1 unit count of a file, without the preamble unit (the ceded files' 50)."""
+    """Return a file's count of the four kinds of unit, without the preamble unit.
+
+    Its reader is `ledger.main`, which sums it over the ceded files and prints the total as
+    the units the ceded-file records cover. A ceded file is one whose corpus-record `group`
+    is `ceded`, the other value of `corpus_record.GROUPS`; the ledger records it once, in
+    `ceded_files.toml`, rather than unit by unit, so this count is how the ledger reports
+    the units such a record stands for.
+
+    It leaves out every unit whose cell index is -1, so a definition above a file's first
+    cell marker would be left out with the preamble; no retained or ceded file has one.
+    """
     return sum(1 for u in units(text) if u[0] != -1)
 
 
