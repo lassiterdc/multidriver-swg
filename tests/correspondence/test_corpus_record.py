@@ -1,6 +1,6 @@
 """Tests of the corpus record check: it reports every disagreement between the record and the tracked legacy files by file and field, ignores files git does not track, and makes the checks below it report "not measured" when it fails.
 
-Violating-arm fixtures are git repositories built inside `tmp_path` from a copy of the
+The failing-case tests' fixtures are git repositories built inside `tmp_path` from a copy of the
 real record and the real tracked corpus files; they are staged, never committed, so no
 git identity is needed.
 """
@@ -45,10 +45,10 @@ def test_record_matches_the_tracked_files():
 
 
 def test_record_matches_a_copied_corpus(tmp_path):
-    """Property: the check passes on a correct corpus at a root other than the repository (satisfying arm).
+    """Property: the check passes on a correct corpus at a root other than the repository.
 
-    Class: any root whose tracked corpus and record agree. Why: the violating-arm tests below
-    run at such roots, so this is the arm showing that a correct corpus there yields no finding.
+    Class: any root whose tracked corpus and record agree. Why: the failing-case tests below
+    run at such roots, so this test shows that a correct corpus there yields no finding.
     Killed by: counting a file's lines by its newline characters instead of `str.splitlines()`,
     because 8 of the 18 tracked corpus files end without a final newline. Not killed by: a check
     that ignores `root` and reads the repository instead, since the copy equals the repository;
@@ -62,7 +62,7 @@ def test_record_matches_a_copied_corpus(tmp_path):
 
 
 def test_a_changed_byte_is_named_by_file_and_field(tmp_path):
-    """Property: a candidate file whose bytes differ from the record is named with the field `sha256` (arm row 1).
+    """Property: a candidate file whose bytes differ from the record is named with the field `sha256`.
 
     Class: any tracked file whose content changed while its length in lines did not. Why: the
     stored extractions and ledger keys cite these bytes; a silent change moves what they cite.
@@ -80,7 +80,7 @@ def test_a_changed_byte_is_named_by_file_and_field(tmp_path):
 
 
 def test_an_untracked_python_file_is_not_counted(tmp_path):
-    """Property: a `.py` file in the corpus directory that git does not track changes no figure (arm row 2).
+    """Property: a `.py` file in the corpus directory that git does not track changes no figure.
 
     Class: untracked or ignored files in the corpus directory, such as a stray script or a
     compiled module an import left behind. Why: the population must be the same on every
@@ -95,7 +95,7 @@ def test_an_untracked_python_file_is_not_counted(tmp_path):
 
 
 def test_a_missing_hand_written_field_is_named(tmp_path):
-    """Property: a section without its `revision` field is reported naming `revision` (arm row 3).
+    """Property: a section without its `revision` field is reported naming `revision`.
 
     Class: any hand-written section field deleted or emptied. Why: the pin is what the upstream
     verification and every citation rest on. Killed by: dropping the presence check. Second
@@ -112,7 +112,7 @@ def test_a_missing_hand_written_field_is_named(tmp_path):
 
 
 def test_a_dependent_check_reports_not_measured(tmp_path):
-    """Property: a check below a failed record skips with the prefix `NOT MEASURED: corpus record check failed` (arm row 25).
+    """Property: a check below a failed record skips with the prefix `NOT MEASURED: corpus record check failed`.
 
     Class: any failing record seen by any dependent check. Why: one broken record must show as
     one failure with one cause, not as one failure per dependent check. Killed by: making
@@ -129,18 +129,17 @@ def test_a_dependent_check_reports_not_measured(tmp_path):
 
 
 def test_a_tracked_file_missing_from_the_tree_is_reported_not_raised(tmp_path):
-    """Reviewer test for chunk 1a.2, ported: a tracked corpus file that cannot be read from the working tree.
+    """A tracked corpus file that cannot be read from the working tree.
 
     Property: the record check REPORTS, rather than raises, when a path git tracks is missing
     from the working tree; a dependent check therefore skips as not measured instead of erroring.
-    Class (i): every tracked corpus path whose working-tree read fails — deleted but not
+    Class: every tracked corpus path whose working-tree read fails — deleted but not
     unstaged, replaced by a directory, or excluded by a sparse checkout (git ls-files lists the
     index, so all three stay in the population while their bytes are unreadable).
-    Why (iii): the record check is the head of the chain; if it raises, every dependent check
+    Why: the record check is the head of the chain; if it raises, every dependent check
     that calls require_record() errors with the same traceback, which is the "one broken record
     reported as hundreds of failures" outcome the chain exists to prevent.
-    Killed by (iv): letting the working-tree read's OSError escape record_findings(), as the
-    first build of this module did.
+    Killed by: letting the working-tree read's OSError escape record_findings().
     Second correct implementation: reading each tracked file's bytes from the index
     (`git show :path`) reports no finding at all for this input and still passes, because the
     assertions require only "no exception escapes" and "any finding names the file".
