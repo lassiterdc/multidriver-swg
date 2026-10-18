@@ -13,7 +13,7 @@ work on one system has a selection point of its own: that work runs its system's
 and does not have to select every other system's case to get the whole check.
 
 Every case calls one helper, `run_guard_case`, which runs the extent check and every callable of
-`ledger.WHOLE_LEDGER_CHECKS`, collects all of their findings, and only then fails, once, with a
+`ownership.WHOLE_LEDGER_CHECKS`, collects all of their findings, and only then fails, once, with a
 message naming each failing check. Deliberately NOT one assertion per check: check 1 is red until
 the ledger holds a row for every retained unit, so a per-check assertion would stop there and leave
 every later check unevaluated in every guard case for as long as any unit has no row.
@@ -30,13 +30,13 @@ from pathlib import Path
 
 import pytest
 
-from tests.correspondence import corpus_record, extent, ledger, system_scope
+from tests.correspondence import corpus_record, extent, ledger, ownership, system_scope
 
 
 def guard_findings(root: Path = extent.REPO_ROOT) -> dict[str, list[str]]:
     """Run the extent check and every whole-ledger check under `root`; return each failing check's findings by name."""
     results = {"extent": extent.check(root)[0]}
-    for check in ledger.WHOLE_LEDGER_CHECKS:
+    for check in ownership.WHOLE_LEDGER_CHECKS:
         results[check.__name__] = check(root)
     return {name: found for name, found in results.items() if found}
 
