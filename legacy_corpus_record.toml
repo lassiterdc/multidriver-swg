@@ -12,7 +12,7 @@ upstream_branch = "working-ornl-hpc11"
 revision = "c74c8a4052efcbb1345981721532f462090d1a12"
 upstream_path = "stochastic_storm_rescaling"
 candidate_rule = "A tracked top-level file of the directory whose name ends in .py is a candidate for unit extraction; every other tracked file of the directory is NOT A UNIT SOURCE."
-extent_rule = "ADR-1 of the pre-refactor-correspondence design, six parts; lines counted by str.splitlines()"
+extent_rule = "the six-part rule implemented in tests/correspondence/extent.py; lines counted by str.splitlines()"
 set_digest = "sha256-manifest:1:a8506a62408610d42f570a7f0fd917db5abf89370830ba085d85a4ca85afedde"  # derived
 unparseable_candidate_files = 0  # derived
 verification_date = "2026-10-12"
@@ -194,40 +194,40 @@ runs_ground = "no import of a name defined nowhere in the corpus is known for th
 path = "_b4_selecting_marginals.py"
 line = 67
 runs = "DOES-NOT-RUN-PAST"
-runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (the stop-marker test in tests/correspondence/corpus_record.py)"
 
 [[section.site]]  # derived
 path = "_b5_fit_vine_copulas.py"
 line = 48
 runs = "DOES-NOT-RUN-PAST"
-runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (the stop-marker test in tests/correspondence/corpus_record.py); the call sits in the body of a loop inside a function, so it stops the script only when that function is called and that loop's body runs"
 
 [[section.site]]  # derived
 path = "_b5_fit_vine_copulas.py"
 line = 78
 runs = "DOES-NOT-RUN-PAST"
-runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (the stop-marker test in tests/correspondence/corpus_record.py); the call sits in the body of a function, so it stops the script only when that function is called"
 
 [[section.site]]  # derived
 path = "_b7.1_qaqc_simulated_events.py"
 line = 72
 runs = "DOES-NOT-RUN-PAST"
-runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (the stop-marker test in tests/correspondence/corpus_record.py)"
 
 [[section.site]]  # derived
 path = "_b7_generate_time_series_from_event_stats.py"
 line = 155
 runs = "DOES-NOT-RUN-PAST"
-runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (the stop-marker test in tests/correspondence/corpus_record.py); the call sits in the body of a loop at module level, so it stops the script only when that loop's body runs"
 
 [[section.site]]  # derived
 path = "_utils.py"
 line = 1274
 runs = "DOES-NOT-RUN-PAST"
-runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (the stop-marker test in tests/correspondence/corpus_record.py); the call sits in the body of a function, so it stops the script only when that function is called"
 
 [[section.site]]  # derived
 path = "_utils.py"
 line = 1563
 runs = "DOES-NOT-RUN-PAST"
-runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (project Appendix C D-3)"
+runs_ground = "an unconditional sys.exit stop marker: an ast.Call of sys.exit not lexically inside If, Try or ExceptHandler (the stop-marker test in tests/correspondence/corpus_record.py); the call sits in the body of a loop inside a function, so it stops the script only when that function is called and that loop's body runs"

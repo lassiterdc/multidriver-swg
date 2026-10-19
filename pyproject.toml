@@ -10,6 +10,7 @@ authors = [
     {name = "Daniel Lassiter", email = "daniel.lassiter@outlook.com"},
 ]
 requires-python = ">= 3.11"
+dependencies = ["numpy", "pandas", "xarray"]
 readme = "README.md"
 # NOTE: do NOT add a `License :: ...` trove classifier. With PEP 639
 # `license = "PolyForm-Noncommercial-1.0.0"` + setuptools>=77, a legacy License
@@ -37,3 +38,4 @@ norecursedirs = [".git", "build", "dist", "*.egg-info"]
 markers = [
     "state_check: a check of the pre-refactor correspondence that the State check CI job runs; carrying this marker is all a check needs to join that job",
 ]
+strict_markers = true

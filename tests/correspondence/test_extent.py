@@ -14,11 +14,11 @@ D_FILE = "_d_build_water_level_generator.py"
 
 
 def test_every_retained_line_is_in_exactly_one_unit():
-    """Property: the six-part rule puts each of the 8,020 retained lines in exactly one of the 188 units (arm row 4).
+    """Property: the six-part rule puts each of the 8,020 retained lines in exactly one of the 188 units.
 
     Class: every line of every retained file, on the real tree. Why: a unit key is a citation
-    only if lines and units partition each file. Killed by: removing part 3 (59 lines below a
-    cell's last unit, and the empty cell's marker, then fall in no unit). Second correct
+    only if lines and units partition each file. Killed by: removing part 3 (59 lines, among
+    them the empty cell's marker, then fall in no unit). Second correct
     implementation: one assigning part 3's lines in a separate pass after building all keys
     still yields the same partition.
     """
@@ -28,7 +28,10 @@ def test_every_retained_line_is_in_exactly_one_unit():
 
 
 def test_a_key_resolves_only_to_a_units_exact_ranges():
-    """Property: a canonical key resolves to its unit's lines, and a key one line short resolves to nothing (extent's half of arm row 5).
+    """Property: a canonical key resolves to its unit's lines, and a key one line short resolves to nothing.
+
+    This is the extent side of a key naming no unit; the ledger side is `test_ledger.py`'s
+    `test_a_row_naming_no_unit_is_named`.
 
     Class: any key naming a retained file with ranges no unit has. Why: a ledger row or a test
     citing wrong ranges must not resolve. Killed by: resolving keys by file only. Second
@@ -55,7 +58,7 @@ def _synthetic_record(digest: str, lines: int, set_digest: str) -> str:
             ("revision", "0" * 40),
             ("upstream_path", "synthetic"),
             ("candidate_rule", "top-level .py files"),
-            ("extent_rule", "ADR-1, six parts"),
+            ("extent_rule", "a synthetic six-part rule"),
             ("set_digest", set_digest),
             ("verification_date", "2026-10-12"),
             ("verification_command", "none"),
@@ -84,17 +87,19 @@ def _synthetic_corpus(tmp_path: Path) -> Path:
 
 
 def test_a_failed_extent_check_skips_dependents_in_its_own_name(tmp_path):
-    """Reviewer test for chunk 1a.4, ported: the extent link of the check chain reports "not measured" in its own name.
+    """The extent link of the check chain reports "not measured" in its own name.
 
     Property: when the corpus record passes and the extent check fails, `require_extent()` skips the
     calling test with the prefix `NOT MEASURED: extent check failed` rather than letting it run.
-    Class (i): every corpus whose record matches its tracked files while some retained line lies in
+    Class: every corpus whose record matches its tracked files while some retained line lies in
     no unit or in two units. A comment line above a retained file's first cell marker is one such
     input, because none of the six parts of the extent rule assigns it.
-    Why (iii): a check below the extent check (the ledger's check 1, the known-defect register's key
-    resolution) that ran on a broken partition would report hundreds of unit-level failures whose
-    one cause is the partition, which is the condition under which a check gets switched off.
-    Killed by (iv): `require_extent` returning without skipping when `check()` has findings, or
+    Why: a check below the extent check that ran on a broken partition would report hundreds of
+    unit-level failures whose one cause is the partition, which is the condition under which a
+    check gets switched off. The dependent this skip guards today is the known-defect register's
+    key resolution, whose test in `test_known_defects.py` calls `require_extent()` first; the
+    ledger's check 1 also resolves keys against the partition but does not call the skip.
+    Killed by: `require_extent` returning without skipping when `check()` has findings, or
     skipping with the corpus record's prefix instead of its own.
     Second correct implementation: one that raises pytest's skip from a fixture wrapping the chain,
     or that caches `check()`'s result per root, still passes, because the assertions read only the
@@ -150,19 +155,19 @@ M11_KEYS = {
 def test_the_d_file_keys_equal_the_independently_computed_keys():
     """Property: the 31 unit keys the extent rule gives `_d_build_water_level_generator.py` equal the 31 keys of an independent oracle.
 
-    The oracle is the list of keys in the approved shape's measurement record (its M11), which
-    were produced by the design master's own K-14 construction, written independently of this
-    module.
-    Class (i): every unit key of that file, i.e. which line belongs to which unit, not only whether
+    The oracle is `M11_KEYS`, a literal set of keys produced outside this module by a separate
+    construction and copied in, so no change to `extent.py` can change it. Not established here:
+    how those keys were constructed, since that construction is not in this repository.
+    Class: every unit key of that file, i.e. which line belongs to which unit, not only whether
     every line belongs to exactly one.
-    Why (iii): the partition's totals stay 8,020 lines, 188 units, 0 unowned and 0 doubly owned under
+    Why: the partition's totals stay 8,020 lines, 188 units, 0 unowned and 0 doubly owned under
     a change to which unit a blank or comment line joins (part 1 of the rule), yet such a change
     moves 93 of the 188 keys. The ledger's rows and every later test cite these keys and are computed
     from this same module, so without an independent oracle the change agrees with itself everywhere.
-    Killed by (iv): removing part 1 of the rule (blank and comment lines above a unit joining that
+    Killed by: removing part 1 of the rule (blank and comment lines above a unit joining that
     unit), which moves keys of this file while every total is unchanged.
     Second correct implementation: one that builds the partition in a single pass, assigning each
-    line by scanning to the nearest unit in its own cell, still produces these keys and passes.
+    line by scanning forward to the next unit in its own cell, still produces these keys and passes.
     """
     found, _counts = extent.extents(D_FILE, extent._read(extent.REPO_ROOT, D_FILE))
     keys = {f["key"] for f in found}

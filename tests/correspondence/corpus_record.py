@@ -1,13 +1,16 @@
 """Check that the corpus record still describes the legacy files git tracks.
 
-The refactor's tests cite line ranges of the legacy code in `_old_code_to_refactor/`.
+The disposition ledger and the tests in this package cite line ranges of the legacy code in
+`_old_code_to_refactor/`.
 Those citations mean something only while the cited files are exactly the files the
 record `legacy_corpus_record.toml` describes, so this module recomputes every derived
 field of that record from the tracked files and reports each disagreement by file and
-field. It is the head of the check chain: a check that reads the corpus calls
-`require_record()` first, and reports that it did not measure, rather than failing,
+field. It is the head of the check chain: a check that reads the corpus can call
+`require_record()` first, and then reports that it did not measure, rather than failing,
 when the record itself is wrong — one broken record then shows as one failure with
-one cause instead of hundreds.
+one cause instead of hundreds. Today the extent check calls it, from `extent.require_extent`,
+and the known-defect register's test reaches it through that call; the ledger's checks read the
+corpus through `extent` and call neither.
 
 Run as a script (`python -m tests.correspondence.corpus_record`) it prints one summary
 line and exits 0 when the record matches, 1 when it does not.
@@ -67,8 +70,13 @@ def _is_candidate(rel: str) -> bool:
 def _stop_marker_lines(tree: ast.AST) -> list[int]:
     """Lines of `sys.exit(...)` calls not lexically inside an `if`, a `try` or an `except`.
 
-    Such a call stops the script unconditionally, so nothing after it at that level
-    runs at the pinned revision (the project's Appendix C D-3 predicate).
+    The test is lexical only. A returned call at module level and outside any loop stops the
+    script where it stands, so nothing after it at that level runs at the pinned revision. A
+    returned call inside a function or loop body stops the script only if that body runs, and
+    is returned all the same: a `def` whose body is a bare `sys.exit(1)` yields its line even if
+    the function is never called. `_section_findings` still requires every returned site's
+    record row to read `DOES-NOT-RUN-PAST`. Not established here: whether each in-body site is
+    reached.
     """
     hits: list[int] = []
 
@@ -187,7 +195,11 @@ def _section_findings(root: Path, section: dict, tracked: list[str]) -> tuple[li
     recorded_sites = set()
     for site in section.get("site", []):
         recorded_sites.add((site.get("path"), site.get("line")))
-        if site.get("runs") != SITE_RUNS or not isinstance(site.get("runs_ground"), str):
+        if (
+            site.get("runs") != SITE_RUNS
+            or not isinstance(site.get("runs_ground"), str)
+            or not site["runs_ground"].strip()
+        ):
             findings.append(f"{site.get('path')}:{site.get('line')}: site runs must be {SITE_RUNS} with a runs_ground")
     for path, line in sorted(sites - recorded_sites):
         findings.append(f"{path}:{line}: stop-marker site not in the record")

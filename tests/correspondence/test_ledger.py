@@ -1,7 +1,7 @@
-"""Tests of the disposition ledger: check 1 on the real tree (the designed live red until the crawl), and one violating arm per ledger refusal.
+"""Tests of the disposition ledger: check 1 on the real tree, red while any unit has no row, and one violating case per ledger refusal.
 
-Fixtures copy the record, the tracked corpus, the ledger and the partition copy into a git
-repository inside `tmp_path` (staged, never committed), then edit one ledger file.
+Fixtures copy the record, the tracked corpus, the ledger and the system-scope file into a
+git repository inside `tmp_path` (staged, never committed), then edit one ledger file.
 """
 
 import shutil
@@ -24,7 +24,7 @@ def _ledger_fixture(tmp_path: Path) -> Path:
         ["git", "ls-files", "-z", "--", "_old_code_to_refactor"], cwd=root, capture_output=True, check=True
     ).stdout.decode("utf-8")
     paths = [p for p in listed.split("\0") if p]
-    paths += [corpus_record.RECORD_NAME, "tests/correspondence/partition_copy.json"]
+    paths += [corpus_record.RECORD_NAME, "tests/correspondence/system_scope.toml"]
     paths += [str(p.relative_to(root)) for p in (root / ledger.LEDGER_DIR).glob("*.toml")]
     for rel in paths:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
@@ -53,13 +53,14 @@ def _names(finding: str, *tokens: str) -> bool:
 
 
 def test_check_1_one_row_per_unit():
-    """Property: the real ledger holds exactly one row per unit — RED until `legacy-crawl` rules the other 157 (DoD row 2).
+    """Property: the real ledger holds exactly one row per unit — RED while any unit has no row.
 
     Class: every unit of the 188. Why: a unit with no recorded disposition is the defect the
-    ledger exists to expose, and the message counts both halves of check 1 so a reader of the red
-    sees which half failed. Killed by: none while it is red — this is the live red, and the
-    duplicate-row and no-unit arms below grade check 1's code. Second correct implementation:
-    comparing a Counter of row keys with the unit list.
+    ledger exists to expose, and the message counts check 1's units with no row and its units with
+    two or more rows, so a reader of the red sees which kind failed; a row naming no unit appears
+    only in the listed findings. Killed by: none while it is red — it is expected to fail until
+    every unit has a row, and the duplicate-row and no-unit tests below grade check 1's code.
+    Second correct implementation: comparing a Counter of row keys with the unit list.
     """
     findings = ledger.check_1()
     no_row = sum(1 for f in findings if f.endswith(": no row"))
@@ -70,7 +71,7 @@ def test_check_1_one_row_per_unit():
 
 
 def test_a_unit_with_two_rows_is_named(tmp_path):
-    """Property: a duplicated row is reported naming its unit (arm row 16).
+    """Property: a duplicated row is reported naming its unit.
 
     Class: any unit with two or more rows. Killed by: counting distinct keys instead of rows.
     Second correct implementation: a Counter over row keys.
@@ -84,7 +85,7 @@ def test_a_unit_with_two_rows_is_named(tmp_path):
 
 
 def test_a_non_canonical_key_is_named(tmp_path):
-    """Property: a key with a descending range is a format finding naming the row (arm row 13).
+    """Property: a key with a descending range is a format finding naming the row.
 
     Class: any key not in `file:a-b[,c-d]` ascending form. Killed by: accepting any range order.
     Second correct implementation: parse and re-format the key, and compare.
@@ -101,32 +102,50 @@ def test_a_non_canonical_key_is_named(tmp_path):
     )
 
 
-def test_a_scope_in_row_citing_a_does_not_belong_clause_is_named(tmp_path):
-    """Property: a scope-in row whose routing clause is a does-not-belong clause is named with that id (arm row 14).
-
-    Class: any routing clause not a belongs clause. Killed by: resolving against every clause.
-    Second correct implementation: a set of belongs ids built once.
-    """
-    root = _ledger_fixture(tmp_path)
-    from tests.correspondence import partition_copy
-
-    against = next(
-        c["id"] for s in partition_copy.load(root)["systems"] for c in s["clauses"] if c["polarity"] != "belongs"
-    )
+def _cite(root, scope_id: str) -> list[str]:
+    """Make the fixture's first row scope-in, citing `scope_id`, and return the ledger's format findings."""
     _edit(
         root,
         D_TOML,
         'key = "_d_build_water_level_generator.py:1-18"\ndisposition = "discard"',
-        f'key = "_d_build_water_level_generator.py:1-18"\ndisposition = "scope-in"\nrouting_clause = "{against}"',
+        f'key = "_d_build_water_level_generator.py:1-18"\ndisposition = "scope-in"\nscope = "{scope_id}"',
     )
-    assert any(_names(f, "_d_build_water_level_generator.py:1-18", against) for f in ledger.load(root)[2])
+    return ledger.load(root)[2]
+
+
+def test_a_scope_in_row_citing_no_statement_is_named(tmp_path):
+    """Property: a scope-in row whose `scope` names no statement of the system-scope file is named by its key.
+
+    Class: any identifier no statement carries. Why: such a row claims an owning scope that does
+    not exist, so nothing could check the tests it is routed to. Killed by: skipping the citation
+    check. Second correct implementation: a set of the file's identifiers built once per load.
+    """
+    root = _ledger_fixture(tmp_path)
+    findings = _cite(root, "dependence-modelling/00000000")
+    assert any(_names(f, "_d_build_water_level_generator.py:1-18") and "names no statement" in f for f in findings)
+
+
+def test_a_scope_in_row_citing_an_excludes_statement_is_named(tmp_path):
+    """Property: a scope-in row whose `scope` names an excludes statement is named by its key.
+
+    Class: any excludes statement of any system. Why: an excludes statement says what a system
+    does not own, so it cannot be the scope a unit is routed into. Killed by: accepting an
+    excludes citation. Second correct implementation: a set of covers identifiers built once.
+    """
+    root = _ledger_fixture(tmp_path)
+    from tests.correspondence import system_scope
+
+    against = next(e["id"] for s in system_scope.load(root)[0] for e in s["statement"] if e["mark"] == "excludes")
+    findings = _cite(root, against)
+    assert any(_names(f, "_d_build_water_level_generator.py:1-18") and "excludes statement" in f for f in findings)
 
 
 def test_a_ceded_group_without_its_record_is_named(tmp_path):
-    """Property: a ceded file with no record in ceded_files.toml is named (arm row 26).
+    """Property: a ceded file with no record in ceded_files.toml is named.
 
-    Class: any ceded file the ceded records omit. Killed by: taking the retained set from the
-    ledger directory alone. Second correct implementation: compare record sets both ways.
+    Class: any ceded file the ceded records omit. Killed by: taking the ceded set from
+    `ceded_files.toml` alone, without comparing it to the corpus record's `ceded` group. Second
+    correct implementation: compare record sets both ways.
     """
     root = _ledger_fixture(tmp_path)
     path = root / ledger.LEDGER_DIR / ledger.CEDED_FILE
@@ -138,7 +157,7 @@ def test_a_ceded_group_without_its_record_is_named(tmp_path):
 
 
 def test_a_retained_group_without_its_ledger_file_is_named(tmp_path):
-    """Property: a retained file with no per-script ledger file is named (arm row 29).
+    """Property: a retained file with no per-script ledger file is named.
 
     Class: any retained file whose ledger file is missing. Killed by: dropping the ledger-files
     comparison. Second correct implementation: compare file stems with the retained set.
@@ -149,7 +168,7 @@ def test_a_retained_group_without_its_ledger_file_is_named(tmp_path):
 
 
 def test_a_scope_out_without_a_destination_is_named(tmp_path):
-    """Property: a scope-out with no destination is a check-2 finding naming it (arm row 18).
+    """Property: a scope-out with no destination is a check-2 finding naming it.
 
     Class: any scope-out lacking `destination`. Killed by: dropping the destination test. Second
     correct implementation: a required-field table per disposition.
@@ -165,7 +184,7 @@ def test_a_scope_out_without_a_destination_is_named(tmp_path):
 
 
 def test_a_member_scope_out_without_acceptance_is_named(tmp_path):
-    """Property: a scope-out to a member with no acceptance state is named (arm row 19).
+    """Property: a scope-out to a member with no acceptance state is named.
 
     Class: any member destination lacking `acceptance`. Killed by: dropping the acceptance test.
     Second correct implementation: validate acceptance as `OPEN` or a path-and-commit table.
@@ -183,7 +202,7 @@ def test_a_member_scope_out_without_acceptance_is_named(tmp_path):
 
 
 def test_an_unacknowledged_run_is_named(tmp_path):
-    """Property: a row missing one detected run is named with the run (arm row 20).
+    """Property: a row missing one detected run is named with the run.
 
     Class: any run inside a unit its row omits. Killed by: comparing in one direction only.
     Second correct implementation: symmetric set difference reported per side.
@@ -197,7 +216,7 @@ def test_an_unacknowledged_run_is_named(tmp_path):
 
 
 def test_a_stale_acknowledgement_is_named(tmp_path):
-    """Property: an acknowledged range that is no run of the detector is named (arm row 21).
+    """Property: an acknowledged range that is no run of the detector is named.
 
     Class: any acknowledged range the predicate does not find. Killed by: comparing in the other
     direction only. Second correct implementation: symmetric set difference.
@@ -216,7 +235,7 @@ def test_a_stale_acknowledgement_is_named(tmp_path):
 
 
 def test_a_row_naming_no_unit_is_named(tmp_path):
-    """Property: a row whose key names no unit's ranges is named (arm row 5, check-1 half).
+    """Property: a row whose key names no unit's ranges is named by check 1.
 
     Class: any key one range off a unit. Killed by: resolving keys by file only. Second correct
     implementation: compare row keys with the extent keys as sets.
@@ -235,16 +254,16 @@ def test_checks_other_than_check_1_are_clean_on_the_real_ledger():
     """Property: on the real ledger, every whole-ledger check other than check 1 reports nothing.
 
     The committed ledger produces no format finding, no check-2 finding and no check-3 finding;
-    only check 1 is red, by design, until the crawl rules the remaining units.
-    Class (i): every correct ledger, at every stage of the crawl. Rows added later must still be
+    only check 1 is red, and it stays red while any unit has no row.
+    Class: every correct ledger, however many units have rows so far. Rows added later must still be
     well formed, still name a destination and an acceptance state for each scope-out, and still
     acknowledge exactly the detected runs, so the property never becomes false on a correct ledger.
-    Why (iii): check 1 is red by design, so the State check job's verdict is "failure" whatever the
+    Why: check 1 is red while any unit has no row, so the State check job's verdict is "failure" whatever the
     other checks do. Its one discriminating signal is WHICH tests fail. A check that wrongly reports
     findings on the real rows changes nothing in that signal unless some test runs it on the real
     rows; without this test the job reads "1 failed, check 1" whether checks 2, 3 and the format
     check are correct or are reporting every row.
-    Killed by (iv): any change that makes one of those checks report a finding on a correct row —
+    Killed by: any change that makes one of those checks report a finding on a correct row —
     for example treating every member scope-out as lacking an acceptance state, refusing every key as
     non-canonical, comparing a row's acknowledged runs with every run of its file rather than of its
     unit, or adding a finding per row in check 3.
@@ -255,7 +274,7 @@ def test_checks_other_than_check_1_are_clean_on_the_real_ledger():
     results = {
         "format": ledger.load()[
             2
-        ],  # load()'s own findings, the surface the shape names, independent of WHOLE_LEDGER_CHECKS
+        ],  # load()'s format findings, read directly so this test does not depend on WHOLE_LEDGER_CHECKS
         "check 2": ledger.check_2(),
         "check 3": ledger.check_3(),
     }

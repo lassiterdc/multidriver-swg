@@ -17,13 +17,15 @@ import sys
 import tomllib
 from pathlib import Path
 
-from tests.correspondence import commented_runs, extent, partition_copy
+from tests.correspondence import commented_runs, extent, system_scope
 
 REPO_ROOT = extent.REPO_ROOT
 LEDGER_DIR = Path("tests") / "correspondence" / "ledger"
 CEDED_FILE = "ceded_files.toml"
 DISPOSITIONS = ("scope-in", "scope-out", "discard")
-KEY_RE = re.compile(r"^(?P<file>[^:]+):(?P<ranges>\d+-\d+(?:,\d+-\d+)*)$")
+# Anchored with \Z rather than $, because $ also matches just before a final newline, so
+# "x.py:1-18\n" would read as canonical; and the file part admits no whitespace at all.
+KEY_RE = re.compile(r"^(?P<file>[^:\s]+):(?P<ranges>\d+-\d+(?:,\d+-\d+)*)\Z")
 
 
 def _canonical(key: str) -> bool:
@@ -83,12 +85,23 @@ def _row_format_findings(row: dict, legacy: str | None, root: Path) -> list[str]
     if not isinstance(row.get("commented_out_runs"), list):
         findings.append(f"row {key}: commented_out_runs is absent")
     if row.get("disposition") == "scope-in":
-        found = partition_copy.clause(row.get("routing_clause", ""), root)
-        if found is None or found["polarity"] != "belongs":
-            findings.append(
-                f"row {key}: routing_clause {row.get('routing_clause')!r} is not a belongs clause of the partition copy"
-            )
+        findings += _scope_missing_findings(row, root) + _scope_excludes_findings(row, root)
     return findings
+
+
+def _scope_missing_findings(row: dict, root: Path) -> list[str]:
+    """Name a scope-in row whose `scope` names no statement of the system-scope file."""
+    if system_scope.statement(row.get("scope", ""), root) is None:
+        return [f"row {row.get('key')}: scope {row.get('scope')!r} names no statement of the system-scope file"]
+    return []
+
+
+def _scope_excludes_findings(row: dict, root: Path) -> list[str]:
+    """Name a scope-in row whose `scope` names an excludes statement, which says what a system does not own."""
+    cited = system_scope.statement(row.get("scope", ""), root)
+    if cited is not None and cited.get("mark") == "excludes":
+        return [f"row {row.get('key')}: scope {row.get('scope')!r} names an excludes statement, not a covers one"]
+    return []
 
 
 def check_1(root: Path = REPO_ROOT) -> list[str]:
@@ -158,11 +171,11 @@ WHOLE_LEDGER_CHECKS = (check_format, check_1, check_2, check_3)
 
 
 def main(root: Path = REPO_ROOT) -> int:
-    """Print § 4.8's summary line; return 0 when every whole-ledger check is clean, 1 otherwise."""
+    """Print the ledger's summary line; return 0 when every whole-ledger check is clean, 1 otherwise."""
     rows, ceded, _ = load(root)
     unit_count = sum(len(extent.extents(n, extent._read(root, n))[0]) for n in extent.retained_files(root))
     one = check_1(root)
-    ceded_units = sum(extent.d1_unit_count(extent._read(root, r["legacy_file"])) for r in ceded)
+    ceded_units = sum(extent.unit_count_without_preamble(extent._read(root, r["legacy_file"])) for r in ceded)
     outs, open_outs = scope_out_counts(root)
     print(
         f"units enumerated: {unit_count}; rows: {len(rows)}; "

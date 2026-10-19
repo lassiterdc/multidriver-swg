@@ -1,0 +1,271 @@
+rule = "system-scope:1"
+
+[[system]]
+slug = "pre-refactor-correspondence"
+
+[[system.statement]]
+mark = "covers"
+text = "Tests and records showing that this code reproduces the legacy code's values, unit by unit or run by run, and the ruling of each legacy unit as kept, dropped or handed elsewhere."
+id = "pre-refactor-correspondence/57373e16"
+
+[[system.statement]]
+mark = "covers"
+text = "The registration, dispatch and enforcement of paired old and new methods, and of recorded departures from the old code."
+id = "pre-refactor-correspondence/500f516c"
+
+[[system.statement]]
+mark = "excludes"
+text = "A check whose reference is the manuscript or the observed data, and the reimplemented code itself."
+id = "pre-refactor-correspondence/528362ce"
+
+[[system.statement]]
+mark = "excludes"
+text = "The equivalence test of a kept unit, which goes with whichever system owns the tested code."
+id = "pre-refactor-correspondence/389e84ee"
+
+[[system]]
+slug = "publication-math-conformance"
+
+[[system.statement]]
+mark = "covers"
+text = "Links between equations of the manuscript this project publishes and the code evaluating them, and sorting each paper-versus-code mismatch into its class."
+id = "publication-math-conformance/33e19dba"
+
+[[system.statement]]
+mark = "excludes"
+text = "Mismatches between new and legacy code, links to methods others have published, and edits to the manuscript itself."
+id = "publication-math-conformance/db574798"
+
+[[system]]
+slug = "observed-record-assembly"
+
+[[system.statement]]
+mark = "covers"
+text = "Combining several overlapping rainfall and water-level source products into one observed record: their coverage calendar, resampling to a shared resolution, the priority order of the merge and the tests that sources may be pooled."
+id = "observed-record-assembly/c76709dc"
+
+[[system.statement]]
+mark = "excludes"
+text = "Downloading or pre-processing one source product, and deciding which stretches of the merged record are events."
+id = "observed-record-assembly/7cdc556e"
+
+[[system]]
+slug = "combined-event-identification"
+
+[[system.statement]]
+mark = "covers"
+text = "Deciding what an event is in the merged observations: the threshold that triggers it, its start and end times, its summary statistics and its type label."
+id = "combined-event-identification/f3c7fb9a"
+
+[[system.statement]]
+mark = "excludes"
+text = "Work that takes an already defined set of events and fits, samples, synthesises or validates it, and giving event statistics exceedance probabilities."
+id = "combined-event-identification/66bd7d29"
+
+[[system]]
+slug = "marginal-distribution-fitting"
+
+[[system.statement]]
+mark = "covers"
+text = "Fitting a single-variable distribution to each event statistic, with any transformation and goodness-of-fit choice, so that it can feed the copula."
+id = "marginal-distribution-fitting/5549038b"
+
+[[system.statement]]
+mark = "excludes"
+text = "Fitting distributions in order to estimate exceedance probabilities, and anything about the dependence between statistics."
+id = "marginal-distribution-fitting/111a50d3"
+
+[[system]]
+slug = "dependence-modelling"
+
+[[system.statement]]
+mark = "covers"
+text = "The vine copula joining the event statistics: the shape of its trees, the family chosen for each pair, how well it fits, and drawing samples from it."
+id = "dependence-modelling/6eb7a1d6"
+
+[[system.statement]]
+mark = "excludes"
+text = "A single statistic's distribution, the number of events, and what is done with a sampled vector of statistics afterwards."
+id = "dependence-modelling/1a2cbaa4"
+
+[[system]]
+slug = "event-occurrence-modelling"
+
+[[system.statement]]
+mark = "covers"
+text = "The number of events of each type in a simulated span of time and their timing, and the observed history of event occurrences those numbers are resampled from."
+id = "event-occurrence-modelling/0d0e65a8"
+
+[[system.statement]]
+mark = "excludes"
+text = "The size of an event's statistics, and the data-availability calendar of the observed record."
+id = "event-occurrence-modelling/a3a3d1b2"
+
+[[system]]
+slug = "timeseries-synthesis"
+
+[[system.statement]]
+mark = "covers"
+text = "Turning sampled event statistics into rainfall, surge and tide series by picking historic events and scaling them to match, and accepting or rejecting a synthesised series on physical grounds."
+id = "timeseries-synthesis/3c747469"
+
+[[system.statement]]
+mark = "excludes"
+text = "Choosing the statistics or the number of events, and writing out the finished series for others."
+id = "timeseries-synthesis/d8d70654"
+
+[[system]]
+slug = "boundary-condition-output"
+
+[[system.statement]]
+mark = "covers"
+text = "The form of each published output: its schema, conventions, units, calendar, chunking and carried metadata, and the identifiers issued with it."
+id = "boundary-condition-output/0cfac71f"
+
+[[system.statement]]
+mark = "excludes"
+text = "Computing the published values, and a downstream model's own reader or equality check."
+id = "boundary-condition-output/58577894"
+
+[[system]]
+slug = "generator-validation"
+
+[[system.statement]]
+mark = "covers"
+text = "Statistical comparison of the generated events with the observed record, such as two-sample and Monte Carlo tests, to judge whether the generator reproduces what was observed."
+id = "generator-validation/87f45e34"
+
+[[system.statement]]
+mark = "excludes"
+text = "Checks against the legacy code or the manuscript, helping a user choose between candidates, and interpreting this codebase's own pytest results."
+id = "generator-validation/9daf3f6a"
+
+[[system]]
+slug = "interactive-decision-support"
+
+[[system.statement]]
+mark = "covers"
+text = "The views and tables on which a user compares candidates and makes a choice, and the identifiers recording that choice."
+id = "interactive-decision-support/65c9484d"
+
+[[system.statement]]
+mark = "excludes"
+text = "A verdict on a finished run, and keeping the chosen selection once it is made."
+id = "interactive-decision-support/83f906e8"
+
+[[system]]
+slug = "workflow-orchestration"
+
+[[system.statement]]
+mark = "covers"
+text = "The execution graph from data to outputs, each step's place in it, the modes it runs in, and the reporting and plotting machinery that delivers results."
+id = "workflow-orchestration/553d1fa2"
+
+[[system.statement]]
+mark = "excludes"
+text = "The computation a step performs, and what a particular figure shows."
+id = "workflow-orchestration/caf9f620"
+
+[[system]]
+slug = "run-configuration-and-provenance"
+
+[[system.statement]]
+mark = "covers"
+text = "How a run is given its random seed, how its provenance is recorded, how machine-specific paths are resolved, and the stored per-run selection artifacts."
+id = "run-configuration-and-provenance/01af8a4f"
+
+[[system.statement]]
+mark = "excludes"
+text = "A call that draws a random number, and a system recording its own identity into a run's provenance."
+id = "run-configuration-and-provenance/b212e5f3"
+
+[[system]]
+slug = "packaging-and-release"
+
+[[system.statement]]
+mark = "covers"
+text = "Whether others can install, pin and cite the toolkit: its public interface, declared dependencies, version pins, licence, release steps, and the scanner that checks published content on every push."
+id = "packaging-and-release/45bd39a9"
+
+[[system.statement]]
+mark = "excludes"
+text = "Settings that change from run to run, documentation and worked examples, and this toolkit's citations of other people's work."
+id = "packaging-and-release/8b26d2b6"
+
+[[system]]
+slug = "event-frequency-assessment"
+
+[[system.statement]]
+mark = "covers"
+text = "Fitting annual-maximum and threshold-exceedance distributions so that event statistics get exceedance probabilities and return periods."
+id = "event-frequency-assessment/48fc4239"
+
+[[system.statement]]
+mark = "excludes"
+text = "Fitting inputs to the copula, probabilities of flood outcomes rather than weather, and sampling events at a chosen return level."
+id = "event-frequency-assessment/76fc98f1"
+
+[[system]]
+slug = "monte-carlo-design-storms"
+
+[[system.statement]]
+mark = "covers"
+text = "Sampling events at a chosen return level, and computing the return period that sets that level for the sampling plan."
+id = "monte-carlo-design-storms/ee1e9a0a"
+
+[[system.statement]]
+mark = "excludes"
+text = "Fitting the distribution being sampled, counting events in a period, turning statistics into forcing, and publishing the results."
+id = "monte-carlo-design-storms/0e8a792e"
+
+[[system]]
+slug = "documentation-and-examples"
+
+[[system.statement]]
+mark = "covers"
+text = "Whether someone other than the author can understand and run the software: narrative documentation, runnable worked examples, the built documentation site and the tests of that documentation."
+id = "documentation-and-examples/36f517ef"
+
+[[system.statement]]
+mark = "excludes"
+text = "Installing, pinning or citing the toolkit, the docstrings and field descriptions owning systems write in their own code, and the content of the citation register."
+id = "documentation-and-examples/a0f284e4"
+
+[[system]]
+slug = "private-estate"
+
+[[system.statement]]
+mark = "covers"
+text = "Material tied to a single machine or a single run, the folders and notes by which it is found, the rule deciding where each kind of artifact lives, and the count-only scans run with the private token lists."
+id = "private-estate/2e663379"
+
+[[system.statement]]
+mark = "excludes"
+text = "The mechanism that resolves machine-specific paths or records provenance, and how an execution mode is bound."
+id = "private-estate/2ac790f5"
+
+[[system]]
+slug = "test-result-legibility"
+
+[[system.statement]]
+mark = "covers"
+text = "The meaning of a result this codebase's own pytest suite reports: the invocation and environment it ran under, the tests left out of it, the code it actually imported, and the verdict recorded."
+id = "test-result-legibility/7e5cbcf5"
+
+[[system.statement]]
+mark = "excludes"
+text = "Outputs of statistical tests, and the content of a test's assertions or the reference it is compared with."
+id = "test-result-legibility/0d41ee11"
+
+[[system]]
+slug = "method-attribution"
+
+[[system.statement]]
+mark = "covers"
+text = "Records of the published external methods this code implements, the links from each to the implementing code, which of them a run used, and that set as written into a report."
+id = "method-attribution/ef849eca"
+
+[[system.statement]]
+mark = "excludes"
+text = "Links to this project's own manuscript equations, per-run state, the delivery of the report surface, and others citing this toolkit."
+id = "method-attribution/c6b6239a"
