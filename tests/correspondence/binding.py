@@ -20,18 +20,26 @@ A licence is any object with two methods, `admits(reference, value) -> bool` and
 that `admits` rejects. This module fixes that interface and no concrete licence.
 
 `registered_units` reads a registration module as a syntax tree, without importing it, so a
-check can learn which units a system has registered from the file alone.
+check can learn which units a system has registered from the file alone. It is defined in
+`tests.correspondence.registration_read`, which imports only the standard library, and is
+imported here so that callers reaching it through this module read the same function; a check
+run by an interpreter with no `pytest` imports it from there, since importing this module
+would fail at `import pytest`.
 """
 
 from __future__ import annotations
 
-import ast
 import importlib
 import sys
-from pathlib import Path
 from typing import Any, Protocol
 
 import pytest
+
+from tests.correspondence.registration_read import (  # noqa: F401  (re-exported for callers that reach the reader through this module)
+    _calls_registers,
+    _unread_registrations,
+    registered_units,
+)
 
 FAMILIES = ("equivalence", "refactor_reminder")
 REGISTRATIONS = "tests.registrations"
@@ -70,70 +78,6 @@ def registers(unit: str):
         return function
 
     return decorate
-
-
-def registered_units(path: Path) -> tuple[list[str], list[str]]:
-    """Return the units a registration module registers, read without importing it, and each form it cannot read.
-
-    Only a module-level function decorated `registers(unit="...")` (or `binding.registers(...)`)
-    with a string literal counts; any other value for `unit` is a finding naming the file and
-    line, because a value computed at import cannot be read from the file. Every other call of
-    `registers`, by its bare name or as an attribute, is a finding too (`_unread_registrations`).
-    """
-    units, findings = [], []
-    tree = ast.parse(Path(path).read_text(encoding="utf-8"))
-    read: set[int] = set()
-    for node in tree.body:
-        if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-            continue
-        for decorator in node.decorator_list:
-            read.add(id(decorator))
-            func = decorator.func if isinstance(decorator, ast.Call) else decorator
-            name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", None)
-            if name != "registers":
-                continue
-            keywords = {k.arg: k.value for k in decorator.keywords} if isinstance(decorator, ast.Call) else {}
-            value = keywords.get("unit")
-            if isinstance(value, ast.Constant) and isinstance(value.value, str) and not decorator.args:
-                units.append(value.value)
-            else:
-                findings.append(
-                    f"{path}:{decorator.lineno}: registration of {node.name} names its unit by a non-literal"
-                )
-    return units, findings + _unread_registrations(tree, read, path)
-
-
-def _calls_registers(node: ast.AST) -> bool:
-    """Whether `node` is a call of `registers`, by its bare name or as an attribute of any object.
-
-    This is the same rule the module-level read lists a decorator by, which reads any attribute
-    named `registers` (`binding.registers`, or `b.registers` when `binding` is imported as `b`).
-    Deliberately NOT `binding.registers` alone: the module-level read would then list a unit
-    for `@b.registers(...)` and stay silent on the same decorator under an `if`, so the list
-    would be silently incomplete for a form the reader itself reads.
-    """
-    if not isinstance(node, ast.Call):
-        return False
-    func = node.func
-    if isinstance(func, ast.Name):
-        return func.id == "registers"
-    return isinstance(func, ast.Attribute) and func.attr == "registers"
-
-
-def _unread_registrations(tree: ast.Module, read: set[int], path) -> list[str]:
-    """Name, by file and line, each `registers(...)` call found anywhere but on a top-level function's decorator list.
-
-    Such a call still registers when the module is imported, inside an `if`, on a class, nested
-    in a function or applied by hand as `registers(...)(f)`, so the static list would silently
-    miss its unit. Naming every call of `registers`, rather than a list of known shapes, keeps
-    the list either complete or visibly incomplete. A call through some other name (`r =
-    registers`, then `@r(...)`) is not seen.
-    """
-    return [
-        f"{path}:{node.lineno}: a registers(...) call outside the decorator list of a top-level function"
-        for node in ast.walk(tree)
-        if _calls_registers(node) and id(node) not in read
-    ]
 
 
 def _module_name(system: str) -> str:

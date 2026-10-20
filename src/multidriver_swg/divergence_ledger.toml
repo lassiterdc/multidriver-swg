@@ -1,0 +1,18 @@
+rule = "divergence-ledger:1"
+statement = "One entry per deliberate departure from the legacy code: a pair entry for each registered pair, a departure entry for each departure with no pair."
+# [[pair]]
+# id = "{pair id}"
+# pre_refactor = { function = "{module}:{qualname}", combined = "canon-ast:1:{hex}", functions = { "{module}:{qualname}" = "canon-ast:1:{hex}" } }
+# current = { function = "...", combined = "...", functions = { ... } }
+# diverges = true | false          # false is the explicit no-divergence marker
+# changed = "...", why = "...", judged_correct_when = "..."   # required when diverges = true; absent when diverges = false (DEC-8)
+# departure = { unit = "{unit key}", site = {line} }          # only on a pair that was a fourth finding's departure entry; such a pair is diverges = true (section 11.8, RO-1)
+#
+# [[departure]]
+# unit = "{unit key}", site = {line}
+# kind = "licensed" | "finding-3" | "finding-4"
+# grounds = { register = { key = "{unit key}", line = {line} } } | { triage = "{family}:{unit key}[:{part}]" }
+# new_code = "not yet written" | "{what the new code does instead}"
+# why = "...", judged_correct_when = "..."
+# fingerprint = { callable = "{registration module}:{function}", combined = "...", functions = { ... } }   # absent until registered
+# future_pair = "{pair id}"        # finding-4 only

@@ -25,6 +25,11 @@ docs = [
     "mkdocstrings[python]",
 ]
 
+# The divergence ledger is data the package reads at run time, so it ships in the wheel; setuptools
+# ships only Python modules by default.
+[tool.setuptools.package-data]
+multidriver_swg = ["divergence_ledger.toml"]
+
 [tool.ruff]
 line-length = 120
 

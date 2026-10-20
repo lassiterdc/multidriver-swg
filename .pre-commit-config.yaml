@@ -32,3 +32,12 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+
+  - repo: local
+    hooks:
+      - id: divergence-detector
+        name: divergence record detector
+        entry: python3 -m tests.correspondence.divergence
+        language: system
+        pass_filenames: false
+        always_run: true
