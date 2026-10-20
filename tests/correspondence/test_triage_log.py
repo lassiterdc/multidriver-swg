@@ -4,7 +4,10 @@ Each arm writes a log into `tmp_path` holding five well-formed rows — every fi
 without a part, a split unit key, both fourth-finding states — and then the one violating row,
 sixth. The arm asserts that exactly one finding comes back and that it names the sixth row and
 the field as whole words, so the well-formed rows are the arm's satisfying inputs and a refusal
-that fires on them reds the arm.
+that fires on them reds the arm. Beside each such log the arm writes a divergence ledger in which
+every well-formed pointer of those rows resolves — two through departure entries and one through
+a pair entry that replaced a departure — so pointer resolution runs on every arm and fires on
+none of them except where an arm's own sixth row is meant to dangle.
 """
 
 from pathlib import Path
@@ -56,15 +59,54 @@ state = "pair registered"
 LANDING_LINE = (
     "triage log: 0 rows; halt condition: work on a failing equivalence test stops and goes to the"
     " developer when the failure's finding is undecided, or when the test cannot pass against"
-    " correctly written new code; departure pointers: not measured: no divergence ledger in this tree"
+    " correctly written new code; departure pointers: 0 resolved of 0"
+)
+LABEL = "canon-ast:1:0000000000000000000000000000000000000000000000000000000000000000"
+LEDGER_HEADER = 'rule = "divergence-ledger:1"\nstatement = "a statement"\n'
+# A departure entry for each well-formed pointer row: the third finding at site 120 and the
+# fourth finding whose method is not built. The sixth-row pointer `_utils.py:1991-2075` site 2000,
+# which two arms use as a well-formed pointer while testing another field, resolves here too.
+LEDGER_DEPARTURES = {
+    "row-3": (
+        '[[departure]]\nunit = "_d_build_water_level_generator.py:117-127,131-136"\nsite = 120\nkind = "finding-3"\n'
+        'grounds = { triage = "equivalence:_d_build_water_level_generator.py:117-127,131-136" }\n'
+        'new_code = "not yet written"\nwhy = "w"\njudged_correct_when = "j"\n'
+    ),
+    "row-4": (
+        '[[departure]]\nunit = "_utils.py:1-18"\nsite = 1\nkind = "finding-4"\n'
+        'grounds = { triage = "refactor_reminder:_utils.py:1-18:storm" }\n'
+        'new_code = "not yet written"\nwhy = "w"\njudged_correct_when = "j"\nfuture_pair = "storm"\n'
+    ),
+    "sixth": (
+        '[[departure]]\nunit = "_utils.py:1991-2075"\nsite = 2000\nkind = "finding-3"\n'
+        'grounds = { triage = "equivalence:_utils.py:1991-2075" }\n'
+        'new_code = "not yet written"\nwhy = "w"\njudged_correct_when = "j"\n'
+    ),
+}
+SIDE = f'{{ function = "m:f", combined = "{LABEL}", functions = {{ "m:f" = "{LABEL}" }} }}'
+# The pair entry that replaced the fifth row's fourth-finding departure once its pair was registered. A fourth
+# finding is a desired deviation, so that pair diverges and carries its three reasons.
+LEDGER_PAIR = (
+    f'[[pair]]\nid = "inputs"\npre_refactor = {SIDE}\ncurrent = {SIDE}\ndiverges = true\n'
+    'changed = "c"\nwhy = "w"\njudged_correct_when = "j"\n'
+    'departure = { unit = "_inputs.py:30-41", site = 41 }\n'
 )
 
 
+def _ledger(root: Path, departures: tuple[str, ...] = tuple(LEDGER_DEPARTURES), pair: bool = True) -> None:
+    """Write a divergence ledger under `root` holding the named departure entries and, when `pair`, the pair entry."""
+    path = root / triage_log.LEDGER_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    body = LEDGER_HEADER + "".join("\n" + LEDGER_DEPARTURES[name] for name in departures)
+    path.write_text(body + ("\n" + LEDGER_PAIR if pair else ""), encoding="utf-8")
+
+
 def _root(tmp_path: Path, sixth_row: str, header: str = HEADER) -> Path:
-    """Write a log of the five well-formed rows plus `sixth_row` under `tmp_path`; return `tmp_path`."""
+    """Write a log of the five well-formed rows plus `sixth_row`, and a ledger resolving their pointers, under `tmp_path`."""
     path = tmp_path / triage_log.LOG_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(header + WELL_FORMED_ROWS + "\n[[row]]\n" + sixth_row, encoding="utf-8")
+    _ledger(tmp_path)
     return tmp_path
 
 
@@ -101,16 +143,16 @@ def test_the_real_triage_log_has_no_finding():
 
 
 def test_the_script_prints_the_landing_line(capsys):
-    """Property: the script prints exactly the row count, the halt condition and the pointers' state, and exits 0.
+    """Property: the script prints exactly the row count, the halt condition and how many pointers resolve, and exits 0.
 
-    Class: the real log as landed, with no row. Why: a zero must read as a stated zero, and the
-    line is the one place a reader learns the halt condition and that pointers are not resolved;
-    this test is a deliberate tripwire that the first appended row, or a change to pointer
-    resolution, must update. Killed by: printing the count alone, or dropping the pointers' state
-    from the line. Not established: that the halt condition is read from the log's header rather
-    than from the module's constant — on the landed log the two are equal, so this test cannot
-    tell them apart. Second correct implementation: a `main` that formats the line from `load()`'s
-    rows and a header reader of its own.
+    Class: the real log as landed, with no row and so no pointer. Why: a zero must read as a
+    stated zero, and the line is the one place a reader learns the halt condition and how many of
+    the log's departure pointers the divergence ledger resolves; this test is a deliberate
+    tripwire that the first appended row must update. Killed by: printing the count alone, or
+    dropping the pointers' count from the line. Not established: that the halt condition is read
+    from the log's header rather than from the module's constant — on the landed log the two are
+    equal, so this test cannot tell them apart. Second correct implementation: a `main` that
+    formats the line from `load()`'s rows and a header reader of its own.
     """
     assert triage_log.main() == 0
     assert capsys.readouterr().out == LANDING_LINE + "\n"
@@ -346,3 +388,92 @@ def test_a_departure_not_of_the_key_form_is_named(tmp_path, departure):
         f"departure = {departure}\n" + ROW_TAIL
     )
     _only_finding(_root(tmp_path, row), "departure")
+
+
+def test_a_departure_pointer_that_names_no_ledger_entry_is_named(tmp_path):
+    """Property: a well-formed pointer of a third or fourth finding that no departure entry or pair entry carries is named.
+
+    Class: every well-formed pointer whose unit and site match no departure entry's unit and site
+    and no pair entry's `departure`, here a known unit at a site no entry names. Why: a pointer
+    is how a reader finds the explanation of a deliberate departure, so one that leads nowhere
+    leaves the departure unexplained while the row reads as complete. Killed by: not resolving
+    pointers, or resolving by unit alone. Second correct implementation: building a mapping from
+    `(unit, site)` to the entry that carries it and naming each pointer the mapping lacks.
+    """
+    row = (
+        'test = "equivalence:_utils.py:1-18"\nfinding = 3\n'
+        'departure = { unit = "_utils.py:1-18", site = 5 }\nruled_outcome = "r"\n' + ROW_TAIL
+    )
+    _only_finding(_root(tmp_path, row), "departure", "_utils.py:1-18", "5")
+
+
+def test_pointers_resolve_through_a_departure_entry_and_through_a_pair_entry_that_replaced_one(tmp_path):
+    """Property: a pointer resolves through a departure entry, or through a pair entry carrying it as its `departure`.
+
+    Class: the well-formed rows' three pointers — two to departure entries, one to the pair entry
+    that replaced a fourth finding's departure once its pair was registered. With all three
+    entries in the ledger nothing is named; removing the pair entry, or one departure entry,
+    names exactly the row that pointed at it. Why: a fourth finding's departure entry becomes a
+    pair entry when its pair is registered, so a resolution reading departure entries alone would
+    name a closed departure as dangling. Killed by: resolving through departure entries only, or
+    through pair entries only. Second correct implementation: one pass over both entry lists
+    that yields each entry's `(unit, site)`.
+    """
+    benign = 'test = "equivalence:_utils.py:1-18"\nfinding = 1\n' + ROW_TAIL
+    root = _root(tmp_path, benign)
+    assert triage_log.load(root)[1] == []
+    _ledger(root, pair=False)
+    _only = triage_log.load(root)[1]
+    assert len(_only) == 1 and _names(_only[0], "row", "5", "departure"), _only
+    _ledger(root, departures=("row-4", "sixth"))
+    _only = triage_log.load(root)[1]
+    assert len(_only) == 1 and _names(_only[0], "row", "3", "departure"), _only
+
+
+def test_the_summary_line_counts_the_pointers_that_resolve(tmp_path, capsys):
+    """Property: the summary line reads `departure pointers: {resolved} resolved of {total}` over the log's well-formed pointers.
+
+    Class: logs whose pointers all resolve and logs where some dangle. Why: the line is how a
+    reader sees, without the findings, how much of the log is backed by the ledger; a constant
+    or a count of rows instead of pointers would misstate it. Killed by: printing a fixed phrase,
+    or counting rows. Second correct implementation: counting resolved pointers in `main` from
+    `load()`'s findings instead of from the resolution itself.
+    """
+    root = _root(tmp_path, 'test = "equivalence:_utils.py:1-18"\nfinding = 1\n' + ROW_TAIL)
+    assert triage_log.main(root) == 0
+    assert "; departure pointers: 3 resolved of 3\n" in capsys.readouterr().out
+    _ledger(root, departures=("row-3",), pair=False)
+    assert triage_log.main(root) == 1
+    assert "; departure pointers: 1 resolved of 3\n" in capsys.readouterr().out
+
+
+def test_a_pointer_with_no_ledger_beside_the_log_is_named(tmp_path):
+    """Property: a log holding a well-formed pointer and no divergence ledger under its root yields one finding saying so.
+
+    Class: any root whose log carries at least one pointer and whose ledger file is absent. Why:
+    an absent ledger leaves every pointer unresolvable, and reading that as "nothing dangles"
+    would hide it; reading it as a crash would stop every other check. Killed by: skipping
+    resolution when the ledger is absent. Second correct implementation: naming each pointer as
+    dangling instead of naming the absent ledger once.
+    """
+    root = _root(tmp_path, 'test = "equivalence:_utils.py:1-18"\nfinding = 1\n' + ROW_TAIL)
+    (root / triage_log.LEDGER_PATH).unlink()
+    findings = triage_log.load(root)[1]
+    assert len(findings) == 1 and "divergence ledger" in findings[0], findings
+
+
+def test_the_ledger_the_fixture_writes_has_the_ledger_form(tmp_path):
+    """Property: `validate` returns nothing on the divergence ledger `_root` writes beside every log.
+
+    Class: the fixture ledger every `_root` arm reads, with all its departure entries and its pair
+    entry. Why: the triage log reads that ledger with `load` only and never validates it, so a
+    fixture that breaks the ledger's form would stay green on every resolution arm while proving
+    resolution against a ledger no real ledger could be. Killed by: a fixture entry outside the
+    form, such as its pair entry marked `diverges = false` while carrying a `departure`. Second
+    correct implementation: validating the fixture ledger inside `_root` itself and raising there.
+    """
+    from tests.correspondence import divergence_ledger_load
+
+    reader = divergence_ledger_load.reader()
+    root = _root(tmp_path, 'test = "equivalence:_utils.py:1-18"\nfinding = 1\n' + ROW_TAIL)
+    assert reader.validate(reader.load(root / triage_log.LEDGER_PATH)) == []

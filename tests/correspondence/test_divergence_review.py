@@ -133,3 +133,54 @@ def test_a_relative_pair_side_alias_from_a_subpackage_is_read_or_named(tmp_path)
     scan = pair_scan.scan_pairs(package, package="z")
     named_s3 = [f for f in scan.findings if f.startswith("src/z/sub/s3.py:") and "pair_side" in f]
     assert {"k2", "k4"} <= set(scan.pairs) and "k3" not in scan.pairs and named_s3, (sorted(scan.pairs), scan.findings)
+
+
+# Chunk 3a.2: the triage log's departure-pointer resolution against the divergence ledger.
+
+_POINTER_LOG = (
+    'rule = "triage-log:1"\n'
+    "halt_condition = \"work on a failing equivalence test stops and goes to the developer when the failure's"
+    ' finding is undecided, or when the test cannot pass against correctly written new code"\n\n'
+    "[[row]]\n"
+    'test = "equivalence:_d.py:1-9"\nfinding = 3\nartifact = "the new code"\n'
+    'commit = "0123456789abcdef0123456789abcdef01234567"\n'
+    'departure = { unit = "_d.py:1-9", site = 4 }\nruled_outcome = "the legacy value is wrong"\n'
+)
+_LEDGER_HEAD = 'rule = "divergence-ledger:1"\nstatement = "a statement"\n'
+_ENTRY_TAIL = 'kind = "finding-3"\ngrounds = { triage = "t" }\nnew_code = "n"\nwhy = "w"\njudged_correct_when = "j"\n'
+
+
+@pytest.mark.parametrize(
+    "malformed",
+    [
+        '[[departure]]\nunit = ["_x.py:1-2"]\nsite = 1\n' + _ENTRY_TAIL,
+        '[[departure]]\nunit = "_x.py:1-2"\nsite = { line = 1 }\n' + _ENTRY_TAIL,
+        '[[pair]]\nid = "q"\ndiverges = false\ndeparture = { unit = ["_y.py:1-2"], site = 3 }\n',
+    ],
+    ids=["departure-unit-array", "departure-site-table", "pair-departure-unit-array"],
+)
+def test_a_malformed_ledger_entry_does_not_stop_the_triage_log_from_reporting(tmp_path, malformed):
+    """Property: a ledger entry whose unit or site is not a scalar leaves the triage log's `load` reporting, not raising.
+
+    Class: every divergence-ledger entry, departure or pair, whose `unit` or `site` (a pair's
+    through its `departure`) is a TOML array or table rather than a string or an integer, which
+    `validate` names as a form defect, beside a log carrying a well-formed pointer that no entry
+    resolves. Why: the ledger is written by hand, `load(root)` promises every finding of the log's
+    header and rows, and the script prints a summary line and exits 1 on a finding; a resolution
+    that hashes each entry's `(unit, site)` raises `TypeError: unhashable type` on such an entry,
+    so the run ends in a traceback and the pointer this log does carry is never named. Killed by:
+    resolving only entries whose unit is a string and whose site is an integer, as the ledger's
+    own pointer form requires, so a malformed entry resolves nothing and the log's pointer is
+    named as resolving to no entry. Second correct implementation: catching the malformed entry
+    and reporting it as its own triage finding, which still names the dangling pointer.
+    """
+    from tests.correspondence import triage_log
+
+    log = tmp_path / triage_log.LOG_PATH
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log.write_text(_POINTER_LOG, encoding="utf-8")
+    ledger = tmp_path / triage_log.LEDGER_PATH
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    ledger.write_text(_LEDGER_HEAD + "\n" + malformed, encoding="utf-8")
+    _rows, findings = triage_log.load(tmp_path)
+    assert any("row 1" in f and "_d.py:1-9" in f for f in findings), findings

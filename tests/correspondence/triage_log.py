@@ -15,10 +15,17 @@ failing test must stop and hand it to the developer.
 
 Run as a script it prints one summary line and exits 0, or 1 on any finding.
 
-Not established: that a departure pointer names an entry that exists. No divergence ledger exists
-in this tree to resolve it against, so the summary line says so unconditionally; this module
-cannot see a ledger added later, and the line becomes false at that moment unless it is changed
-in the same change. Nor is a row's test checked against the tests that exist: only its form is.
+Each well-formed departure pointer is also followed into the divergence ledger
+(`src/multidriver_swg/divergence_ledger.toml`, read under the same root as the log): it resolves
+when a departure entry carries that unit and site, or when a pair entry carries it as the
+departure it replaced, which is what a fourth finding's departure entry becomes once its pair is
+registered. A pointer that resolves to neither is a finding, and the summary line states how many
+pointers resolved of how many there are. The ledger is read only when the log carries a pointer
+to resolve, so a log with none needs no ledger beside it.
+
+Not established: that the entry a pointer resolves to describes the same departure as the row —
+only that one exists at that unit and site. Nor is a row's test checked against the tests that
+exist: only its form is.
 """
 
 from __future__ import annotations
@@ -28,10 +35,11 @@ import sys
 import tomllib
 from pathlib import Path
 
-from tests.correspondence import ledger
+from tests.correspondence import divergence_ledger_load, ledger
 
 REPO_ROOT = ledger.REPO_ROOT
 LOG_PATH = Path("tests") / "correspondence" / "triage_log.toml"
+LEDGER_PATH = Path("src") / "multidriver_swg" / "divergence_ledger.toml"
 RULE = "triage-log:1"
 HALT_CONDITION = (
     "work on a failing equivalence test stops and goes to the developer when the failure's finding"
@@ -42,7 +50,6 @@ ROW_KEYS = ("test", "finding", "artifact", "commit", "departure", "ruled_outcome
 FINDINGS = (1, 2, 3, 4)
 POINTING_FINDINGS = (3, 4)
 STATES = ("fork ruled, method not built", "pair registered")
-DEPARTURE_RESOLUTION = "not measured: no divergence ledger in this tree"
 FAMILY_RE = re.compile(r"[A-Za-z_]\w*")
 PART_RE = re.compile(r"[^\s:]+")
 COMMIT_RE = re.compile(r"[0-9a-fA-F]{40}")
@@ -59,7 +66,63 @@ def load(root: Path = REPO_ROOT) -> tuple[list[dict], list[str]]:
     rows = log.get("row", [])
     for index, row in enumerate(rows, 1):
         findings.extend(_row_findings(f"row {index}", row))
-    return rows, findings
+    return rows, findings + _resolution(root, rows)[2]
+
+
+def _pointers(rows: list[dict]) -> list[tuple[str, str, int]]:
+    """Each well-formed departure pointer of a third or fourth finding, as `(row label, unit, site)`.
+
+    A malformed pointer is already named by the form check, and following it would only name it
+    a second time, so it is not resolved.
+    """
+    found = []
+    for index, row in enumerate(rows, 1):
+        label = f"row {index}"
+        if (
+            _valid_finding(row.get("finding"))
+            and row["finding"] in POINTING_FINDINGS
+            and "departure" in row
+            and not _departure_form_findings(label, row)
+        ):
+            found.append((label, row["departure"]["unit"], row["departure"]["site"]))
+    return found
+
+
+def _target(entry: dict) -> tuple[str, int] | None:
+    """An entry's `(unit, site)` when the unit is a string and the site an integer, else `None`."""
+    unit, site = entry.get("unit"), entry.get("site")
+    if isinstance(unit, str) and isinstance(site, int) and not isinstance(site, bool):
+        return unit, site
+    return None
+
+
+def _resolution(root: Path, rows: list[dict]) -> tuple[int, int, list[str]]:
+    """How many well-formed pointers resolve in the divergence ledger under `root`, of how many, and each that does not."""
+    pointers = _pointers(rows)
+    if not pointers:
+        return 0, 0, []
+    path = root / LEDGER_PATH
+    if not path.is_file():
+        return 0, len(pointers), [f"departure pointers: no divergence ledger at {LEDGER_PATH.as_posix()}"]
+    divergence = divergence_ledger_load.reader().load(path)
+    # Only an entry whose unit is a string and whose site is an integer can be a target. The
+    # ledger is written by hand, and an array or table there is a form defect the ledger's own
+    # `validate` names; hashing it here would raise `TypeError: unhashable type` and end the
+    # run in a traceback instead of reporting. A skipped entry resolves nothing, so a pointer
+    # that needed it is still named below.
+    targets = {_target(e) for e in divergence.departures if isinstance(e, dict)}
+    targets |= {
+        _target(e["departure"])
+        for e in divergence.pairs
+        if isinstance(e, dict) and isinstance(e.get("departure"), dict)
+    }
+    targets.discard(None)
+    findings = [
+        f"{label}: departure {{ unit = {unit}, site = {site} }} names no departure entry and no pair entry in the divergence ledger"
+        for label, unit, site in pointers
+        if (unit, site) not in targets
+    ]
+    return len(pointers) - len(findings), len(pointers), findings
 
 
 def _top_level_key_findings(log: dict) -> list[str]:
@@ -198,12 +261,13 @@ def _state_findings(label: str, row: dict) -> list[str]:
 
 
 def main(root: Path = REPO_ROOT) -> int:
-    """Print the row count, the halt condition and the pointers' state; return 0 with no finding, 1 otherwise."""
+    """Print the row count, the halt condition and how many pointers resolve; return 0 with no finding, 1 otherwise."""
     rows, findings = load(root)
     log = tomllib.loads((root / LOG_PATH).read_text(encoding="utf-8"))
+    resolved, total, _ = _resolution(root, rows)
     print(
         f"triage log: {len(rows)} rows; halt condition: {log.get('halt_condition')}; "
-        f"departure pointers: {DEPARTURE_RESOLUTION}"
+        f"departure pointers: {resolved} resolved of {total}"
     )
     for finding in findings:
         print(f"  {finding}", file=sys.stderr)
