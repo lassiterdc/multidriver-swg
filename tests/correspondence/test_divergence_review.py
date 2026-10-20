@@ -184,3 +184,56 @@ def test_a_malformed_ledger_entry_does_not_stop_the_triage_log_from_reporting(tm
     ledger.write_text(_LEDGER_HEAD + "\n" + malformed, encoding="utf-8")
     _rows, findings = triage_log.load(tmp_path)
     assert any("row 1" in f and "_d.py:1-9" in f for f in findings), findings
+
+
+# Chunk 3a.3: the detector's view of the registration modules.
+
+_UNREAD_REGISTRATIONS = {
+    "under-if": (
+        "from tests.correspondence.binding import registers\n\n"
+        'if True:\n\n    @registers(unit="_w.py:1-2")\n    def reg(x):\n        return x\n'
+    ),
+    "applied-by-hand": (
+        "from tests.correspondence.binding import registers\n\n\n"
+        'def reg(x):\n    return x\n\n\nregisters(unit="_w.py:1-2")(reg)\n'
+    ),
+    "non-literal-unit": (
+        "from tests.correspondence.binding import registers\n\n"
+        'UNIT = "_w.py:1-2"\n\n\n@registers(unit=UNIT)\ndef reg(x):\n    return x\n'
+    ),
+}
+
+
+@pytest.mark.parametrize("form", sorted(_UNREAD_REGISTRATIONS))
+def test_a_registration_the_reader_cannot_read_is_not_passed_over_by_the_detector(tmp_path, form):
+    """Property: a registration module the static reader names as unreadable makes the detector report, not stay silent.
+
+    Class: every registration module under `tests/registrations/` holding a `registers(...)` call
+    that `registration_read.registered_units` returns as a FINDING rather than as a unit — one
+    under a module-level `if`, one applied by hand, one naming its unit by a non-literal — beside a
+    departure entry for that unit that records no fingerprint. Why: each of these registers the
+    unit when the module is imported, so the harness binds new code to it, while D2 decides
+    "registered" from the reader's unit list alone; the reader exists to keep that list "either
+    complete or visibly incomplete", and a detector that discards the reader's findings turns the
+    visible gap into a silent one, so the departure entry that should carry a fingerprint passes
+    with no finding at all. Killed by: reporting each registration-reader finding beside the
+    scan's structural findings, naming its module. Second correct implementation: treating a
+    departure entry whose unit appears in no reader list but whose registration module carries a
+    reader finding as a D2 finding naming that module.
+    """
+    from tests.correspondence import divergence
+
+    package = tmp_path / "src" / "multidriver_swg"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("", encoding="utf-8")
+    (package / "divergence_ledger.toml").write_text(
+        'rule = "divergence-ledger:1"\nstatement = "s"\n\n[[departure]]\nunit = "_w.py:1-2"\nsite = 1\n'
+        'kind = "finding-3"\ngrounds = { triage = "equivalence:_w.py:1-2" }\nnew_code = "n"\n'
+        'why = "w"\njudged_correct_when = "j"\n',
+        encoding="utf-8",
+    )
+    registrations = tmp_path / "tests" / "registrations"
+    registrations.mkdir(parents=True)
+    (registrations / "x.py").write_text(_UNREAD_REGISTRATIONS[form], encoding="utf-8")
+    findings = divergence.detect(tmp_path).findings
+    assert any("x.py" in f for f in findings), findings
