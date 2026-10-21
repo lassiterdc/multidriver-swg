@@ -1,14 +1,15 @@
 """Tests of the port-state declaration: the ported rule, the unproven and dispositioned counts, the not-measured state, and the real tree's line.
 
-The synthetic cases copy the corpus record, the tracked legacy corpus and the ledger into a git
-repository inside `tmp_path` (staged, never committed), then add a synthetic test file whose
+The synthetic cases copy the corpus record, the tracked legacy corpus, the ledger and the system-scope
+file into a git repository inside `tmp_path` (staged, never committed), then add a synthetic test file whose
 equivalence tests bear the key of the first retained unit, a proof-record file, and, where the
 case needs one, a synthetic run record in the form the recorder writes. Each synthetic case reads
 the declaration's counts rather than its printed line, so a change to how the line is rendered
-reds only the real-tree test.
+reds only the two line tests.
 """
 
 import json
+import re
 import shutil
 import subprocess
 import tomllib
@@ -16,17 +17,20 @@ from pathlib import Path
 
 import pytest
 
-from tests.correspondence import corpus_record, extent, ledger, port_state, proofs
+from tests.correspondence import corpus_record, extent, ledger, port_state, proofs, system_scope
 
 pytestmark = pytest.mark.state_check
 
 SYSTEM = "pre-refactor-correspondence"
 PROOFS_HEADER = 'rule = "proof-record:1"\nstatement = "synthetic"\n'
-LINE = (
-    "port state: files 18 in the corpus manifest, 0 the parser cannot read; units 188 enumerated, "
-    "31 dispositioned, 0 ported (50 more units in 4 ceded-file scope-out records); tests 0 unproven of "
-    "0 equivalence tests; a unit is ported once it has one or more equivalence tests and each of them "
+RULE_TEXT = (
+    "a unit is ported once it has one or more equivalence tests and each of them "
     "passed in the given run against new code its system registered"
+)
+ZERO_LINE = (
+    "port state: files 18 in the corpus manifest, 0 the parser cannot read; units 188 enumerated, "
+    "0 dispositioned, 0 ported (50 more units in 4 ceded-file scope-out records); tests 0 unproven of "
+    f"0 equivalence tests; {RULE_TEXT}"
 )
 
 
@@ -41,6 +45,9 @@ def _tree(tmp_path: Path, parts: list[str], proof_parts: list[str] = ()) -> tupl
     ).stdout.decode("utf-8")
     paths = [p for p in listed.split("\0") if p] + [corpus_record.RECORD_NAME]
     paths += [str(p.relative_to(root)) for p in (root / ledger.LEDGER_DIR).glob("*.toml")]
+    # The ledger's check reads a scope-in row's scope from this file, so a copied ledger holding such a
+    # row raises FileNotFoundError without it.
+    paths.append(str(system_scope.SCOPE_PATH))
     for rel in paths:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / rel, tmp_path / rel)
@@ -183,15 +190,93 @@ def test_the_dispositioned_count_counts_units_not_ledger_rows(tmp_path):
     assert port_state.declaration(root)["dispositioned"] == len(rows) - 1
 
 
-def test_the_declaration_line_on_the_real_tree(capsys):
-    """Property: the command prints the real tree's declaration line exactly and exits 0.
+def test_the_declaration_line_states_its_zero_state_on_a_synthetic_tree(tmp_path, capsys):
+    """Property: on a tree with no ledger row, equivalence test, proof row or run record, the command prints the zero-state line exactly and exits 0.
 
-    Class: the real tree at landing, where no equivalence test, proof row or run record exists.
-    Why: every count must be printed with its unit and beside the ported rule, so a reader of a zero
-    knows what was counted; this line changes when the first equivalence test or ledger row is
-    added, and the change that adds it updates this test. Killed by: leaving the unit counts out of
-    the line. Second correct implementation: building the line from a list of labelled fields joined by
-    separators rather than from one format string.
+    Class: a synthetic tree copied from the real one with every per-script ledger file emptied of
+    rows, so its line does not move when the crawl adds rows to the real ledger. Why: every count must
+    be printed with its unit and beside the ported rule, so a reader of a zero knows what was counted.
+    Killed by: leaving the unit counts out of the line. Second correct implementation: building the
+    line from a list of labelled fields joined by separators rather than from one format string.
     """
+    root, _key = _tree(tmp_path / "tree", [])
+    for path in (root / ledger.LEDGER_DIR).glob("*.toml"):
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        if "legacy_file" in data and "row" in data:
+            path.write_text(f"legacy_file = {json.dumps(data['legacy_file'])}\n", encoding="utf-8")
+    assert port_state.main([], root=root) == 0
+    assert capsys.readouterr().out == ZERO_LINE + "\n"
+
+
+# An equivalence decorator at the start of a line; a decorator quoted inside a string, as the synthetic
+# test files above are written, does not begin its line and is not counted.
+EQUIVALENCE_DECORATOR = re.compile(r"^\s*@pytest\.mark\.equivalence\((?P<args>[^)]*)\)", re.MULTILINE)
+KEYWORD = re.compile(r'(?P<name>unit|part)\s*=\s*"(?P<value>[^"]*)"')
+
+
+def _listed_test_files(root: Path) -> list[Path]:
+    """The test files under `tests/` that git lists, tracked or untracked and not ignored.
+
+    Deliberately NOT the plain `git ls-files`, which omits a file written and not yet staged, so it
+    would read a test the command already counts as absent.
+    """
+    listed = subprocess.run(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "tests"],
+        cwd=root,
+        capture_output=True,
+        check=True,
+    ).stdout.decode("utf-8")
+    names = [p for p in listed.split("\0") if p]
+    return [root / p for p in names if re.search(r"(^|/)(test_[^/]*|[^/]*_test)\.py$", p) and (root / p).is_file()]
+
+
+def _independent_counts(root: Path) -> dict:
+    """The line's changing counts, read from the tree's bytes without the module under test, the ledger reader or the inventory.
+
+    Dispositioned is the number of distinct `[[row]]` keys in the per-script ledger files; it equals
+    the declaration's count while every row names an enumerated unit, which the ledger's check 1
+    enforces. Not established: that a row's key names an enumerated unit, which this count does not
+    test. The equivalence tests are the decorators that begin a line in the listed test files, and a
+    test is unproven when no `[[proof]]` row of the proof records names its unit and part.
+    """
+    keys = set()
+    for path in (root / ledger.LEDGER_DIR).glob("*.toml"):
+        keys |= {row["key"] for row in tomllib.loads(path.read_text(encoding="utf-8")).get("row", [])}
+    tests = []
+    for path in _listed_test_files(root):
+        for match in EQUIVALENCE_DECORATOR.finditer(path.read_text(encoding="utf-8")):
+            values = {m["name"]: m["value"] for m in KEYWORD.finditer(match["args"])}
+            tests.append((values.get("unit"), values.get("part")))
+    records = tomllib.loads((root / proofs.RECORDS).read_text(encoding="utf-8")).get("proof", [])
+    proven = {(row.get("unit"), row.get("part")) for row in records if row.get("family") == "equivalence"}
+    return {
+        "dispositioned": len(keys),
+        "ported": "not measured" if tests else 0,
+        "unproven": sum(1 for test in tests if test not in proven),
+        "equivalence_tests": len(tests),
+    }
+
+
+def test_the_declaration_line_on_the_real_tree(capsys):
+    """Property: the command prints the real tree's line, whose changing counts equal counts taken independently of it, and exits 0.
+
+    Class: the real tree at any point of the crawl, read with no run record — any number of ledger
+    rows, reminder files and, later, equivalence tests and proof rows. Why: this line is the reader's
+    measure of the port's progress, so a count that drifts from the tree's bytes misleads every reader;
+    and an expectation recomputed by the module under test would move with any defect in it. Killed by:
+    a ledger reader that drops the rows of one per-script ledger file, which lowers the printed
+    dispositioned count below the rows the files hold. Second correct implementation: counting the
+    dispositioned units through the enumerated keys rather than the distinct row keys, which agree
+    while every row names an enumerated unit. Not established: the file walk of the inventory, which
+    this test can catch only once an equivalence test exists; on a tree holding none, a walk that
+    skips a directory changes no count this line prints.
+    """
+    counts = _independent_counts(corpus_record.REPO_ROOT)
+    expected = (
+        "port state: files 18 in the corpus manifest, 0 the parser cannot read; units 188 enumerated, "
+        f"{counts['dispositioned']} dispositioned, {counts['ported']} ported "
+        "(50 more units in 4 ceded-file scope-out records); "
+        f"tests {counts['unproven']} unproven of {counts['equivalence_tests']} equivalence tests; {RULE_TEXT}"
+    )
     assert port_state.main([]) == 0
-    assert capsys.readouterr().out == LINE + "\n"
+    assert capsys.readouterr().out == expected + "\n"
