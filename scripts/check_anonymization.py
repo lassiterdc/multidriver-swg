@@ -134,6 +134,92 @@ def load_carrier(blocklist_path: Path) -> list[str]:
     return tokens
 
 
+# Environment variables that point git at a repository directly. They are dropped
+# for the main-checkout lookup because git exports GIT_DIR to every hook it runs in
+# a linked worktree, naming that worktree's own git directory; with it inherited,
+# `--show-prefix` prints an empty line, the carrier is looked for at the top of the
+# main checkout instead of in its scripts/, and the guard exits 2 on every hook
+# commit from a worktree. Dropping them also stops a variable naming another repository from
+# answering in place of the one the blocklist's directory belongs to.
+_GIT_LOCATION_VARS = ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR")
+
+
+def main_checkout_anchor(blocklist_path: Path) -> Path | None:
+    """The blocklist's path at the same repository-relative place in the main checkout.
+
+    The carrier and ledger are gitignored files that exist in ONE checkout (on a
+    developer machine, links a per-machine setup step creates there), so every
+    other worktree of the same repository has neither, and the guard would fail
+    closed there even on a machine that holds them. Every worktree shares one git common directory, whose parent is the
+    main checkout, so the main checkout's copy of the blocklist's directory is
+    the one place the same links can be found.
+
+    The lookup is anchored on the blocklist's own directory, which lies inside
+    the repository being scanned. Deliberately NOT the current working
+    directory: a lookup from there answers for whichever repository the caller
+    stands in, so a scan of an unrelated repository would read this machine's
+    carrier and stop failing closed.
+
+    Returns None when the directory does not exist or is not inside a git
+    repository, or git is unavailable or reports anything unexpected; the
+    caller then keeps the original anchor and fails closed as before.
+    """
+    env = {k: v for k, v in os.environ.items() if k not in _GIT_LOCATION_VARS}
+    try:
+        proc = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(blocklist_path.parent),
+                "rev-parse",
+                "--path-format=absolute",
+                "--git-common-dir",
+                "--show-prefix",
+            ],
+            capture_output=True,
+            check=False,
+            env=env,
+        )
+    except OSError:  # git is not on PATH
+        return None
+    if proc.returncode != 0:
+        return None
+    lines = proc.stdout.decode("utf-8", "replace").splitlines()
+    if len(lines) != 2:
+        return None
+    common_dir, prefix = lines
+    return Path(common_dir).parent / prefix / blocklist_path.name
+
+
+def resolve_default_anchor(blocklist_path: Path) -> Path:
+    """The anchor whose directory holds the carrier: this checkout's, else the main checkout's.
+
+    The carrier and the ledger are always read from ONE directory, the first of
+    the two in which the carrier FILE exists. Deliberately NOT a per-file
+    fallback: a ledger read from the main checkout beside a carrier read from
+    this one would key every acceptance on another file's token order, so an
+    acceptance recorded for one token could silence a different token on the
+    same line.
+
+    Absence is the only trigger. A carrier that exists but defines no tokens is
+    a broken carrier, not a missing one, and falling back past it would let the
+    main checkout's copy hide the breakage, so it keeps this anchor and
+    `load_carrier` refuses it with exit 2. When neither directory holds a carrier
+    the original anchor is returned, and the scan fails closed exactly as it did
+    before this lookup existed.
+
+    Applied only to the default anchor. An explicit `--blocklist` names the
+    directory the caller wants read, and silently reading another one instead
+    would make that option untrustworthy.
+    """
+    if (blocklist_path.parent / LOCAL_SUPPLEMENT).exists():
+        return blocklist_path
+    fallback = main_checkout_anchor(blocklist_path)
+    if fallback is not None and (fallback.parent / LOCAL_SUPPLEMENT).exists():
+        return fallback
+    return blocklist_path
+
+
 def compile_patterns(tokens: list[str]) -> list[tuple[str, re.Pattern[str]]]:
     """(token, whole-word case-insensitive literal pattern) per token."""
     return [(t, re.compile(r"\b" + re.escape(t) + r"\b", re.IGNORECASE)) for t in tokens]
@@ -290,7 +376,10 @@ def main(argv: list[str] | None = None) -> int:
         "--blocklist",
         type=Path,
         default=None,
-        help="directory anchor for the carrier and ledger (default: <root>/scripts/)",
+        help=(
+            "directory anchor for the carrier and ledger (default: <root>/scripts/, "
+            "or the main checkout's scripts/ when this checkout has no carrier)"
+        ),
     )
     parser.add_argument(
         "--list",
@@ -337,7 +426,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.format == "json":
         raise SystemExit("check_anonymization: --format json not yet implemented")
 
-    blocklist = args.blocklist or (args.root / "scripts" / "anonymization_blocklist.txt")
+    # Every read below (carrier, ledger, --require-supplement, --list) goes through
+    # this one anchor, so the fallback cannot reach some of them and miss others.
+    blocklist = args.blocklist or resolve_default_anchor(args.root / "scripts" / "anonymization_blocklist.txt")
 
     if count_only_in_force(args.count_only):
         return _count_only_main(args, blocklist)

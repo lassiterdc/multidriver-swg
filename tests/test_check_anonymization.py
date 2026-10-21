@@ -337,3 +337,188 @@ def test_count_only_refuses_list_and_reveal(tmp_path: Path, capsys, extra) -> No
     text = "\n".join(_lines(capsys.readouterr()))
     assert rc == 2
     assert "zzsynthacct" not in text
+
+
+# --- the main-checkout fallback for a linked worktree -------------------------
+#
+# The carrier and ledger are gitignored links that exist in ONE checkout of a
+# repository. A linked worktree of the same repository has neither, so these tests
+# build that layout in tmp_path: a main checkout holding the carrier (and, where a
+# test needs it, a ledger) and a worktree added from it with `git worktree add`.
+
+
+def _git(cwd: Path, *args: str) -> None:
+    """Run git with a throwaway identity, so a commit works on a machine with none configured."""
+    subprocess.run(
+        ["git", "-c", "user.name=guard-test", "-c", "user.email=guard-test@example.invalid", *args],
+        cwd=cwd,
+        check=True,
+        capture_output=True,
+    )
+
+
+def _main_and_worktree(tmp_path: Path, files: dict[str, str]) -> tuple[Path, Path]:
+    """A committed main checkout holding the carrier, and a linked worktree holding no carrier and no ledger."""
+    main = tmp_path / "main"
+    main.mkdir(parents=True)
+    # The tracked policy file keeps scripts/ in the commit, as in the real repository;
+    # a directory holding only ignored files would not exist in the worktree at all.
+    _init_repo(main, {"scripts/anonymization_blocklist.txt": "# policy only\n", **files})
+    with (main / ".gitignore").open("a", encoding="utf-8") as handle:
+        handle.write("/scripts/anonymization_ledger.local.txt\n")
+    _git(main, "add", "-A")
+    _git(main, "commit", "-q", "--no-verify", "-m", "init")
+    worktree = tmp_path / "worktree"
+    _git(main, "worktree", "add", "-q", str(worktree))
+    assert not (worktree / "scripts" / guard.LOCAL_SUPPLEMENT).exists()
+    return main, worktree
+
+
+def _accept_leak(checkout: Path) -> None:
+    """Write a ledger in this checkout accepting the one line `src/leak.py` holds, for the carrier's first token."""
+    fp = guard.line_fingerprint("acct = 'zzsynthacct'")
+    (checkout / "scripts" / guard.LOCAL_LEDGER).write_text(f"{fp}  src/leak.py  1\n", encoding="utf-8")
+
+
+def _exit_status(argv: list[str]) -> int:
+    """The guard's exit status, whether main() returns it or raises it (a detail-mode carrier refusal raises)."""
+    try:
+        return guard.main(argv)
+    except SystemExit as exc:
+        assert isinstance(exc.code, int)
+        return exc.code
+
+
+_LEAK = {"src/leak.py": "acct = 'zzsynthacct'\n"}
+
+
+def test_a_worktree_without_a_carrier_reads_the_main_checkouts(tmp_path: Path, capsys) -> None:
+    """A worktree with no carrier of its own scans with the main checkout's carrier.
+
+    Class: any linked worktree of a repository whose main checkout holds the
+    carrier and whose own scripts directory holds none -- the position of a Build
+    worktree and of a landing's throwaway checkout. Required because without it
+    the guard exits 2 there on a machine that has the carrier, so a commit from
+    any worktree has to skip the hook. The tree carries a planted token so that
+    the verdict proves the tokens were LOADED: exit 1 naming the file, where a
+    guard that found no carrier exits 2 and one that loaded no tokens finds
+    nothing. Killed by removing the fallback (exit 2). A second correct
+    implementation that finds the main checkout from `git worktree list` rather
+    than from the common directory still passes.
+    """
+    _main, worktree = _main_and_worktree(tmp_path, _LEAK)
+    rc = guard.main(["--root", str(worktree)])
+    err = capsys.readouterr().err
+    assert rc == 1
+    assert "src/leak.py" in err
+    assert "zzsynthacct" not in err
+
+
+def test_a_clean_worktree_without_a_carrier_passes_on_the_main_checkouts(tmp_path: Path) -> None:
+    """A clean worktree with no carrier of its own exits 0 through the main checkout's carrier.
+
+    Class: the same layout as the test above with no planted token, which is the
+    everyday commit from a worktree. Required because that commit must pass the
+    hook unskipped. Killed by removing the fallback (exit 2). A second correct
+    implementation that resolves the main checkout through `git worktree list`
+    still passes.
+    """
+    _main, worktree = _main_and_worktree(tmp_path, {"src/ok.py": "x = 1\n"})
+    assert guard.main(["--root", str(worktree)]) == 0
+
+
+def test_no_carrier_in_either_checkout_still_fails_closed(tmp_path: Path, capsys) -> None:
+    """With no carrier in the worktree or the main checkout, the guard exits 2.
+
+    Class: a machine that never linked the carrier, scanned from a worktree.
+    Required because the fallback must not turn "no ground truth anywhere" into a
+    green scan. Killed by a fallback that treats an unreachable carrier as an empty
+    token list (exit 0). A second correct implementation that checks the main
+    checkout before this one when this one lacks the file still passes.
+    """
+    main, worktree = _main_and_worktree(tmp_path, _LEAK)
+    (main / "scripts" / guard.LOCAL_SUPPLEMENT).unlink()
+    rc = _exit_status(["--root", str(worktree)])
+    assert rc == 2
+    assert "no carrier is reachable" in capsys.readouterr().err
+
+
+def test_a_worktree_with_its_own_carrier_reads_no_ledger_from_the_main_checkout(tmp_path: Path) -> None:
+    """A worktree holding its own carrier and no ledger does not borrow the main checkout's ledger.
+
+    Class: a worktree whose carrier exists and whose ledger does not, while the main
+    checkout's ledger accepts the very line the worktree's tree carries. Required
+    because a ledger row is keyed on a carrier ORDINAL, so a ledger read beside
+    another checkout's carrier can accept a different token than the one it was
+    recorded for; both must come from one directory. The control scan of the main
+    checkout shows the ledger does accept that line there, so the red in the
+    worktree is the ledger's absence and not a ledger that accepts nothing. Killed
+    by falling back for the ledger independently of the carrier (exit 0). A second
+    correct implementation that resolves the directory once and passes it down
+    explicitly, rather than rewriting the anchor path, still passes.
+    """
+    main, worktree = _main_and_worktree(tmp_path, _LEAK)
+    _accept_leak(main)
+    (worktree / "scripts" / guard.LOCAL_SUPPLEMENT).write_text(
+        "zzsynthacct\nzz-synthetic-estate-repo\n", encoding="utf-8"
+    )
+    assert guard.main(["--root", str(main)]) == 0
+    assert guard.main(["--root", str(worktree)]) == 1
+
+
+def test_a_present_empty_carrier_does_not_fall_back(tmp_path: Path, capsys) -> None:
+    """A carrier that exists in the worktree but defines no tokens exits 2 and is not replaced.
+
+    Class: a worktree carrier reduced to comments or blank lines while the main
+    checkout's carrier is intact. Required because only ABSENCE triggers the
+    fallback: a broken carrier silently replaced by another checkout's copy would
+    hide the breakage. Killed by a fallback keyed on the token count rather than
+    on the file's existence (exit 1, the main carrier's finding). A second correct
+    implementation that tests `is_file()` rather than `exists()` still passes.
+    """
+    _main, worktree = _main_and_worktree(tmp_path, _LEAK)
+    (worktree / "scripts" / guard.LOCAL_SUPPLEMENT).write_text("# nothing listed\n\n", encoding="utf-8")
+    rc = _exit_status(["--root", str(worktree)])
+    assert rc == 2
+    assert "no carrier is reachable" in capsys.readouterr().err
+
+
+def test_an_explicit_blocklist_anchor_does_not_fall_back(tmp_path: Path) -> None:
+    """An explicit `--blocklist` whose directory holds no carrier exits 2, whatever the main checkout holds.
+
+    Class: a caller naming the anchor directory itself, in a worktree whose main
+    checkout has the carrier. Required because an option that names a directory
+    must read that directory; reading another one instead would make the option
+    untrustworthy. Killed by applying the fallback to an explicit anchor too
+    (exit 1, the main carrier's finding). A second correct implementation that
+    decides "explicit" from whether the option was given rather than from its
+    value still passes.
+    """
+    _main, worktree = _main_and_worktree(tmp_path, _LEAK)
+    anchor = worktree / "scripts" / "anonymization_blocklist.txt"
+    assert _exit_status(["--root", str(worktree), "--blocklist", str(anchor)]) == 2
+
+
+def test_the_fallback_is_anchored_on_the_scanned_repository_not_the_working_directory(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Standing in a worktree whose main checkout has a carrier, a scan of ANOTHER repository with none exits 2.
+
+    Class: any run whose working directory is a checkout of one repository while
+    `--root` names a different repository -- which is what this test module does
+    whenever it is run from a worktree, since every test scans a tmp_path
+    repository. Required because a lookup from the working directory answers for
+    the repository the caller stands in, so the other repository would be scanned
+    with this machine's carrier and would stop failing closed. Killed by finding
+    the main checkout from the working directory (`git rev-parse --git-common-dir`
+    with no `-C`, joined with `scripts/`), which exits 0 here. A second correct
+    implementation that anchors on `--root` instead of on the blocklist's
+    directory still passes.
+    """
+    _main, worktree = _main_and_worktree(tmp_path / "carrying", {"src/ok.py": "x = 1\n"})
+    other = tmp_path / "other"
+    other.mkdir()
+    _init_repo(other, {"src/ok.py": "x = 1\n"})
+    (other / "scripts" / guard.LOCAL_SUPPLEMENT).unlink()
+    monkeypatch.chdir(worktree)
+    assert _exit_status(["--root", str(other)]) == 2
