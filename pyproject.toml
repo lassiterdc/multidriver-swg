@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multidriver-swg"
-version = "0.1.0"
+version = "0.2.0.dev0"
 description = "Stochastic weather generator producing multi-driver flood forcing (rainfall + storm surge + tidal phase) by resampling and rescaling historic events to match randomly generated event statistics"
 authors = [
     {name = "Daniel Lassiter", email = "daniel.lassiter@outlook.com"},
@@ -13,9 +13,9 @@ requires-python = ">= 3.11"
 dependencies = ["numpy", "pandas", "xarray"]
 readme = "README.md"
 # NOTE: do NOT add a `License :: ...` trove classifier. With PEP 639
-# `license = "PolyForm-Noncommercial-1.0.0"` + setuptools>=77, a legacy License
+# `license = "AGPL-3.0-or-later"` + setuptools>=77, a legacy License
 # classifier raises setuptools InvalidConfigError at build time (verified in hhemt).
-license = "PolyForm-Noncommercial-1.0.0"
+license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 
 [project.optional-dependencies]

@@ -22,7 +22,8 @@ Full documentation at [ReadTheDocs](https://multidriver-swg.readthedocs.io/).
 
 ## Licence
 
-The toolkit is licensed under the PolyForm Noncommercial License 1.0.0 (`LICENSE`).
+The toolkit is licensed under the GNU Affero General Public License, version 3 or
+any later version (AGPL-3.0-or-later; `LICENSE`).
 That licence does not cover `_old_code_to_refactor/`, which is MIT-licensed
 (`_old_code_to_refactor/LICENSE`) and a byte-identical copy of files of
 `stormy@c74c8a4` (<https://github.com/lassiterdc/stormy>). One block of
