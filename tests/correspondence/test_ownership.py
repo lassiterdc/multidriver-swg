@@ -1,15 +1,18 @@
-"""Tests of checks 4 to 7: one violating case per refusal, the guard helper's use of them, and the real tree at zero.
+"""Tests of checks 4 to 7: one violating case per refusal, the guard helper's use of them, and the summary line.
 
-Fixtures copy the record, the tracked corpus, the ledger and the system-scope file into a git
-repository inside `tmp_path` (staged, never committed), make one discarded ledger row scope-in by
+Fixtures copy the record, the tracked corpus, the ledger, the system-scope file and the real tree's
+family-test files into a git repository inside `tmp_path` (staged, never committed), so the copied
+ledger's real scoped-in rows keep their tests, then make one discarded ledger row scope-in by
 citing a real covers statement, and write synthetic family tests under that tree's `tests/`, which
 the static inventory reads and no outer run collects. Each test asserts on its own check's
 findings only, because one input can earn findings from two checks: a test owned by a system
 outside the file is, for instance, also a test whose owner differs from its row's cited system.
 """
 
+import re
 import shutil
 import subprocess
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -23,10 +26,38 @@ D_TOML = "_d_build_water_level_generator.toml"
 UNIT = "_d_build_water_level_generator.py:1-18"
 DISCARDED = "_d_build_water_level_generator.py:19-27"
 LANDING = "checks 4 to 7: scoped-in rows 0, family tests 0 — nothing to check; findings 0"
+# A family decorator at the start of a line; a decorator quoted inside a string, as the synthetic test
+# files below are written, does not begin its line and is not counted.
+FAMILY_DECORATOR = re.compile(r"^\s*@pytest\.mark\.(equivalence|refactor_reminder)\(", re.MULTILINE)
 
 
-def _fixture(tmp_path: Path) -> Path:
-    """Copy every input the four checks read into a staged git repository at `tmp_path`; return it."""
+def _listed_family_files(root: Path) -> list[str]:
+    """The test files under `tests/` that carry a family decorator, from the git listing rather than the inventory.
+
+    Deliberately NOT the plain `git ls-files`, which omits a file written and not yet staged, such as a
+    reminder written before its ruling is committed.
+    """
+    listed = subprocess.run(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "tests"],
+        cwd=root,
+        capture_output=True,
+        check=True,
+    ).stdout.decode("utf-8")
+    return [
+        p
+        for p in listed.split("\0")
+        if re.search(r"(^|/)(test_[^/]*|[^/]*_test)\.py$", p)
+        and (root / p).is_file()
+        and FAMILY_DECORATOR.search((root / p).read_text(encoding="utf-8"))
+    ]
+
+
+def _fixture(tmp_path: Path, family_tests: bool = True) -> Path:
+    """Copy every input the four checks read into a staged git repository at `tmp_path`; return it.
+
+    The real tree's family-test files are copied too, unless `family_tests` is false, so that every
+    real scoped-in row of the copied ledger keeps the tests that make checks 4 to 7 clean on it.
+    """
     root = corpus_record.REPO_ROOT
     listed = subprocess.run(
         ["git", "ls-files", "-z", "--", "_old_code_to_refactor"], cwd=root, capture_output=True, check=True
@@ -34,6 +65,8 @@ def _fixture(tmp_path: Path) -> Path:
     paths = [p for p in listed.split("\0") if p]
     paths += [corpus_record.RECORD_NAME, str(system_scope.SCOPE_PATH)]
     paths += [str(p.relative_to(root)) for p in (root / ledger.LEDGER_DIR).glob("*.toml")]
+    if family_tests:
+        paths += _listed_family_files(root)
     for rel in paths:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / rel, tmp_path / rel)
@@ -269,16 +302,49 @@ def test_the_guard_helper_runs_the_ownership_checks(tmp_path):
     assert "check_4" in {word.strip(":;") for word in first_line.split()}, first_line
 
 
-def test_at_zero_the_summary_line_states_its_denominators():
-    """Property: on the real tree the four checks find nothing, and the line says how much they looked at.
+def test_at_zero_the_summary_line_states_its_denominators(tmp_path):
+    """Property: on a tree with no scoped-in row and no family test, the four checks find nothing, and the line says how much they looked at.
 
-    Class: the committed ledger and test tree, whose scoped-in rows and family tests are both zero
-    until the first unit is ruled in. Why: a check over nothing passes, so a bare `findings 0` would
-    read as a pass over the ledger; the line states both denominators and says there is nothing to
-    check. Ruling in the first unit, or adding the first family test, changes the line on purpose.
-    Killed by: printing `findings 0` alone. Second correct implementation: a line built from the
-    inventory's and the ledger's own summaries, with the same words.
+    Class: a synthetic tree copied from the real one with every per-script ledger file emptied of rows
+    and no family-test file, so its line does not move when the crawl rules units in. Why: a check over
+    nothing passes, so a bare `findings 0` would read as a pass over the ledger; the line states both
+    denominators and says there is nothing to check. Killed by: printing `findings 0` alone. Second
+    correct implementation: a line built from the inventory's and the ledger's own summaries, with the
+    same words.
     """
-    line, findings = ownership.summary()
+    root = _fixture(tmp_path, family_tests=False)
+    for path in (root / ledger.LEDGER_DIR).glob("*.toml"):
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        if "legacy_file" in data and "row" in data:
+            path.write_text(f'legacy_file = "{data["legacy_file"]}"\n', encoding="utf-8")
+    line, findings = ownership.summary(root)
     assert not findings, "\n".join(findings)
     assert line == LANDING
+
+
+def test_on_the_real_tree_the_summary_line_states_denominators_counted_independently():
+    """Property: on the real tree the four checks find nothing, and the line's denominators equal counts taken independently of it.
+
+    Class: the real tree at any point of the crawl — any number of scoped-in rows and of family tests,
+    tracked or written and not yet staged. Why: the State check job grades the real tree by these
+    checks, so they must find nothing there, and the line's counts are what a reader uses to see how
+    much was checked; an expectation recomputed through the inventory or the ledger reader would move
+    with any defect in either. Killed by: a file walk that skips `tests/reminders/`, which drops every
+    reminder from the family-test count on a tree that holds one. Second correct implementation:
+    counting the scoped-in rows through the enumerated keys rather than straight from the ledger files,
+    which agree while every row names an enumerated unit.
+    """
+    root = corpus_record.REPO_ROOT
+    rows = sum(
+        1
+        for path in (root / ledger.LEDGER_DIR).glob("*.toml")
+        for row in tomllib.loads(path.read_text(encoding="utf-8")).get("row", [])
+        if row.get("disposition") == "scope-in"
+    )
+    tests = sum(
+        len(FAMILY_DECORATOR.findall((root / p).read_text(encoding="utf-8"))) for p in _listed_family_files(root)
+    )
+    nothing = " — nothing to check" if rows == 0 and tests == 0 else ""
+    line, findings = ownership.summary()
+    assert not findings, "\n".join(findings)
+    assert line == f"checks 4 to 7: scoped-in rows {rows}, family tests {tests}{nothing}; findings 0"
