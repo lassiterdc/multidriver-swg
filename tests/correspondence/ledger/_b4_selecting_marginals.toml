@@ -1,1 +1,71 @@
 legacy_file = "_b4_selecting_marginals.py"
+
+[[row]]
+key = "_b4_selecting_marginals.py:1-22"
+disposition = "discard"
+reason = "Imports libraries and helpers and sets two goodness-of-fit cut-offs and a significance level; the new code declares its own imports, the cut-offs are read by units ruled on their own and go with them, and the significance level is read by nothing."
+commented_out_runs = []
+
+[[row]]
+key = "_b4_selecting_marginals.py:23-65"
+disposition = "scope-in"
+reason = "Splits the merged events into surge-only, rain-only and compound events, takes the smallest peak surge and rain depth of each type as the bounds the marginal fitting shifts by, and reads the statistics chosen for each event type."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "_b4_selecting_marginals.py:66-181"
+disposition = "scope-in"
+reason = "Fits each of thirteen candidate distributions to each chosen statistic of each event type, with and without a Box-Cox transform and a location fixed at the minimum, and for the threshold statistics shifted to the threshold or capped at the other driver's threshold, and records every fit's scores and every failed fit."
+commented_out_runs = [
+  { lines = "79-92", treatment = "not ported" },
+  { lines = "135-138", treatment = "not ported" },
+]
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "_b4_selecting_marginals.py:182-188"
+disposition = "scope-in"
+reason = "Draws and saves the four-panel figure of every candidate marginal fit of every chosen statistic whose Cramer-von Mises and Kolmogorov-Smirnov p-values both exceed 0.2, as the views from which candidate fits are short-listed."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b4_selecting_marginals.py:189-208"
+disposition = "scope-in"
+reason = "Re-draws the hand short-listed candidate marginal fits of the surge-only events and checks that every chosen statistic of that event type has at least one, as the views for the final choice of fit."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b4_selecting_marginals.py:209-221"
+disposition = "scope-in"
+reason = "Re-draws the hand short-listed candidate marginal fits of the rain-only events and checks that every chosen statistic of that event type has at least one, as the views for the final choice of fit."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b4_selecting_marginals.py:222-249"
+disposition = "scope-in"
+reason = "Re-draws the hand short-listed candidate marginal fits of the compound events and checks that every chosen statistic of that event type has at least one, as the views for the final choice of fit."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b4_selecting_marginals.py:250-267"
+disposition = "scope-in"
+reason = "Short-lists and re-draws candidate marginal fits for all events taken together, restored from commented-out code written for an older version of the plotting. Its legacy code never ran in this form, so its reminder is replaced by a test of the short-list on known fits rather than by a recomputed legacy value."
+commented_out_runs = [
+  { lines = "254-262", treatment = "ported with the unit" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b4_selecting_marginals.py:268-316"
+disposition = "scope-in"
+reason = "Fits the hand-chosen distribution of each chosen statistic for the surge-only, rain-only and compound events, and for all events together as restored from commented-out code, and writes their fitted parameters and their fitted against observed values, which the simulation reads as the marginal distributions. Its all-events lines are restored from commented-out code, so they have no legacy value in the record and are tested on known fits rather than against a recomputed legacy value."
+commented_out_runs = [
+  { lines = "305-307", treatment = "ported with the unit" },
+  { lines = "309-312", treatment = "ported with the unit" },
+]
+scope = "marginal-distribution-fitting/5549038b"
