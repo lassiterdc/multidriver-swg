@@ -1,1 +1,156 @@
 legacy_file = "_b3_event_analysis.py"
+
+[[row]]
+key = "_b3_event_analysis.py:1-16"
+disposition = "discard"
+reason = "Imports libraries and creates the script's plot folders; the new code declares its own imports and output locations, so the block computes nothing to port."
+commented_out_runs = []
+
+[[row]]
+key = "_b3_event_analysis.py:17-23"
+disposition = "discard"
+reason = "Loads the radar rainfall and the six-minute water levels, neither of which any live code of the script reads."
+commented_out_runs = []
+
+[[row]]
+key = "_b3_event_analysis.py:24-41"
+disposition = "scope-in"
+reason = "Loads the combined surge and rain event summaries and time series for the radar, gridded and gauge rainfall and labels each event compound, surge or rain from whether it passed each threshold."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_b3_event_analysis.py:42-51"
+disposition = "scope-in"
+reason = "Finds the radar rainfall's time step as the most common gap between readings and turns its rain rates into rain depth per step."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b3_event_analysis.py:52-61"
+disposition = "scope-in"
+reason = "Draws the radar rain depth per time step from 2015 on as an illustration of the observed rainfall record."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b3_event_analysis.py:62-97"
+disposition = "scope-in"
+reason = "Draws each radar-paired event's rain depth from 2015 on at its start date as an illustration of the selected events."
+commented_out_runs = [
+  { lines = "68-70", treatment = "not ported" },
+  { lines = "76-79", treatment = "not ported" },
+]
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_b3_event_analysis.py:98-134"
+disposition = "scope-in"
+reason = "Counts the observed compound, surge-only and rain-only events for each rainfall source, over events with no missing value, and saves the counts and the compound share as pie charts."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b3_event_analysis.py:135-220"
+disposition = "scope-in"
+reason = "Merges the radar-paired and gridded-paired event sets by source priority, keeping the radar events and adding a gridded event only where no valid radar data overlaps it, in which case the gridded event replaces the radar time steps it spans, into the one combined event summary and time series every later step reads; the gauge events are not used."
+commented_out_runs = [
+  { lines = "136-138", treatment = "not ported" },
+  { lines = "174-177", treatment = "not ported" },
+  { lines = "181-184", treatment = "not ported" },
+  { lines = "186-189", treatment = "not ported" },
+  { lines = "191-193", treatment = "not ported" },
+  { lines = "195-198", treatment = "not ported" },
+  { lines = "200-205", treatment = "not ported" },
+  { lines = "210-212", treatment = "not ported" },
+]
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b3_event_analysis.py:221-227"
+disposition = "discard"
+reason = "Writes the merged event summaries and time series to CSV and NetCDF files for the later legacy scripts; the new code passes the merged events between its steps by its own means, and their values are those of the merge."
+commented_out_runs = []
+
+[[row]]
+key = "_b3_event_analysis.py:228-261,270-296"
+disposition = "scope-in"
+reason = "Compares the radar rain events with the gauge and gridded rain events by total depth and by highest one- to twenty-four-hour mean intensity, with two-sample Cramer-von Mises and rank-sum tests at the five percent level and saved plots, as the check that the rainfall sources may be pooled."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b3_event_analysis.py:262-269"
+disposition = "discard"
+reason = "Computes shared histogram bin edges for a statistic pooled across several tables; nothing calls it."
+commented_out_runs = []
+
+[[row]]
+key = "_b3_event_analysis.py:297-331"
+disposition = "scope-in"
+reason = "Splits the merged events into surge-only, rain-only and compound events and, for each type, correlates the empirical quantiles of every surge statistic with every rain and timing statistic, as the tables from which the statistics each event type's copula joins are chosen, with the highest four-hour mean rain intensity as the rain intensity statistic."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b3_event_analysis.py:332-394"
+disposition = "scope-in"
+reason = "Records the hand choice of the surge-only events' copula statistics, peak surge, total rain depth, highest four-hour mean rain intensity and the lag from that rain peak to the surge's highest hour, as a table of the chosen pairs and their quantile correlations."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b3_event_analysis.py:395-473"
+disposition = "scope-in"
+reason = "Records the hand choice of the rain-only events' copula statistics, highest sixteen-hour mean surge, peak surge, total rain depth, highest four-hour mean rain intensity and the lag from the rain's heaviest sixteen hours to the surge's highest hour, as a table of the chosen pairs and their quantile correlations."
+commented_out_runs = [
+  { lines = "414-417", treatment = "not ported" },
+  { lines = "428-431", treatment = "not ported" },
+  { lines = "445-447", treatment = "not ported" },
+  { lines = "459-461", treatment = "not ported" },
+  { lines = "463-465", treatment = "not ported" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b3_event_analysis.py:474-543"
+disposition = "scope-in"
+reason = "Records the hand choice of the compound events' copula statistics, peak surge, total rain depth, highest four-hour mean rain intensity and the lag from the rain's heaviest twenty-four hours to the surge's highest sixteen hours, as a table of the chosen pairs and their quantile correlations."
+commented_out_runs = [
+  { lines = "498-500", treatment = "not ported" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b3_event_analysis.py:544-621"
+disposition = "scope-in"
+reason = "Chooses copula statistics for all events taken together from their quantile correlations, restored from commented-out code. Its legacy code never ran, so its reminder is replaced by a test of the selection on a known correlation table rather than by a recomputed legacy value."
+commented_out_runs = [
+  { lines = "545-547", treatment = "ported with the unit" },
+  { lines = "549-557", treatment = "ported with the unit" },
+  { lines = "559-561", treatment = "not ported" },
+  { lines = "563-571", treatment = "not ported" },
+  { lines = "573-583", treatment = "ported with the unit" },
+  { lines = "585-593", treatment = "ported with the unit" },
+  { lines = "595-602", treatment = "not ported" },
+  { lines = "604-612", treatment = "ported with the unit" },
+  { lines = "614-616", treatment = "ported with the unit" },
+  { lines = "618-620", treatment = "ported with the unit" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b3_event_analysis.py:622-657"
+disposition = "scope-in"
+reason = "Plots the quantiles and the values of each chosen statistic pair for the surge-only, rain-only and compound events and writes each type's chosen pairs to the tables from which the marginal fitting takes the statistics to fit."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b3_event_analysis.py:658-668"
+disposition = "scope-in"
+reason = "Plots and saves the choice of statistics for all events taken together, restored from commented-out code. Its legacy code never ran, so its reminder is replaced by a test of the saved table on a known selection rather than by a recomputed legacy value."
+commented_out_runs = [
+  { lines = "659-662", treatment = "ported with the unit" },
+]
+scope = "interactive-decision-support/65c9484d"
