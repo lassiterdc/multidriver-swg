@@ -1,1 +1,117 @@
 legacy_file = "_b2_event_selection.py"
+
+[[row]]
+key = "_b2_event_selection.py:1-24"
+disposition = "discard"
+reason = "Imports libraries, creates output folders and sets the script's own comparison settings; the new code declares its own imports and locations, four of the five settings are read by units ruled on their own and go with them, and the fifth, a histogram bin count, is read by nothing."
+commented_out_runs = []
+
+[[row]]
+key = "_b2_event_selection.py:25-87"
+disposition = "scope-in"
+reason = "Loads the gauge, radar and gridded rainfall and the 6-minute and hourly water levels and brings each to the radar rainfall's five-minute step, counting missing gauge rainfall as zero and averaging water levels when resampling, and saves the resampled 6-minute water levels."
+commented_out_runs = [
+  { lines = "64-68", treatment = "not ported" },
+]
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b2_event_selection.py:88-94"
+disposition = "scope-in"
+reason = "Lists every calendar day between a series' first and last day and marks each as covered when the series has any value on it."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b2_event_selection.py:95-108"
+disposition = "scope-in"
+reason = "Counts the selected events starting in each rolling 365-day window of a source's record, keeping only windows the source covers on every day, to give the observed number of events per year."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b2_event_selection.py:109-153"
+disposition = "scope-in"
+reason = "Runs the rain-event selection on the gauge, radar and gridded rainfall at five candidate thresholds from 40 to 60 mm and keeps each run's events and events per year, as the candidates compared when choosing the rain threshold."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b2_event_selection.py:154-268"
+disposition = "scope-in"
+reason = "Compares the radar rainfall with the gridded and the gauge rainfall at each candidate threshold, by events per year and by each event's depth and peak one-hour intensity, with bootstrap two-sample tests and plots used to choose the rain threshold."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b2_event_selection.py:269-272"
+disposition = "discard"
+reason = "Holds only commented-out code that would have tabulated events per year by candidate threshold; nothing in it runs."
+commented_out_runs = [
+  { lines = "270-272", treatment = "discarded with the unit" },
+]
+
+[[row]]
+key = "_b2_event_selection.py:273-324"
+disposition = "scope-in"
+reason = "Selects the final rain events from the radar, gridded and gauge rainfall at a 55 mm threshold, treating missing rainfall as zero, adds each event's one- to twenty-four-hour mean intensities and writes the event summaries and time series the event analysis reads."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_b2_event_selection.py:325-347"
+disposition = "scope-in"
+reason = "Draws scatter plots of radar against gridded rain rates, hourly and by event total, where their events overlap, as a view a user looks at when deciding whether the two sources may be combined."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b2_event_selection.py:348-385"
+disposition = "scope-in"
+reason = "Plots each rainfall source's final events per year against its yearly rainfall and compares the radar events with the gauge and gridded events on every event statistic with bootstrap two-sample tests, as the check that the sources may be pooled."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b2_event_selection.py:386-392,406-411"
+disposition = "scope-in"
+reason = "Counts each rainfall source's final events per calendar year and tests whether the yearly differences between the radar and the other sources average to zero, as a check that the sources may be pooled."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b2_event_selection.py:393-405"
+disposition = "scope-in"
+reason = "Tests with a one-sample t-test whether a set of yearly event-count differences between rainfall sources averages to zero, returning whether the hypothesis is rejected."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b2_event_selection.py:412-552"
+disposition = "scope-in"
+reason = "Runs the surge-event selection on the hourly and the 6-minute water levels at five candidate thresholds from 3.5 to 2.2 ft and compares the two records' events per year and surge statistics in plots used to choose the surge threshold."
+commented_out_runs = [
+  { lines = "454-467", treatment = "not ported" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b2_event_selection.py:553-568"
+disposition = "scope-in"
+reason = "Selects the final surge events from the six-minute water levels at a 2.5 ft surge threshold and adds each event's one- to twenty-four-hour mean surge statistics."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_b2_event_selection.py:569-587"
+disposition = "scope-in"
+reason = "Computes the final surge events per year and plots their peak-surge histogram and annual event counts against the surge threshold, as the report of the surge-event selection; the two surge-event tables it also writes are read by no later step and are not ported."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_b2_event_selection.py:588-617"
+disposition = "scope-in"
+reason = "Pairs the final surge events with the final rain events of each rainfall source into combined events and writes their summaries and time series, which the event analysis reads."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
