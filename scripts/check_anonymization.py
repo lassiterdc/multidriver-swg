@@ -209,7 +209,7 @@ def resolve_default_anchor(blocklist_path: Path) -> Path:
     before this lookup existed.
 
     Applied only to the default anchor. An explicit `--blocklist` names the
-    directory the caller wants read, and silently reading another one instead
+    blocklist file whose directory the caller wants read, and silently reading another one instead
     would make that option untrustworthy.
     """
     if (blocklist_path.parent / LOCAL_SUPPLEMENT).exists():
@@ -377,8 +377,9 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=None,
         help=(
-            "directory anchor for the carrier and ledger (default: <root>/scripts/, "
-            "or the main checkout's scripts/ when this checkout has no carrier)"
+            "path of the blocklist file; the carrier and ledger are read from its directory "
+            "(default: <root>/scripts/anonymization_blocklist.txt, or the same path in the main checkout "
+            "when this checkout has no carrier)"
         ),
     )
     parser.add_argument(

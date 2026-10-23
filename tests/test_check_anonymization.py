@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -522,3 +524,36 @@ def test_the_fallback_is_anchored_on_the_scanned_repository_not_the_working_dire
     (other / "scripts" / guard.LOCAL_SUPPLEMENT).unlink()
     monkeypatch.chdir(worktree)
     assert _exit_status(["--root", str(other)]) == 2
+
+
+_BLOCKLIST_HELP = (
+    "path of the blocklist file; the carrier and ledger are read from its directory "
+    "(default: <root>/scripts/anonymization_blocklist.txt, or the same path in the main checkout "
+    "when this checkout has no carrier)"
+)
+
+
+def test_the_blocklist_option_help_names_the_blocklist_file() -> None:
+    """`--help` describes `--blocklist` as the path of the blocklist file, the form the guard reads it in.
+
+    Class: the help entry of `--blocklist`, whatever terminal width the caller has
+    exported. Required because the guard reads the carrier from the parent directory
+    of the path it is given, so a caller who passes the directory itself makes the
+    guard look one directory too high, find no carrier and exit 2; help that says to
+    pass a directory leads the caller into that failure. The width is pinned at 200
+    columns in the child's environment because argparse splits a word longer than its
+    help column, which no whitespace normalisation rejoins. Killed by restoring help
+    that names a directory anchor. A second correct implementation that splits the
+    help into other string fragments, or wraps it at another width, still passes,
+    because whitespace is normalised before the comparison.
+    """
+    script = Path(guard.__file__).resolve()
+    proc = subprocess.run(
+        [sys.executable, "-B", str(script), "--help"],
+        capture_output=True,
+        text=True,
+        check=True,
+        env={**os.environ, "COLUMNS": "200"},
+    )
+    text = " ".join(proc.stdout.split())
+    assert text.count("--blocklist BLOCKLIST " + _BLOCKLIST_HELP) == 1
