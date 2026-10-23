@@ -1,1 +1,363 @@
 legacy_file = "_utils.py"
+
+[[row]]
+key = "_utils.py:1-16"
+disposition = "discard"
+reason = "Ruled by class: every statement of this unit is an import, and the new code declares its own imports, so the unit computes nothing to port."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:17-24"
+disposition = "discard"
+reason = "Returns a zarr compression encoding for every variable of a dataset; no retained step calls it, and the new code sets its own output compression."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:25-28"
+disposition = "discard"
+reason = "Returns the absolute difference between a target rain depth and a rainfall series' depth; no legacy code calls it."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:29-95"
+disposition = "scope-in"
+reason = "Rescales a rainfall series to a target depth by changing its timestep to the target depth over the sum of its intensities, then returns it to the original timestep with each step the overlap-weighted mean intensity of the stretched steps it covers."
+commented_out_runs = [
+  { lines = "31-35", treatment = "not ported" },
+]
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:96-103"
+disposition = "scope-in"
+reason = "Returns a rainfall series' largest moving-window mean intensity over the window length read from the rain intensity statistic's name, by which a rescaled series is checked against its target intensity."
+commented_out_runs = []
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:104-171"
+disposition = "scope-in"
+reason = "Rescales a donor rainfall series to a simulated event's peak moving-mean intensity and depth by alternately multiplying its grid-cell intensities and stretching its timestep until both are within tolerance, giving up with a recorded problem after a set number of attempts or once the series is twice the longest allowed duration."
+commented_out_runs = []
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:172-212"
+disposition = "scope-in"
+reason = "Finds each simulated event's nearest observed events over standardised statistics and orders them for trial by a draw without replacement weighted by the reciprocal of their rank, as the donor candidates for rescaling."
+commented_out_runs = []
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:213-227"
+disposition = "scope-in"
+reason = "Returns, for a simulated event and a rescaling attempt, the observed donor at that position of its candidate order with the donor's span, id and statistics and the simulated event's target statistics."
+commented_out_runs = []
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:228-235"
+disposition = "discard"
+reason = "Returns a donor surge series' observed start allowing for a forward shift; its only call is commented out."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:236-270"
+disposition = "scope-in"
+reason = "Gives a synthesised surge series a tide taken from the observed record over the donor event's dates in a randomly drawn recent year, shifted by a random amount within a set window, redrawing the year when that span is incomplete, and returns the tide, the water level and the shift."
+commented_out_runs = []
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:271-334"
+disposition = "scope-in"
+reason = "Fills a synthesised event's missing rainfall with zero and its missing surge from the observed record beside the donor's span, offset by the donor's peak adjustment, after checking that the observed piece matches the existing surge exactly."
+commented_out_runs = [
+  { lines = "275-277", treatment = "not ported" },
+]
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:335-398"
+disposition = "scope-in"
+reason = "Lengthens an event's series to hold a set buffer either side of the surge peak and after the last rain block holding a set fraction of the event's rain, with blocks cut back from the series' end, and a set buffer before the first rain, optionally re-dating it to a start date."
+commented_out_runs = []
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_utils.py:399-409"
+disposition = "discard"
+reason = "Creates a folder, first deleting it when asked; the new code makes its own output folders."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:410-420"
+disposition = "scope-in"
+reason = "Returns, per observed event of an event type, the fitted cumulative probability of each modelled statistic from the saved table of observed against fitted values, dropping events with a missing statistic, as the input the copula is fitted to."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "_utils.py:421-434"
+disposition = "scope-in"
+reason = "Draws a given number of samples from a fitted vine copula, seeded when a seed is given and unseeded otherwise, as a table with the observed statistics' names."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_utils.py:435-466"
+disposition = "discard"
+reason = "Returns the plotting-position quantile of a value within a sample and can chart it; its only caller is called by commented-out code alone."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:467-573"
+disposition = "scope-in"
+reason = "Charts the simulated against the observed yearly event counts, for all events and for rain-only, surge-only and compound events, as side-by-side density histograms with optional sample sizes."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_utils.py:574-596"
+disposition = "discard"
+reason = "Tests by probability-plot correlation against random reference samples whether a sample follows a discrete uniform distribution; only commented-out code calls it."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:597-604"
+disposition = "scope-in"
+reason = "Returns the p-value of an observed statistic among simulated ones as the percentile rank of the simulated value nearest to it."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_utils.py:605-660"
+disposition = "scope-in"
+reason = "Returns, over every pair of statistics, a given percentile of the kernel densities of the observed and the simulated pairs on a shared grid, and the percentiles of their differences, as the common colour scale of the observed-against-simulated density plots."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_utils.py:661-717"
+disposition = "scope-in"
+reason = "Charts a simulation or resampling test of an observed statistic: a histogram of the simulated values with the two-sided rejection regions shaded, the observed value and its percentile marked, and the test's result in the title."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_utils.py:718-746"
+disposition = "scope-in"
+reason = "Tests whether an observed pair's Kendall's tau is plausible against the taus of same-size samples drawn from a fitted copula or resampled from simulated events, rejecting two-sided at a given significance level."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_utils.py:747-856"
+disposition = "scope-in"
+reason = "Tests, for every pair of statistics, whether the observed Kendall's tau is plausible against samples drawn from a fitted copula or resampled from simulated events, tabulates the results with the simulated taus' two-sided bounds, and optionally charts each pair's observed and simulated densities with the test."
+commented_out_runs = [
+  { lines = "753-755", treatment = "not ported" },
+]
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_utils.py:857-921"
+disposition = "scope-in"
+reason = "Runs seven two-sample tests on two samples, Cramer-von Mises, Kolmogorov-Smirnov, Mann-Whitney U, Wilcoxon rank-sum, Student's t, Welch's t and Anderson-Darling, and returns each p-value with its conclusion at a given significance level."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_utils.py:922-990"
+disposition = "scope-in"
+reason = "Charts, for each two-sample test, the histogram of p-values over repeated resampled pairs of samples with the rejection region shaded and the rejection rate in the title, for the tests that two sources may be pooled."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_utils.py:991-1055"
+disposition = "scope-in"
+reason = "Compares two samples of a statistic by running a battery of two-sample tests on repeated resampled pairs and charting their p-values, and by charting the two samples' density histograms with the battery's results on the full samples, as the tests that two sources may be pooled."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_utils.py:1056-1064"
+disposition = "discard"
+reason = "Returns the best-scoring rows of a table of distribution fit scores on one score column; its only calls are commented out."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:1065-1197"
+disposition = "scope-in"
+reason = "Plots and saves, for every event statistic, each fitted distribution whose two goodness-of-fit p-values exceed their cut-offs, named by its score, transformations and distribution, as the candidates among which a distribution is chosen by hand, or redraws one named fit."
+commented_out_runs = [
+  { lines = "1070-1082", treatment = "not ported" },
+  { lines = "1130-1132", treatment = "not ported" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_utils.py:1198-1238"
+disposition = "scope-in"
+reason = "Redraws the chosen distribution fit of each event statistic of an event type, warns when a statistic has none, and writes the table of chosen distributions with their parameters and the table of empirical against fitted values that later steps read."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "_utils.py:1239-1256"
+disposition = "scope-in"
+reason = "Redraws the distribution fits on a short list for an event type and reports which event statistics have at least one fit on it, warning when any has none."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_utils.py:1257-1268"
+disposition = "discard"
+reason = "Returns and optionally prints the time elapsed since a given start, which no later step reads; the new code reports run time by its own method."
+commented_out_runs = [
+  { lines = "1259-1261", treatment = "discarded with the unit" },
+]
+
+[[row]]
+key = "_utils.py:1269-1422"
+disposition = "scope-in"
+reason = "Selects rain events largest first by repeatedly taking the end of the largest rolling rain sum, bounding the event by the nearest dry windows, capping its length at the wettest window of the longest allowed duration, recording its span, depth and intensities and removing it, until the largest sum falls below a threshold or a target count per year is reached."
+commented_out_runs = [
+  { lines = "1335-1337", treatment = "not ported" },
+]
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:1423-1539"
+disposition = "scope-in"
+reason = "Selects surge events largest first while the peak meets a threshold, bounding each by the nearest steps at or below an event-limit level, widening a short event to the minimum inter-event time, rebuilding a long one hour by hour from the peak toward the larger neighbouring one-hour mean up to the longest allowed duration, and removing it with an inter-event margin."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:1540-1577"
+disposition = "scope-in"
+reason = "Computes, for each event and each given duration, the largest rolling mean or other statistic over that duration and the timestep at which it occurs, as event summary statistics."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:1578-1595"
+disposition = "scope-in"
+reason = "Charts the number of selected events per year as bars, captioned with the event count, the years of record, the events per year and the selection threshold."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:1596-1612"
+disposition = "scope-in"
+reason = "Charts a histogram of the selected surge events' peaks, captioned with the surge threshold, the event count, the years of record and the events per year."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:1613-1785"
+disposition = "scope-in"
+reason = "Combines a rain event set and a surge event set into one table of event spans and compound, rain and surge flags, widening each overlapped rain event by the surge events peaking within it and the rain events they overlap, then merging overlapping events until none overlap."
+commented_out_runs = [
+  { lines = "1685-1687", treatment = "not ported" },
+]
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:1786-1989"
+disposition = "scope-in"
+reason = "Builds the combined rain, surge and compound event set for one rain and one water-level source: the event spans widened for significant rain or surge at their edges, each event's depth, peak intensity, peak surge, their times and the hours between them, the peak rolling statistics and their timing differences, and the relabelling as compound of single-type events that reach the other driver's smallest selected value."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:1990-2016"
+disposition = "scope-in"
+reason = "Resamples the gauge rainfall to a target timestep, carrying each reading forward only within its original timestep, after converting inches to millimetres per hour and Eastern Standard Time to UTC, and drops given years; returns the rate and the depth per step."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_utils.py:2017-2025"
+disposition = "scope-in"
+reason = "Runs a given two-sample test on two samples and returns its p-value with a reject or fail-to-reject conclusion at a given significance level."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_utils.py:2026-2059"
+disposition = "scope-in"
+reason = "Tests whether two sources' samples of an event statistic share a distribution by the Cramer-von Mises and rank-sum two-sample tests at the 0.05 level, and charts their density histograms side by side with their means, medians, percentage differences and the tests' results."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_utils.py:2060-2071"
+disposition = "scope-in"
+reason = "Labels each event of a summary table compound, surge or rain from its compound, surge-event and rain-event flags, in that order of precedence."
+commented_out_runs = []
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_utils.py:2072-2074"
+disposition = "discard"
+reason = "Returns element by element whether a series equals a scalar, counting missing values as equal; it is named only in a comment."
+commented_out_runs = []
+
+[[row]]
+key = "_utils.py:2075-2153"
+disposition = "scope-in"
+reason = "Merges per-source event sets by a priority order, keeping the preferred source's events, adding a lower source's event only where the preferred set has no valid reading in its span and deleting the preferred time steps it spans, then renumbering the events and matching each to its summary row by id, source and start time."
+commented_out_runs = [
+  { lines = "2106-2109", treatment = "not ported" },
+]
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_utils.py:2154-2197"
+disposition = "scope-in"
+reason = "Computes the Cunnane plotting positions of each column of an event summary table after dropping that column's missing values, as the empirical quantiles on which statistics are compared."
+commented_out_runs = [
+  { lines = "2163-2167", treatment = "not ported" },
+  { lines = "2169-2172", treatment = "not ported" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_utils.py:2198-2283"
+disposition = "scope-in"
+reason = "Correlates each pair of one surge-related and one other event statistic on their plotting positions, leaving out data-source, timestep, start and end columns by name, as the table on which the statistics to model are chosen."
+commented_out_runs = [
+  { lines = "2268-2270", treatment = "not ported" },
+  { lines = "2272-2274", treatment = "not ported" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_utils.py:2284-2309"
+disposition = "scope-in"
+reason = "Plots, for each selected pair of event statistics, the scatter of their plotting positions beside the scatter of their values, captioned with their quantile correlation."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_utils.py:2310-2322"
+disposition = "scope-in"
+reason = "Selects from the correlation table the pairs whose statistic names match two given patterns, optionally excluding a third, sorted by absolute correlation, as the table on which a statistic's partner is chosen."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_utils.py:2323-2328"
+disposition = "scope-in"
+reason = "Records a chosen pair of event statistics by appending its row of the filtered correlation table to the list of selections."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_utils.py:2329-2393"
+disposition = "discard"
+reason = "Plots each observed event's rainfall, surge and water level with their peaks and quantiles; no legacy code calls it."
+commented_out_runs = []
