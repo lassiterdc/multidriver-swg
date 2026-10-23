@@ -16,3 +16,183 @@ statement = "One entry per deliberate departure from the legacy code: a pair ent
 # why = "...", judged_correct_when = "..."
 # fingerprint = { callable = "{registration module}:{function}", combined = "...", functions = { ... } }   # absent until registered
 # future_pair = "{pair id}"        # finding-4 only
+
+[[departure]]
+unit = "__ref_ams_functions.py:111-214"
+site = 158
+kind = "licensed"
+grounds = { register = { key = "__ref_ams_functions.py:111-214", line = 158 } }
+new_code = "not yet written"
+why = "The legacy log-likelihood is the logarithm of a product of densities, which underflows to zero for large samples."
+judged_correct_when = "The log-likelihood equals the sum of the log-densities of the fitted distribution at the data and is finite whenever every density is positive."
+
+[[departure]]
+unit = "__ref_ams_functions.py:111-214"
+site = 164
+kind = "licensed"
+grounds = { register = { key = "__ref_ams_functions.py:111-214", line = 164 } }
+new_code = "not yet written"
+why = "The legacy log-likelihood is the logarithm of a product of densities, which underflows to zero for large samples."
+judged_correct_when = "The log-likelihood equals the sum of the log-densities of the fitted distribution at the data and is finite whenever every density is positive."
+
+[[departure]]
+unit = "__ref_ams_functions.py:111-214"
+site = 199
+kind = "licensed"
+grounds = { register = { key = "__ref_ams_functions.py:111-214", line = 199 } }
+new_code = "not yet written"
+why = "The legacy test compares the data with the fit's own quantiles rather than with the fitted distribution."
+judged_correct_when = "The p-value equals that of the one-sample Kolmogorov-Smirnov test of the data against the fitted distribution with its fitted parameters."
+
+[[departure]]
+unit = "_b5_fit_vine_copulas.py:38-57"
+site = 48
+kind = "licensed"
+grounds = { register = { key = "_b5_fit_vine_copulas.py:38-57", line = 48 } }
+new_code = "not yet written"
+why = "The legacy check reports a rejection rate of two-sample tests between copula samples and observations with no null distribution, and without resampling the observations."
+judged_correct_when = "The observed rejection rate is compared with the distribution of rejection rates between pairs of samples drawn from the fitted copula, using the same number of tests, and each test resamples the observations."
+
+[[departure]]
+unit = "_b5_fit_vine_copulas.py:76-96"
+site = 78
+kind = "licensed"
+grounds = { register = { key = "_b5_fit_vine_copulas.py:76-96", line = 78 } }
+new_code = "not yet written"
+why = "The legacy test rejects a copula when its fit distance is unusually small as well as unusually large."
+judged_correct_when = "The test rejects only when the observed Cramer-von Mises distance exceeds the upper alpha quantile of the distances of samples drawn from the fitted copula."
+
+[[departure]]
+unit = "_b6_simulate_from_vincop.py:489-596"
+site = 564
+kind = "licensed"
+grounds = { register = { key = "_b6_simulate_from_vincop.py:489-596", line = 564 } }
+new_code = "not yet written"
+why = "The legacy filter for surge-only draws keeps every draw that is not a compound event, including draws below the surge threshold."
+judged_correct_when = "Every kept surge-only event meets the surge threshold and not the rain threshold."
+
+[[departure]]
+unit = "_b6_simulate_from_vincop.py:489-596"
+site = 565
+kind = "licensed"
+grounds = { register = { key = "_b6_simulate_from_vincop.py:489-596", line = 565 } }
+new_code = "not yet written"
+why = "The legacy code chooses which surge-only copula draws it keeps with no seed."
+judged_correct_when = "Two runs given the same seed keep the same surge-only events, and the choice is made with the run's seeded random generator."
+
+[[departure]]
+unit = "_b6_simulate_from_vincop.py:489-596"
+site = 567
+kind = "licensed"
+grounds = { register = { key = "_b6_simulate_from_vincop.py:489-596", line = 567 } }
+new_code = "not yet written"
+why = "The legacy filter for rain-only draws keeps every draw that is not a compound event, including draws below the rain threshold."
+judged_correct_when = "Every kept rain-only event meets the rain threshold and not the surge threshold."
+
+[[departure]]
+unit = "_b6_simulate_from_vincop.py:489-596"
+site = 568
+kind = "licensed"
+grounds = { register = { key = "_b6_simulate_from_vincop.py:489-596", line = 568 } }
+new_code = "not yet written"
+why = "The legacy code chooses which rain-only copula draws it keeps with no seed."
+judged_correct_when = "Two runs given the same seed keep the same rain-only events, and the choice is made with the run's seeded random generator."
+
+[[departure]]
+unit = "_b6_simulate_from_vincop.py:489-596"
+site = 571
+kind = "licensed"
+grounds = { register = { key = "_b6_simulate_from_vincop.py:489-596", line = 571 } }
+new_code = "not yet written"
+why = "The legacy code chooses which compound copula draws it keeps with no seed."
+judged_correct_when = "Two runs given the same seed keep the same compound events, and the choice is made with the run's seeded random generator."
+
+[[departure]]
+unit = "_b7_generate_time_series_from_event_stats.py:381-890"
+site = 771
+kind = "licensed"
+grounds = { register = { key = "_b7_generate_time_series_from_event_stats.py:381-890", line = 771 } }
+new_code = "not yet written"
+why = "The legacy checks of the peak surge, rain depth and rain intensity recomputed from an event's final series compare each value with itself."
+judged_correct_when = "An event whose final series' peak surge, rain depth or rain intensity differs from its simulated value by more than the tolerances is reported, and the event's statistics carry the values recomputed from its series."
+
+[[departure]]
+unit = "_b7.1_qaqc_simulated_events.py:1-116"
+site = 72
+kind = "licensed"
+grounds = { register = { key = "_b7.1_qaqc_simulated_events.py:1-116", line = 72 } }
+new_code = "not yet written"
+why = "The legacy re-classification labels a simulated rain event by its rain depth alone, not by the duration-based threshold the observed rain events are selected with."
+judged_correct_when = "Each simulated event is labelled rain, surge or compound by the same rule, thresholds and duration the event selection applies to the observed events, so an observed event and a simulated event with the same statistics receive the same label."
+
+[[departure]]
+unit = "_utils.py:172-212"
+site = 210
+kind = "licensed"
+grounds = { register = { key = "_utils.py:172-212", line = 210 } }
+new_code = "not yet written"
+why = "The legacy code orders each simulated event's donor candidates by a weighted draw with no seed."
+judged_correct_when = "Two runs given the same seed order every simulated event's donor candidates identically, and the order is drawn with the run's seeded random generator with the same rank weights."
+
+[[departure]]
+unit = "_utils.py:236-270"
+site = 243
+kind = "licensed"
+grounds = { register = { key = "_utils.py:236-270", line = 243 } }
+new_code = "not yet written"
+why = "The legacy code draws the tide shift with no seed."
+judged_correct_when = "Two runs given the same seed give every event the same tide shift, drawn with the run's seeded random generator from the same window."
+
+[[departure]]
+unit = "_utils.py:236-270"
+site = 247
+kind = "licensed"
+grounds = { register = { key = "_utils.py:236-270", line = 247 } }
+new_code = "not yet written"
+why = "The legacy code draws the tide year with no seed."
+judged_correct_when = "Two runs given the same seed give every event the same tide year, drawn with the run's seeded random generator from the same set of years."
+
+[[departure]]
+unit = "_utils.py:421-434"
+site = 431
+kind = "licensed"
+grounds = { register = { key = "_utils.py:421-434", line = 431 } }
+new_code = "not yet written"
+why = "The legacy copula sampling draws with no seed whenever its caller gives none."
+judged_correct_when = "Every copula sample is drawn with the run's seeded random generator, and two runs given the same seed draw the same samples."
+
+[[departure]]
+unit = "_utils.py:718-746"
+site = 733
+kind = "licensed"
+grounds = { register = { key = "_utils.py:718-746", line = 733 } }
+new_code = "not yet written"
+why = "The legacy test resamples the simulated events with no seed."
+judged_correct_when = "Two runs given the same seed resample the same simulated events and return the same p-value and result."
+
+[[departure]]
+unit = "_utils.py:991-1055"
+site = 1015
+kind = "licensed"
+grounds = { register = { key = "_utils.py:991-1055", line = 1015 } }
+new_code = "not yet written"
+why = "The legacy comparison resamples its first sample with no seed."
+judged_correct_when = "Two runs given the same seed draw the same resamples of the first sample."
+
+[[departure]]
+unit = "_utils.py:991-1055"
+site = 1016
+kind = "licensed"
+grounds = { register = { key = "_utils.py:991-1055", line = 1016 } }
+new_code = "not yet written"
+why = "The legacy comparison resamples its second sample with no seed."
+judged_correct_when = "Two runs given the same seed draw the same resamples of the second sample."
+
+[[departure]]
+unit = "_utils.py:2075-2153"
+site = 2123
+kind = "licensed"
+grounds = { register = { key = "_utils.py:2075-2153", line = 2123 } }
+new_code = "not yet written"
+why = "The legacy merge deletes only the preferred time steps an added event spans, so a partly covered preferred event is truncated against its summary or stops the merge."
+judged_correct_when = "Every preferred event that an added event overlaps is removed whole, every kept event's summary row describes the span of its time series, and inputs with no partial overlap give the legacy result."
