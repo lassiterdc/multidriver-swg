@@ -1,7 +1,303 @@
 rule = "known-defect-register:1"
-examined_scope = "UNEXAMINED"
-examination_command = "UNEXAMINED"
-statement = "No part of the legacy corpus has yet been examined for defects. While examined_scope reads UNEXAMINED, an empty entry list means unexamined, not free of defects."
-# one [[entry]] per defect; none yet, since nothing has been examined:
+examined_scope = "Every unit of the ten retained legacy scripts that had no ruling before this examination, 157 units, each examined by reading it; the discarded water-level generator script was not examined, and a defect in a unit ruled discard is not entered."
+examination_command = "An AST walk of every retained legacy file listing each sys.exit call not nested in an if, try or except block, which is a stop marker, and each call of a random draw (sample, choice, uniform, randint, normal, rvs, shuffle, permutation, random, standard_normal or simulate) passing no random_state, seed, seeds, rng or generator keyword other than None, which is an unseeded draw; every other entry comes from reading each unit."
+statement = "The register lists the defects found by examining every unit of the ten retained legacy scripts that had no ruling before the examination, each entry with its ruling. An entry ruled OBLIGED is a defect the new code must still be able to reproduce, under the method that preserves the legacy behaviour, so that results made with the legacy code can be reproduced and the defect's effect on them measured; the ruling does not make the defect the behaviour a regular method of the new code is meant to have. An entry ruled LICENSED is one the new code departs from, with the departure recorded in the divergence ledger."
+# one [[entry]] per defect:
 # key = "{unit key}", line = {line inside the unit}, defect = "{text}", kind = "{text}",
 # ruling = "OBLIGED" | "LICENSED" | "UNRULED", reason = "{text}", equation = "{the publication-math-conformance system's identifier for the equation, optional}"
+
+[[entry]]
+key = "__ref_ams_functions.py:111-214"
+line = 158
+defect = "The log-likelihood of a three-parameter fit is the logarithm of the product of the densities, which underflows to zero for a sample of a few hundred values, and is zero at any sample size when the location is fixed at the sample minimum and the density vanishes at that bound; either way the log-likelihood is minus infinity and the AIC infinite."
+kind = "found by reading"
+ruling = "LICENSED"
+reason = "The AIC is a score of the fit, and a value made infinite by underflow rather than by the fit's quality reports nothing; the new code computes it from the sum of the log-densities."
+
+[[entry]]
+key = "__ref_ams_functions.py:111-214"
+line = 164
+defect = "The log-likelihood of a two-parameter fit is the logarithm of the product of the densities, which underflows to zero for a sample of a few hundred values and makes the log-likelihood minus infinity and the AIC infinite."
+kind = "found by reading"
+ruling = "LICENSED"
+reason = "The AIC is a score of the fit, and a value made infinite by underflow rather than by the fit's quality reports nothing; the new code computes it from the sum of the log-densities."
+
+[[entry]]
+key = "__ref_ams_functions.py:111-214"
+line = 199
+defect = "The Kolmogorov-Smirnov p-value is a two-sample test of the data against the fitted distribution's quantiles at the data's own plotting positions, which gives far higher p-values than a test of the data against the fitted distribution."
+kind = "found by reading"
+ruling = "LICENSED"
+reason = "The p-value is used to screen candidate fits, and a test that compares the data with values derived from the data understates how poorly a fit matches; the new code tests the data against the fitted distribution."
+
+[[entry]]
+key = "_b4_selecting_marginals.py:66-181"
+line = 67
+defect = "The statistics fitted for each event type do not include the duration used for threshold-based event selection, which the author's unconditional stop at the head of the fitting cell says they should; as committed the stop also halts the cell, and the fits later steps use were made before it was added."
+kind = "stop marker"
+ruling = "OBLIGED"
+reason = "The new code fits the statistics the legacy run fitted, without that duration, so that its marginal fits match the ones every later step was built from; it does not reproduce the stop, which computes nothing, and including the duration is a change of method for a later decision."
+
+[[entry]]
+key = "_b5_fit_vine_copulas.py:38-57"
+line = 48
+defect = "The comparison of each copula margin with the observed margin reports the rate at which repeated two-sample tests reject without a null distribution of that rate and without resampling the observations, both of which the author's unconditional stop inside the loop says it needs; as committed the stop also halts the function before any test."
+kind = "stop marker"
+ruling = "LICENSED"
+reason = "A rejection rate with no null distribution cannot say whether the copula fits; the new code compares it with the rate between pairs of copula samples and resamples the observations, as the author's note specifies."
+
+[[entry]]
+key = "_b5_fit_vine_copulas.py:76-96"
+line = 78
+defect = "The Monte Carlo Cramer-von Mises test of a vine copula rejects when the observed distance lies in either tail of the distances of samples from the copula, so an unusually close fit is rejected too, where the author's unconditional stop at the head of the function says the test should be one-sided; as committed the stop also halts the function."
+kind = "stop marker"
+ruling = "LICENSED"
+reason = "A distance between fitted and empirical probabilities measures lack of fit only in its upper tail; the new code rejects only there, as the author's note specifies."
+
+[[entry]]
+key = "_b6_simulate_from_vincop.py:489-596"
+line = 564
+defect = "The filter meant to keep the surge copula's draws that are surge events and not compound events applies the bitwise and before the comparison, so it keeps every draw that is not a compound event, including draws below the surge threshold, as surge-only events."
+kind = "found by reading"
+ruling = "LICENSED"
+reason = "A draw below the surge threshold is not a surge event; the new code keeps as surge-only only the draws that meet the surge threshold and not the rain threshold."
+
+[[entry]]
+key = "_b6_simulate_from_vincop.py:489-596"
+line = 565
+defect = "The surge-only events kept from the copula draws are a random choice among the valid draws made with no seed, so a run given the same seed keeps different events."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A simulation that cannot be repeated from its seed cannot be checked or reproduced; the new code makes this choice with the run's seeded random generator."
+
+[[entry]]
+key = "_b6_simulate_from_vincop.py:489-596"
+line = 567
+defect = "The filter meant to keep the rain copula's draws that are rain events and not compound events applies the bitwise and before the comparison, so it keeps every draw that is not a compound event, including draws below the rain threshold, as rain-only events."
+kind = "found by reading"
+ruling = "LICENSED"
+reason = "A draw below the rain threshold is not a rain event; the new code keeps as rain-only only the draws that meet the rain threshold and not the surge threshold."
+
+[[entry]]
+key = "_b6_simulate_from_vincop.py:489-596"
+line = 568
+defect = "The rain-only events kept from the copula draws are a random choice among the valid draws made with no seed, so a run given the same seed keeps different events."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A simulation that cannot be repeated from its seed cannot be checked or reproduced; the new code makes this choice with the run's seeded random generator."
+
+[[entry]]
+key = "_b6_simulate_from_vincop.py:489-596"
+line = 571
+defect = "The compound events kept from the copula draws are a random choice among the valid draws made with no seed, so a run given the same seed keeps different events."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A simulation that cannot be repeated from its seed cannot be checked or reproduced; the new code makes this choice with the run's seeded random generator."
+
+[[entry]]
+key = "_b7_generate_time_series_from_event_stats.py:88-380"
+line = 155
+defect = "The donor observed events for a simulated event's rainfall and for its surge are chosen by two separate nearest-neighbour searches, one over the rain statistics and one over the surge statistics, where the author's unconditional stop before the searches says there should be one search over all event statistics; as committed the stop also halts the cell, and the series later steps use were made before it was added."
+kind = "stop marker"
+ruling = "OBLIGED"
+reason = "The new code chooses donors by the two searches the legacy run used, so that its synthesised series match the ones every later step was built from; it does not reproduce the stop, which computes nothing, and one search over all statistics is a change of method for a later decision."
+
+[[entry]]
+key = "_b7_generate_time_series_from_event_stats.py:88-380"
+line = 279
+defect = "A simulated event whose target rain depth is less than one timestep of rain at its target intensity, or whose donor has no rain, is written with zero rainfall and recorded as rescaled without a problem, so its rain depth and intensity do not match their targets and nothing flags it."
+kind = "found by reading"
+ruling = "OBLIGED"
+reason = "The new code writes such an event with zero rainfall as the legacy run did, so that its kept events match the legacy ones; flagging or rejecting it changes which events are kept, a change of method for a later decision."
+
+[[entry]]
+key = "_b7_generate_time_series_from_event_stats.py:381-890"
+line = 628
+defect = "A simulated rain-only event whose finished series, after its surge is added, shifted and buffered, is longer than the longest observed rain-only event halts the script at an author's stop asking whether that observed duration or the settings file's maximum storm length should bound it, so the clipping written below the stop for rain-only events never runs."
+kind = "unreachable code"
+ruling = "OBLIGED"
+reason = "The new code reproduces the legacy result on every event the original application produced and adds no computation: it neither clips nor stops on such an event, which never arose, and leaves the lengths of generated events against observed ones to the generator's goodness-of-fit checks."
+
+[[entry]]
+key = "_b7_generate_time_series_from_event_stats.py:381-890"
+line = 763
+defect = "A finished rain-only or surge-only event longer than the longest observed event of its type plus three times the settings file's buffer around peaks halts the script with the message what's going on here, with no event named; a compound event is stopped at line 761 only beyond one and a half times the longest observed compound event plus the buffers around peaks and before the first rain."
+kind = "found by reading"
+ruling = "OBLIGED"
+reason = "For rain-only events the new code drops this stop, which never fired in the original application, and adds no computation, leaving their lengths to the generator's goodness-of-fit checks; surge-only and compound events keep their legacy length checks."
+
+[[entry]]
+key = "_b7_generate_time_series_from_event_stats.py:381-890"
+line = 771
+defect = "After an event's series is shifted, buffered and clipped, its peak surge, rain depth and rain intensity recomputed from the series replace the event's statistics before the comparison meant to stop on a change beyond the tolerances, so the three checks at lines 771, 780 and 791 compare a value with itself and can never fire."
+kind = "unreachable code"
+ruling = "LICENSED"
+reason = "A check that cannot fire hides any drift between an event's series and its simulated statistics; the new code compares each recomputed value with the simulated one before replacing it and reports a difference beyond the tolerances."
+
+[[entry]]
+key = "_b7.1_qaqc_simulated_events.py:1-116"
+line = 72
+defect = "The re-classification of the simulated events labels a rain event by its rain depth against the smallest observed rain-only depth alone, while the observed rain events are selected by a rain threshold over a duration, which the author's unconditional stop before the rain label says it must also use; as committed the stop also halts the script before the re-classification and everything after it."
+kind = "stop marker"
+ruling = "LICENSED"
+reason = "Simulated and observed events must be labelled by one rule for their comparison to be like with like; the new code labels each simulated event by the rule, thresholds and duration the event selection applies to the observed events."
+
+[[entry]]
+key = "_utils.py:104-171"
+line = 143
+defect = "The rainfall rescaling iteration also ends after a set number of attempts or once the series is twice the longest allowed duration, returning the series with a recorded problem, where the methods supplement repeats it until the tolerance test passes and states no other termination."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code ends the iteration in the same two cases and records the problem, so that it accepts and rejects the same donors as the legacy run; describing the two stops is a correction to the manuscript."
+
+[[entry]]
+key = "_utils.py:172-212"
+line = 210
+defect = "The order in which each simulated event's nearest observed events are tried as donors is drawn with no seed, so a run given the same seed tries them in a different order and can accept a different donor."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A synthesis that cannot be repeated from its seed cannot be checked or reproduced; the new code draws the order with the run's seeded random generator."
+
+[[entry]]
+key = "_utils.py:236-270"
+line = 238
+defect = "The tide years are taken as the given number of years before the most recent year of the observed record, leaving the most recent year out, where the methods supplement's set of years includes it and the settings file's comment says the most recent years are used."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code takes the tide from the same years as the legacy code, so that its tides come from the same part of the record; whether to include the most recent year is a later decision."
+
+[[entry]]
+key = "_utils.py:236-270"
+line = 243
+defect = "The shift of the tide taken from the observed record is drawn from the global random generator with no seed, so a run given the same seed gives each event a different tide."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A synthesis that cannot be repeated from its seed cannot be checked or reproduced; the new code draws the shift with the run's seeded random generator."
+
+[[entry]]
+key = "_utils.py:236-270"
+line = 247
+defect = "The year the tide is taken from is drawn from the global random generator with no seed, so a run given the same seed gives each event a different tide."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A synthesis that cannot be repeated from its seed cannot be checked or reproduced; the new code draws the year with the run's seeded random generator."
+
+[[entry]]
+key = "_utils.py:421-434"
+line = 431
+defect = "When no seed is given the fitted copula is sampled with no seed, and five of the six calls give none, so their samples differ from run to run."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A sample that cannot be repeated from the run's seed cannot be checked or reproduced; the new code always samples the copula with the run's seeded random generator."
+
+[[entry]]
+key = "_utils.py:597-604"
+line = 598
+defect = "The p-value of an observed statistic is the percentile rank of the nearest simulated value, where the methods supplement evaluates the empirical distribution of the simulated statistic at the observed value; the two differ by up to the gap between neighbouring simulated values."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code returns the nearest-value rank as the legacy code does, so that its tests reject exactly where the legacy tests did; evaluating the empirical distribution at the observed value is a change of method for a later decision."
+
+[[entry]]
+key = "_utils.py:718-746"
+line = 723
+defect = "The observed and simulated Kendall's tau are computed as tau-b, which corrects its denominator for ties and scores a tied pair 0, where the methods supplement writes tau-a, which scores every pair that is not concordant -1; the two differ whenever ties exist."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code computes tau-b as the legacy code does, so that its tests reject exactly where the legacy tests did; stating which tau is used is a correction to the manuscript."
+
+[[entry]]
+key = "_utils.py:718-746"
+line = 733
+defect = "The simulated events from which each tau is recomputed are resampled with no seed, so the test's p-value and result differ from run to run."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A test that cannot be repeated from its seed cannot be checked; the new code resamples with the run's seeded random generator."
+
+[[entry]]
+key = "_utils.py:857-921"
+line = 902
+defect = "The battery of two-sample tests runs seven tests, including Welch's t-test, where the methods supplement names six."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code runs the same seven tests as the legacy code, so that its results list the same tests; naming the seventh is a correction to the manuscript."
+
+[[entry]]
+key = "_utils.py:991-1055"
+line = 1015
+defect = "The first sample's resamples for the repeated two-sample tests are drawn with no seed, so the tests' rejection rates differ from run to run."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A comparison that cannot be repeated from its seed cannot be checked; the new code resamples with the run's seeded random generator."
+
+[[entry]]
+key = "_utils.py:991-1055"
+line = 1016
+defect = "The second sample's resamples for the repeated two-sample tests are drawn with no seed, so the tests' rejection rates differ from run to run."
+kind = "unseeded draw"
+ruling = "LICENSED"
+reason = "A comparison that cannot be repeated from its seed cannot be checked; the new code resamples with the run's seeded random generator."
+
+[[entry]]
+key = "_utils.py:1269-1422"
+line = 1274
+defect = "The rain-event selection stops unconditionally at its first statement, whose message says that the rolling rain sum that triggers and bounds an event is taken over the minimum inter-event time where it should be taken over a separate threshold duration, as the methods supplement does; the event bounding below it is therefore unreachable."
+kind = "stop marker"
+ruling = "OBLIGED"
+reason = "The new code runs the selection and sums over the minimum inter-event time as the legacy code did before the stop, so that it finds the same events; a separate threshold duration is a change of method for a later decision."
+
+[[entry]]
+key = "_utils.py:1269-1422"
+line = 1390
+defect = "With a threshold, the largest remaining event is recorded before its rolling sum is tested against the threshold, so every result ends with one event whose sum is below the threshold."
+kind = "found by reading"
+ruling = "OBLIGED"
+reason = "The new code keeps that last event as the legacy code does, so that its event set matches the legacy one; excluding it is a change of method for a later decision."
+
+[[entry]]
+key = "_utils.py:1423-1539"
+line = 1477
+defect = "A surge event longer than the longest allowed duration is rebuilt by extending toward the side with the larger mean surge over the next hour, where the methods supplement extends toward the larger of the two neighbouring surge values."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code compares the one-hour means as the legacy code does, so that it finds the same event spans; describing the comparison is a correction to the manuscript."
+
+[[entry]]
+key = "_utils.py:1540-1577"
+line = 1563
+defect = "The event statistics computation stops unconditionally on the first pass of its loop over durations, with a message that the timestep of each statistic should fall in the middle of the rolling window; past the stop, the timestep returned is the window's right edge, which shifts every lag statistic computed from it."
+kind = "stop marker"
+ruling = "OBLIGED"
+reason = "The new code computes the statistics and reports each at the window's right edge as the legacy code did before the stop, so that its event statistics match the legacy event tables; centring the timestep is a change of method for a later decision."
+
+[[entry]]
+key = "_utils.py:1613-1785"
+line = 1633
+defect = "A rain event and a surge event become one compound event whenever their spans overlap, where the methods supplement, and the function's own docstring, make them compound only when the surge peak falls during the rain event."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code combines on any overlap as the legacy code does, so that it finds the same compound events; combining only on a surge peak within the rain event is a change of method for a later decision."
+
+[[entry]]
+key = "_utils.py:1613-1785"
+line = 1765
+defect = "When overlapping events are merged into one, the merged event ends at the earliest end of the events merged rather than the latest, so the part of a longer event after that end belongs to no event."
+kind = "found by reading"
+ruling = "OBLIGED"
+reason = "The new code ends a merged event at the earliest end as the legacy code does, so that its event spans and statistics match the legacy ones; ending it at the latest end is a change of method for a later decision."
+
+[[entry]]
+key = "_utils.py:2075-2153"
+line = 2123
+defect = "When an added lower-priority event spans only part of a preferred event, only the preferred time steps inside its span are deleted, so a preferred event that loses its first steps no longer matches its summary row and stops the merge, and one that loses its last steps is kept with a summary row describing its original span."
+kind = "found by reading"
+ruling = "LICENSED"
+reason = "Each kept event's summary must describe its own series, and the code's own comment states the intent to drop the replaced event; the new code removes the whole preferred event that an added event overlaps."
+
+[[entry]]
+key = "_utils.py:2198-2283"
+line = 2200
+defect = "The correlation between event statistics is the Pearson correlation of plotting positions computed over each statistic's own non-missing values and then restricted to the events with every statistic present, where the methods supplement takes the Spearman rank correlation of each pair."
+kind = "differs from the manuscript"
+ruling = "OBLIGED"
+reason = "The new code computes the correlations as the legacy code does, so that the table the statistics were chosen from is reproduced; computing Spearman correlations is a change of method for a later decision."

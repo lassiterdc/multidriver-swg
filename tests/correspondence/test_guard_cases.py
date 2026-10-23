@@ -24,6 +24,7 @@ running unmarked. This module does not carry the `state_check` marker as a whole
 job does not select the guard cases.
 """
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -68,6 +69,24 @@ def test_the_helper_names_every_failing_check(tmp_path):
     paths = [p for p in listed.split("\0") if p]
     paths += [corpus_record.RECORD_NAME, str(system_scope.SCOPE_PATH)]
     paths += [str(p.relative_to(root)) for p in (root / ledger.LEDGER_DIR).glob("*.toml")]
+    # The real tree's family-test files come along, so a copied scoped-in row keeps the tests the
+    # ownership checks look for and fails none of them; they are found from the git listing, tracked or
+    # untracked, rather than through the inventory, so a defect there cannot reshape this fixture. A
+    # decorator counts only at the start of a line; one quoted inside a string does not begin its line.
+    family_decorator = re.compile(r"^\s*@pytest\.mark\.(equivalence|refactor_reminder)\(", re.MULTILINE)
+    tests = subprocess.run(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "tests"],
+        cwd=root,
+        capture_output=True,
+        check=True,
+    ).stdout.decode("utf-8")
+    paths += [
+        p
+        for p in tests.split("\0")
+        if re.search(r"(^|/)(test_[^/]*|[^/]*_test)\.py$", p)
+        and (root / p).is_file()
+        and family_decorator.search((root / p).read_text(encoding="utf-8"))
+    ]
     for rel in paths:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / rel, tmp_path / rel)
@@ -77,7 +96,13 @@ def test_the_helper_names_every_failing_check(tmp_path):
     run = '  { lines = "82-84", treatment = "discarded with the unit" },\n'
     text = d_file.read_text(encoding="utf-8")
     assert text.count(run) == 1
-    d_file.write_text(text.replace(run, ""), encoding="utf-8")  # check 3 now fails; check 1 already does
+    # Check 1 is made to fail here, by construction, rather than taken from the real tree, which stops
+    # failing it once every unit has a row: the copied file loses its first row, which is not the row
+    # whose run is cut below.
+    head, _first, rest = text.partition("\n[[row]]\n")
+    kept = rest[rest.index("\n[[row]]\n") :]
+    assert run not in rest[: rest.index("\n[[row]]\n")]
+    d_file.write_text(head + kept.replace(run, ""), encoding="utf-8")  # check 1 and check 3 now fail
     with pytest.raises(AssertionError) as caught:
         run_guard_case(tmp_path)
     first_line = str(caught.value).splitlines()[0]

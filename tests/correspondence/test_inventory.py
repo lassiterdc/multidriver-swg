@@ -261,16 +261,83 @@ def test_reminders_are_counted_per_system(tmp_path):
     assert inventory.reminders_per_system(inventory.listing(tmp_path)[0]) == {SLUG: 2}
 
 
-def test_the_inventory_prints_its_landing_line_exactly(capsys):
-    """Property: over the real tree, the inventory command prints exactly the line stating its zero counts, and exits 0.
+def test_the_inventory_prints_its_zero_state_line_on_a_synthetic_tree(tmp_path, capsys):
+    """Property: over a tree holding no family test, the inventory command prints exactly the line stating its zero counts, and exits 0.
 
-    Class: the real tree as it stands, which holds no family test. Why: a check that finds
-    nothing must say how much it looked at, so this test pins the whole line rather than a part
-    of it; the first family test a later change adds alters the line and reds this test, and that
-    change updates the expected line on purpose. Killed by: a summary that prints an empty
-    reminder clause instead of `none`, or any other change to the line's wording or counts.
-    Second correct implementation: a `main` that builds the line from a `Counter` of the
-    reminders' systems in one format string, printing `none` for an empty counter.
+    Class: any tree whose test files carry no family decorator; here a synthetic one holding one
+    plain test, so the line does not move when the crawl adds reminders to the real tree. Why: a
+    check that finds nothing must say how much it looked at, so this test pins the whole line rather
+    than a part of it. Killed by: a summary that prints an empty reminder clause instead of `none`,
+    or any other change to the zero-state line's wording. Second correct implementation: a `main`
+    that builds the line from a `Counter` of the reminders' systems in one format string, printing
+    `none` for an empty counter.
     """
-    assert inventory.main() == 0
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "test_plain.py").write_text("def test_plain():\n    pass\n", encoding="utf-8")
+    assert inventory.main(tmp_path) == 0
     assert capsys.readouterr().out == LANDING + "\n"
+
+
+# A family decorator at the start of a line; a decorator quoted inside a string, as the synthetic
+# test files above are written, does not begin its line and is not counted.
+FAMILY_DECORATOR = re.compile(
+    r"^\s*@pytest\.mark\.(?P<family>equivalence|refactor_reminder)\((?P<args>[^)]*)\)", re.MULTILINE
+)
+SYSTEM_KEYWORD = re.compile(r'system\s*=\s*["\'](?P<value>[^"\']*)["\']')
+
+
+def _listed_test_files(root):
+    """The test files under `tests/` that git lists, tracked or untracked and not ignored.
+
+    Deliberately NOT the plain `git ls-files`, which omits a file written and not yet staged, so it
+    would read a reminder the command already counts as absent.
+    """
+    listed = subprocess.run(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "tests"],
+        cwd=root,
+        capture_output=True,
+        check=True,
+    ).stdout.decode("utf-8")
+    names = [p for p in listed.split("\0") if p]
+    return [root / p for p in names if re.search(r"(^|/)(test_[^/]*|[^/]*_test)\.py$", p) and (root / p).is_file()]
+
+
+def _independent_summary(root):
+    """The summary line and the number of family tests, read from the tree's bytes without the inventory.
+
+    Not established: a decorator whose arguments span more than one line or contain a closing
+    parenthesis, which this pattern does not read; the reminders the crawl writes use neither.
+    """
+    tests, files, reminders = 0, set(), {}
+    for path in _listed_test_files(root):
+        for match in FAMILY_DECORATOR.finditer(path.read_text(encoding="utf-8")):
+            tests += 1
+            files.add(path)
+            if match["family"] == "refactor_reminder":
+                system = SYSTEM_KEYWORD.search(match["args"])["value"]
+                reminders[system] = reminders.get(system, 0) + 1
+    per = ", ".join(f"{s}={n}" for s, n in sorted(reminders.items())) or "none"
+    summary = (
+        f"test inventory: {tests} tests in {len(files)} files over families equivalence, refactor_reminder; "
+        f"reminders per system: {per}"
+    )
+    return summary, tests
+
+
+def test_the_inventory_prints_the_real_trees_line_against_independent_counts(capsys):
+    """Property: over the real tree, the command prints one line per family test and a summary line equal to counts taken independently of it, and exits 0.
+
+    Class: the real tree at any point of the crawl — any number of reminder files under any owners,
+    tracked or written and not yet staged, and later equivalence tests. Why: the per-system reminder
+    counts are what a reader uses to see how much porting each system still owes, so a count that
+    drifts from the tree's bytes misleads every reader; and an expectation recomputed by the module
+    under test would move with any defect in it. Killed by: a file walk that skips `tests/reminders/`,
+    which drops every reminder from the printed counts on a tree that holds one. Second correct
+    implementation: counting the family decorators with `ast` over the listed files rather than with a
+    line-anchored pattern, which agree on every decorator the crawl writes.
+    """
+    expected, tests = _independent_summary(inventory.REPO_ROOT)
+    assert inventory.main() == 0
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[-1] == expected
+    assert len(lines) - 1 == tests

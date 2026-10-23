@@ -1,1 +1,29 @@
 legacy_file = "_inputs.py"
+
+[[row]]
+key = "_inputs.py:1-6"
+disposition = "discard"
+reason = "Ruled by class: every statement of this unit is an import, and the new code declares its own imports, so the unit computes nothing to port."
+commented_out_runs = []
+
+[[row]]
+key = "_inputs.py:7-36"
+disposition = "discard"
+reason = "Sets run settings as module-level values; each one in use is read by another legacy step and goes with that step's ruling, the two event thresholds are replaced by the event-selection script's own, and the rest are read by no retained step, so this block has nothing of its own to port."
+commented_out_runs = []
+
+[[row]]
+key = "_inputs.py:37-199"
+disposition = "scope-in"
+reason = "Locates every input and output file of the legacy steps, which is not ported, and sets the event-selection settings (summary durations, events per year, minimum gap, longest event and the surge level bounding an event) and two tide settings, which are ported, with the set the new code carries settled where the generator's settings are curated."
+commented_out_runs = [
+  { lines = "82-84", treatment = "not ported" },
+  { lines = "154-156", treatment = "not ported" },
+]
+scope = "combined-event-identification/f3c7fb9a"
+
+[[row]]
+key = "_inputs.py:200-203"
+disposition = "discard"
+reason = "Locates a rain-gage dataset on one machine's disk; no retained step reads it, and its only reader is a download script already handed to the data-fetching repository, which resolves its own inputs."
+commented_out_runs = []

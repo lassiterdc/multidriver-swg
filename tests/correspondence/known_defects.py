@@ -2,9 +2,9 @@
 
 The register (`tests/correspondence/known_defects.toml`) lists the defects found in the legacy
 corpus, each keyed by its unit and a line inside it, with a ruling that says whether a test may
-reproduce the defect. The committed register has no entry yet, because no part of the corpus
-has been examined for defects — and an empty register must not read as a defect-free corpus. The
-register therefore carries its own scope: `examined_scope` and `examination_command` both read
+reproduce the defect. The committed register records an examination, over the scope its
+`examined_scope` states, and the defects it found. An empty register must not read as a defect-free
+corpus, so the register carries its own scope: `examined_scope` and `examination_command` both read
 `UNEXAMINED` until an examination is stated, and then both are stated. The check keys on those
 two fields agreeing, never on whether the entry list is empty, because an examined register with
 no entry is a state the register must be able to represent. Run as a script it prints one summary

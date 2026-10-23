@@ -1,1 +1,42 @@
 legacy_file = "_b7_generate_time_series_from_event_stats.py"
+
+[[row]]
+key = "_b7_generate_time_series_from_event_stats.py:1-87"
+disposition = "discard"
+reason = "Imports libraries, loads the inputs of the time-series generation and sets the storm-rescaling settings; the new code declares its own imports and inputs, each setting in use is read by the rescaling or finalizing step and goes with it, and the first iteration cap and skip list are replaced before any read."
+commented_out_runs = [
+  { lines = "46-48", treatment = "discarded with the unit" },
+  { lines = "75-79", treatment = "discarded with the unit" },
+]
+
+[[row]]
+key = "_b7_generate_time_series_from_event_stats.py:88-380"
+disposition = "scope-in"
+reason = "For each simulated event, finds seven nearest observed donor events by separate searches over its rain and its surge statistics, tries them in a rank-weighted random order, shifts a donor's surge so its peak equals the simulated peak and rescales a donor's rainfall to the simulated depth and intensity, accepts the first donor whose series has no duration or tolerance problem, and writes every attempt's statistics and series."
+commented_out_runs = [
+  { lines = "170-173", treatment = "not ported" },
+  { lines = "282-284", treatment = "not ported" },
+  { lines = "286-291", treatment = "not ported" },
+]
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_b7_generate_time_series_from_event_stats.py:381-890"
+disposition = "scope-in"
+reason = "For each event type, keeps in order as many successfully rescaled simulated events as the simulated years need, puts each event's rain and surge on one time axis, extends the surge with observed water levels, shifts it to the simulated peak delay, adds a tide from a randomly shifted observed period, clips an event longer than the longest observed event of its type, recomputes its statistics from the final series, and writes each type's statistics and series."
+commented_out_runs = []
+scope = "timeseries-synthesis/3c747469"
+
+[[row]]
+key = "_b7_generate_time_series_from_event_stats.py:891-914"
+disposition = "scope-in"
+reason = "Reads back each event type's simulated event statistics and series, checks that each holds exactly the number of events the simulated yearly counts require, and gathers them for joining into one published table and one series file."
+commented_out_runs = []
+scope = "boundary-condition-output/0cfac71f"
+
+[[row]]
+key = "_b7_generate_time_series_from_event_stats.py:915-969"
+disposition = "scope-in"
+reason = "Joins the rain, surge and compound events' statistics and series into one table and one compressed series file, converts every surge, tide and water-level value from feet to metres with matching names, and checks each event's rain depth and peak surge in the series against the table."
+commented_out_runs = []
+scope = "boundary-condition-output/0cfac71f"

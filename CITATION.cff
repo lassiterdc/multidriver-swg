@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+title: "multidriver-swg"
+authors:
+  - given-names: Daniel
+    family-names: Lassiter
+license: AGPL-3.0-or-later
+repository-code: "https://github.com/lassiterdc/multidriver-swg.git"

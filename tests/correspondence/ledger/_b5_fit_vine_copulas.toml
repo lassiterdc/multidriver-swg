@@ -1,1 +1,89 @@
 legacy_file = "_b5_fit_vine_copulas.py"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:1-15"
+disposition = "discard"
+reason = "Ruled by class: every statement of this unit is an import, and the new code declares its own imports, so the unit computes nothing to port."
+commented_out_runs = []
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:16-37"
+disposition = "discard"
+reason = "Splits the merged events by type only to list the event types the copula fitting walks, and sets a significance level and four lists that nothing reads; the copula data come from the saved marginal probabilities."
+commented_out_runs = []
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:38-57"
+disposition = "scope-in"
+reason = "Checks a fitted vine copula one variable at a time by drawing repeated samples from it, comparing each sample's margin with the observed margin by two-sample tests, and plotting the distribution of their p-values. Its legacy code stops before its first test and no record of a run is kept, so its reminder is replaced by a test of the check on known samples rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:58-71"
+disposition = "scope-in"
+reason = "Computes each observation's empirical joint cumulative probability, the share of observations at or below it in every variable over the count plus one, against which a fitted copula's probabilities are tested."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:72-75"
+disposition = "scope-in"
+reason = "Computes the Cramer-von Mises distance between empirical and fitted joint probabilities as the sum of their squared differences."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:76-96"
+disposition = "scope-in"
+reason = "Tests a fitted vine copula by placing the observed Cramer-von Mises distance between its joint probabilities and the empirical ones among the same distance for samples drawn from the copula, and rejects the fit by the observed distance's position."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:97-119"
+disposition = "scope-in"
+reason = "Draws and saves the goodness-of-fit figures of one fitted vine copula: its Monte Carlo distance test, the comparison of each variable's copula samples with the observations, and the comparison of each pair's Kendall's tau."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:120-127"
+disposition = "scope-in"
+reason = "Computes the Cramer-von Mises distance between a fitted copula's joint probabilities at the observations and their empirical joint probabilities."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:128-240"
+disposition = "scope-in"
+reason = "Fits a vine copula for each event type under each of 48 combinations of selection criterion, parametric method, tree criterion and truncation choice, saves and reloads each fit, and records each fit's Monte Carlo distance test and pairwise Kendall's tau test results."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:241-252"
+disposition = "scope-in"
+reason = "Keeps the tested vine copula fit settings whose distance-test and pairwise Kendall's tau p-values all lie between 0.05 and 0.95 and saves them as the table of candidate settings."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:253-291"
+disposition = "scope-in"
+reason = "Draws the goodness-of-fit figures of each hand short-listed vine copula fit setting of each event type, with larger Monte Carlo test sizes, as the views on which the final setting is chosen."
+commented_out_runs = []
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:292-296"
+disposition = "discard"
+reason = "Sets the chosen vine copula fit setting of each event type as an index; the only reader is the final copula step, ruled on its own, and the copulas these choices picked are saved where the simulation reads them."
+commented_out_runs = []
+
+[[row]]
+key = "_b5_fit_vine_copulas.py:297-328"
+disposition = "scope-in"
+reason = "Saves the vine copula fitted with the chosen setting of each event type as the copula parameters the simulation samples from, and draws its goodness-of-fit figures."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"

@@ -1,1 +1,107 @@
 legacy_file = "__ref_ams_functions.py"
+
+[[row]]
+key = "__ref_ams_functions.py:1-22"
+disposition = "discard"
+reason = "Ruled by class: every statement of this unit is an import, and the new code declares its own imports, so the unit computes nothing to port."
+commented_out_runs = []
+
+[[row]]
+key = "__ref_ams_functions.py:23-30"
+disposition = "scope-in"
+reason = "Applies a Box-Cox power transform to an event statistic, shifting it above zero first when needed, so that a distribution can be fitted in the transformed space."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:31-38"
+disposition = "scope-in"
+reason = "Reverses the Box-Cox transform for a recorded power and shift, returning transformed values to the units of the event statistic."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:39-43"
+disposition = "scope-in"
+reason = "Rescales an event statistic to zero mean and unit population standard deviation, returning both, as an optional transformation before fitting. Its legacy code never ran, so its reminder is replaced by a test of the rescaling on known values rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:44-47"
+disposition = "scope-in"
+reason = "Reverses the zero-mean, unit-deviation rescaling, returning values to the units of the event statistic. Its legacy code never ran, so its reminder is replaced by a test of the reverse rescaling on known values rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:48-51"
+disposition = "scope-in"
+reason = "Adds a fixed shift to every value of an event statistic, one of the transformations applied before fitting."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:52-55"
+disposition = "scope-in"
+reason = "Removes the fixed shift added before fitting, returning values to the units of the event statistic."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:56-70"
+disposition = "scope-in"
+reason = "Applies a fitted distribution's recorded transformations, in the fitting order, to new values, so that they can be evaluated against the fitted distribution."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:71-88"
+disposition = "scope-in"
+reason = "Applies the chosen transformations to an event statistic before fitting and returns the parameters needed to reverse them."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:89-104"
+disposition = "scope-in"
+reason = "Reverses a fit's transformations in reverse order, turning values drawn from a fitted distribution back into the units of the event statistic."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:105-107"
+disposition = "scope-in"
+reason = "Scores a fitted distribution by the mean squared relative difference between observed and fitted values, as one of the goodness-of-fit measures stored with each fit."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:108-110"
+disposition = "scope-in"
+reason = "Scores a fitted distribution by the mean absolute relative difference between observed and fitted values, as one of the goodness-of-fit measures stored with each fit."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:111-214"
+disposition = "scope-in"
+reason = "Fits one candidate distribution to one event statistic under one set of transformations, rejects fits whose support conflicts with the transformation, and records the parameters and goodness-of-fit scores used to choose a marginal distribution."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"
+
+[[row]]
+key = "__ref_ams_functions.py:215-324"
+disposition = "scope-in"
+reason = "Draws the four-panel figure of one fitted distribution, with its scores and support in the title, from which a user compares candidate fits and chooses one."
+commented_out_runs = [
+  { lines = "248-250", treatment = "not ported" },
+]
+scope = "interactive-decision-support/65c9484d"
+
+[[row]]
+key = "__ref_ams_functions.py:325-387"
+disposition = "scope-in"
+reason = "Defines the thirteen candidate distributions tried for each event statistic, with the number of parameters each is fitted with."
+commented_out_runs = []
+scope = "marginal-distribution-fitting/5549038b"

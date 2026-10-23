@@ -1,1 +1,117 @@
 legacy_file = "_b6_simulate_from_vincop.py"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:1-99"
+disposition = "scope-in"
+reason = "Loads the merged observed events and records and each event type's fitted vine copula, and builds the calendar of days on which radar or gridded rainfall and water-level data both exist, over which observed events are counted; its random seed is read by the simulation steps and its significance level and lists by nothing."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:100-216"
+disposition = "scope-in"
+reason = "Counts, for each calendar year from a fixed start date, the rain-only, surge-only and compound events that start on a day with both rainfall and water-level data, and the days of that year missing in all, for rainfall and for water levels, as the observed history of event occurrences."
+commented_out_runs = [
+  { lines = "153-155", treatment = "not ported" },
+  { lines = "173-191", treatment = "not ported" },
+  { lines = "193-201", treatment = "not ported" },
+  { lines = "205-210", treatment = "not ported" },
+  { lines = "212-215", treatment = "not ported" },
+]
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:217-233"
+disposition = "scope-in"
+reason = "Counts the observed events of each type per calendar year over the days with both rainfall and water-level data and keeps the years missing fewer than ten days as the observed years the simulated event counts are resampled from."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:234-355"
+disposition = "discard"
+reason = "Writes the observed events of complete radar and six-minute water-level years in the form of the simulated product to files no later step reads."
+commented_out_runs = []
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:356-376"
+disposition = "scope-in"
+reason = "Saves, for each observed year left out for missing ten or more days, a bar chart of its valid rainfall and water-level days per month."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:377-383"
+disposition = "scope-in"
+reason = "Saves a bar chart of the valid rainfall and water-level days per month over all the observed years left out for missing data."
+commented_out_runs = []
+scope = "observed-record-assembly/c76709dc"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:384-392"
+disposition = "scope-in"
+reason = "Estimates a yearly Poisson rate of events of one type as the event count of the kept observed years over the number of valid days divided by 365, as an alternative occurrence model."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:393-398"
+disposition = "scope-in"
+reason = "Draws the number of events of one type in each simulated year from a seeded Poisson distribution, as an alternative occurrence model. Its legacy code never ran, so its reminder is replaced by a test of the draw on a known rate and seed rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:399-455"
+disposition = "scope-in"
+reason = "Estimates a yearly Poisson rate of events for each event type from the kept observed years, as an alternative occurrence model; its commented-out Poisson simulation and comparison with the observed counts are not ported."
+commented_out_runs = [
+  { lines = "413-416", treatment = "not ported" },
+  { lines = "425-427", treatment = "not ported" },
+  { lines = "430-432", treatment = "not ported" },
+  { lines = "434-436", treatment = "not ported" },
+  { lines = "444-449", treatment = "not ported" },
+]
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:456-478"
+disposition = "scope-in"
+reason = "Saves bar charts of the number of observed compound, surge-only and rain-only events starting in each calendar month, over the months in which any event starts."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:479-488"
+disposition = "scope-in"
+reason = "Draws each simulated year's numbers of compound, rain-only and surge-only events by resampling whole kept observed years with replacement under a fixed seed, for one and a half times the years to generate, charts them against the observed counts and writes the counts of the years to generate."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:489-596"
+disposition = "scope-in"
+reason = "Draws each event type's statistics from its fitted vine copula under a fixed seed at twice the number needed, turns them into real units through each statistic's fitted marginal distribution, labels each draw by the smallest observed surge peak and rain depth, drops draws with missing values, and keeps the number of events of each type the simulated years require."
+commented_out_runs = []
+scope = "dependence-modelling/6eb7a1d6"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:597-626"
+disposition = "scope-in"
+reason = "Compares each statistic of each event type's simulated events with the observed events of that type by repeated two-sample tests on resamples the size of the observed sample, saving a histogram and density plot per statistic, and sets aside each type's simulated statistics for numbering."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:627-745"
+disposition = "scope-in"
+reason = "Places the simulated events of each type in the simulated years by their yearly counts and numbers them consecutively, writes each type's simulated event statistics with year and number, checks that every event meets its own type's thresholds and no other, and charts each statistic's observed and simulated distributions with two-sample test results."
+commented_out_runs = []
+scope = "event-occurrence-modelling/0d0e65a8"
+
+[[row]]
+key = "_b6_simulate_from_vincop.py:746-770"
+disposition = "scope-in"
+reason = "Compares, for each event type and each pair of statistics, the observed Kendall rank correlation with its spread over resamples of the simulated events the size of the observed sample, at a 0.05 significance level, and plots each pair."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"

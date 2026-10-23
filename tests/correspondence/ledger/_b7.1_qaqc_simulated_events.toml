@@ -1,1 +1,94 @@
 legacy_file = "_b7.1_qaqc_simulated_events.py"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:1-116"
+disposition = "scope-in"
+reason = "Loads the observed events and the combined simulated events and series in metres, sets the comparison thresholds as the smallest observed surge-only peak surge and rain-only rain depth, and re-classifies each simulated event as surge, rain or compound from its final statistics. Its re-classification lies past an unconditional stop and never ran, so its reminder is replaced by a test of the classification on known event statistics rather than by a recomputed legacy value."
+commented_out_runs = [
+  { lines = "22-30", treatment = "not ported" },
+  { lines = "90-92", treatment = "not ported" },
+  { lines = "99-104", treatment = "not ported" },
+  { lines = "106-109", treatment = "not ported" },
+  { lines = "111-113", treatment = "not ported" },
+]
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:117-312"
+disposition = "scope-in"
+reason = "For each event type and each observed rain data source, checks that every simulated event meets its type's thresholds and charts the simulated against the observed values of each statistic with two-sample tests, and the pairwise Kendall rank correlations of their fitted cumulative probabilities against resamples of the simulated events. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the comparison on known observed and simulated samples rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:313-316,455-460"
+disposition = "discard"
+reason = "Imports plotting tools, sets the resolution of the exploratory charts and creates their folder; the new code declares its own imports and folders, and the resolution goes with the charts that read it."
+commented_out_runs = []
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:317-353"
+disposition = "scope-in"
+reason = "Lines up one series of each of a set of simulated events in a table, rainfall from its first rain and surge, tide or water level from the event's surge peak, for the charts of how each observed donor was rescaled. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the alignment on known series rather than by a recomputed legacy value."
+commented_out_runs = [
+  { lines = "340-342", treatment = "not ported" },
+]
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:354-454"
+disposition = "scope-in"
+reason = "Charts the spread of many aligned series over time as coloured bands between their ranked values at each time step, with chosen single series drawn as lines, over the bands or in a panel below them. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the ranked bands on known series rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:461-587"
+disposition = "scope-in"
+reason = "For each observed rain donor, charts the spread of the rainfall, surge and water level of every simulated event rescaled from it, aligned at their first rain, with the donor's observed series drawn on top. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the charted spread on known series rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:588-635"
+disposition = "scope-in"
+reason = "For each observed rain donor, charts the spread of the rainfall of every simulated event rescaled from it, with the longest and the most intense rescaling drawn in a panel below the bands, and the donor's observed rainfall drawn over the bands and in that panel. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the charted spread on known series rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:636-691"
+disposition = "scope-in"
+reason = "For each observed surge donor, charts the spread of the surge of every simulated event rescaled from it, aligned at the surge peak, with the donor's observed surge drawn on top. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the charted spread on known series rather than by a recomputed legacy value."
+commented_out_runs = [
+  { lines = "648-651", treatment = "not ported" },
+  { lines = "653-656", treatment = "not ported" },
+]
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:692-702"
+disposition = "scope-in"
+reason = "Charts how many simulated events were rescaled from each observed rain donor, with the number of distinct donors used out of the observed events with rain. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the counts on a known set of donor assignments rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:703-720"
+disposition = "scope-in"
+reason = "Charts the observed rainfall of the rain donor used by the most simulated events, with its depth and peak intensity. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test that the most-used donor is chosen from a known set of donor counts rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:721-749"
+disposition = "scope-in"
+reason = "Charts how many simulated events were rescaled from each observed surge donor, and the observed surge of the donor used most often with its peak surge. Its legacy code lies past an unconditional stop and never ran, so its reminder is replaced by a test of the counts and the most-used donor on a known set of donor assignments rather than by a recomputed legacy value."
+commented_out_runs = []
+scope = "generator-validation/87f45e34"
+
+[[row]]
+key = "_b7.1_qaqc_simulated_events.py:750-768"
+disposition = "discard"
+reason = "Sets out to chart the rescaled surge made from the most-used surge donor, which the per-donor surge charts already show, but passes its chart function's arguments in the wrong positions and no file name, so it cannot complete."
+commented_out_runs = []
