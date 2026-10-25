@@ -1,0 +1,65 @@
+
+def perform_two_sample_tests(sample1, sample2, alpha=0.05):
+    # sample1, sample2 = s_dataset1, s_dataset2
+    sample1 = np.asarray(sample1, dtype=float)
+    sample2 = np.asarray(sample2, dtype=float)
+
+    results = {}
+
+    # 0. Cramer-von Mises (CVM test)
+    cvm_result = stats.cramervonmises_2samp(sample1, sample2)
+    cvm_pvalue = cvm_result.pvalue
+    results['Cramer-von Mises'] = (cvm_pvalue, 
+                                     "reject" 
+                                     if cvm_pvalue < alpha else 
+                                     "fail_to_reject")
+
+    # 1. Kolmogorov-Smirnov test (KS test)
+    ks_stat, ks_pvalue = stats.ks_2samp(sample1, sample2)
+    results['Kolmogorov-Smirnov'] = (ks_pvalue, 
+                                     "reject" 
+                                     if ks_pvalue < alpha else 
+                                     "fail_to_reject")
+
+    # 2. Mann-Whitney U test (non-parametric)
+    mannwhitney_stat, mannwhitney_pvalue = stats.mannwhitneyu(sample1, sample2, alternative='two-sided')
+    results['Mann-Whitney U'] = (mannwhitney_pvalue, 
+                                 "reject" 
+                                 if mannwhitney_pvalue < alpha else 
+                                 "fail_to_reject")
+
+    # 3. Wilcoxon rank-sum test (non-parametric, same as Mann-Whitney U but from another perspective)
+    wilcoxon_stat, wilcoxon_pvalue = stats.ranksums(sample1, sample2)
+    results['Wilcoxon rank-sum'] = (wilcoxon_pvalue, 
+                                    "reject" 
+                                    if wilcoxon_pvalue < alpha else 
+                                    "fail_to_reject")
+
+    # 4. Student’s t-test (parametric, assumes equal variances)
+    ttest_stat, ttest_pvalue = stats.ttest_ind(sample1, sample2, equal_var=True)
+    results['Student’s t-test (equal variances)'] = (ttest_pvalue, 
+                                                     "reject" 
+                                                     if ttest_pvalue < alpha else 
+                                                     "fail_to_reject")
+
+    # 5. Welch’s t-test (parametric, does not assume equal variances)
+    welch_stat, welch_pvalue = stats.ttest_ind(sample1, sample2, equal_var=False)
+    results['Welch’s t-test (unequal variances)'] = (welch_pvalue, 
+                                                     "reject" 
+                                                     if welch_pvalue < alpha else 
+                                                     "fail_to_reject")
+
+    # 6. Anderson-Darling test
+    # This test returns a statistic and critical values, but to compare p-values we'll compare it to ks test
+    anderson_stat = stats.anderson_ksamp([sample1, sample2])
+    anderson_pvalue = anderson_stat.pvalue
+    results['Anderson-Darling'] = (anderson_pvalue, 
+                                   "reject" 
+                                   if anderson_pvalue < alpha else 
+                                   "fail_to_reject")
+    df_results = pd.DataFrame({
+    'Test': list(results.keys()),
+    'p-value': [result[0] for result in results.values()],
+    'Conclusion': [result[1] for result in results.values()]
+        })
+    return df_results

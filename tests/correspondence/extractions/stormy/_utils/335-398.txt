@@ -1,0 +1,64 @@
+
+def reindex_to_buffer_significant_rain_and_surge(df_tseries, arbirary_start_date = None, wlevel_varname = "surge_ft"):
+    idx_name = df_tseries.index.name
+    # reindex to honor time buffers if adjustments are needed
+    new_tstep_index = df_tseries.index.copy()
+    tstep = pd.Series(df_tseries.index.diff()).mode().iloc[0]
+    if not df_tseries[wlevel_varname].isna().all():
+        ## reindex to buffer around peak surge
+        idx_peak_surge = df_tseries[wlevel_varname].dropna().idxmax()
+        dur_after_peak_surge_h = (new_tstep_index.max() - idx_peak_surge) / np.timedelta64(1, "h")
+        dur_before_peak_surge_h = (idx_peak_surge - new_tstep_index.min()) / np.timedelta64(1, "h")
+        ### add buffer after peak surge
+        if dur_after_peak_surge_h < timeseries_buffer_around_peaks_h:
+            # if verbose:
+            #     print(f"Extending time series so it ends {timeseries_buffer_around_peaks_h} hours after the peak surge index")
+            new_end = idx_peak_surge + pd.Timedelta(timeseries_buffer_around_peaks_h, "h")
+            new_tstep_index = pd.date_range(start = new_tstep_index.min(), end = new_end, freq = tstep)
+        ### add buffer before peak surge
+        if dur_before_peak_surge_h < timeseries_buffer_around_peaks_h:
+            # if verbose:
+            #     print(f"Extending time series so it starts {timeseries_buffer_around_peaks_h} hours before the peak surge index")
+            new_start = idx_peak_surge - pd.Timedelta(timeseries_buffer_around_peaks_h, "h")
+            new_tstep_index = pd.date_range(start = new_start, end = new_tstep_index.max(), freq = tstep)
+    if not df_tseries["mm_per_hr"].isna().all():
+        ## reindex based on rainfall
+        ### make sure there is a warm up period before the first 
+        s_rain_depth = df_tseries["mm_per_hr"].dropna() * (tstep / np.timedelta64(1, "h"))
+        idx_nonzero = s_rain_depth[s_rain_depth>0].index
+        s_rain_depth = s_rain_depth.loc[idx_nonzero.min():idx_nonzero.max()]
+        idx_first_tstep_with_rain = idx_nonzero.min()
+        dur_before_first_rain = (idx_first_tstep_with_rain - new_tstep_index.min()) / np.timedelta64(1, "h")
+        ### make sure that there is a buffer after the last plug of significant rainfall
+        tot_depth = s_rain_depth.sum()
+        s_rain_depth_preceding_sums = s_rain_depth.resample(rule = pd.Timedelta(timeseries_buffer_around_peaks_h, "h"), origin = "end", closed = "left").sum()
+        s_rain_depth_preceding_raindepth_fractions = s_rain_depth_preceding_sums / tot_depth
+        s_rain_depth_preceding_significant_raindepth_fractions =s_rain_depth_preceding_raindepth_fractions[s_rain_depth_preceding_raindepth_fractions >= buffer_window_raindepth_fraction_to_trigger_tserties_extension]
+        idx_last_significant_plug_of_rainfall = s_rain_depth_preceding_significant_raindepth_fractions.index.max()
+        dur_after_last_significant_rain = (new_tstep_index.max() - idx_last_significant_plug_of_rainfall) / np.timedelta64(1, "h")
+        ### add buffer after last significant rain plug
+        if dur_after_last_significant_rain < timeseries_buffer_around_peaks_h:
+            # if verbose:
+            #     print(f"Extending time series so it ends {timeseries_buffer_around_peaks_h} hours after the last significant rainfall plug ({timeseries_buffer_around_peaks_h}hr rain depth that equals or exceeds {buffer_window_raindepth_fraction_to_trigger_tserties_extension*100}% of the total rain depth)")
+            new_end = idx_last_significant_plug_of_rainfall + pd.Timedelta(timeseries_buffer_around_peaks_h, "h")
+            new_tstep_index = pd.date_range(start = new_tstep_index.min(), end = new_end, freq = tstep)
+        ### add buffer before first rain fall
+        if dur_before_first_rain < timeseries_buffer_before_first_rain_h:
+            # if verbose:
+            #     print(f"Extending time series so it starts {timeseries_buffer_before_first_rain_h} hours before first rainfall")
+            # sys.exit("WORK - insepcting to make sure reindexing is working like it's supposed to")
+            new_start = idx_first_tstep_with_rain - pd.Timedelta(timeseries_buffer_before_first_rain_h, "h")
+            new_tstep_index = pd.date_range(start = new_start, end = new_tstep_index.max(), freq = tstep)
+    # if the index is unchanged, do nothing; otherwise, reindex the dataset
+    reindex = True
+    if len(new_tstep_index) == len(df_tseries.index): # if their lengths are the same and
+        if (new_tstep_index != df_tseries.index).sum() == 0: # every index value is identical
+            reindex = False # do not reindex
+    if reindex: # otherwise, reindex
+        df_tseries = df_tseries.reindex(new_tstep_index)
+        # if new min index is before arbitrary start date, shift it
+        if arbirary_start_date is not None:
+            if df_tseries.index.min() != arbirary_start_date:
+                df_tseries.index = df_tseries.index - df_tseries.index.min() + arbirary_start_date
+        df_tseries.index.name = idx_name
+    return df_tseries

@@ -1,0 +1,19 @@
+#%% plot and save
+fname_save = f"{fldr_plt_selected_events}max_surge_hist.png"
+plot_wlevel_histogram(df_6min_wlevel_event_summaries, df_6min_wlevel_event_tseries, surge_event_threshold_ft_selected,
+               s_6min_surge, surge_6min_event_n_per_year,
+               fname_save = fname_save)
+
+tstep_wlevel = pd.Series(s_6min_surge.index.diff()).mode().iloc[0]
+
+wlevel_record_length = len(s_6min_surge.dropna().index) * tstep_wlevel
+
+wlevel_return_rate_n_per_year = 365/((wlevel_record_length / len(df_6min_wlevel_event_summaries)) / np.timedelta64(1, "D"))
+
+fig_title = "Surge Events"
+fname_savefig = f"{fldr_plt_selected_events}surge_event_nstorms_per_year.png"
+plot_annual_rainfall_totals(df_6min_wlevel_event_summaries, s_6min_surge, surge_event_threshold_ft_selected,
+                             wlevel_return_rate_n_per_year, fig_title = fig_title, fname_savefig = fname_savefig, threshold_units = "feet")
+
+df_6min_wlevel_event_summaries.to_csv(f_6min_surge_event_summaries)
+df_6min_wlevel_event_tseries.to_csv(f_6min_surge_event_timeseries)

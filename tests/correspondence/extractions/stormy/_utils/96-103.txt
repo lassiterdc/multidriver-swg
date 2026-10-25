@@ -1,0 +1,8 @@
+
+def compute_sim_max_mean_rain_intensity(sim_time_series, rain_intensity_stat):
+    dur = int(rain_intensity_stat.split("_")[1].split("hr")[0])
+    df_rain_summaries = compute_event_timeseries_statistics(sim_time_series, lst_time_durations_h_to_analyze=[dur],
+                                                            varname=sim_time_series.columns[0], agg_stat = "mean")
+    # first rescale to match targeted intensity
+    sim_max_intensity = df_rain_summaries.loc[sim_time_series.columns[0], rain_intensity_stat]
+    return sim_max_intensity

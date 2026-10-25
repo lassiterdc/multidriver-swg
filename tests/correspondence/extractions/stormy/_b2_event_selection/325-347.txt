@@ -1,0 +1,23 @@
+#%% compare mrms to aorc where they overlap
+df_mrms_rainevent_tseries.reset_index().date_time.values
+
+s_mrms_event_id = df_mrms_rainevent_tseries.reset_index().set_index("date_time")["event_id"]
+s_mrms_mm_per_hr = df_mrms_rainevent_tseries.reset_index().set_index("date_time")["mm_per_hour"]
+s_mrms_mm_per_hr.name = "mm_per_hr_mrms"
+s_aorc_mm_per_hr = df_aorc_rainevent_tseries.reset_index().set_index("date_time")["mm_per_hour"]
+s_aorc_mm_per_hr.name = "mm_per_hr_aorc"
+
+# df_mrms_aorc_rainrate_comarison = pd.concat([s_mrms_mm_per_hr, s_aorc_mm_per_hr, s_mrms_event_id, s_mrms_bias_corrected], axis = 1).dropna()
+df_mrms_aorc_rainrate_comarison = pd.concat([s_mrms_mm_per_hr, s_aorc_mm_per_hr, s_mrms_event_id], axis = 1).dropna().reset_index().set_index(["event_id", "date_time"])
+
+df_mrms_aorc_rainrate_comarison_hourly = (
+    df_mrms_aorc_rainrate_comarison.groupby(level='event_id')  # Group by 'event_id'
+      .resample('1h', level='date_time')  # Resample 'date_time' index to 1 hour
+      .mean()  # Take the mean
+)
+
+df_mrms_aorc_rainrate_comarison_hourly = pd.concat([df_mrms_aorc_rainrate_comarison_hourly.reset_index().set_index("date_time"), s_mrms_bias_corrected], axis = 1).dropna()
+
+df_mrms_aorc_rainrate_comarison_hourly.plot.scatter(x = "mm_per_hr_mrms", y = "mm_per_hr_aorc")
+
+df_mrms_aorc_rainrate_comarison_hourly.groupby("event_id").sum().plot.scatter(x = "mm_per_hr_mrms", y = "mm_per_hr_aorc")

@@ -1,0 +1,18 @@
+
+def plot_annual_rainfall_totals(df_rainevent_summary, s_rainfall_mm_per_hr, threshold_mm, return_rate_n_per_year, fig_title = None, fname_savefig = None, threshold_units = "mm"):
+    fig, ax = plt.subplots(figsize = (8,4), dpi = 200)
+    event_start_column = [col for col in df_rainevent_summary.columns if "event_start" in col][0]
+    df_rainevent_summary[event_start_column].dt.year.value_counts().sort_index().plot.bar(ax=ax)
+    ax.set_ylabel("N events")
+    fig_text1 = "The {} largest events were selected from {} years of data".format(len(df_rainevent_summary), len(s_rainfall_mm_per_hr.index.year.unique()))
+    fig_text2 = "corresponding to an arrival rate of {:.2f} storms per year.".format(return_rate_n_per_year)
+    fig_text3 = "The threshold corresponding to this"
+    fig_text4 = "is {} {}".format(round(threshold_mm,2), threshold_units)
+    txt_fig_cap_txt = "{}\n{}\n{}\n{}".format(fig_text1, fig_text2, fig_text3, fig_text4)
+    fig.text(.5, -0.12, txt_fig_cap_txt, ha='center')
+    if fig_title is not None:
+        fig.suptitle(fig_title)
+    fig.tight_layout()
+    if fname_savefig is not None:
+        plt.savefig(fname_savefig, bbox_inches='tight')
+        plt.clf()

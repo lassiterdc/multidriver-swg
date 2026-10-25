@@ -1,0 +1,3 @@
+
+def comp_madi(empirical, fitted):
+    return sum(abs((empirical - fitted)/empirical))/len(empirical)

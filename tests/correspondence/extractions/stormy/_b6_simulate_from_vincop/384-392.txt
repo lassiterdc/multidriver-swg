@@ -1,0 +1,9 @@
+#%% (OBSOLETE - NOT USING POISSON) generate event occurences from poisson distribution
+def estimate_poisson_lambda(df_obs_annual_event_counts, idx_valid_dates, event_type):
+    s_obs_annual_event_counts = df_obs_annual_event_counts[event_type]
+    s_obs_annual_event_counts = s_obs_annual_event_counts.reset_index(drop = True)
+    n_years = len(idx_valid_dates)/365
+    n_observations = s_obs_annual_event_counts.sum()
+    lbda = n_observations/n_years
+    print(f"Computed a lambda for {event_type} events of {lbda:.2f} events per year based on a {n_years:.2f} year dataset which included {n_observations} observations of this event type.")
+    return lbda

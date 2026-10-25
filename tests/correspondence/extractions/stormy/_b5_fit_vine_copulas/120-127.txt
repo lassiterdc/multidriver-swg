@@ -1,0 +1,8 @@
+
+def compute_obs_cvm_stat(df_obs, vinecop):
+    s_emp_cdf_obs = empirical_multivariate_cdf(df_obs)
+    s_cop_cdf_obs = pd.Series(vinecop.cdf(df_obs), index = df_obs.index)
+    cvm_crit_obs = compute_cvm_criterion(s_emp_cdf_obs, s_cop_cdf_obs)
+    return cvm_crit_obs
+
+

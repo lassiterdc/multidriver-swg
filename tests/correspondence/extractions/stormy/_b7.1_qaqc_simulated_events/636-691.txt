@@ -1,0 +1,56 @@
+#%% investigate surge rescalings
+dir_plot_surge_rescalings = f"{dir_plot}/surge_rescaling/"
+create_folder(dir_plot_surge_rescalings, clear_folder=True)
+
+obs_event_idx_rescaled_surge = df_sim_summaries_all[df_sim_summaries_all["surge_peak_m"]>0].loc[:, "obs_event_id_surge"].astype(int).unique()
+
+for obs_event_idx in obs_event_idx_rescaled_surge:
+    lst_s_to_plot = []
+    df_sim_smries_using_rescaled_surge_event = df_sim_summaries_all[df_sim_summaries_all["obs_event_id_surge"] == obs_event_idx]
+    df_tseries_combined = return_df_of_obs_tseries_reindexed_at_first_timestep_based_on_subset_of_sim_smry_df(df_sim_smries_using_rescaled_surge_event, ds_tseries_all, dataset="surge_m")
+    df_tseries_combined = df_tseries_combined.dropna()
+    
+    # s_longest = df_tseries_combined.dropna(axis = 1).iloc[:, 0]
+    # s_longest.name = "longest rescaling"
+    # s_longest.color = "lowest_cbar"
+    # lst_s_to_plot.append(s_longest)
+
+    # s_highest_intensity = df_tseries_combined.loc[:, df_tseries_combined.max().idxmax()]
+    # s_highest_intensity.name = "most intense rescaling"
+    # s_highest_intensity.color = "highest_cbar"
+    # lst_s_to_plot.append(s_highest_intensity)
+
+    n_rescalings = len(df_sim_smries_using_rescaled_surge_event)
+    fname_savefig = f"{dir_plot_surge_rescalings}n{n_rescalings}_rescaled_surge_event_{obs_event_idx}.png"
+    row_w_target_event_info = df_sim_summaries_all[df_sim_summaries_all["obs_event_id_surge"] == obs_event_idx].iloc[0]
+
+    obs_event_start = row_w_target_event_info["obs_event_start_surge"]
+    obs_event_end = row_w_target_event_info["obs_event_end_surge"]
+    s_obs_surge_event = ds_event_tseries.sortby("date_time").sel(date_time = slice(obs_event_start,obs_event_end)).to_dataframe()["surge_m"]
+    s_obs_surge_event.name = "original time series"
+    
+    s_obs_event = s_obs_surge_event
+    # include original event
+    s_obs_event_reindexed = s_obs_event.copy()
+
+    idx_max_surge = s_obs_event_reindexed.idxmax()
+    new_idx = s_obs_event_reindexed.index - idx_max_surge
+    s_obs_event_reindexed.index = new_idx / np.timedelta64(1, "m")
+
+    s_obs_event_reindexed.color = "black"
+    lst_s_to_plot.append(s_obs_event_reindexed)
+    # line_label = "original time series"
+    ylab = "surge (m)"
+    txt_ax_title = f"Rescaled and shifted surge based on obs event id {obs_event_idx}\ntimes rescaled = {n_rescalings}"
+    # fname_savefig  = None
+    sep_plt_for_lines = False
+    plot_event_quantiles_over_time(df_tseries_combined=df_tseries_combined, lst_s_to_plot=lst_s_to_plot,
+                                    sep_plt_for_lines = sep_plt_for_lines,
+                                      ylab=ylab, txt_ax_title=txt_ax_title, fname_savefig=fname_savefig)
+
+
+
+
+
+
+

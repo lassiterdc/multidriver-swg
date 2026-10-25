@@ -1,0 +1,108 @@
+#%%  sampling of surge, rain, and combo events
+# define surge event and rain event thresholds from event time series
+surge_event_threshold = df_surge_events.surge_peak_ft.min()
+rain_event_threshold = df_rain_events.precip_depth_mm.min()
+
+n_surge_events = df_occurences_sim["surge"].sum()
+n_rain_events = df_occurences_sim["rain"].sum()
+n_combo_events = df_occurences_sim["compound"].sum()
+n_total_events = df_occurences_sim["any"].sum()
+
+dic_event_category = {"compound_events":"compound",
+                "rain_events":"rain",
+                "surge_events":"surge"}
+
+df_marginals_compound = f"{dir_fitting_maringals}compound_events_distributions.csv"
+df_marginals_rain = f"{dir_fitting_maringals}rain_events_distributions.csv"
+df_marginals_surge = f"{dir_fitting_maringals}surge_events_distributions.csv"
+
+n_to_oversimulate = n_years_to_simulate * 10
+dic_n_to_simulate = {"compound_events":n_combo_events,
+                     "rain_events":n_rain_events,
+                     "surge_events":n_surge_events}
+
+lst_sim_to_skip = []#, "compound_events", "rain_events"]
+
+n_oversimulate_multiplier = 2
+lst_df_simulated_realspace = []
+dic_frac_invalid = {}
+dic_full_over_sim = {}
+from __ref_ams_functions import *
+for event_type_key in dic_copulas:
+    if event_type_key in lst_sim_to_skip: # not modeling all events at the same time since the marginal fit qualities were poor
+        continue 
+    # sys.exit("work")
+    cop_fitted = dic_copulas[event_type_key]
+    df_event_summaries = dic_event_summaries[event_type_key]
+    n_to_simulate = dic_n_to_simulate[event_type_key] * n_oversimulate_multiplier
+    df_marginal_fits = pd.read_csv(f"{dir_fitting_maringals}{event_type_key}_distributions.csv")
+    df_obs = format_fitted_cdf_values_for_fitting_copula(event_type_key=event_type_key)
+    # simulate from copula
+    df_simulated_cdf = simulate_from_copula(df_obs=df_obs, n=n_to_simulate, cop_fitted=cop_fitted, seeds = random_seed)
+    df_simulated_realspace = pd.DataFrame(index = df_simulated_cdf.index, columns = df_simulated_cdf.columns)
+    for idx, fitted_row in df_marginal_fits.iterrows():
+        dataset = fitted_row["data"]
+        s_data_sim = df_simulated_cdf[dataset]
+        # if there is an upper bound, need to flip the simulated cdf values before transforming back to real space
+        if not np.isnan(fitted_row["upper_bound"]):
+            print(f"Flipping cdf values for copula simluated {event_type_key} {dataset} because an upper bound transformation was applied to this dataset")
+            s_data_sim_untransformed = s_data_sim.copy()
+            s_data_sim = 1 - s_data_sim
+        #     sys.exit("work")
+        n_params = fitted_row["n_params"]
+        fx = getattr(stats, fitted_row.loc["distribution"])
+        if n_params == 3:
+            x_sim = pd.Series(fx.ppf(s_data_sim, fitted_row["shape"], fitted_row["loc"], fitted_row["scale"]), name = "x_fit_at_empirical_cdf_val")
+        if n_params == 2:
+            x_sim = pd.Series(fx.ppf(s_data_sim, fitted_row["loc"], fitted_row["scale"]), name = "x_fit_at_empirical_cdf_val")
+        # only has an effect if a transformation was applied
+        x_sim_realspace = backtransform_data(x_sim, fitted_row)
+        df_simulated_realspace.loc[:,dataset] = x_sim_realspace
+    # classify events
+    filter_surge_event = df_simulated_realspace["surge_peak_ft"] >= surge_event_threshold
+    filter_rain_event = df_simulated_realspace["precip_depth_mm"] >= rain_event_threshold
+    filter_compound_event = filter_surge_event & filter_rain_event
+    df_simulated_realspace["rain_event"] = filter_rain_event
+    df_simulated_realspace["surge_event"] = filter_surge_event
+    df_simulated_realspace["compound_event"] = filter_compound_event
+    df_simulated_realspace["copula_source"] = event_type_key
+    dic_full_over_sim[event_type_key] = df_simulated_realspace.copy()
+    df_realspace_valid = df_simulated_realspace[~df_simulated_realspace.isna().any(axis = 1)]
+    # compute frac invalid as a performance metric
+    n_invalid = len(df_simulated_realspace) - len(df_realspace_valid)
+    frac_invalid = n_invalid / len(df_simulated_realspace)
+    dic_frac_invalid[event_type_key] = frac_invalid
+    if event_type_key == 'surge_events':
+        df_realspace_valid = df_realspace_valid[(df_realspace_valid["surge_event"] == True) & df_realspace_valid["compound_event"] == False]
+        df_simulated_return = df_realspace_valid.sample(dic_n_to_simulate[event_type_key])
+    if event_type_key == "rain_events":
+        df_realspace_valid = df_realspace_valid[(df_realspace_valid["rain_event"] == True) & df_realspace_valid["compound_event"] == False]
+        df_simulated_return = df_realspace_valid.sample(dic_n_to_simulate[event_type_key])
+    if event_type_key == "compound_events":
+        df_realspace_valid = df_realspace_valid[df_realspace_valid["compound_event"] == True]
+        df_simulated_return = df_realspace_valid.sample(dic_n_to_simulate[event_type_key])
+    # if frac_invalid > 0:
+    #     print(f"{frac_invalid} is the fraction of {event_type_key} simulations that were invalid either due to thresholds not being properly met or there being na values after the realspace transformation.")
+
+    # df_simulated_realspace = pd.concat([df_compound_events, df_non_compound_events])
+    lst_df_simulated_realspace.append(df_simulated_return)
+    # plt.scatter(df_simulated_return["max_1hr_mean_mm_per_hr"], df_simulated_return["precip_depth_mm"])
+    # sys.exit("work")
+    
+df_simulated_realspace = pd.concat(lst_df_simulated_realspace)
+
+for key in dic_frac_invalid.keys():
+    if dic_frac_invalid[key] > 0:
+        print(f"For {key}, {100*dic_frac_invalid[key]:.5f}% of simulated events are invalid and were rejected (probably due to na values in the transformations).")
+        print(f"see dic_full_over_sim['{key}'].isna().sum() to see which variables were the problem going on")
+
+# double check that the total number of events line up
+chk1 = (n_total_events == len(df_simulated_realspace))
+chk2 = (n_surge_events == ((df_simulated_realspace["compound_event"] == False) & (df_simulated_realspace["surge_event"] == True)).sum())
+chk3 = (n_rain_events == ((df_simulated_realspace["compound_event"] == False) & (df_simulated_realspace["rain_event"] == True)).sum())
+chk4 = (n_combo_events == ((df_simulated_realspace["compound_event"] == True).sum()))
+
+if not (chk1 and chk2 and chk3 and chk4):
+    print("WARNING: THE TOTAL NUMBER OF SIMULATED EVENTS DOES NOT ALIGN WITH THE EXPECTED NUMBER")
+
+

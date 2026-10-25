@@ -1,0 +1,10 @@
+#%%
+
+fig, ax = plt.subplots(dpi = 300, figsize = (6, 4))
+# s_mrms_rainfall_mm.plot(ax=ax)
+s_mrms_rainfall_mm.loc["2015":].plot(ax=ax)
+ax.set_xticklabels("")
+ax.set_yticklabels("")
+ax.set_xlabel("date time")
+ax.set_ylabel("precipitation intensity")
+# plt.clf()

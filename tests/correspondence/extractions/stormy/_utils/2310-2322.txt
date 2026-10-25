@@ -1,0 +1,13 @@
+
+def analyze_correlations(df_corrs_of_interest, var_of_interest, corrs_of_interest, vars_to_filter_out=None):
+    primary_selection = df_corrs_of_interest.var1.str.contains(var_of_interest, regex=True) | df_corrs_of_interest.var2.str.contains(var_of_interest, regex=True)
+    secondary_selection = df_corrs_of_interest.var1.str.contains(corrs_of_interest, regex=True) | df_corrs_of_interest.var2.str.contains(corrs_of_interest, regex=True)
+    if vars_to_filter_out is not None:
+        filterout_selection = ~df_corrs_of_interest.var1.str.contains(vars_to_filter_out) & ~df_corrs_of_interest.var2.str.contains(vars_to_filter_out)
+        selection = primary_selection & secondary_selection & filterout_selection
+    else:
+        selection = primary_selection & secondary_selection
+
+    df_correlations_to_analyze = df_corrs_of_interest[selection].sort_values("abs_corr", ascending = False)
+
+    return df_correlations_to_analyze

@@ -1,0 +1,110 @@
+
+def plot_fitted_distribution(s_fit, df_emp_vs_fitted, n_params, fname_savefig):
+    # update xlab name to include any transformations
+    xlab = s_fit.name
+    transformation = xlab
+    if not np.isnan(s_fit["upper_bound"]):
+        transformation = "({} - {:.2f})*-1".format(transformation, s_fit["upper_bound"])
+    if s_fit["scalar_shift"] != 0:
+        transformation = "(({}) - {:.2f})".format(transformation, -s_fit["scalar_shift"])
+    if s_fit["normalize"] == True:
+        n_params += 2 # estiamted mean and standard deviation
+        transformation = "normalized({})".format(transformation)
+    if s_fit["boxcox"] == True:
+        transformation = transformation + " + {}".format(str(round(s_fit.scalar_shift_for_boxcox, 2)))
+        n_params += 1 # estimated lambda
+        transformation = "boxcox({})".format(transformation)
+
+    fig, axes = plt.subplots(2,2, dpi=400, figsize=[10, 9])
+
+    fit_color = "red"
+    obs_color = "blue"
+
+    axes[1,1].hist(df_emp_vs_fitted["cdf_fit"], bins=30, alpha=0.3, label='CDF Fit', color=fit_color, density=True)
+    sns.kdeplot(df_emp_vs_fitted["cdf_fit"], ax=axes[1,1], color=fit_color, fill=False, label="CDF Fit",
+                bw_adjust = 0.4)
+    axes[1,1].hist(df_emp_vs_fitted["cdf_emp"], bins=30, alpha=0.3, label='CDF Empirical', color=obs_color, density=True)
+    sns.kdeplot(df_emp_vs_fitted["cdf_emp"], ax=axes[1,1], color=obs_color, fill=False, label="CDF Empirical",
+                bw_adjust = 0.4)
+    axes[1,1].set_title("Density of Empirical (Gringerton) vs. Fitted CDF Values")
+    axes[1,1].set_ylabel("Probability Density")
+    axes[1,1].set_xlabel("CDF Value Operated at Observation")
+    axes[1,1].set_xlim((-0.1, 1.1))
+    # add cvm text
+    # cvm_uniform = stats.cramervonmises(df_emp_vs_fitted["cdf_fit"], 'uniform')
+    # ax_txt = "CVM P-value\nof fitted CDF\nvalues vs.\nuniform dist.:\n{:.3f}".format(cvm_uniform.pvalue)
+    # # Add text to the upper left of axes[1,1]
+    # axes[1,1].text(0.05, 0.95, ax_txt, transform=axes[1,1].transAxes,
+    #             fontsize=10, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.5))
+
+
+    # plot empirical pdfs   
+    axes[0,0].hist(df_emp_vs_fitted["observations_transformed"], density=True, histtype="stepfilled",
+            alpha=0.2, label=" empirical", color = obs_color, bins=20)
+    sns.kdeplot(df_emp_vs_fitted["observations_transformed"], ax=axes[0,0], color=obs_color, fill=False, label="empirical",
+                bw_adjust = 0.6)
+    # plot the fitted pdf
+    distribution = getattr(stats, s_fit.loc["distribution"])
+    shape, loc, scale = s_fit.loc["shape"], s_fit.loc["loc"], s_fit.loc["scale"]
+    ## define plot extents 
+    data_min = df_emp_vs_fitted["observations_transformed"].min()
+    data_max = df_emp_vs_fitted["observations_transformed"].max()
+    range_extension = 0.35 * (data_max - data_min)  # Adjust this factor as needed
+    xlims = (df_emp_vs_fitted["observations_transformed"].min()-range_extension, df_emp_vs_fitted["observations_transformed"].max()+range_extension)
+    x_dist = np.linspace(data_min-range_extension*2, data_max+range_extension*2, 1000)
+    if np.isnan(s_fit.loc["shape"]): # 2 param
+        y_dist = distribution.pdf(x_dist, loc, scale)
+    else: # 3 param
+        y_dist = distribution.pdf(x_dist, shape, loc, scale)
+    axes[0,0].plot(x_dist, y_dist, label = "fitted", color=fit_color)
+    # axes[0,0].plot(df_emp_vs_fitted["x_fitted"], df_emp_vs_fitted.y_pdf_fit, label = "fitted", color=fit_color)
+    # axes[0,0].legend()
+    axes[0,0].set_xlim(xlims)
+    axes[0,0].set_ylabel("Probability Density")
+    axes[0,0].set_xlabel(transformation)
+    axes[0,0].set_title("Probability Density Function")
+    axes[0,1].plot(df_emp_vs_fitted["observations_realspace"], df_emp_vs_fitted.cdf_emp, label = "empirical", color = obs_color)
+    axes[0,1].plot(df_emp_vs_fitted["observations_realspace"], df_emp_vs_fitted.cdf_fit, label = "fitted", color=fit_color, ls="--")
+    axes[0,1].legend()
+    axes[0,1].set_ylabel("Cumulative Probability")
+    axes[0,1].set_title("Cumulative Density Function")
+    # axes[0,1].set_xlabel(xlab)
+    axes[0,1].set_xlabel(xlab)
+    if np.isnan(s_fit.loc["shape"]): # 2 param
+        stats.probplot(df_emp_vs_fitted["observations_transformed"], sparams = (loc, scale), dist = s_fit.loc["distribution"], plot = axes[1,0])
+    else: # 3 param
+        stats.probplot(df_emp_vs_fitted["observations_transformed"], sparams = (shape, loc, scale), dist = s_fit.loc["distribution"], plot = axes[1,0])
+
+    # create figure title
+    perf_summary = ": AIC = {} | CVM P = {} | KS P = {}".format(round(s_fit.loc["aic"],1),
+                                                                  round(s_fit.loc["cvm_pval"],3),
+                                                                  round(s_fit.loc["ks_pval"],3))
+    txt_fig_title = f'{s_fit.loc["distribution"]+perf_summary}\n{s_fit.loc["support_lb"]:.2f}<={transformation}<={s_fit.loc["support_ub"]:.2f}\n'
+    if transformation == xlab:
+        transformation = xlab
+    else:
+        # back transform the support params
+        s_bounds = pd.Series(data=[s_fit.loc["support_lb"], s_fit.loc["support_ub"]], index = ["support_lb", "support_ub"])
+        s_bounds_untrs = backtransform_data(s_bounds, s_fit)
+        # if the lower and upper bounds are infinit, assign the same value for the upper and lower bounds
+        if np.isinf(s_fit.loc["support_lb"]):
+            s_bounds_untrs.loc["support_lb"] = s_fit.loc["support_lb"]
+        if np.isinf(s_fit.loc["support_ub"]):
+            s_bounds_untrs.loc["support_ub"] = s_fit.loc["support_ub"]
+        # if upper bound is applied, reverse the upper and lower bounds
+        if not np.isnan(s_fit["upper_bound"]):
+            old_lb = s_bounds_untrs.loc["support_lb"]
+            s_bounds_untrs.loc["support_lb"] = -1*s_bounds_untrs.loc["support_ub"]
+            s_bounds_untrs.loc["support_ub"] = old_lb
+
+        txt_fig_title += f'{s_bounds_untrs.loc["support_lb"]:.2f}<={xlab}<={s_bounds_untrs.loc["support_ub"]:.2f}\n'
+    if s_fit.loc["fix_loc_to_min"]:
+        txt_fig_title += f'loc param fixed to min of {transformation}'
+    fig.suptitle(txt_fig_title)
+    # fig.text(.5, 1, s_fit.loc["distribution"]+perf_summary+transformation, ha='center')
+
+    fig.set_tight_layout(True)
+
+    if fname_savefig is not None: # save
+        plt.savefig(fname_savefig, dpi = 400, bbox_inches='tight')
+    return fig, axes

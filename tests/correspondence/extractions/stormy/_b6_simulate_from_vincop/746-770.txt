@@ -1,0 +1,25 @@
+#%% make sure relationships between real space variables makes sense
+
+for event_type_key in dic_copulas:
+    if event_type_key in lst_sim_to_skip: # not modeling all events at the same time since the marginal fit qualities were poor
+        continue 
+
+    df_simulated_realspace_subset = df_simulated_realspace[df_simulated_realspace["copula_source"] == event_type_key]
+    df_simulated_realspace_overlapping_vars = df_simulated_realspace_subset.dropna(axis = 1)
+    # sys.exit("work")
+    # cop_fitted = dic_copulas[event_type_key]
+    df_event_summaries = dic_event_summaries[event_type_key]
+
+    # df_marginal_fits = pd.read_csv(f"{dir_fitting_maringals}{event_type_key}_distributions.csv")
+    df_obs = format_fitted_cdf_values_for_fitting_copula(event_type_key=event_type_key)
+
+    dir_plot_events = f"{dir_plot}pairwise_realspace_comp_{event_type_key}/"
+    Path(dir_plot_events).mkdir(parents=True, exist_ok=True)
+
+    n_for_montecarlo_tau_test = 1000
+    df_obs = df_event_summaries.loc[:, df_obs.columns].astype(float)
+    cop_fitted=None
+    df_simulated= df_simulated_realspace_overlapping_vars.loc[:, df_obs.columns].astype(float)
+    df_mc_results_combined = evaluate_copula_fit_based_on_comparing_kendalltaus_for_each_variable_pair(df_obs=df_obs, alpha=alpha,n_for_montecarlo_tau_test=n_for_montecarlo_tau_test, cop_fitted=None,
+                                                                                                        df_simulated=df_simulated, plot = True, fldr_plots = dir_plot_events,
+                                                                                                        fig_main_title=f"observed vs. stochastically simualted {event_type_key}")

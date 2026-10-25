@@ -1,0 +1,86 @@
+#%%  mrms data when available (only using 6-min water level currently)
+# mrms and ncei
+# lst_df_tseries_in_order_of_preferred_data_source = [df_6min_wlevel_mrms_event_tseries, df_6min_wlevel_hrly_ncei_event_tseries]
+# lst_df_summaries_in_order_of_preferred_data_source = [df_6min_wlevel_mrms_event_summary_stats, df_6min_wlevel_hrly_ncei_event_summary_stats]
+
+
+# mrms and aorc
+lst_df_tseries_in_order_of_preferred_data_source = [df_6min_wlevel_mrms_event_tseries, df_6min_wlevel_aorc_event_tseries]
+lst_df_summaries_in_order_of_preferred_data_source = [df_6min_wlevel_mrms_event_summary_stats, df_6min_wlevel_aorc_event_summary_stats]
+
+
+# mrms, aorc, and ncei
+# lst_df_tseries_in_order_of_preferred_data_source = [df_6min_wlevel_mrms_event_tseries, df_6min_wlevel_aorc_event_tseries, df_6min_wlevel_hrly_ncei_event_tseries]
+# lst_df_summaries_in_order_of_preferred_data_source = [df_6min_wlevel_mrms_event_summary_stats, df_6min_wlevel_aorc_event_summary_stats, df_6min_wlevel_hrly_ncei_event_summary_stats]
+
+
+# lst_corresponding_target_data_sources = [df_6min_wlevel_mrms_event_summary_stats.dropna()["rain_data_source"].iloc[0],
+#                                        df_6min_wlevel_hrly_ncei_event_summary_stats.dropna()["rain_data_source"].iloc[0]]
+# lst_corresponding_nontarget_data_sources = [df_6min_wlevel_mrms_event_summary_stats.dropna()["wlevel_data_source"].iloc[0],
+#                                        df_6min_wlevel_hrly_ncei_event_summary_stats.dropna()["wlevel_data_source"].iloc[0]]
+
+
+col_target_data_source = "rain_data_source"
+# col_nontarget_data_source = "wlevel_data_source"
+col_data = "mm_per_hr"
+
+df_combined_tseries, df_combined_summaries = combine_dataset_according_to_priority(col_target_data_source, # col_nontarget_data_source,
+                                                                                    lst_df_tseries_in_order_of_preferred_data_source,
+                                                                                    col_data, lst_df_summaries_in_order_of_preferred_data_source)
+
+# # years with mrms data available
+# years_with_mrms = pd.Series(s_mrms_rainfall_mm_per_hr.index.year).unique()
+# df_mrms_years = pd.DataFrame(dict(years_with_mrms = years_with_mrms),
+#                              index = years_with_mrms)
+
+# # years with 6-min water level data available
+# years_with_6min_wlevel = pd.Series(df_6min_water_levels.index.year).unique()
+# df_6min_wlevel_years = pd.DataFrame(dict(years_with_6min_wlevel = years_with_6min_wlevel),
+#                                     index = years_with_6min_wlevel)
+# df_6min_wlevel_mrms_overlap = pd.concat([df_mrms_years, df_6min_wlevel_years], axis = 1)
+# years_with_6min_wlevel_and_mrms = df_6min_wlevel_mrms_overlap.dropna().index.values
+# years_with_6min_wlevel_and_NO_mrms = df_6min_wlevel_mrms_overlap[df_6min_wlevel_mrms_overlap.years_with_mrms.isna()].index.values
+# years_with_NO_6min_wlevel_and_mrms = df_6min_wlevel_mrms_overlap[df_6min_wlevel_mrms_overlap.years_with_6min_wlevel.isna()].index.values
+# if len(years_with_NO_6min_wlevel_and_mrms) > 0:
+#     print("WARNING: I had not coded for this situation and would need to do so if this print statement is triggered.")
+
+# # where 6-min water level is available and MRMS data is NOT available, replace those rows with NCEI hourly data and 6min water level data
+# idx_to_keep = df_6min_wlevel_hrly_ncei_event_summary_stats[~df_6min_wlevel_hrly_ncei_event_summary_stats.event_start.dt.year.isin(years_with_6min_wlevel_and_mrms)].index
+# df_to_append1 = df_6min_wlevel_hrly_ncei_event_summary_stats.loc[idx_to_keep,:].dropna()
+# df_tseries_to_append1 = df_6min_wlevel_hrly_ncei_event_tseries.set_index(["event_id", "date_time"]).loc[df_to_append1.event_id]
+
+# ## retrieve rows to add
+# idx_to_keep = df_6min_wlevel_mrms_event_summary_stats[df_6min_wlevel_mrms_event_summary_stats.event_start.dt.year.isin(years_with_6min_wlevel_and_mrms)].index
+# df_to_append2 = df_6min_wlevel_mrms_event_summary_stats.loc[idx_to_keep, :]
+# df_tseries_to_append2 = df_6min_wlevel_mrms_event_tseries.set_index(["event_id", "date_time"]).loc[df_to_append2.event_id]
+
+# ## combine all non-overlapping hydro data into a single df
+# df_combined_summaries = pd.concat([df_to_append1, df_to_append2]).sort_values("event_start").reset_index(drop = True)
+# df_wlevel_rain_tseries = pd.concat([df_tseries_to_append1, df_tseries_to_append2]).reset_index().sort_values("date_time")
+
+# # combine time series
+# # index by event_start
+# df_tseries = df_wlevel_rain_tseries
+# df_event_summary = df_combined_summaries
+# def re_index_tseries_by_event_start(df_tseries, datetime_col = "date_time"):
+#     s_event_starts = df_tseries.groupby("event_id").min()[datetime_col]
+#     s_event_starts.name = "event_start"
+#     # df_tseries.set_index("event_id").join(s_event_starts, how = "left")
+#     df_tseries_reindexed = df_tseries.set_index("event_id").join(s_event_starts, how = "left").reset_index(drop=True).set_index(["event_start", "date_time"])
+#     # ds_tseries = df_tseries_reindexed.to_xarray()
+#     return df_tseries_reindexed.sort_index()
+
+# df_combined_summaries = df_combined_summaries.drop(columns = "event_id").set_index("event_start")
+# df_combined_summaries = classify_event(df_combined_summaries)
+
+# df_wlevel_rain_tseries_reindexed = re_index_tseries_by_event_start(df_wlevel_rain_tseries, datetime_col = "date_time")
+# df_wlevel_rain_tseries_reindexed = df_wlevel_rain_tseries_reindexed.join(df_combined_summaries.event_selection_category, how = "left")
+# df_wlevel_rain_tseries_reindexed = df_wlevel_rain_tseries.reset_index().set_index(["date_time"])
+
+# df_combined_summaries = df_combined_summaries.reset_index().set_index(["event_selection_category", "event_start"])
+# ds_wlevel_rain_summary_stats = df_combined_summaries.to_xarray()
+ds_combined_tseries = df_combined_tseries.set_index(["date_time"]).to_xarray()
+# ds_wlevel_rain_events = xr.merge([df_combined_summaries, ds_wlevel_rain_summary_stats])
+
+
+

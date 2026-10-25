@@ -1,0 +1,27 @@
+
+# comparing different statistical aggregations
+for dur in lst_time_durations_h_to_analyze:
+    if dur < 1:
+        continue # the min time duration is 1 hour
+    stat = "max_{}hr_mean_mm_per_hr".format(dur)
+    fig_title = "Comparison of {}".format(stat)
+    s1 = df_stats_mrms[stat].dropna()
+    s1.name = "mrms_{}".format(stat)
+    s2 = df_stats_ncei_hrly[stat].dropna()
+    s2.name = "ncei_hrly_{}".format(stat)
+    cmv_result, ranksum_result = compare_stats(s1, s2, fig_title, plot = False)
+    if (cmv_result == ranksum_result) and (cmv_result == "reject"):
+        print(f"According to both the cmv and ranksum tests, {stat} in NCEI and MRMS do not come from the same distribution")
+        # continue
+    fname_savefig = f"{dir_event_slxn_validing_distributions}mrms_vs_ncei_hrly_{stat}.png"
+    compare_stats(s1, s2, fig_title, plot = True, fname_savefig = fname_savefig)
+
+    s2 = df_stats_aorc[stat].dropna()
+    s2.name = "aorc_{}".format(stat)
+    cmv_result, ranksum_result = compare_stats(s1, s2, fig_title, plot = False)
+    if (cmv_result == ranksum_result) and (cmv_result == "reject"):
+        print(f"According to both the cmv and ranksum tests, {stat} in AORC and MRMS do not come from the same distribution")
+        # continue
+    fname_savefig = f"{dir_event_slxn_validing_distributions}mrms_vs_aorc_{stat}.png"
+    compare_stats(s1, s2, fig_title, plot = True, fname_savefig = fname_savefig)
+

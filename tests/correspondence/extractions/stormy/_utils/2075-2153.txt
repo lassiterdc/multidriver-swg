@@ -1,0 +1,79 @@
+
+def combine_dataset_according_to_priority(col_target_data_source, lst_df_tseries_in_order_of_preferred_data_source,
+                                           col_data, lst_df_summaries_in_order_of_preferred_data_source):
+    # update data source for each event summary:
+    for idx_smry, df_summary in enumerate(lst_df_summaries_in_order_of_preferred_data_source):
+        # fill missing values for event time series data sources
+        # if df_summary[col_target_data_source].isna().sum() > 0:
+        #     print("warning: there are missing values for data source")
+        #     df_summary[col_target_data_source] = df_summary.dropna()[col_target_data_source].iloc[0]
+        # if df_summary[col_nontarget_data_source].isna().sum() > 0:
+        #     print("warning: there are missing values for data source")
+        #     df_summary[col_nontarget_data_source] = df_summary.dropna()[col_nontarget_data_source].iloc[0]
+        lst_df_summaries_in_order_of_preferred_data_source[idx_smry] = df_summary
+    # loop through keeping priority datasets and adding lower priority datasets as needed
+    lst_dfs_lower_priority_events_to_keep = []
+    df_higher_priority = lst_df_tseries_in_order_of_preferred_data_source[0]
+    # if data source value is missing, fill missing values
+    # if df_higher_priority[col_target_data_source].isna().sum() > 0:
+    #     print("warning: there are missing values for data source")
+    #     df_higher_priority[col_target_data_source] = df_higher_priority.dropna()[col_target_data_source].iloc[0]
+    # if df_higher_priority[col_nontarget_data_source].isna().sum() > 0:
+    #     print("warning: there are missing values for data source")
+    #     df_higher_priority[col_nontarget_data_source] = df_higher_priority.dropna()[col_nontarget_data_source].iloc[0]
+
+    for df_lower_priority in lst_df_tseries_in_order_of_preferred_data_source[1:]:
+        # low_idx = high_idx+1
+        # if data source value is missing, fill missing values
+        # if df_lower_priority[col_target_data_source].isna().sum() > 0:
+        #     print("warning: there are missing values for data source")
+        #     df_lower_priority[col_target_data_source] = df_lower_priority.dropna()[col_target_data_source].iloc[0]
+        # if df_lower_priority[col_nontarget_data_source].isna().sum() > 0:
+        #     print("warning: there are missing values for data source")
+        #     df_lower_priority[col_nontarget_data_source] = df_lower_priority.dropna()[col_nontarget_data_source].iloc[0]
+        # df_lower_priority[col_target_data_source] = lst_corresponding_target_data_sources[low_idx]
+        # df_lower_priority[col_nontarget_data_source] = lst_corresponding_nontarget_data_sources[low_idx]
+        df_higher_priority_valid = df_higher_priority.loc[df_higher_priority[col_data].dropna().index, :]
+        for e_id, df_lower_priority_event in df_lower_priority.groupby("event_id"):
+            # is there valid data in the priority dataset overlapping with this event? (if so, do not include this event)
+            filter_overlap = (df_higher_priority_valid["date_time"] >= df_lower_priority_event["date_time"].min()) & (df_higher_priority_valid["date_time"] <= df_lower_priority_event["date_time"].max())
+            if filter_overlap.sum() > 0:
+                continue
+            # since there is no overlap, is there valid data from the target dataset in this time series? If so, include it
+            df_lower_priority_event_valid = df_lower_priority_event.loc[df_lower_priority_event[col_data].dropna().index, :]
+            if len(df_lower_priority_event_valid) > 0:
+                lst_dfs_lower_priority_events_to_keep.append(df_lower_priority_event)
+                # it is possible that this event needs to actually REPLACE a higher priority event if it's there because of an alternative threhsold selection process; if that's the case, drop that event from df_higher_priority
+                filter_overlap = (df_higher_priority["date_time"] >= df_lower_priority_event["date_time"].min()) & (df_higher_priority["date_time"] <= df_lower_priority_event["date_time"].max())
+                if filter_overlap.sum() > 0:
+                    df_higher_priority = df_higher_priority.drop(df_higher_priority[filter_overlap].index)
+        # update the df_higher_priority dataset
+        lst_dfs_lower_priority_events_to_keep.append(df_higher_priority)
+        df_higher_priority = pd.concat(lst_dfs_lower_priority_events_to_keep, ignore_index=True)
+
+    # combine time series and event summary datasets ensuring matching indices
+    df_all_summaries = pd.concat(lst_df_summaries_in_order_of_preferred_data_source, ignore_index=True)
+    lst_df_tseries = []
+    lst_s_summary_rows = []
+    new_e_id = -1
+    for idx_group, df_priority_event in df_higher_priority.groupby(["event_id", col_target_data_source]):
+        new_e_id += 1
+        e_id, d_src = idx_group
+        # assign tseries event id
+        df_priority_event["event_id"] = new_e_id
+        # find corresponding summary row
+        filter_smry = (df_all_summaries["event_id"] == e_id) & (df_all_summaries[col_target_data_source] == d_src) & (df_all_summaries["event_start"] == df_priority_event["date_time"].min()) #compare_series_to_scalar(df_all_summaries["precip_depth_mm"], df_priority_event["mm"].sum()) & compare_series_to_scalar(df_all_summaries["surge_peak_ft"], df_priority_event["surge_ft"].max())
+        if (filter_smry.sum() > 1) or (filter_smry.sum() == 0):
+            sys.exit("ERROR: CORRESPONDING EVENT SUMMARY NOT FOUND")
+
+        s_summary_row = df_all_summaries[filter_smry].iloc[0]
+        ## update event id to match
+        s_summary_row["event_id"] = new_e_id
+        s_summary_row.name = new_e_id
+        lst_df_tseries.append(df_priority_event)
+        lst_s_summary_rows.append(s_summary_row)
+
+    df_combined_tseries = pd.concat(lst_df_tseries, ignore_index=True)
+    df_combined_summaries = pd.concat(lst_s_summary_rows, ignore_index=True, axis = 1).T
+
+    return df_combined_tseries, df_combined_summaries

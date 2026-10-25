@@ -1,0 +1,23 @@
+
+
+
+def create_vinecop_gof_plots(df_obs, cop_fitted, n_for_density_plot, n_for_marginal_cdf_comparison, n_for_montecarlo_tau_test, n_for_montecarlo_cvm_test,
+                            alpha, fldr_plots, event_key, clearfigs = True):
+    df_simulated = simulate_from_copula(df_obs=df_obs, n=n_for_density_plot, cop_fitted=cop_fitted)
+    # Create contour plots for each pair of variables
+    n_vars = df_obs.shape[1]
+
+    # plot cvm test statistic results
+    if n_for_montecarlo_cvm_test is not None:
+        mc_result, pvalue, cvm_crit_obs, s_cvm_crit_sim = compare_emp_cvm_criterion_to_dist_from_copula_sims(n_samps_for_dist=n_for_montecarlo_cvm_test, df_obs=df_obs, cop_fitted=cop_fitted, alpha=alpha)
+        varname_test="CVM Statistic"
+        f_savefig = f'{fldr_plots}{varname_test}_monte_carlo.png'
+        plot_obs_vs_montecarlo_simulated_statstic(varname_test=varname_test, s_mc_simulated_stat = s_cvm_crit_sim,
+                                                   val_obs_stat = cvm_crit_obs, pvalue = pvalue ,string_two_sided_test_result = mc_result, alpha=alpha,
+                                                            n_obs = len(df_obs), n_mc_sims=n_for_montecarlo_cvm_test,
+                                                              fig_maintitle = event_key, ax = None, fig = None, clearfigs = True, f_savefig = f_savefig)
+
+    evaluate_copula_fit_based_on_comparing_simulated_marginals_with_obervations(df_obs, cop_fitted=cop_fitted, n_samps = n_for_marginal_cdf_comparison, fldr_plots = fldr_plots, alpha=alpha)
+    evaluate_copula_fit_based_on_comparing_kendalltaus_for_each_variable_pair(df_obs, alpha, n_for_montecarlo_tau_test, cop_fitted,
+                                                                                    df_simulated=df_simulated, plot = True, fldr_plots = fldr_plots,
+                                                                                    fig_main_title = event_key)

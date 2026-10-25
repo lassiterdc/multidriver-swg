@@ -1,0 +1,43 @@
+#%% load and process data data
+df_all_events_summary = pd.read_csv(f_combined_event_summaries, 
+                                    parse_dates=["event_start", "event_end", "surge_peak_tstep",
+                                                "precip_max_intensity_tstep"])
+df_surge_events = df_all_events_summary[df_all_events_summary["event_type"] == "surge"]
+df_rain_events = df_all_events_summary[df_all_events_summary["event_type"] == "rain"]
+df_combo_events = df_all_events_summary[df_all_events_summary["event_type"] == "compound"]
+
+surge_threshold_ft = df_surge_events[threshold_varname_surge_events].min()
+rain_threshold_mm = df_rain_events[threshold_varname_rain_events].min()
+
+
+lst_all_event_stats = []
+lst_surge_event_stats = []
+lst_rain_event_stats = []
+lst_compound_event_stats = []
+
+dic_event_stats = {}
+
+dic_event_summaries = {#"all_events":df_all_events_summary,
+                       "compound_events":df_combo_events,
+                       "rain_events":df_rain_events,
+                       "surge_events":df_surge_events}
+
+for f_chosen_event_stats in glob(f"{dir_selecting_maringals}*.csv"):
+    df_event_stats = pd.read_csv(f_chosen_event_stats)
+    lst_stats = list(pd.Series(list(df_event_stats.var1) + list(df_event_stats.var2)).unique())
+    # if "all_event" in f_chosen_event_stats:
+    #     dic_event_stats["all_events"] = lst_stats
+    if "compound" in f_chosen_event_stats:
+        dic_event_stats["compound_events"] = lst_stats
+    elif "rain_event" in f_chosen_event_stats:
+        dic_event_stats["rain_events"] = lst_stats
+    elif "surge_event" in f_chosen_event_stats:
+        dic_event_stats["surge_events"] = lst_stats
+    else:
+        prnt = f"file {f_chosen_event_stats} not recognized"
+        print(prnt)
+
+dir_plots_all_fitted_marginals = dir_fitting_maringals + "fitted_distributions_all/"
+Path(dir_plots_all_fitted_marginals).mkdir(parents=True, exist_ok=True)
+
+# vars_with_0_lb = ["max_1hr_mean_mm_per_hr"]

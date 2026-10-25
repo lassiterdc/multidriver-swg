@@ -1,0 +1,41 @@
+
+def final_selection_plot_and_write_csv(lst_fname_of_interest, which_event_key, dic_event_stats, dic_event_summaries,
+                                        dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff):
+    lst_fits = []            
+    lst_emp_vs_fitted = []            
+    lst_marginals_accounted_for = []
+    for fname_of_interest in lst_fname_of_interest:
+        s_fit, df_emp_vs_fitted = plot_subset_of_fits(dic_event_summaries, dic_event_stats, dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff, mode = "from_fname", which_event_key = which_event_key,
+                                                       fname_of_interest = fname_of_interest, subdir_name = "slxn_final", return_fit = True)
+        df_cols = df_emp_vs_fitted.columns.tolist()
+        s_fit = pd.concat([pd.Series([which_event_key], index = ["event_type"]), s_fit])
+        lst_fits.append(s_fit)
+        df_emp_vs_fitted["data"] = s_fit["data"]
+        df_emp_vs_fitted["distribution"] = s_fit["distribution"]
+        df_emp_vs_fitted["event_type"] = s_fit["event_type"]
+        df_emp_vs_fitted["any_transformation"] = s_fit["any_transformation"]
+        if not s_fit["any_transformation"]:
+            df_emp_vs_fitted["observations_transformed"] = np.nan
+            df_emp_vs_fitted["x_fit_at_empirical_cdf_val_transformed"] = np.nan
+        df_emp_vs_fitted["data_source"] = f_combined_event_summaries
+        # re-order columns
+        df_emp_vs_fitted = df_emp_vs_fitted.reset_index().rename(columns={'index': 'observation_id'})
+        column_order = ['event_type', 'observation_id', 'data', 'data_source', 'any_transformation', 'distribution'] + df_cols
+        df_emp_vs_fitted = df_emp_vs_fitted[column_order]
+        df_emp_vs_fitted = df_emp_vs_fitted.set_index(["event_type", "observation_id", "data"])
+        lst_emp_vs_fitted.append(df_emp_vs_fitted)
+        for identified_marginal in dic_event_stats[which_event_key]:
+            if identified_marginal in fname_of_interest:
+                lst_marginals_accounted_for.append(identified_marginal)
+    s_marginals_accounted_for = pd.Series(lst_marginals_accounted_for).sort_values().reset_index(drop=True)
+    s_all_marginals_identified_when_analyzing_event_statistic_correlations = pd.Series(dic_event_stats[which_event_key]).sort_values().reset_index(drop=True)
+    lst_vars_not_accounted_for = []
+    for var in s_all_marginals_identified_when_analyzing_event_statistic_correlations:
+        if var not in list(s_marginals_accounted_for):
+            lst_vars_not_accounted_for.append(var)
+    if len(lst_vars_not_accounted_for) > 0:
+        print(f"Warning: not all marginals identified during event statistic correlation analysis have been modeled.\nNon-modeled variables: {lst_vars_not_accounted_for}\nModeled variables: {list(s_marginals_accounted_for.values)}")
+    df_fits = pd.concat(lst_fits, axis = 1).T.reset_index(drop = True)
+    df_fitted_vs_empirical = pd.concat(lst_emp_vs_fitted)
+    df_fits.to_csv(f"{dir_fitting_maringals}{which_event_key}_distributions.csv", index = False)
+    df_fitted_vs_empirical.to_csv(f"{dir_fitting_maringals}{which_event_key}_empirical_vs_fitted.csv", index = True)

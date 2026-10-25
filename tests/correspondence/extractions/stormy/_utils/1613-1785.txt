@@ -1,0 +1,173 @@
+
+# combine mrms and surge events during the overlapping period of record
+def determine_compound_event_start_and_end_times(df_wlevel_event_tseries, df_wlevel_event_summaries, df_rainevent_tseries, df_rainevent_summary):
+    """
+    For each rain event, find the time series indices that overlap with a surge event. If the peak surge of that surge event occurs 
+    during the rain event, I am considering them a compound event.
+    """
+    # define lists of the surge event IDs and rain event IDs that are being combined
+    lst_surge_events_being_combined = [] 
+    lst_rain_events_being_combined = []
+    surge_event_datetimes = df_wlevel_event_tseries.reset_index().date_time
+    rain_event_datetimes = df_rainevent_tseries.reset_index().date_time
+    lst_compound_event_starts = []
+    lst_compound_event_ends = []
+
+    # for each rain event, determine the fraction of it that is contained within a surge event
+    for rain_event_id, rain_event in df_rainevent_summary.iterrows():
+        # does this overlap at all with a surge event?
+        rain_event_duration = rain_event.rain_event_end - rain_event.rain_event_start
+        idx_overlap = (surge_event_datetimes >= rain_event.rain_event_start) & (surge_event_datetimes <= rain_event.rain_event_end)
+        surge_event_datetimes_overlap = surge_event_datetimes[idx_overlap]
+        if len(surge_event_datetimes_overlap) == 0:
+            continue
+        overlap_duration = surge_event_datetimes_overlap.iloc[-1] - surge_event_datetimes_overlap.iloc[0]
+        frac_overlap = overlap_duration / rain_event_duration
+        # if overlap is non-zero, combine them into a single event
+        if frac_overlap > 0:
+            # initialize event starts and ends
+            compound_event_start = rain_event.rain_event_start
+            compound_event_end = rain_event.rain_event_end
+            # loop through each overlapping surge event and update event start and end times
+            df_wlevel_event_tseries_subset = df_wlevel_event_tseries.loc[(slice(None), surge_event_datetimes_overlap), :]
+            # identify unique event IDs
+            surge_event_ids_to_combine = df_wlevel_event_tseries_subset.reset_index().surge_event_id.unique()
+            # see if there are any other rain events that these events span
+            for surge_event_id in surge_event_ids_to_combine:
+                surge_event = df_wlevel_event_summaries.loc[surge_event_id, :]
+                # determine whether the peak surge event occurs during the rain event
+                peak_surge_occurs_during_rain_event = (surge_event["max_surge_tstep"] >= rain_event.rain_event_start) and (surge_event["max_surge_tstep"] <= rain_event.rain_event_end)
+                # if the peak surge does NOT occur during the rain event, do not combine them
+                if not peak_surge_occurs_during_rain_event:
+                    continue
+                lst_surge_events_being_combined.append(surge_event_id)
+                idx_overlap = (rain_event_datetimes >= surge_event.surge_event_start) & (rain_event_datetimes <= surge_event.surge_event_end)
+                rain_event_datetimes_overlap = rain_event_datetimes[idx_overlap]
+                df_rainevent_tseries_subset = df_rainevent_tseries.loc[(slice(None), rain_event_datetimes_overlap), :]
+                # identify unique event IDs
+                rain_event_ids_with_overlap = df_rainevent_tseries_subset.reset_index().event_id.unique()
+                for overlapping_rain_event_id in rain_event_ids_with_overlap:
+                    overlapping_rain_event = df_rainevent_summary.loc[overlapping_rain_event_id]
+                    lst_rain_events_being_combined.append(overlapping_rain_event_id)
+                    compound_event_start = min([compound_event_start, surge_event.surge_event_start, overlapping_rain_event.rain_event_start])
+                    compound_event_end = max([compound_event_end, surge_event.surge_event_end, overlapping_rain_event.rain_event_end])
+        lst_compound_event_starts.append(compound_event_start)
+        lst_compound_event_ends.append(compound_event_end)
+        # if len(rain_event_ids_with_overlap) > 1:
+        #     print("Encountered situation with multiple rain events being combined. I want to inspect the loop to make sure code is doing what it's supposed to.")
+        #     # break
+        # if len(surge_event_ids_to_combine) > 1:
+        #     print("Encountered situation with multiple surge events being combined. I want to inspect the loop to make sure code is doing what it's supposed to.")
+        #     # break
+
+    df_combined_events = pd.DataFrame(dict(
+        combined_event_start = lst_compound_event_starts,
+        combined_event_end = lst_compound_event_ends,
+        surge_event = True,
+        rain_event = True
+    ))
+
+
+    df_combined_events["compound"] = True
+    df_combined_events["compound_event_duration"] = df_combined_events.combined_event_end - df_combined_events.combined_event_start
+    # df_combined_events["wlevel_data_source"] = wlevel_source
+    # df_combined_events["rain_data_source"] = rain_source
+    # df_combined_events["data_source"] = "{}_and_{}".format(rain_source, wlevel_source)
+
+    # combine all event start and end times
+    df_rainevent_summary_combined_events_removed = df_rainevent_summary[~df_rainevent_summary.index.isin(lst_rain_events_being_combined)].copy()
+    df_wlevel_event_summaries_combined_events_removed = df_wlevel_event_summaries[~df_wlevel_event_summaries.index.isin(lst_surge_events_being_combined)].copy()
+
+    df_rainevent_summary_combined_events_removed["compound"] = False
+    df_rainevent_summary_combined_events_removed["rain_event"] = True
+    df_rainevent_summary_combined_events_removed["surge_event"] = False
+
+    df_wlevel_event_summaries_combined_events_removed["compound"] = False
+    df_wlevel_event_summaries_combined_events_removed["rain_event"] = False
+    df_wlevel_event_summaries_combined_events_removed["surge_event"] = True
+
+    s_starts = pd.concat([df_rainevent_summary_combined_events_removed.rain_event_start,
+                        df_wlevel_event_summaries_combined_events_removed.surge_event_start,
+                        df_combined_events.combined_event_start]).reset_index(drop=True)
+    s_starts.name = "event_start"
+
+    s_ends = pd.concat([df_rainevent_summary_combined_events_removed.rain_event_end,
+                        df_wlevel_event_summaries_combined_events_removed.surge_event_end,
+                        df_combined_events.combined_event_end]).reset_index(drop=True)
+    s_ends.name = "event_end"
+
+    s_compound = pd.concat([df_rainevent_summary_combined_events_removed["compound"],
+                        df_wlevel_event_summaries_combined_events_removed["compound"],
+                        df_combined_events["compound"]]).reset_index(drop=True)
+    s_compound.name = "compound"
+
+    s_rain_event = pd.concat([df_rainevent_summary_combined_events_removed["rain_event"],
+                        df_wlevel_event_summaries_combined_events_removed["rain_event"],
+                        df_combined_events["rain_event"]]).reset_index(drop=True)
+    s_rain_event.name = "rain_event"
+
+    s_surge_event = pd.concat([df_rainevent_summary_combined_events_removed["surge_event"],
+                        df_wlevel_event_summaries_combined_events_removed["surge_event"],
+                        df_combined_events["surge_event"]]).reset_index(drop=True)
+    s_surge_event.name = "surge_event"
+
+    # s_rain_source = pd.concat([df_rainevent_summary_combined_events_removed.rain_data_source,
+    #                     df_wlevel_event_summaries_combined_events_removed.rain_data_source,
+    #                     df_combined_events.rain_data_source]).reset_index(drop=True)
+    # s_rain_source.name = "rain_data_source"
+
+    # s_surge_source = pd.concat([df_rainevent_summary_combined_events_removed.wlevel_data_source,
+    #                     df_wlevel_event_summaries_combined_events_removed.wlevel_data_source,
+    #                     df_combined_events.wlevel_data_source]).reset_index(drop=True)
+    # s_surge_source.name = "wlevel_data_source"
+    df_compound_event_summaries = pd.concat([s_starts, s_ends, s_compound, s_rain_event, s_surge_event], axis = 1)
+    # define data sources from input datasets:
+    rain_source = df_rainevent_summary["rain_data_source"].values[0]
+    wlevel_source = df_wlevel_event_summaries["wlevel_data_source"].values[0]
+    df_compound_event_summaries["rain_data_source"] = rain_source
+    df_compound_event_summaries["wlevel_data_source"] = wlevel_source
+    df_compound_event_summaries.reset_index(drop = True, inplace = True)
+    df_compound_event_summaries.index.name = "event_id"
+
+    overlapping_events_present = True
+    while overlapping_events_present:
+        count_overlapping = 0
+        lst_s_new_events = []
+        lst_s_events_to_keep = []
+        # lst_idx_events_combined = []
+        for e_id, row in df_compound_event_summaries.iterrows():
+            strt = row.event_start
+            end = row.event_end
+            # events overlap if the end comes before the end and after the start of another event
+            # OR if the start comes after the start and before the end of another event
+            filter_end = (end <= df_compound_event_summaries["event_end"]) & (end >= df_compound_event_summaries["event_start"])
+            filter_start = (strt <= df_compound_event_summaries["event_end"]) & (strt >= df_compound_event_summaries["event_start"])
+            if (filter_end | filter_start).sum() > 1:
+                s_new_event = pd.Series(index = df_compound_event_summaries.columns).astype(object)
+                # break
+                count_overlapping += 1
+                idx_overlapping = list(df_compound_event_summaries[filter_end | filter_start].index)
+                
+                df_overlapping = df_compound_event_summaries.loc[idx_overlapping,:]
+                s_new_event["event_start"] = df_overlapping["event_start"].min()
+                s_new_event["event_end"] = df_overlapping["event_end"].min()
+                new_event_classification = df_overlapping.loc[:, ["rain_event", "surge_event"]].any()
+                s_new_event["rain_event"] = new_event_classification["rain_event"]
+                s_new_event["surge_event"] = new_event_classification["surge_event"]
+                s_new_event["compound"] = new_event_classification.all()
+                s_new_event["rain_data_source"] = rain_source
+                s_new_event["wlevel_data_source"] = wlevel_source
+                lst_s_new_events.append(s_new_event)
+                # lst_idx_events_combined.append(idx_overlapping)
+                # drop the event ids that were combined
+                # df_compound_event_summaries = df_compound_event_summaries.drop(idx_overlapping)
+            else:
+                lst_s_events_to_keep.append(row)
+        if len(lst_s_new_events) == 0:
+            break
+        # create dataframe of unique combined events
+        df_newly_combined_events = pd.concat(lst_s_new_events, axis = 1).T.drop_duplicates().reset_index(drop = True)
+        df_non_overlapping_events = pd.concat(lst_s_events_to_keep, axis = 1).T.reset_index(drop = True)
+        df_compound_event_summaries = pd.concat([df_newly_combined_events, df_non_overlapping_events], ignore_index=True)
+        df_compound_event_summaries = df_compound_event_summaries.sort_values("event_start").reset_index(drop = True)
+    return df_compound_event_summaries

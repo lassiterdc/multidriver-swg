@@ -1,0 +1,20 @@
+#%% coarse fit selection
+subdir_name = "slxn_coarse"
+# surge_events
+which_event_key = "surge_events"
+print(f"Plotting {which_event_key} distributions.")
+
+lst_fname_of_interest = ["surge_peak_ft_cvm-0.89_trns_1_shift_dist-gamma",
+                         "surge_peak_ft_cvm-0.86_trns_1_shift_dist-weibull_min_fixed_loc",
+                         "surge_peak_ft_cvm-0.86_notrns_dist-weibull_min_fixed_loc",
+                         "precip_depth_mm_cvm-0.72_trns_1_ub_dist-genpareto",
+                         "precip_depth_mm_cvm-0.38_trns_1_ub_dist-genpareto_fixed_loc",
+                         "max_mean_1hrsurge_peak_after_4hrrain_peak_h_cvm-0.85_notrns_dist-gumbel_l",
+                         "max_4hr_mean_mm_per_hr_cvm-0.91_notrns_dist-genpareto_fixed_loc",
+                         "max_4hr_mean_mm_per_hr_cvm-0.76_notrns_dist-genpareto",
+                         "max_4hr_mean_mm_per_hr_cvm-0.51_notrns_dist-weibull_min_fixed_loc"
+                         ]
+
+s_vars_accounted_for = reproduce_select_plots_and_verify_all_vars_accounted_for(dic_event_stats, which_event_key, lst_fname_of_interest, dic_event_summaries,
+                                                                                dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff)
+print(f"{which_event_key} variables accounted for:\n{s_vars_accounted_for}")

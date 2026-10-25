@@ -1,0 +1,11 @@
+#%% looking into scaled versions of rescaled rainfall time series
+
+fig, ax = plt.subplots(dpi=dpi)
+df_counts_rain_event_rescaling = df_sim_summaries_all.obs_event_id_rain.astype(int).value_counts()
+df_counts_rain_event_rescaling.plot.bar(ax=ax)
+n_rain_events_rescaled = len(df_sim_summaries_all.obs_event_id_rain.value_counts())
+n_rain_events_observed = len(df_all_events_summary[~df_all_events_summary["precip_depth_mm"].isna()])
+ax.set_title(f"# of times rain event was rescaled\n({n_rain_events_rescaled} unique observed events rescaled out of \n{n_rain_events_observed} observed rain time series across\nsurge, rain, and compound events)")
+fig.tight_layout()
+plt.savefig(f"{dir_plot_eda}bar_count_rain_event_rescaling.png", bbox_inches='tight')
+

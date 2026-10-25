@@ -1,0 +1,52 @@
+#%% after inspecting plots, define threshold and perform final event selection
+rain_event_threshold_mm_selected = threshold = 55
+assign_0_to_missing = True
+target_events_per_year = None
+# final run of event selection using selected threshold
+str_data_source = "mrms"
+print(f"performing event selection on {str_data_source} data....")
+df_mrms_rainevent_summary, df_mrms_rainevent_tseries, mrms_threshold_mm, mrms_event_return_rate_n_per_year = event_selection_threshold_or_nstorms(s_mrms_rainfall_mm_per_hr,
+                                                                            min_interevent_time, max_strm_len, str_data_source,
+                                                                            threshold = threshold, assign_0_to_missing = assign_0_to_missing)
+#
+str_data_source = "aorc"
+print(f"performing event selection on {str_data_source} data....")
+df_aorc_rainevent_summary, df_aorc_rainevent_tseries, aorc_threshold_mm, aorc_event_return_rate_n_per_year = event_selection_threshold_or_nstorms(s_aorc_rainfall_mm_per_hr,
+                                                                            min_interevent_time, max_strm_len, str_data_source,
+                                                                            threshold = threshold)
+#
+str_data_source = "ncei_hrly"
+print(f"performing event selection on {str_data_source} data....")
+df_ncei_hrly_rainevent_summary, df_ncei_hrly_rainevent_tseries, ncei_hrly_threshold_mm, ncei_hourly_event_return_rate_n_per_year = event_selection_threshold_or_nstorms(s_rainfall_ncei_hrly_mrms_res_mm_per_hr,
+                                                                                                min_interevent_time,
+                                                                                                max_strm_len, str_data_source,
+                                                                                                threshold = threshold, assign_0_to_missing = assign_0_to_missing)
+# exporting
+df_rain_stats_ncei_hrly = compute_event_timeseries_statistics(df_ncei_hrly_rainevent_tseries["mm_per_hour"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="mm_per_hour", idx_name_time = "date_time",
+                                          agg_stat = "mean")
+df_rain_stats_aorc = compute_event_timeseries_statistics(df_aorc_rainevent_tseries["mm_per_hour"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="mm_per_hour", idx_name_time = "date_time",
+                                          agg_stat = "mean")
+df_rain_stats_mrms = compute_event_timeseries_statistics(df_mrms_rainevent_tseries["mm_per_hour"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="mm_per_hour", idx_name_time = "date_time",
+                                          agg_stat = "mean")
+
+new_data_columns = list(df_rain_stats_ncei_hrly.columns[df_rain_stats_ncei_hrly.columns.str.contains(r'^(?!.*tstep).*$')])
+df_ncei_hrly_rainevent_summary = df_ncei_hrly_rainevent_summary.join(df_rain_stats_ncei_hrly, rsuffix = "_right")
+df_mrms_rainevent_summary = df_mrms_rainevent_summary.join(df_rain_stats_mrms, rsuffix = "_right")
+df_aorc_rainevent_summary = df_aorc_rainevent_summary.join(df_rain_stats_aorc, rsuffix = "_right")
+
+# save outputs to csv files
+## mrms
+Path(f_mrms_event_summaries).parent.mkdir(parents=True, exist_ok=True)
+df_mrms_rainevent_summary.to_csv(f_mrms_event_summaries)
+df_mrms_rainevent_tseries.to_csv(f_mrms_event_timeseries)
+## aorc
+Path(f_aorc_event_summaries).parent.mkdir(parents=True, exist_ok=True)
+df_aorc_rainevent_summary.to_csv(f_aorc_event_summaries)
+df_aorc_rainevent_tseries.to_csv(f_aorc_event_timeseries)
+## ncei
+Path(f_ncei_hrly_event_summaries).parent.mkdir(parents=True, exist_ok=True)
+df_ncei_hrly_rainevent_summary.to_csv(f_ncei_hrly_event_summaries)
+df_ncei_hrly_rainevent_tseries.to_csv(f_ncei_hrly_event_timeseries)
+# df_ncei_daily_rainevent_summary.to_csv(f_ncei_daily_event_summaries)
+# df_ncei_daily_rainevent_tseries.to_csv(f_ncei_daily_event_timeseries)
+

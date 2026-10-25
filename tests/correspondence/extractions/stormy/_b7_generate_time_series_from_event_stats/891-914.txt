@@ -1,0 +1,24 @@
+#%% consolidating into single summary dataframe and time series netcdf
+df_occurences_sim = pd.read_csv(f"{dir_simulate_from_copula}simulated_event_counts_{n_years_of_weather_to_generate}yrs.csv", index_col = "year")
+df_occurences_sim
+
+lst_summaries = []
+lst_ds_tseries = []
+for event_type_key in dic_event_summaries:
+    event_type = None
+    for col in df_occurences_sim.columns:
+        if col in event_type_key:
+            event_type = col
+    df_summaries = pd.read_csv(f"{dir_storm_rescaling}{event_type_key}_simulation_summaries.csv", index_col=["event_type", "year", "event_id"])
+
+    ds_tseries = xr.open_dataset(f"{dir_storm_rescaling}{event_type_key}_simulation_time_series.nc", chunks = dict(timestep = "auto", year = "auto"))
+
+    n_events_in_tseries = len(ds_tseries.isel(timestep = 0).to_dataframe().dropna())
+
+    # make sure number of events is correct
+    if (df_occurences_sim.sum()[event_type] != len(df_summaries)) or (df_occurences_sim.sum()[event_type] != n_events_in_tseries):
+        sys.exit(f"ERROR: THE NUMBER OF SIMULATED {event_type_key} DOES NOT MATCH THE TARGETED NUMBER OF SIMULATIONS".upper())
+
+    lst_summaries.append(df_summaries)
+    lst_ds_tseries.append(ds_tseries)
+

@@ -1,0 +1,8 @@
+#%% functions
+def boxcox_transformation(s_data):
+    scalar_shift_for_boxcox = 0
+    if s_data.min() <= 0:
+        scalar_shift_for_boxcox = .0001+abs(1.0001*s_data.min())
+        s_data += scalar_shift_for_boxcox
+    s_data_transformed, lmbda = stats.boxcox(s_data)
+    return s_data_transformed, lmbda, scalar_shift_for_boxcox

@@ -1,0 +1,14 @@
+
+def simulate_from_copula(df_obs, n, cop_fitted, seeds = None):
+    # df_obs, n = df_obs_subset, len(df_obs_subset)
+    if seeds is not None:
+        try:
+            seeds = list(seeds)
+        except:
+            seeds = [seeds]
+        simulated_data = cop_fitted.simulate(n=n, seeds = seeds)
+    else:
+        simulated_data = cop_fitted.simulate(n=n)
+    df_simulated  = pd.DataFrame(simulated_data)
+    df_simulated.columns = df_obs.columns
+    return df_simulated

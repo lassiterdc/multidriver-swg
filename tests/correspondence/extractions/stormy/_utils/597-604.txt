@@ -1,0 +1,8 @@
+
+def get_quantile_from_value(series, value):
+    # Calculate the rank of each value in the series as a percentage (quantile)
+    ranks = series.rank(pct=True)
+    # Find the closest value in the series
+    closest_value = series.iloc[(series - value).abs().argsort()[:1]].values[0]
+    # Return the quantile of the closest value
+    return ranks[series == closest_value].iloc[0]

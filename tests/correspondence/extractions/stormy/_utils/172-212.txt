@@ -1,0 +1,41 @@
+
+def return_df_of_neighbors_w_rank_weighted_slxn_prob(df_obs_target_source, df_sim_smry, data_cols, n_neighbors):
+    from sklearn.neighbors import NearestNeighbors
+    from sklearn.preprocessing import StandardScaler
+    og_idx_df_obs_target_source = df_obs_target_source.index
+    df_obs_target_source.reset_index(drop = True, inplace = True)
+    s_obs_event_index_lookup = pd.Series(data = og_idx_df_obs_target_source, index = df_obs_target_source.index)
+    s_obs_event_index_lookup.name = 'obs_storm_id'
+    # subset the relevant statistics
+    df_obs_smry_1hydro = df_obs_target_source[data_cols]
+    df_sim_smry_1hydro = df_sim_smry[data_cols]
+    scaler = StandardScaler()
+    scaler.fit(df_obs_smry_1hydro)
+    # scale the data
+    df_obs_smry_1hydro_scaled = scaler.transform(df_obs_smry_1hydro)
+    df_sim_smry_1hydro_scaled = scaler.transform(df_sim_smry_1hydro)
+    # Initialize NearestNeighbors model
+    nbrs = NearestNeighbors(n_neighbors=n_neighbors, algorithm='auto')
+    # Fit the model using df_obs_smry_1hydro_scaled
+    nbrs.fit(df_obs_smry_1hydro_scaled)
+    # Find the nearest neighbors for each row in df_sim_smry_1hydro_scaled
+    distances, indices = nbrs.kneighbors(df_sim_smry_1hydro_scaled)
+    # define rank based weighting for sampling from nearest neighbors
+    s_weighting_numerator = pd.Series(1, index = np.arange(1, n_neighbors+1)) # index is the rank
+    s_weighting_numerator = s_weighting_numerator / s_weighting_numerator.index
+    s_weighting = s_weighting_numerator / s_weighting_numerator.sum()
+
+    lst_s_neighbors = []
+    for col_name, col_data in pd.DataFrame(indices).items():
+        # break
+        new_col_name = f"nbr_{col_name}"
+        s_nearest_obs_event = pd.merge(col_data.to_frame(), s_obs_event_index_lookup,
+                                                left_on=col_name, right_index=True)["obs_storm_id"]
+        s_nearest_obs_event.name = new_col_name
+        lst_s_neighbors.append(s_nearest_obs_event)
+    df_neighbors = pd.concat(lst_s_neighbors, axis = 1)
+
+    # re-order the observed event ids in each row using weighted rank-based sampling
+    df_neighbors = df_neighbors.apply(lambda row: pd.Series(row.sample(n=n_neighbors, replace = False, weights = s_weighting.values).values, index=df_neighbors.columns), axis=1)
+    df_neighbors.index = df_sim_smry.index
+    return df_neighbors

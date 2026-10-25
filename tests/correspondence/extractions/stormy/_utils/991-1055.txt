@@ -1,0 +1,65 @@
+
+
+def compare_2_distributions(s_dataset1, s_dataset2, dataset_name, n_bootstrap, n_per_sample, alpha, bins = 30, include_kde = True,
+                              dir_savefig = None, figtitle_supplementary_text = None, fig_fname_prefix = None, do_bootstrapping = True, plot_hist = True):
+  
+  if (s_dataset1.name is not None) and (s_dataset2.name is not None):
+      txt_data_desc = f"{s_dataset1.name} vs. {s_dataset2.name}"
+  else:
+      txt_data_desc = ""
+  fig_title = f"{dataset_name}\n2-sample test results {txt_data_desc}\nn-per-sample: {n_per_sample} | n samples: {n_bootstrap}"
+  if figtitle_supplementary_text is not None:
+    fig_title += f"\n{figtitle_supplementary_text}"
+  if fig_fname_prefix is not None:
+      fig_fname_prefix = f"{fig_fname_prefix}"
+  else:
+      fig_fname_prefix = ""
+  if dir_savefig is not None:
+      Path(dir_savefig).mkdir(parents=True, exist_ok=True)
+      fname_savefig = f"{dir_savefig}{txt_data_desc}_{dataset_name}_{fig_fname_prefix}.png"
+  else:
+      fname_savefig = None
+  if do_bootstrapping:
+    lst_results = []
+    for samp_id in np.arange(n_bootstrap):
+        df_results = perform_two_sample_tests(s_dataset1.sample(n = n_per_sample, replace = True, random_state=None),
+                                          s_dataset2.sample(n = n_per_sample, replace = True, random_state=None), alpha=alpha)
+        df_results["samp_id"] = samp_id
+        lst_results.append(df_results)
+    df_mc_results = pd.concat(lst_results).reset_index(drop = True)
+    plot_pvalue_distributions(df_mc_results, alpha=alpha,
+                fig_title = fig_title,
+                fname_savefig = fname_savefig)
+  if plot_hist:
+    fig, ax = plt.subplots(dpi = 250, figsize = (7,7))
+    rwidth_value = .8
+    align = "left"
+    if type(bins) == int:
+      min_val = min(s_dataset1.min(), s_dataset2.min())
+      max_val = max(s_dataset1.max(), s_dataset2.max())
+      bin_edges = np.linspace(min_val, max_val, bins + 1)
+    else:
+      bin_edges = bins
+    ax.hist(s_dataset1, bins=bin_edges, color='blue', alpha=0.3, label=s_dataset1.name, density=True, align=align, rwidth=rwidth_value)
+    ax.hist(s_dataset2, bins=bin_edges, color='green', alpha=0.3, label=s_dataset2.name, density=True, align=align, rwidth=rwidth_value)
+    if include_kde:
+      sns.kdeplot(s_dataset1, color='blue', label=s_dataset1.name, fill=False, ax=ax)
+      sns.kdeplot(s_dataset2, color='green', label=s_dataset2.name, fill=False, ax=ax)
+    df_results = perform_two_sample_tests(s_dataset1, s_dataset2, alpha=alpha)
+    txt = ''
+    for result_idx, result_row in df_results.iterrows():
+        txt += f'{result_row["Test"]}: {result_row["p-value"]:.2f} ({result_row["Conclusion"]})\n'
+    ax.text(0.2, -0.3, txt, ha='left', va='center', transform=ax.transAxes, fontsize=8)
+    ax.set_title(f'{dataset_name} {figtitle_supplementary_text}')
+    ax.set_xlabel(dataset_name, fontsize=12)
+    ax.set_ylabel('Density', fontsize=12)
+    ax.legend()
+    fig.suptitle(f"{txt_data_desc}", fontsize=16)
+    fig.tight_layout()
+    if dir_savefig is not None:
+        fname_savefig = f"{dir_savefig}{dataset_name}_{fig_fname_prefix}{txt_data_desc}_histogram.png"
+        plt.savefig(f"{fname_savefig}")
+        plt.clf()
+    else:
+        fname_savefig = None
+        plt.show()

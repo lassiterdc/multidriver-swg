@@ -1,0 +1,4 @@
+
+def inverse_normalize(s_data_transformed, mean, std):
+    s_data_untransformed = s_data_transformed*std + mean
+    return s_data_untransformed

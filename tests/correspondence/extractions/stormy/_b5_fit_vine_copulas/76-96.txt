@@ -1,0 +1,21 @@
+
+def compare_emp_cvm_criterion_to_dist_from_copula_sims(n_samps_for_dist, df_obs, cop_fitted, alpha):
+    sys.exit("i need to update this function so that it is a one-sided test")
+    s_emp_cdf_obs = empirical_multivariate_cdf(df_obs)
+    s_cop_cdf_obs = pd.Series(cop_fitted.cdf(df_obs), index = df_obs.index)
+    cvm_crit_obs = compute_cvm_criterion(s_emp_cdf_obs, s_cop_cdf_obs)
+    s_cvm_crit_sim = pd.Series(index = np.arange(n_samps_for_dist))
+    for sim_idx in np.arange(n_samps_for_dist):
+        df_simulated = simulate_from_copula(df_obs=df_obs, n=len(df_obs), cop_fitted=cop_fitted)
+        s_emp_cdf_sim = empirical_multivariate_cdf(df_simulated)
+        s_cop_cdf_sim = pd.Series(cop_fitted.cdf(df_simulated), index = df_simulated.index)
+        cvm_crit_sim = compute_cvm_criterion(s_emp_cdf_sim, s_cop_cdf_sim)
+        s_cvm_crit_sim.loc[sim_idx] = cvm_crit_sim
+    pvalue = get_quantile_from_value(s_cvm_crit_sim, cvm_crit_obs)
+    if pvalue < alpha/2:
+        mc_result = "reject"
+    elif pvalue > (1-(alpha/2)):
+        mc_result = "reject"
+    else:
+        mc_result = "fail to reject"
+    return mc_result, pvalue, cvm_crit_obs, s_cvm_crit_sim

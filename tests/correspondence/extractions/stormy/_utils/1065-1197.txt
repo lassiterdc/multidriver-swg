@@ -1,0 +1,133 @@
+
+def plot_subset_of_fits(dic_event_summaries, dic_event_stats, dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff,
+                         mode = "all", which_event_key = None,
+                           fname_of_interest = None, subdir_name = None, return_fit = False):
+    # work
+    # cvm_cutoff = ks_cutoff = 0.2
+    # mode = "all"
+    # subdir_name = None
+    # return_fit = True
+    # key = "surge_events"
+    # df_event_summary = dic_event_summaries[key]
+    # vars_all = dic_event_stats[key]
+    # f_pdf_performance = f"{dir_plots_all_fitted_marginals}{key}.csv"
+    # df_perf = pd.read_csv(f_pdf_performance)
+    # fldr_plt = f"{dir_fitting_maringals}plots_{key}/"
+    # v = "precip_depth_mm"
+    # df_perf_singlevar = df_perf[df_perf["data"] == v]
+    # df_best = df_perf_singlevar[(df_perf_singlevar.cvm_pval > cvm_cutoff) & (df_perf_singlevar.ks_pval > ks_cutoff)]
+    # end work
+    import shutil
+    if mode not in ["all", "from_fname"]:
+        sys.exit('mode not recognized')
+    if mode == "from_fname":
+        plotted_succesfully = False
+        if which_event_key == None:
+            sys.exit(f"If mode == {mode}, which_event_key argument must be specified.")
+        if fname_of_interest == None:
+            sys.exit(f"If mode == {mode}, fname_of_interest argument must be specified.")
+        if subdir_name == None:
+            sys.exit(f"If mode == {mode}, subdir_name argument must be specified.")
+    for key in dic_event_summaries:
+        if mode == "from_fname":
+            if key != which_event_key:
+                continue
+            else:
+                # print(f"inspecting plots for {key}")
+                pass
+        # print(f"Processing {which_event_key}.....")
+        df_event_summary = dic_event_summaries[key]
+        vars_all = dic_event_stats[key]
+        f_pdf_performance = f"{dir_plots_all_fitted_marginals}{key}.csv"
+        df_perf = pd.read_csv(f_pdf_performance)
+        fldr_plt = f"{dir_fitting_maringals}plots_{key}/"
+        if mode == "all":
+            try:
+                shutil.rmtree(fldr_plt)
+            except:
+                pass
+            Path(fldr_plt).mkdir(parents=True, exist_ok=True)
+        if mode == "from_fname":
+            f_plt_subdir = f"{fldr_plt}{subdir_name}/"
+            Path(f_plt_subdir).mkdir(parents=True, exist_ok=True)
+        for v in vars_all:
+            df_perf_singlevar = df_perf[df_perf["data"] == v]
+            # return the top n best rows among transformed and untransformed datasets based on each performance metric
+            # lst_transformed = [True, False]
+            # lst_dfs_best = []
+            # for perf_colname in dic_perf_metrics:
+            #     for transformed in lst_transformed:
+            #         filter_any_transformation = (~np.isnan(df_perf_singlevar["upper_bound"])) | (df_perf_singlevar["scalar_shift"]!=0) | df_perf_singlevar["normalize"] | df_perf_singlevar["boxcox"]
+            #         # return all rows with a cvm of greater than 0.2
+            #         if transformed == True:
+                        
+            #             df_perf_singlevar_subset = return_best_n_rows(df_perf_singlevar[filter_any_transformation], perf_colname=perf_colname, best_val=dic_perf_metrics[perf_colname], n_best=n_best)
+            #         else:
+            #             df_perf_singlevar_subset = return_best_n_rows(df_perf_singlevar[~filter_any_transformation], perf_colname=perf_colname, best_val=dic_perf_metrics[perf_colname], n_best=n_best)
+            #         lst_dfs_best.append(df_perf_singlevar_subset)
+            # df_best = pd.concat(lst_dfs_best).drop_duplicates()
+            # also remove any that are rejected by the ks test or cvm test at a prespecified tolerance
+            df_best = df_perf_singlevar[(df_perf_singlevar.cvm_pval > cvm_cutoff) & (df_perf_singlevar.ks_pval > ks_cutoff)]
+            if len(df_best) == 0:
+                print(f"WARNING: NO GOOD FITS WERE FOUND FOR VARIABLE {v}")
+                break
+            # plotting all the possible fits to support manual selection of PDFs
+            for index, row in df_best.iterrows():
+                # total_count += 1
+                # print(total_count)
+                any_transformation = (not np.isnan(row["upper_bound"])) or (row["scalar_shift"]!=0) or row["normalize"] or row["boxcox"]
+                # if "log" in row.loc["distribution"]:
+                #     any_transformation = True
+                fx = getattr(stats, row.loc["distribution"])
+                v = row.data
+                s_data = df_event_summary[v].dropna()
+                fix_loc_to_min = row["fix_loc_to_min"]
+                n_params = row["n_params"]
+                upper_bound = row["upper_bound"]
+                scalar_shift = row["scalar_shift"]
+                normalize = row["normalize"]
+                boxcox = row["boxcox"]
+                plot = True
+                # define figname
+                if row.aic < 0:
+                    aic_desc = "n" + str(round(row.aic, 1)*-1)
+                else:
+                    aic_desc = str(round(row.aic, 1))
+                if any_transformation:
+                    count_transformations = 0
+                    fname_prefix = "trns_{}"
+                    if not np.isnan(row["upper_bound"]):
+                        fname_prefix += "_ub"
+                        count_transformations+=1
+                    if row["scalar_shift"]!=0:
+                        fname_prefix += "_shift"
+                        count_transformations+=1
+                    if row["normalize"]:
+                        fname_prefix += "_nrmlz"
+                        count_transformations+=1
+                    if row["boxcox"]:
+                        fname_prefix += "_bxcx"
+                        count_transformations+=1
+                    fname_prefix = fname_prefix.format(count_transformations)
+                else:
+                    fname_prefix = "notrns"
+                fname = f"{v}_cvm-{round(row.cvm_pval, 2)}_{fname_prefix}_dist-{row.distribution}"
+                if fix_loc_to_min:
+                    fname += "_fixed_loc"
+                fname_savefig = fldr_plt + fname + ".png"
+                if mode == "from_fname":
+                    if fname != fname_of_interest:
+                        continue
+                    else:
+                        fname_savefig = f_plt_subdir + fname + ".png"
+                        # print(f"Plotting and saving figure {fname_savefig}")
+                        pass
+                s_fit, df_emp_vs_fitted = fit_dist(s_data, fx, n_params=n_params, fix_loc_to_min=fix_loc_to_min, upper_bound=upper_bound, scalar_shift=scalar_shift, normalize = normalize, boxcox = boxcox, plot = plot, fname_savefig = fname_savefig)
+                plt.clf()
+                plotted_succesfully = True
+    if mode == "from_fname":
+        if not plotted_succesfully:
+            print("WARNING: FOR SOME REASONG THE FOLLOWING PLOT NOT CREATED:")
+            print(f"{fname_of_interest}")
+        if return_fit == True:
+            return s_fit, df_emp_vs_fitted

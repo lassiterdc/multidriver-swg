@@ -1,0 +1,36 @@
+#%%
+
+
+# df_6min_wlevel_mrms_event_summary_stats.set_index("event_start").reset_index
+
+# merged = pd.merge_asof(s_mrms_rainfall_mm.reset_index(),
+#                        df_6min_wlevel_mrms_event_summary_stats,
+#                        left_on='date_time',
+#                        right_on='event_start',
+#                        direction='nearest')  # options: 'backward', 'forward', 'nearest'
+
+
+# merged.set_index("event_start").loc["2015":]\
+#     .reset_index().plot("event_start", "precip_depth_mm", ax=ax)
+# ax.set_xticklabels("")
+# ax.set_yticklabels("")
+# ax.set_xlabel("date time")
+# ax.set_ylabel("precipitation intensity")
+
+
+
+# Plot using plt.bar with datetime x-values
+# plt.figure(figsize=(10, 4))
+df_6min_wlevel_mrms_event_summary_stats_no_na = df_6min_wlevel_mrms_event_summary_stats.set_index("event_start").loc["2015":]
+df_6min_wlevel_mrms_event_summary_stats_no_na = df_6min_wlevel_mrms_event_summary_stats_no_na.loc[df_6min_wlevel_mrms_event_summary_stats_no_na["precip_depth_mm"].dropna().index]
+
+fig, ax = plt.subplots(dpi = 300, figsize = (6, 4))
+ax.bar(df_6min_wlevel_mrms_event_summary_stats_no_na.index, df_6min_wlevel_mrms_event_summary_stats_no_na["precip_depth_mm"]
+        , width=pd.Timedelta(days=5))  # width controls bar thickness
+ax.set_xticklabels("")
+ax.set_yticklabels("")
+ax.set_xlabel("date time")
+ax.set_ylabel("precipitation intensity")
+fig.tight_layout()
+
+

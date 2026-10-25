@@ -1,0 +1,104 @@
+
+
+def fit_dist(s_data, fx, n_params, upper_bound, fix_loc_to_min, scalar_shift, normalize, boxcox, plot = False, fname_savefig = None):
+    dist = fx.name
+    data_variable = s_data.name
+    s_data = s_data.sort_values()
+    og_index = s_data.index
+    s_data_for_fitting = s_data.reset_index(drop=True).copy()
+    s_data_untransformed = s_data_for_fitting.copy()
+    s_fit = pd.Series(index = ["data", "distribution", "n_params", "shape", "loc", "scale", "cvm_pval", "ks_pval", "aic", "msdi", "madi",
+                                "log", "scalar_shift", "upper_bound", "fix_loc_to_min", "normalize", "boxcox", "scalar_shift_for_boxcox"],
+                        dtype=object)
+    s_fit.loc["data"] = data_variable
+    s_fit.loc["distribution"] = dist
+    s_fit.loc["n_params"] = n_params
+    s_fit.loc["scalar_shift"] = scalar_shift
+    s_fit.loc["normalize"] = normalize
+    s_fit.loc["boxcox"] = boxcox
+    s_fit.loc["upper_bound"] = upper_bound
+    s_fit.loc["fix_loc_to_min"] = fix_loc_to_min
+    # perform transformations
+    s_data_for_fitting, scalar_shift_for_boxcox, lmbda, mean, std = transform_data_for_fitting(s_data_untransformed = s_data_untransformed,
+                                                                                               upper_bound = upper_bound,
+                                                                                                scalar_shift=scalar_shift,
+                                                                                                  normalize=normalize,
+                                                                                                    boxcox=boxcox)
+    s_fit.loc["scalar_shift_for_boxcox"] = scalar_shift_for_boxcox
+    s_fit.loc["lambda"] = lmbda
+    s_fit.loc["mean"] = mean
+    s_fit.loc["std"] = std
+
+    any_transformation = (not np.isnan(s_fit.loc["upper_bound"])) or (s_fit.loc["scalar_shift"]!=0) or s_fit["normalize"] or s_fit["boxcox"]
+    # if "log" in s_fit.loc["distribution"]:
+    #     any_transformation = True
+    s_fit["any_transformation"] = any_transformation
+    
+    s_emp = pd.Series(scipy.stats.mstats.plotting_positions(s_data_for_fitting, 0.44,0.44), name = 'cdf_emp') # gringerton plotting position
+
+    if n_params == 3:
+        if fix_loc_to_min == True:
+            shape, loc, scale = params = fx.fit(s_data_for_fitting, floc = s_data_for_fitting.min())
+        else:
+            shape, loc, scale = params = fx.fit(s_data_for_fitting)
+        s_fit.loc["shape"] = shape
+        x_fit = pd.Series(fx.ppf(s_emp, shape, loc, scale), name = "x_fit_at_empirical_cdf_val")
+        y_cdf = pd.Series(fx.cdf(s_data_for_fitting, shape, loc, scale), name = 'cdf_fit')
+        y_pdf = pd.Series(fx.pdf(x_fit, shape, loc, scale), name = "y_pdf_fit")
+        log_likelihood = np.log(np.prod(fx.pdf(s_data_for_fitting,shape, loc, scale)))
+    if n_params == 2:
+        loc, scale = params = fx.fit(s_data_for_fitting)   
+        x_fit = pd.Series(fx.ppf(s_emp, loc, scale), name = "x_fit_at_empirical_cdf_val")
+        y_cdf = pd.Series(fx.cdf(s_data_for_fitting, loc, scale), name = 'cdf_fit')
+        y_pdf = pd.Series(fx.pdf(x_fit, loc, scale), name = "y_pdf_fit")
+        log_likelihood = np.log(np.prod(fx.pdf(s_data_for_fitting, loc, scale)))
+    # compute the lower and upper bounds of the fitted distribution
+    dist = fx(*params)
+    support_lb, support_ub = dist.support()
+
+    # if a scalar shift was applied or an upper bound was provided, throw an error
+    lower_or_upper_bound_applied = (not np.isnan(s_fit["upper_bound"])) or (s_fit["scalar_shift"] != 0)
+    if lower_or_upper_bound_applied and (np.isinf(support_lb)):
+        # if the lower boundary is less than 0, do not use
+        return None, None
+    if (s_data_for_fitting.min() != support_lb) and fix_loc_to_min:
+        return None, None
+
+    s_fit.loc["support_lb"] = support_lb
+    s_fit.loc["support_ub"] = support_ub
+    s_fit.loc["loc"] = loc
+    s_fit.loc["scale"] = scale
+    # back transform fitted data (in reverse order as transformation)
+    s_data_transformed = x_fit.copy()
+    x_fit_untransformed = backtransform_data(x_fit, s_fit)
+
+    aic = 2 * n_params - 2 * log_likelihood
+    
+    df_emp_vs_fitted = pd.concat([s_data_for_fitting, x_fit, s_data_untransformed, x_fit_untransformed, y_pdf, y_cdf, s_emp], axis = 1, ignore_index=True)
+    df_emp_vs_fitted.columns = ["observations_transformed", f"{x_fit.name}_transformed", "observations_realspace", f"{x_fit.name}_realspace", y_pdf.name, y_cdf.name, s_emp.name]
+    df_emp_vs_fitted.sort_values(s_emp.name, inplace=True)
+    df_emp_vs_fitted.index = og_index
+
+    # if not any_transformation:
+    #     df_emp_vs_fitted["observations_transformed"] = np.nan
+    #     df_emp_vs_fitted[f"{x_fit.name}_transformed"] = np.nan
+
+    msdi = comp_msdi(s_data_untransformed, x_fit_untransformed)
+    madi = comp_madi(s_data_untransformed, x_fit_untransformed)
+    
+    stat, ks_pval = stats.ks_2samp(s_data_for_fitting, x_fit)
+    if n_params == 3:
+        cvm_output = stats.cramervonmises(s_data_for_fitting, fx.name, args = (shape, loc, scale))
+    if n_params == 2:
+        cvm_output = stats.cramervonmises(s_data_for_fitting, fx.name, args = (loc, scale))
+    cvm_pval = cvm_output.pvalue
+
+    s_fit.loc["cvm_pval"] = cvm_pval
+    s_fit.loc["ks_pval"] = ks_pval
+    s_fit.loc["aic"] = aic
+    s_fit.loc["msdi"] = msdi
+    s_fit.loc["madi"] = madi
+    s_fit.name = s_data.name
+    if plot:
+        plot_fitted_distribution(s_fit, df_emp_vs_fitted, n_params, fname_savefig)
+    return s_fit, df_emp_vs_fitted

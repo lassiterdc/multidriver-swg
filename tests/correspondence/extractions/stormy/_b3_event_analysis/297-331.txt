@@ -1,0 +1,35 @@
+#%% investigate quantiles and quantile correlations for each event category
+# surge
+df_combined_summaries = pd.read_csv(f_combined_event_summaries)
+cols_to_drop_for_analysis = ["compound", "rain_event", "surge_event", "rain_data_source", "wlevel_data_source", "event_type", "wlevel_data_source"]
+
+# df_combined_summaries = df_combined_summaries.reset_index()
+df_surge_events = df_combined_summaries[df_combined_summaries["event_type"] == "surge"]
+df_surge_events = df_surge_events.drop(columns=cols_to_drop_for_analysis)
+df_combined_summaries_corrs_of_interest_surge = calculate_quantile_correlations(df_surge_events)
+
+# rain
+df_rain_events = df_combined_summaries[df_combined_summaries["event_type"] == "rain"]
+df_rain_events = df_rain_events.drop(columns=cols_to_drop_for_analysis)
+df_combined_summaries_corrs_of_interest_rain = calculate_quantile_correlations(df_rain_events)
+
+# all
+# df_combined_summaries_corrs_of_interest_all = calculate_quantile_correlations(df_combined_summaries)
+
+
+# just combo
+df_combo_events = df_combined_summaries[df_combined_summaries["event_type"] == "compound"]
+df_combo_events = df_combo_events.drop(columns=cols_to_drop_for_analysis)
+df_combined_summaries_corrs_of_interest_combo = calculate_quantile_correlations(df_combo_events)
+
+
+############## MANUAL SELECTION OF IMPORTANT RELATIONSHIPS ##############
+"""
+Process:
+- Find the strongest relationship between 1 hour max rainfall intensity and a surge statistic
+- Find strongest relationship between 1 hour max rainfall intensity and and time delay statistic
+- Find the strongest relationship between total event depth and a surge statistic
+- Find the strongest relationship between total event depth and a time delay statistic
+- Find strongest relationship between surge peak and a rain statistic
+"""
+target_rainfall_intensity_variable = "max_4hr_mean_mm_per_hr" # ncei, mrms, and aorc come from same distribution for this variable

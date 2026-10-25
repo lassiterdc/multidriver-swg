@@ -1,0 +1,13 @@
+#%% rain_events
+which_event_key = "rain_events"
+print(f"Plotting {which_event_key} distributions.")
+
+lst_fname_of_interest = ["surge_peak_ft_cvm-0.96_trns_1_ub_dist-exponpow",
+                         "precip_depth_mm_cvm-0.96_notrns_dist-weibull_min_fixed_loc",
+                         "max_mean_1hrsurge_peak_after_16hrrain_peak_h_cvm-0.98_notrns_dist-t",
+                         "max_4hr_mean_mm_per_hr_cvm-0.96_notrns_dist-chi"
+                         ]
+
+s_vars_accounted_for = reproduce_select_plots_and_verify_all_vars_accounted_for(dic_event_stats, which_event_key, lst_fname_of_interest, dic_event_summaries,
+                                                                                dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff)
+print(f"{which_event_key} variables accounted for:\n{s_vars_accounted_for}")

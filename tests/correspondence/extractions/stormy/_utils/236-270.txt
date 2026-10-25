@@ -1,0 +1,35 @@
+
+def generate_randomized_tide_component(s_tseries_sim_surge, ds_6min_water_levels_mrms_res, t_window_h_to_shift_tidal_tseries, obs_start, obs_end):
+    years_to_choose_from = ds_6min_water_levels_mrms_res.date_time.to_series().dt.year.unique()[-(n_years_to_look_back_for_tidal_tseries+1):-1]
+    if len(s_tseries_sim_surge.index.names) > 1:
+        s_tseries_sim_surge = s_tseries_sim_surge.reset_index().set_index('timestep')
+    tstep = pd.Series(s_tseries_sim_surge.index.diff()).mode().iloc[0]
+    # randomly shift the tidal time series
+    t_shift_hrs = np.random.uniform(low=-t_window_h_to_shift_tidal_tseries/2, high=t_window_h_to_shift_tidal_tseries/2, size=None)
+    tdelt_shift_tide = pd.Timedelta(t_shift_hrs, "h").round(tstep) 
+    valid_time_series_created = False
+    while valid_time_series_created == False:
+        year = np.random.choice(years_to_choose_from)
+        dur = obs_end - obs_start
+        obs_start_selected = pd.to_datetime(f"{year}-{obs_start.month}-{obs_start.day} {str(obs_start.time())}")
+        obs_end_selected = obs_start_selected + dur
+        s_obs_tseries_tide_shifted = ds_6min_water_levels_mrms_res.sel(date_time = slice((obs_start_selected+tdelt_shift_tide),(obs_end_selected+tdelt_shift_tide)))["tide_ft"].to_dataframe()["tide_ft"]
+        rescaled_dur = s_obs_tseries_tide_shifted.index.max() - s_obs_tseries_tide_shifted.index.min()
+        if (rescaled_dur == dur) and (s_obs_tseries_tide_shifted.isna().sum() == 0):
+            valid_time_series_created = True
+        else: # resample a different year
+            next_years_to_choose_from = []
+            for next_year in years_to_choose_from:
+                if next_year == year:
+                    continue
+                next_years_to_choose_from.append(int(next_year))
+            years_to_choose_from = next_years_to_choose_from
+            valid_time_series_created = False
+            if len(years_to_choose_from) == 0:
+                sys.exit("there were no valid tidal time series in the years selected for identifying tidal time series")
+    tdelt_shift_tide = s_obs_tseries_tide_shifted.index.min() - obs_start
+    s_obs_tseries_tide_shifted.index = s_tseries_sim_surge.index
+    s_tseries_sim_wlevel = s_tseries_sim_surge + s_obs_tseries_tide_shifted
+    s_tseries_sim_wlevel.index = s_tseries_sim_surge.index
+    s_tseries_sim_wlevel.name = "waterlevel_ft"
+    return s_obs_tseries_tide_shifted, s_tseries_sim_wlevel, tdelt_shift_tide

@@ -1,0 +1,18 @@
+#%% load compound event data
+# 6 min water level and mrms
+df_6min_wlevel_mrms_event_summary_stats = pd.read_csv(f_6m_wlevel_mrms_event_summaries, parse_dates = ["event_start", "event_end"])
+df_6min_wlevel_mrms_event_tseries = pd.read_csv(f_6m_wlevel_mrms_event_timeseries, parse_dates = ["date_time"])
+if "_mm" in df_6min_wlevel_mrms_event_tseries.columns:
+    df_6min_wlevel_mrms_event_tseries = df_6min_wlevel_mrms_event_tseries.rename(columns={"_mm":"mm"})
+
+df_6min_wlevel_aorc_event_summary_stats = pd.read_csv(f_6m_wlevel_aorc_event_summaries, parse_dates = ["event_start", "event_end"])
+df_6min_wlevel_aorc_event_tseries = pd.read_csv(f_6m_wlevel_aorc_event_timeseries, parse_dates = ["date_time"])
+if "_mm" in df_6min_wlevel_aorc_event_tseries.columns:
+    df_6min_wlevel_aorc_event_tseries = df_6min_wlevel_aorc_event_tseries.rename(columns={"_mm":"mm"})
+
+df_6min_wlevel_hrly_ncei_event_summary_stats = pd.read_csv(f_6min_wlevel_hrly_ncei_event_summaries, parse_dates = ["event_start", "event_end"])
+df_6min_wlevel_hrly_ncei_event_tseries = pd.read_csv(f_6min_wlevel_hrly_ncei_event_timeseries, parse_dates = ["date_time"])
+
+df_6min_wlevel_hrly_ncei_event_summary_stats = classify_events(df_6min_wlevel_hrly_ncei_event_summary_stats)
+df_6min_wlevel_mrms_event_summary_stats = classify_events(df_6min_wlevel_mrms_event_summary_stats)
+df_6min_wlevel_aorc_event_summary_stats = classify_events(df_6min_wlevel_aorc_event_summary_stats)

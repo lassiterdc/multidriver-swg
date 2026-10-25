@@ -1,0 +1,64 @@
+
+def fill_rain_and_extend_surge_series(df_tseries_sim_rain, s_tseries_sim_surge, ds_6min_water_levels_mrms_res,
+                                       prev_obs_start = None, row_surge_event = None, arbirary_start_date = None, obs_start_hardcode = None):
+    # WORK
+    # df_tseries_sim_rain, s_tseries_sim_surge, ds_6min_water_levels_mrms_res = df_tseries_combined[col_rain], df_tseries_combined["surge_ft"], ds_6min_water_levels_mrms_res
+    # prev_obs_start = obs_start
+    # arbirary_start_date = arbirary_start_date
+    # END WORK
+    # fill missing rain data with 0, fill missing surge data by retrieving more data from the observed event
+    # time series and shifting it using the same adjustment as the previous rescaling
+    df_tseries_sim_rain_filled = df_tseries_sim_rain.fillna(0)
+    s_tseries_sim_surge_filled = s_tseries_sim_surge.copy()
+    if prev_obs_start is not None:
+        first_idx_with_surge = s_tseries_sim_surge.dropna().index.min()
+        first_idx = s_tseries_sim_surge.index.min()
+        # if the first timestep with surge has values, there is no need to backfill
+        if first_idx_with_surge <= first_idx:
+             obs_start = prev_obs_start
+        else: # otherwise, compute how far back we must look in the record to complete the dataset
+            time_needed = first_idx_with_surge - first_idx
+            obs_start = prev_obs_start - time_needed
+    # elif row_surge_event is not None: # index based on index of max surge
+    #     obs_start = lookup_obs_surge_event_start(row_surge_event, arbirary_start_date, s_tseries_sim_surge)
+    elif obs_start_hardcode is not None:
+        obs_start = obs_start_hardcode
+        pass
+    # define event end to ensure the number of necessary tsteps are gathered by adding the entire duration to the obs_start
+    sim_duration = (s_tseries_sim_surge.index.max() - s_tseries_sim_surge.index.min())
+    obs_end = obs_start + sim_duration
+    if (obs_end - obs_start) != sim_duration:
+        sys.exit("ERROR: The observed event duration does not align with the simulated event duration")
+    if s_tseries_sim_surge.isna().any():
+        s_obs_tseries_surge = ds_6min_water_levels_mrms_res.sel(date_time = slice(obs_start,obs_end))["surge_ft"].to_dataframe()["surge_ft"]
+        if row_surge_event is not None:
+            surge_adjustement = row_surge_event["surge_peak_ft"] - row_surge_event["obs_surge_peak_ft"]
+            if not np.isclose((row_surge_event["obs_surge_peak_ft"] + surge_adjustement), row_surge_event["surge_peak_ft"]):
+                sys.exit("error: i messed up in my calculation of the observed event surge scaling")
+            if (s_obs_tseries_surge.index.max() - s_obs_tseries_surge.index.min()) != sim_duration:
+                sys.exit("ERROR: Duration of simulated and observed time series does not line up")
+            if len(s_tseries_sim_surge) != len(s_obs_tseries_surge):
+                sys.exit("ERROR: The number of timesteps in the simulated and observed time series does not line up")
+            s_obs_surge_shifted_tomatch_sim = s_obs_tseries_surge + surge_adjustement
+        else: # no change
+            s_obs_surge_shifted_tomatch_sim = s_obs_tseries_surge
+        # make sure the time series line up
+        # reindex the simulated surge tseries
+        s_tseries_sim_surge_reindexed = s_tseries_sim_surge.copy()
+        s_tseries_sim_surge_reindexed.index = s_tseries_sim_surge_reindexed.index - s_tseries_sim_surge_reindexed.index.min()
+        # define the locs to compare witht the extended series
+        locs_to_compare = s_tseries_sim_surge_reindexed.dropna().index
+        # reindex the observed time series
+        s_obs_surge_shifted_tomatch_sim_reindexed = s_obs_surge_shifted_tomatch_sim.copy()
+        s_obs_surge_shifted_tomatch_sim_reindexed.index = s_obs_surge_shifted_tomatch_sim_reindexed.index - s_obs_surge_shifted_tomatch_sim_reindexed.index.min()
+        abs_diffs = abs(s_obs_surge_shifted_tomatch_sim_reindexed.loc[locs_to_compare] - s_tseries_sim_surge_reindexed.loc[locs_to_compare]).sum()
+        if not np.isclose(abs_diffs.sum(), 0):
+            s_obs_surge_shifted_tomatch_sim_reindexed.name = "obs"
+            s_tseries_sim_surge_reindexed.name = "sim"
+            sim_surge_peak_lead = (s_tseries_sim_surge_reindexed.idxmax() - s_obs_surge_shifted_tomatch_sim_reindexed.idxmax()) / np.timedelta64(1, "h") * 60
+            print(f"Peaks are off by {sim_surge_peak_lead} minutes")
+            pd.concat([s_obs_surge_shifted_tomatch_sim_reindexed, s_tseries_sim_surge_reindexed], axis = 1).plot()
+            sys.exit("ERROR: The matching indices of the rescaled surge event does not align with the surge dataset used for filling missing values")
+        s_tseries_sim_surge_filled = pd.Series(s_obs_surge_shifted_tomatch_sim.values, index = s_tseries_sim_surge.index)
+        s_tseries_sim_surge_filled.name = s_tseries_sim_surge.name
+    return s_tseries_sim_surge_filled, df_tseries_sim_rain_filled, obs_start, obs_end

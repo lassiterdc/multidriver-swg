@@ -1,0 +1,16 @@
+#%% final water level event selection, aiming for similar return period as rainfall (2-2.5 events per year)
+surge_event_threshold_ft_selected = 2.5
+s_6min_surge = df_6min_water_levels_mrms_res["surge_ft"]
+
+str_data_source = "6min_surge_data"
+df_6min_wlevel_event_summaries, df_6min_wlevel_event_tseries, _6min_surge_event_threshold, surge_6min_event_n_per_year = surge_event_selection(s_6min_surge,
+                                                                                                  surge_threshold_to_determine_event_limits, max_event_duration_h,
+                                                                                                  min_interevent_time, str_data_source, threshold = surge_event_threshold_ft_selected)
+
+nperyear = len(df_6min_wlevel_event_summaries) / (len(pd.Series(s_6min_surge.index.date).unique())/365)
+
+df_surge_stats_6min = compute_event_timeseries_statistics(df_6min_wlevel_event_tseries["surge_ft"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze,
+                                                           varname="surge_ft", idx_name_time = "date_time",agg_stat = "mean", idx_event_id = "surge_event_id")
+
+df_6min_wlevel_event_summaries = df_6min_wlevel_event_summaries.join(df_surge_stats_6min)
+

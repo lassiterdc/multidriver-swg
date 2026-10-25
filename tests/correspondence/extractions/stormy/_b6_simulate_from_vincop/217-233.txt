@@ -1,0 +1,17 @@
+
+
+
+idx_valid_allrain_and_wlevel_dates = pd.concat([all_rain_dates, wlevel_dates], join = "inner", axis = 1).index
+idx_valid_allrain_and_wlevel_dates = pd.to_datetime(idx_valid_allrain_and_wlevel_dates).date
+idx_valid_dates = idx_valid_allrain_and_wlevel_dates
+fixed_start_date = "01-01"
+df_obs_annual_event_counts = create_df_of_obs_event_occurences(idx_valid_dates, df_all_events_summary, df_valid_dates, fixed_start_date, lst_event_type = ["rain", "surge", "compound"])
+
+print("Mean annual occurence rate before removing observations")
+print(df_obs_annual_event_counts.loc[:, ["rain", "surge", "compound"]].mean())
+
+
+df_obs_annual_event_counts_for_fitting = df_obs_annual_event_counts[df_obs_annual_event_counts.n_missing < 10]
+print("Mean annual occurence rate after removing observations where n_missing > 10")
+print(df_obs_annual_event_counts_for_fitting.loc[:, ["rain", "surge", "compound"]].mean())
+df_occurences_obs = df_obs_annual_event_counts_for_fitting.loc[:, ["any", "rain", "surge", "compound"]]

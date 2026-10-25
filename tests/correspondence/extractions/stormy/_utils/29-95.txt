@@ -1,0 +1,67 @@
+
+# def calculate_optimal_tstep(sim_time_series, target_sim_depth):
+#     # Compute the sum of the time series
+#     sim_sum = sim_time_series.sum() # sum of all intensities (mm per hour per 5 minute timestep)
+#     # Calculate the optimal tstep_hr
+#     tstep_hr = target_sim_depth / sim_sum
+#     return tstep_hr
+
+def rescale_rain_tseries_to_match_target_depth(sim_time_series, target_sim_depth, target_tstep_tdelta):
+    og_index_name = sim_time_series.index.name
+    # new_tstep_hr = calculate_optimal_tstep(sim_time_series["mm_per_hr"], target_sim_depth)
+    # current_sim_depth = sim_time_series["mm_per_hr"].mean() * n_current_hours
+    # how would we have to modify n_current_hours such that the result matches the target sim depth?
+    # n_hours = target_sim_depth / sim_time_series["mm_per_hr"].mean()
+
+    new_tstep_hr = target_sim_depth / sim_time_series["mm_per_hr"].sum()
+    sim_precip_depth_mm = (sim_time_series["mm_per_hr"] * new_tstep_hr).sum()
+    if not np.isclose(sim_precip_depth_mm, target_sim_depth):
+        sys.exit(F"ERROR: TOTAL PRECIP DEPTH FROM SIMULATED EVENT TIME SERIES DOES NOT EQUAL THE SIMULATED EVENT STATISTIC")
+    # reindex the time series with the new timestep
+    new_idx = pd.timedelta_range(start = "0 hours", periods = len(sim_time_series),
+                                freq=pd.Timedelta(hours=new_tstep_hr))
+    sim_time_series.index = new_idx
+    # now re-index at the original time delta using a time-weighted average intensity
+    idx_back_to_typical = pd.timedelta_range(start='0 hours', end=new_idx[-1], freq=target_tstep_tdelta)
+    idx_back_to_typical.name = "start_time"
+    df_idx_back_to_typical = idx_back_to_typical.to_frame().reset_index(drop = True)
+    df_idx_back_to_typical["end_time"] = df_idx_back_to_typical["start_time"] + target_tstep_tdelta
+
+    # initialize list for final calculated precip values
+    lst_precip_values = []
+    # place the indices into a dataframe representing each tsteps coverage for easy indexing
+    new_idx.name = "start_time"
+    df_new_idx = new_idx.to_frame().reset_index(drop = True)
+    df_new_idx["end_time"] = df_new_idx["start_time"] + pd.Timedelta(hours=new_tstep_hr)
+    for idx_idx, idx_tdelta in enumerate(idx_back_to_typical):
+        row_target_idx = df_idx_back_to_typical.iloc[idx_idx]
+        # find overlapping indices from the re-indexed dataset that overlap with the target index
+        fltr_ovrlp_start = (row_target_idx["start_time"] <= df_new_idx["end_time"])
+        fltr_ovrlp_end = (row_target_idx["end_time"] >= df_new_idx["start_time"])
+        df_overlapping_irreg_indices = df_new_idx[fltr_ovrlp_start & fltr_ovrlp_end]
+        if len(df_overlapping_irreg_indices) == 1:
+            weighted_val = sim_time_series.loc[df_overlapping_irreg_indices.iloc[0]["start_time"], :]
+            weighted_val.name = idx_tdelta
+        elif len(df_overlapping_irreg_indices) > 1:    
+            # define end of time window for calculating time weighted value
+            time_window_end = row_target_idx["end_time"]
+            # initialize time weighted average rainfall intensity
+            weighted_val = pd.Series(data=0, index = sim_time_series.columns).astype(float)
+            # compute weighted value based on each overlapping timestep
+            for irreg_idx in df_overlapping_irreg_indices["start_time"][::-1]:
+                # find duration of overlap with the target regular tstep
+                dur_overlap = (time_window_end - max(irreg_idx, row_target_idx["start_time"])) 
+                # compute the weighting as frac of overlap over the target tstep
+                weight = dur_overlap / target_tstep_tdelta
+                # compute the weighted value and sum it with previous results
+                weighted_val += weight * sim_time_series.loc[irreg_idx, :]
+                # print(f"dur_overlap: {dur_overlap}| weight: {weight:.2f} | weighted_val: {weighted_val:.2f} | time_window_end: {time_window_end}")
+                time_window_end -= dur_overlap # this is just relevant for the print statement
+            weighted_val.name = idx_tdelta
+        lst_precip_values.append(weighted_val)
+    # update precip depth time series
+    # updated_idx = pd.timedelta_range(start='0 hours', periods=len(lst_precip_values), freq=target_tstep_tdelta)
+    # sim_time_series = pd.DataFrame({obs_tseries_mm_p_h.columns[0]:lst_precip_values}, index = updated_idx)
+    sim_time_series = pd.concat(lst_precip_values, axis = 1).T
+    sim_time_series.index.name = og_index_name
+    return sim_time_series

@@ -1,0 +1,14 @@
+
+def generate_annual_event_occurance_df(df_valid_dates, df_event_summary, event_date_column):
+  event_idx_start_date = df_event_summary[event_date_column]#.dt.date
+  df_events = pd.DataFrame(dict(event_occurred = True), index=event_idx_start_date)
+  df_events["event_date"] = pd.to_datetime(df_events.index.date)
+  df_events_per_date = df_events.groupby("event_date").sum()
+  idx_dates = pd.date_range(df_valid_dates.index.min(), df_valid_dates.index.max())
+  df_valid_and_occurance = pd.DataFrame(index = idx_dates)
+  df_valid_and_occurance = df_valid_and_occurance.join(df_events_per_date, how = "outer").fillna(0)
+  df_valid_and_occurance = df_valid_and_occurance.join(df_valid_dates, how = "outer")
+  df_valid_and_occurance[f'n_events_prev{t_window_d}d'] = df_valid_and_occurance['event_occurred'].rolling(window=f'{t_window_d}D').sum()
+  df_valid_and_occurance[f'n_valid_prev{t_window_d}d'] = df_valid_and_occurance['valid'].rolling(window=f'{t_window_d}D').sum()
+  df_valid_and_occurance = df_valid_and_occurance[df_valid_and_occurance["n_valid_prev365d"] == t_window_d]
+  return df_valid_and_occurance

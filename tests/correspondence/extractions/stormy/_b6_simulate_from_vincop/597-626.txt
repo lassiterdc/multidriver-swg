@@ -1,0 +1,30 @@
+#%% check to make sure that compound event statistics generated from surge copula are same as those generated from rain copula
+dic_simulations = {}
+for event_type in df_simulated_realspace.copula_source.unique():
+    df_simulated_realspace_subset = df_simulated_realspace[df_simulated_realspace["copula_source"] == event_type]
+    df_simulated_realspace_overlapping_vars = df_simulated_realspace_subset.dropna(axis = 1)
+    dic_simulations[event_type] = df_simulated_realspace_overlapping_vars.reset_index(drop = True)
+    df_event_summaries = dic_event_summaries[event_type]
+    lst_vars_in_common = []
+    for var in df_simulated_realspace_overlapping_vars.columns:
+        if var not in ["rain_event", "surge_event", "compound_event", "copula_source"]:
+            lst_vars_in_common.append(var)
+
+    alpha = 0.05
+    n_bootstrap = 1000
+    dir_savefig = dir_plot + f"sim_vs_obs_{event_type}/"
+    figtitle_supplementary_text = f""
+    fig_fname_prefix = f"{event_type}_comparison_"
+    cols_to_compare = lst_vars_in_common
+    for dataset in cols_to_compare:
+        s_dataset1 = df_event_summaries[dataset].dropna()
+        s_dataset1.name = "observed"
+        s_dataset2 = df_simulated_realspace_overlapping_vars[dataset]
+        s_dataset2.name = "simulated"
+        n_per_sample = len(s_dataset1)
+        compare_2_distributions(s_dataset1, s_dataset2, dataset, n_bootstrap, n_per_sample, alpha, bins = 30, include_kde = True,
+                                    dir_savefig = dir_savefig, figtitle_supplementary_text = figtitle_supplementary_text,
+                                        fig_fname_prefix = fig_fname_prefix)
+
+
+

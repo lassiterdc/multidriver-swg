@@ -1,0 +1,15 @@
+
+def transform_data_given_transformations(s_data_realspace, s_fit):
+    s_data_transformed = s_data_realspace.copy()
+    # apply upper bound
+    if not np.isnan(s_fit["upper_bound"]):
+        s_data_transformed = (s_data_transformed - s_fit["upper_bound"])*-1
+    # apply shift
+    s_data_transformed = shift_data(s_data_transformed, s_fit["scalar_shift"])
+    # normalize
+    if s_fit["normalize"] == True:
+        s_data_transformed = (s_data_transformed - s_fit["mean"])/s_fit["std"]
+    # boxcox
+    if s_fit["boxcox"] == True:
+        s_data_transformed = stats.boxcox(s_data_transformed+s_fit["scalar_shift_for_boxcox"], lmbda=s_fit["lambda"])
+    return s_data_transformed

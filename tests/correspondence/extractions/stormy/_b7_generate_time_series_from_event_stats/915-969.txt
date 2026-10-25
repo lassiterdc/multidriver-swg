@@ -1,0 +1,55 @@
+#%% combine
+event_type_order = ["rain", "surge", "compound"]
+df_summary_combined = pd.concat(lst_summaries).sort_index().loc[pd.IndexSlice[event_type_order, :, :], :] # the indexing is to force order that index level
+
+# convert surge units from feet to meters
+for col_val_in_feet in [col for col in df_summary_combined.columns if ('_ft' in col)]:
+    newname = col_val_in_feet.replace("_ft", "_m")
+    dic_rename = {col_val_in_feet:newname}
+    # sys.exit("work")
+    df_summary_combined = df_summary_combined.rename(columns = dic_rename)
+    df_summary_combined[newname] = df_summary_combined[newname] / feet_per_meter
+    print(f"Converted {col_val_in_feet} to meters and renamed it to {newname}")
+
+# compute all summary stats that are not shared
+
+
+df_summary_combined.to_csv(f"{dir_storm_rescaling}combined_simulation_summaries.csv")
+
+
+# ds_tseries_combined
+ds_tseries_combined = xr.concat(lst_ds_tseries, dim = "event_type")
+
+# convert water level to meters
+ds_tseries_combined = ds_tseries_combined.rename(dict(waterlevel_ft = "waterlevel_m", surge_ft = "surge_m", tide_ft = "tide_m"))
+ds_tseries_combined["waterlevel_m"] = ds_tseries_combined["waterlevel_m"] / feet_per_meter
+ds_tseries_combined["surge_m"] = ds_tseries_combined["surge_m"] / feet_per_meter
+ds_tseries_combined["tide_m"] = ds_tseries_combined["tide_m"] / feet_per_meter
+
+d_encoding = {}
+for da_name in ds_tseries_combined.data_vars:
+    d_encoding[da_name] = {"zlib":True}
+
+ds_tseries_combined.to_netcdf(f"{dir_storm_rescaling}combined_simulation_time_series.nc", encoding=d_encoding)
+
+# final check that the total rainfall and peak surges line up
+# compare rain depths
+df_event_depths_from_tseries = (ds_tseries_combined["mm_per_hr"] * (tstep / np.timedelta64(1, "h"))).sum("timestep").to_dataframe()
+df_event_depths_from_tseries = df_event_depths_from_tseries.rename(columns = dict(mm_per_hr = "precip_depth_mm_from_tseries"))
+
+diffs = df_summary_combined["precip_depth_mm"].to_frame().join(df_event_depths_from_tseries).diff(axis = 1).iloc[:, 1].values
+
+if (~np.isclose(diffs, 0)).sum() > 0:
+    print("ERROR: rain depths do not line up")
+
+# compare peak surge
+tseries_var = "surge_m"
+summary_var = "surge_peak_m"
+
+df_from_tseries = ds_tseries_combined[tseries_var].max("timestep").to_dataframe()
+df_from_tseries = df_from_tseries.rename(columns = {tseries_var:f"{summary_var}_from_tseries"})
+
+diffs = df_summary_combined[summary_var].to_frame().join(df_from_tseries).diff(axis = 1).iloc[:, 1].values
+
+if (~np.isclose(diffs, 0)).sum() > 0:
+    print(f"ERROR: {summary_var} do not line up")

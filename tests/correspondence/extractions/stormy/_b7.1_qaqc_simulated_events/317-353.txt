@@ -1,0 +1,37 @@
+# df_sim_smries_subset = df_sim_smries_using_most_rescaled_surge_event
+# dataset = "surge_m"
+def return_df_of_obs_tseries_reindexed_at_first_timestep_based_on_subset_of_sim_smry_df(df_sim_smries_subset, ds_tseries_all, dataset, reindex = True):
+    lst_s_tseries_to_plot = []
+    for row_idx, row_event in df_sim_smries_subset.iterrows():
+        event_type = row_idx[0]
+        year = row_idx[1]
+        event_id = row_idx[2]
+        s_tseries = ds_tseries_all.sel(event_type = event_type, year = year, event_id = event_id).to_dataframe().dropna()[dataset]
+        s_tseries.name = f"{event_type}_{year}_{event_id}"
+        # if rainfall, drop preceding and proceeding indices with zero rainfall; also fill na values with 0
+        if dataset == "mm_per_hr":
+            non_zero_indices = s_tseries[s_tseries>0].index
+            s_tseries = s_tseries.loc[non_zero_indices.min():non_zero_indices.max()]
+            s_tseries = s_tseries.fillna(0)
+            s_tseries.index = s_tseries.index - s_tseries.index.min()
+        # if surge, reindex so that the peak surge happens at index 0
+        if dataset in ["surge_m", "tide_m", "waterlevel_m"]:
+            # sys.exit("this ")
+            # if not np.isnan(row_event["surge_peak_after_rain_peak_h_target"]):
+            #     tdelay_stat_name = "surge_peak_after_rain_peak_h_target"
+            #     tdelay_stat_target = row_event[tdelay_stat_name]
+            # elif not np.isnan(row_event["max_mean_16hrsurge_peak_after_16hrrain_peak_h_target"]):
+            #     tdelay_stat_name = "max_mean_16hrsurge_peak_after_16hrrain_peak_h_target"
+            #     tdelay_stat_target = row_event[tdelay_stat_name]
+            # row_event[tdelay_stat_name.split("_target")[0]]
+            s_tseries_surge = ds_tseries_all.sel(event_type = event_type, year = year, event_id = event_id).to_dataframe().dropna()["surge_m"]
+            idx_max_surge = s_tseries_surge.idxmax()
+            new_idx = s_tseries_surge.index - idx_max_surge
+            s_tseries.index = new_idx
+        lst_s_tseries_to_plot.append(s_tseries)
+
+    # combine; and for surge events, drop missing and reindex so that the first timestep is 0; this will not affect rain events
+    df_tseries_combined = pd.concat(lst_s_tseries_to_plot, axis = 1)
+    # df_tseries_combined.index = df_tseries_combined.index - df_tseries_combined.index.min()
+
+    return df_tseries_combined

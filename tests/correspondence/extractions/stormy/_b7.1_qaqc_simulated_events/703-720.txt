@@ -1,0 +1,18 @@
+#%% inspecting the rain event that was most rescaled
+obs_event_id_rain_rescaled_most_times = df_counts_rain_event_rescaling.idxmax()
+
+row_w_target_event_info = df_sim_summaries_all[df_sim_summaries_all["obs_event_id_rain"] == obs_event_id_rain_rescaled_most_times].iloc[0]
+obs_event_start = row_w_target_event_info["obs_event_start_rain"]
+obs_event_end = row_w_target_event_info["obs_event_end_rain"]
+
+row_obs_event_smry = df_all_events_summary.loc[obs_event_id_rain_rescaled_most_times,:]
+s_obs_rain_event = ds_event_tseries.sortby("date_time").sel(date_time = slice(obs_event_start,obs_event_end)).to_dataframe()["mm_per_hr"]
+fig, ax = plt.subplots(dpi=dpi)
+s_obs_rain_event.plot(ax=ax)
+ax.set_title(f"Rainfall from event id {obs_event_id_rain_rescaled_most_times}\n(depth = {row_obs_event_smry['precip_depth_mm']:.2f} mm, max intensity = {row_obs_event_smry['precip_max_intensity']:.2f} mm per hour)")
+fig.tight_layout()
+plt.savefig(f"{dir_plot_eda}tseries_obs_rainevent_most_rescaled.png", bbox_inches='tight')
+
+
+
+

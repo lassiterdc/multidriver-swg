@@ -1,0 +1,17 @@
+
+# plot and save to csv
+def plot_wlevel_histogram(df_wlevel_event_summaries, df_wlevel_event_tseries, surge_event_threshold,
+                   s_surge, n_events_per_year,
+                   fname_save = None):
+    fig, ax1 = plt.subplots(dpi = 200)
+    df_wlevel_event_summaries.max_surge_ft.hist(ax = ax1)
+    ax1.set_xlabel("max_surge_ft")
+    fig_txt = f"Surge threshold for event selection: {surge_event_threshold:.2f} ft\n"
+    fig_txt += f"n_events = {len(df_wlevel_event_summaries)} | n_years = {len(pd.Series(s_surge.index.date).unique())/365.25:.2f} | Events per year = {n_events_per_year:.2f}"
+    fig.text(.5, -0.08, fig_txt, ha='center')
+    fig.tight_layout()
+    if fname_save is not None:
+        plt.savefig(fname_save, bbox_inches='tight')
+        plt.clf()
+    else:
+        plt.show()

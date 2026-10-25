@@ -1,0 +1,4 @@
+
+def compute_cvm_criterion(s_sample, s_fitted):
+    cvm_stat = ((s_sample - s_fitted)**2).sum()
+    return cvm_stat

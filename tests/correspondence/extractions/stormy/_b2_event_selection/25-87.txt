@@ -1,0 +1,63 @@
+#%% load data
+# ncei data from the airport
+# df_rainfall_ncei_daily_in = pd.read_csv(f_daily_summaries_airport, parse_dates=["DATE"])
+df_rainfall_ncei_hourly_in = pd.read_csv(f_hourlyprecip_airport, parse_dates=["DATE"])
+
+# drop duplicates and return just the precipitation series
+# s_rainfall_ncei_daily_in = df_rainfall_ncei_daily_in.loc[:, ["DATE", "PRCP"]].drop_duplicates().set_index("DATE").PRCP
+s_rainfall_ncei_hourly_in = df_rainfall_ncei_hourly_in.loc[:, ["DATE", "HPCP"]].drop_duplicates().set_index("DATE").HPCP
+# replace missing values with 0 for event selection
+s_rainfall_ncei_hourly_in[s_rainfall_ncei_hourly_in == 999.99] = 0
+
+
+# s_rainfall_ncei_mrms_res_mm = s_rainfall_ncei_mrms_res_mm_per_hr * (5/60) # mm/hour * 5 min/tstep * 1/60 hr/min = mm per tstep
+# mrms data
+df_mrms_rainfall = pd.read_csv(f_mrms_rainfall, parse_dates=True, index_col = "time")
+df_mrms_rainfall.index.name = "date_time"
+s_mrms_bias_corrected = df_mrms_rainfall.bias_corrected
+s_mrms_rainfall_mm_per_hr = df_mrms_rainfall.rain_mean
+s_mrms_rainfall_mm_per_hr.name = "mm_per_hr"
+tstep_mrms = pd.Series(s_mrms_rainfall_mm_per_hr.index.diff()).mode().iloc[0]
+tstep_mrms_min = tstep_mrms / np.timedelta64(1, "h")*60
+s_mrms_rainfall_mm = s_mrms_rainfall_mm_per_hr * (tstep_mrms_min/60)
+s_mrms_rainfall_mm.name = "mm"
+# water level data
+df_6min_water_levels = pd.read_csv(f_water_level_storm_surge, parse_dates=True, index_col="date_time")
+df_hrly_water_levels = pd.read_csv(f_water_level_storm_surge_hrly, parse_dates=True, index_col="date_time")
+df_hrly_water_levels.rename(columns = dict(waterlevel_ft_hrly = "waterlevel_ft", surge_ft_hrly = "surge_ft"), inplace = True)
+# preprocessing water level data
+## resample water level time series to same timestep as rainfall
+df_hrly_water_levels_1min = df_hrly_water_levels.loc[:, ["waterlevel_ft", "tide_ft", "surge_ft"]].resample('1min').mean().ffill()
+df_hrly_water_levels_mrms_res = df_hrly_water_levels_1min.loc[:, ["waterlevel_ft", "tide_ft", "surge_ft"]].resample(f'{tstep_mrms_min:.0f}min').mean()
+df_6min_water_levels_1min = df_6min_water_levels.loc[:, ["waterlevel_ft", "tide_ft", "surge_ft"]].resample('1min').mean().ffill()
+df_6min_water_levels_mrms_res = df_6min_water_levels_1min.loc[:, ["waterlevel_ft", "tide_ft", "surge_ft"]].resample(f'{tstep_mrms_min:.0f}min').mean()
+
+# df_6min_water_levels_mrms_res.to_csv(f_6min_wlevel_resampled_to_5_min)
+df_6min_water_levels_mrms_res.to_xarray().to_netcdf(f_6min_wlevel_resampled_to_mrms_res_nc)
+
+
+# load rainyda results
+# ds_rainyday = xr.open_dataset(f_rain_realizations)
+# # extract rainyday rainfall
+# da_rainyday_depth = (ds_rainyday.rain * ds_rainyday.timestep_min / 60) # mm/hr * 5 min/testp * 1/60 hr/min = mm/tstep
+# da_rainyday_mean_depth_per_event = da_rainyday_depth.sum(["time"]).mean(["latitude", "longitude"]) # sum over time then take spatial mean
+# df_rainyday_mean_depth_per_event = da_rainyday_mean_depth_per_event.to_dataframe()
+
+s_rainfall_ncei_hrly_mrms_res_mm_per_hr, s_rainfall_ncei_hrly_mrms_res_mm = process_ncei_data(s_rainfall_ncei_hourly_in, tstep_mrms_min)
+
+
+# aorc data
+df_aorc_rainfall = pd.read_csv(f_aorc_rainfall, parse_dates=True, index_col = "time")
+df_aorc_rainfall.index.name = "date_time"
+# change to mrms resolution
+og_tstep_aorc = pd.Series(df_aorc_rainfall.index.diff()).mode().iloc[0]
+df_aorc_rainfall = df_aorc_rainfall.resample(f'{tstep_mrms_min:.0f}min').asfreq()
+df_aorc_rainfall = df_aorc_rainfall.groupby(pd.Grouper(level='date_time', freq=og_tstep_aorc)).ffill() # grouping by date makes sure i don't accidentally fill long swaths of missing data
+
+s_aorc_rainfall_mm_per_hr = df_aorc_rainfall.rain_mean
+s_aorc_rainfall_mm_per_hr.name = "mm_per_hr"
+tstep_aorc = pd.Series(s_aorc_rainfall_mm_per_hr.index.diff()).mode().iloc[0]
+tstep_aorc_min = tstep_aorc / np.timedelta64(1, "h")*60
+s_aorc_rainfall_mm = s_aorc_rainfall_mm_per_hr * (tstep_aorc_min/60)
+s_aorc_rainfall_mm.name = "mm"
+

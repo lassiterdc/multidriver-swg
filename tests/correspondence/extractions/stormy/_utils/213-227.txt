@@ -1,0 +1,15 @@
+
+def retrieve_obs_and_sim_info_for_rescaling(data_cols, df_neighbors, sim_event_id, n_rescaling_attempts, df_all_events_summary, df_sim_smry):
+    # define obs event id for trial
+    row_obs_neighbors = df_neighbors.loc[sim_event_id,:]
+    obs_event_id = row_obs_neighbors.iloc[n_rescaling_attempts]
+    
+    # extract event stats
+    event_start = df_all_events_summary.loc[obs_event_id,'event_start']
+    event_end = df_all_events_summary.loc[obs_event_id,'event_end']
+    og_event_category = df_all_events_summary.loc[obs_event_id,'event_type']
+    row_obs_event = df_all_events_summary.loc[obs_event_id, ]
+
+    nbr_id = row_obs_neighbors[row_obs_neighbors == obs_event_id].index[0]
+    row_sim_event = df_sim_smry.loc[sim_event_id, data_cols]
+    return nbr_id, event_start, event_end, obs_event_id, row_obs_event, row_sim_event

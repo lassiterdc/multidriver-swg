@@ -1,0 +1,7 @@
+#%% plot all distribution fits
+mode = "all"
+subdir_name = None
+return_fit = True
+
+plot_subset_of_fits(dic_event_summaries, dic_event_stats, dir_plots_all_fitted_marginals,
+                     cvm_cutoff, ks_cutoff, mode = mode, subdir_name = subdir_name, return_fit = return_fit)

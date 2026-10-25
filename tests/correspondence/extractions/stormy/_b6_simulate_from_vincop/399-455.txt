@@ -1,0 +1,57 @@
+
+
+## compound
+event_type="compound"
+lbda_compound = estimate_poisson_lambda(df_obs_annual_event_counts_for_fitting, idx_valid_dates, event_type)
+
+## rain only
+event_type="rain"
+lbda_rain = estimate_poisson_lambda(df_obs_annual_event_counts_for_fitting, idx_valid_dates, event_type)
+
+## surge only
+event_type="surge"
+lbda_surge = estimate_poisson_lambda(df_obs_annual_event_counts_for_fitting, idx_valid_dates, event_type)
+
+# ## simulate from poisson distribution
+# n_per_year_sim_compound = simulate_from_poisson(lbda_compound, n_years_to_simulate, random_seed, "compound")
+# n_per_year_sim_rain = simulate_from_poisson(lbda_rain, n_years_to_simulate, random_seed, "rain")
+# n_per_year_sim_surge = simulate_from_poisson(lbda_surge, n_years_to_simulate, random_seed, "surge")
+
+# # df_occurences_obs = pd.concat([s_obs_annual_event_counts_compound, s_obs_annual_event_rain, s_obs_annual_event_counts_surge], axis = 1)
+# # df_occurences_obs["any"] = df_occurences_obs.sum(axis = 1, skipna = False)
+
+# df_occurences_sim = pd.concat([n_per_year_sim_compound, n_per_year_sim_rain, n_per_year_sim_surge], axis = 1)
+# df_occurences_sim["any"] = df_occurences_sim.sum(axis = 1)
+
+# plot simulations
+# txt_fig_caption = f"This is based on the number of 365-day observational periods on record"
+# savefig_filename = f"{dir_plot}event_occurences_observed.png"
+# plot_event_occurances(df_occurences_obs, txt_fig_caption=txt_fig_caption, savefig_filename=savefig_filename, plot_n_count = True)
+# 
+
+# savefig_filename = None
+# txt_fig_caption = f"n={n_years_of_weather_to_generate} years of event occurences simulated using 3 poissons distributions for rainfall, storm surge, and compound events"
+# compare_sim_vs_obs_event_occurances(df_occurences_sim.iloc[0:n_years_of_weather_to_generate, :], df_occurences_obs, txt_fig_caption = txt_fig_caption, savefig_filename=savefig_filename, plot_n_count = True)
+
+# n_bootstrap = 200
+# alpha = 0.05
+# dir_savefig = f"{dir_plot}occurence_sim_vs_obs_gof/"
+# try:
+#     shutil.rmtree(dir_savefig)
+# except:
+#     pass
+# Path(dir_savefig).mkdir(parents=True, exist_ok=True)
+# figtitle_supplementary_text = ""
+# for dataset in df_occurences_sim.columns:
+#     fig_fname_prefix = f"_event_occurence_gof_"
+#     s_dataset1 = df_occurences_sim[dataset]
+#     s_dataset1.name = "simulated"
+#     s_dataset2 = df_occurences_obs[dataset].dropna()
+#     s_dataset2.name = "observed"
+#     n_per_sample = len(s_dataset2)
+#     compare_2_distributions(s_dataset1, s_dataset2, dataset, n_bootstrap, n_per_sample, alpha, bins = 30, include_kde = True,
+#                                         dir_savefig = dir_savefig, figtitle_supplementary_text = figtitle_supplementary_text,
+#                                             fig_fname_prefix = fig_fname_prefix)
+    
+# print("not using Poisson")
+

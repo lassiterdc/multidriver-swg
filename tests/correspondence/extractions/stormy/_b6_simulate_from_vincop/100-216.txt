@@ -1,0 +1,117 @@
+#%% build model of # of events per year using mrms data
+def create_df_of_obs_event_occurences(idx_valid_dates, df_all_events_summary, df_valid_dates, fixed_start_date, lst_event_type = ["rain", "surge", "compound"]):
+    # t_window_d = 364
+    start_date = idx_valid_dates.min()
+    end_date = idx_valid_dates.max()
+    if fixed_start_date is not None:
+        start_date = pd.to_datetime(f"{start_date.year}-{fixed_start_date}")
+        end_date = (pd.to_datetime(f"{end_date.year+1}-{fixed_start_date}") - np.timedelta64(24, "h")).date()
+    idx_full_daterange = pd.date_range(start_date, end_date)
+    fltr_valid = []
+    for __, row in df_all_events_summary.iterrows():
+        valid_event = False
+        # for valid_date in idx_valid_dates:
+        if ((idx_valid_dates >= row["event_start"].date()) & (idx_valid_dates <= row["event_start"].date())).sum()> 0:
+            valid_event = True
+        fltr_valid.append(valid_event)
+    df_all_events_summary_subset = df_all_events_summary[fltr_valid]
+    lst_s_event_occurences = []
+    for event_type in lst_event_type:
+        s_event_start_dates = df_all_events_summary_subset[df_all_events_summary_subset["event_type"] == event_type]["event_start"].dt.date
+        s_event_occurred = pd.Series(data = True, index = s_event_start_dates)
+        s_event_occurred = s_event_occurred.reindex(idx_full_daterange, fill_value=False)
+        s_event_occurred.name = event_type
+        lst_s_event_occurences.append(s_event_occurred)
+    df_obs_annual_event_occurence = pd.concat(lst_s_event_occurences, axis = 1)
+    # if fixed_start_date is not None: # create full-year groups
+    s_groups = pd.Series(index = df_obs_annual_event_occurence.index, dtype=int)
+    group = 0
+    timeleft = True
+    group_start_date = df_obs_annual_event_occurence.index.min()
+    while timeleft == True:
+        group_end_date = pd.to_datetime((pd.to_datetime(f"{group_start_date.year+1}-{fixed_start_date}") - np.timedelta64(24, "h")).date())
+        # creat groups
+        if len(s_groups.loc[group_start_date:group_end_date]) == 0:
+            timeleft = False
+            break
+        s_groups.loc[group_start_date:group_end_date] = int(group)
+        group += 1
+        group_start_date = pd.to_datetime((pd.to_datetime(f"{group_start_date.year+1}-{fixed_start_date}")).date())
+    s_groups = s_groups.astype(int)
+    # df_obs_annual_event_counts = df_obs_annual_event_occurence.reset_index(drop = True).rolling(window=t_window_d).sum().iloc[::t_window_d].dropna()
+    df_obs_annual_event_counts = df_obs_annual_event_occurence.groupby(s_groups).sum()
+    df_obs_annual_event_counts.index.name = "group"
+    s_groups.index.name = "date"
+    s_groups.name = "group"
+    s_start_dates = s_groups.to_frame().reset_index().groupby("group").min()["date"]
+    s_start_dates.name = "begin_date"
+    s_end_dates = s_groups.to_frame().reset_index().groupby("group").max()["date"]
+    s_end_dates.name = "end_date"
+    s_date_ranges = pd.concat([s_start_dates, s_end_dates], axis = 1)
+    df_obs_annual_event_counts = df_obs_annual_event_counts.join(s_date_ranges)
+    # compute statistics
+    df_obs_annual_event_counts["any"] = df_obs_annual_event_counts.loc[:, lst_event_type].sum(axis = 1)
+    # col_idx_adjust = len(df_obs_annual_event_counts.columns)
+    # df_obs_annual_event_counts["ppct_quant"] = np.nan
+    # df_obs_annual_event_counts["ppct_result"] = ""
+    s_valid = pd.Series(data = True, index = idx_valid_dates).reindex(idx_full_daterange, fill_value=False)
+    n_valid_days_per_group = s_valid.groupby(s_groups).sum()
+    n_days_per_group = df_obs_annual_event_counts["end_date"] - df_obs_annual_event_counts["begin_date"] + np.timedelta64(24, "h")
+    n_days_per_group = n_days_per_group / np.timedelta64(1, "D")
+    df_obs_annual_event_counts["n_missing"] = (n_days_per_group - n_valid_days_per_group).astype(int)
+    for grp_idx, row in df_obs_annual_event_counts.iterrows():
+        n_days_in_group = n_days_per_group.loc[grp_idx]
+        if row["end_date"].date() >= df_valid_dates.index.max():
+            df_valid_dates_group = df_valid_dates.loc[row["begin_date"].date():].copy()
+            n_additional_missing = (row["end_date"].date() - df_valid_dates_group.index.max()) / np.timedelta64(1, "D")
+        else:
+            df_valid_dates_group = df_valid_dates.loc[row["begin_date"].date():row["end_date"].date()].copy()
+            n_additional_missing = 0
+        s_days_missing_group = n_days_in_group - (~df_valid_dates_group.isna()).sum() + n_additional_missing
+        df_obs_annual_event_counts.loc[grp_idx, "n_missing_rain"] = s_days_missing_group.loc["all_rain_data"]
+        df_obs_annual_event_counts.loc[grp_idx, "n_missing_wlevel"] = s_days_missing_group.loc["wlevel_data"]
+    # else: # do a rolling sum
+    #     df_obs_annual_event_counts = df_obs_annual_event_counts.reset_index(drop = True).rolling(window=t_window_d).sum().iloc[::t_window_d].dropna()
+    #     df_obs_annual_event_counts["begin_date"] = s_event_occurred.index.min()
+    #     df_obs_annual_event_counts["end_date"] = s_event_occurred.index.min()
+    #     # analyze missing days in observed event series
+    #     iloc_idx_event_counts = df_obs_annual_event_counts.index
+    #     loc_event_count_end_dates = s_event_occurred.iloc[iloc_idx_event_counts].index
+    #     # ppcf
+    #     low = 1
+    #     high = 365
+    #     # low = 1
+    #     # high = 12
+    #     mc_samps_for_dist = 1000
+    #     df_obs_annual_event_counts["any"] = df_obs_annual_event_counts.loc[:, lst_event_type].sum(axis = 1)
+    #     col_idx_adjust = len(df_obs_annual_event_counts.columns)
+    #     df_obs_annual_event_counts["n_missing"] = np.nan
+    #     df_obs_annual_event_counts["ppct_quant"] = np.nan
+    #     df_obs_annual_event_counts["ppct_result"] = ""
+    # #     # lst_n_missing = []
+    # prev_enddate = s_event_occurred.index.min()
+    # for i, enddate in tqdm(enumerate(loc_event_count_end_dates)):
+    #     s_event_occurred_reindexed = s_event_occurred.reindex(idx_full_daterange, fill_value=np.nan).loc[prev_enddate:enddate]
+    #     s_event_occurred_reindexed_missing = s_event_occurred_reindexed[s_event_occurred_reindexed.isna()]
+    #     s_event_occurred_reindexed_present = s_event_occurred_reindexed[~s_event_occurred_reindexed.isna()]
+    #     s_monthly_date_counts = pd.Series(s_event_occurred_reindexed_present.index.month).value_counts().sort_index()
+    #     # probability plot correlation test: uniform distribution
+    #     ## create series of days included in the observational dataset replacing 366 (on leap years) with 29
+    #     s_obs = pd.Series(s_event_occurred_reindexed_present.index.day_of_year).replace(366, 29)
+    #     # s_obs = pd.Series(s_event_occurred_reindexed_present.index.month)
+    #     quant, fig, ax = ppcf_randint(s_obs, mc_samps_for_dist, low, high, plot = False, alpha = alpha)
+    #     if (quant < alpha):
+    #         result = "reject"
+    #     else:
+    #         result = "fail_to_reject"
+    #     df_obs_annual_event_counts.iloc[i, col_idx_adjust+3] = quant
+    #     df_obs_annual_event_counts.iloc[i, col_idx_adjust+4] = result
+    #     # if result == "reject":
+    #     #     quant, fig, ax = ppcf_randint(s_obs, mc_samps_for_dist, low, high, plot = True, alpha = 0.05)
+    #     #     ax.set_title(F"Probability Plot Correlation Test\nObserved day-of-year valid dates in 365-day period vs.\nsimulated from randint(low={low}, high={high}) distribution")
+
+    #     df_obs_annual_event_counts.iloc[i, col_idx_adjust] = len(s_event_occurred_reindexed_missing)
+    #     df_obs_annual_event_counts.iloc[i, col_idx_adjust+1] = prev_enddate
+    #     df_obs_annual_event_counts.iloc[i, col_idx_adjust+2] = enddate
+    #     prev_enddate = enddate
+    return df_obs_annual_event_counts

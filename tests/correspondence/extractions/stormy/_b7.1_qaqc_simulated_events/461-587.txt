@@ -1,0 +1,127 @@
+#%% combining surge and rain rescalings to look at variability of simulated events
+df_sim_summaries_all = df_sim_summaries_all.set_index(["event_type", "year", "event_id"])
+dir_plot_rain_and_surge_rescaling = f"{dir_plot}/rain_rescaling_and_surge/"
+create_folder(dir_plot_rain_and_surge_rescaling, clear_folder=True)
+
+df_sim_summaries_rain = df_sim_summaries_all[df_sim_summaries_all["precip_depth_mm"]>0]
+obs_event_idx_rescaled_rain = df_sim_summaries_rain.loc[:, "obs_event_id_rain"].astype(int).unique()
+
+for obs_event_idx in obs_event_idx_rescaled_rain:
+    lst_s_to_plot = []
+    df_sim_smries_using_rescaled_rain_event = df_sim_summaries_all[df_sim_summaries_all["obs_event_id_rain"] == obs_event_idx]
+
+
+    # return time series for all simulated events with that observed rain dataset
+    # sim_events_indices = df_sim_smries_using_rescaled_rain_event.reset_index()["sim_event_id"].values
+    # ds_tseries_all_subset = ds_tseries_all.sel(sim_event_id = sim_events_indices)
+    # create dataframe of time series shifted such that the first non-zero rainfall value is 0
+    lst_df_tseries_combined = []
+    for event_type, year, event_id in df_sim_smries_using_rescaled_rain_event.index:
+        df_tseries_all_subset = ds_tseries_all.sel(event_type = event_type, year = year, event_id = event_id).to_dataframe()
+        df_tseries_all_subset = df_tseries_all_subset.drop(columns = ["event_type", "year", "event_id"])
+        # drop rows where all the values are na
+        df_tseries_all_subset = df_tseries_all_subset[~df_tseries_all_subset.isna().all(axis = 1)]
+        if df_tseries_all_subset["mm_per_hr"].sum() == 0:
+            continue
+        first_tstep_w_rain = df_tseries_all_subset[df_tseries_all_subset["mm_per_hr"] > 0].index[0]
+        df_tseries_all_subset_reindexed = df_tseries_all_subset.copy()
+        df_tseries_all_subset_reindexed.index = df_tseries_all_subset.index - first_tstep_w_rain
+        df_tseries_all_subset_reindexed["event_info"] = f"{event_type}_{year}_{event_id}"
+        df_tseries_all_subset_reindexed = df_tseries_all_subset_reindexed.reset_index().set_index(["event_info", "timestep"])
+        lst_df_tseries_combined.append(df_tseries_all_subset_reindexed)
+        # df_tseries_all_subset = df_tseries_all_subset[~df_tseries_all_subset.isna().all(axis = 1)]
+        # reindex so that timestep 0 is first non-zero rainfall value
+    
+    df_tseries_combined = pd.concat(lst_df_tseries_combined)
+
+    
+    df_tseries_combined["surge_m"].unstack(level = "event_info")
+    df_tseries_combined["waterlevel_m"].unstack(level = "event_info")
+
+
+
+    # df_tseries_combined = return_df_of_obs_tseries_reindexed_at_first_timestep_based_on_subset_of_sim_smry_df(df_sim_smries_using_rescaled_rain_event, ds_tseries_all, dataset="mm_per_hr")
+    
+    n_rescalings = len(df_sim_smries_using_rescaled_rain_event)
+    # fname_savefig = f"{dir_plot_rain_rescalings}rescaled_rain_event_{obs_event_idx}_with_surge_variation.png"
+    row_w_target_event_info = df_sim_summaries_all[df_sim_summaries_all["obs_event_id_rain"] == obs_event_idx].iloc[0]
+    obs_event_start = row_w_target_event_info["obs_event_start_rain"]
+    obs_event_end = row_w_target_event_info["obs_event_end_rain"]
+    df_obs = ds_event_tseries.sortby("date_time").sel(date_time = slice(obs_event_start,obs_event_end)).to_dataframe()
+    # shift so that the first non-zero rain depth occurs at time 0
+    df_obs.index = (df_obs.index - df_obs[df_obs["mm_per_hr"] > 0].index[0]) / np.timedelta64(1, "m")
+
+    s_obs_rain_event = df_obs["mm_per_hr"]
+    s_obs_rain_event.name = "observed rainfall"
+    s_obs_rain_event.color = "black"
+    # s_obs_event = s_obs_rain_event
+    # include original event
+    # s_obs_event_reindexed = s_obs_event.copy()
+    # s_obs_event_reindexed.index = (s_obs_event.index - s_obs_event.index.min()) 
+    
+    lst_s_to_plot.append(s_obs_rain_event)
+    # line_label = "original time series"
+    ylab = "mm per hour"
+    # extract observed event statistics for plot title
+    obs_event_row = df_all_events_summary.loc[obs_event_idx, :]
+    obs_event_type = obs_event_row["event_type"]
+    obs_event_precip_depth = obs_event_row["precip_depth_mm"]
+    obs_event_precip_max_intnsty = obs_event_row["precip_max_intensity"]
+    obs_event_peak_surge = obs_event_row["surge_peak_m"]
+
+    txt_ax_title = f"Rescaled and shifted rainfall and storm surge around obs rain event id {obs_event_idx} (n_rescalings = {n_rescalings})\nObserved event type = {obs_event_type} | rain depth (mm) = {obs_event_precip_depth:.1f}\npeak intensity (mm per hr) = {obs_event_precip_max_intnsty:.1f} | peak surge (m) = {obs_event_peak_surge:.1f}"
+
+    fname_savefig = None
+    return_fig_and_ax = True
+    sep_plt_for_lines = False
+    fig = plt.figure(figsize=(10, 12), dpi = 300)  # Adjust the overall figure size
+    gs = gridspec.GridSpec(3, 2, width_ratios=[1, 0.03], height_ratios=[.8, 1, 1])
+    ax1 = fig.add_subplot(gs[0, 0])
+    plot_event_quantiles_over_time(df_tseries_combined=df_tseries_combined["mm_per_hr"].unstack(level = "event_info"), lst_s_to_plot=lst_s_to_plot,
+                                    sep_plt_for_lines = sep_plt_for_lines,
+                                      ylab=ylab, txt_ax_title=txt_ax_title, add_cbar = False, fig=fig, gs=gs, ax1 = ax1, x_tick_tstep_hr = "12 hours",
+                                        fname_savefig=fname_savefig)
+    # sys.exit()
+
+    lst_s_to_plot = []
+    s_obs_event = df_obs["surge_m"]
+    s_obs_event.name = "observed surge"
+    s_obs_event.color = "black"
+    lst_s_to_plot.append(s_obs_event)
+    # line_label = "original time series"
+    ylab = "surge (m)"
+    txt_ax_title = f""
+    # fname_savefig  = None
+    sep_plt_for_lines = False
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    plot_event_quantiles_over_time(df_tseries_combined=df_tseries_combined["surge_m"].unstack(level = "event_info"), lst_s_to_plot=lst_s_to_plot,
+                                    sep_plt_for_lines = sep_plt_for_lines,
+                                      ylab=ylab, txt_ax_title=txt_ax_title, add_cbar = True, fig=fig, gs=gs, ax1 = ax2, x_tick_tstep_hr = "12 hours",
+                                      fname_savefig=None)
+    
+
+    lst_s_to_plot = []
+    s_obs_event = df_obs["waterlevel_m"]
+    s_obs_event.name = "observed water level"
+    s_obs_event.color = "black"
+    lst_s_to_plot.append(s_obs_event)
+    # line_label = "original time series"
+    ylab = "water level (surge + tide) (m)"
+    txt_ax_title = f""
+    # fname_savefig  = None
+    sep_plt_for_lines = False
+
+    ax3 = fig.add_subplot(gs[2, 0])
+    plot_event_quantiles_over_time(df_tseries_combined=df_tseries_combined["waterlevel_m"].unstack(level = "event_info"), lst_s_to_plot=lst_s_to_plot,
+                                    sep_plt_for_lines = sep_plt_for_lines,
+                                      ylab=ylab, txt_ax_title=txt_ax_title, add_cbar = False, fig=fig, gs=gs, ax1 = ax3, x_tick_tstep_hr = "12 hours",
+                                      fname_savefig=None)
+    fname_savefig = f"{dir_plot_rain_and_surge_rescaling}rain_event_{obs_event_idx}_rescaled_w_surge.png"
+    plt.savefig(fname_savefig, bbox_inches='tight')
+    plt.clf()
+    # sys.exit()
+
+
+
+

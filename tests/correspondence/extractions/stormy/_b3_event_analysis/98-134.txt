@@ -1,0 +1,37 @@
+#%% pie charts
+fname_savefig = f"{dir_compound_events_stats_plots}pie_frac_surge_rain_and_combo_6min_wlevel_and_ncei.png"
+n_valid_events = len(df_6min_wlevel_hrly_ncei_event_summary_stats.dropna())
+n_compound = (df_6min_wlevel_hrly_ncei_event_summary_stats.dropna()["compound"]==True).sum()
+frac_overlapping = n_compound / n_valid_events
+fig, ax = plt.subplots()
+df_6min_wlevel_hrly_ncei_event_summary_stats["data_source"] = df_6min_wlevel_hrly_ncei_event_summary_stats["rain_data_source"] + "_and_" + df_6min_wlevel_hrly_ncei_event_summary_stats["wlevel_data_source"]
+df_6min_wlevel_hrly_ncei_event_summary_stats.dropna()["event_type"].value_counts().plot.pie(ax=ax)
+ax.set_ylabel('')
+txt = f"{n_compound}/{n_valid_events} ({frac_overlapping * 100:.1f}%) of events exceed both the rainfall and surge thresholds"
+fig.text(0, 0, txt)
+plt.savefig(fname_savefig, bbox_inches='tight')
+plt.clf()
+
+fname_savefig = f"{dir_compound_events_stats_plots}pie_frac_surge_rain_and_combo_6min_wlevel_and_mrms.png"
+n_valid_events = len(df_6min_wlevel_mrms_event_summary_stats.dropna())
+n_compound = (df_6min_wlevel_mrms_event_summary_stats.dropna()["compound"]==True).sum()
+frac_overlapping = n_compound / n_valid_events
+fig, ax = plt.subplots()
+df_6min_wlevel_mrms_event_summary_stats.dropna()["event_type"].value_counts().plot.pie(ax=ax)
+ax.set_ylabel('')
+txt = f"{n_compound}/{n_valid_events} ({frac_overlapping * 100:.1f}%) of events exceed both the rainfall and surge thresholds"
+fig.text(0, 0, txt)
+plt.savefig(fname_savefig, bbox_inches='tight')
+plt.clf()
+
+fname_savefig = f"{dir_compound_events_stats_plots}pie_frac_surge_rain_and_combo_6min_wlevel_and_aorc.png"
+n_valid_events = len(df_6min_wlevel_aorc_event_summary_stats.dropna())
+n_compound = (df_6min_wlevel_aorc_event_summary_stats.dropna()["compound"]==True).sum()
+frac_overlapping = n_compound / n_valid_events
+fig, ax = plt.subplots()
+df_6min_wlevel_aorc_event_summary_stats.dropna()["event_type"].value_counts().plot.pie(ax=ax)
+ax.set_ylabel('')
+txt = f"{n_compound}/{n_valid_events} ({frac_overlapping * 100:.1f}%) of events exceed both the rainfall and surge thresholds"
+fig.text(0, 0, txt)
+plt.savefig(fname_savefig, bbox_inches='tight')
+plt.clf()

@@ -1,0 +1,11 @@
+#%%  ALL
+# abs_cors = df_variables_selected_all.abs_corr
+# var1s = df_variables_selected_all.reset_index().var1
+# var2s = df_variables_selected_all.reset_index().var2
+# s_savefig_fnames = fldr_plots + "all_event_abs_corr_" + abs_cors.round(3).astype(str) + "_" + var1s.values + "." + var2s.values+  ".png"
+
+# plot_event_statistic_relationships(df_variables_selected_all,
+#                                        df_combined_summaries, fig_title = "all_events", s_savefig_fnames=s_savefig_fnames)
+# df_variables_selected_all.to_csv(f"{dir_selecting_maringals}all_event_marginals.csv")
+
+#%% export dataframe with the selected statistics

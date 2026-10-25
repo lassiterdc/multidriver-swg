@@ -1,0 +1,7 @@
+#%% functions
+def find_dates_with_data(s_full_dataset):
+  s_valid_dates = pd.Series(pd.Series(s_full_dataset.index.date).unique())
+  df_dates_with_data = pd.DataFrame(dict(valid = True), index = s_valid_dates)
+  s_all_dates = pd.date_range(start = s_valid_dates.min(), end = s_valid_dates.max())
+  df_valid_dates = df_dates_with_data.reindex(s_all_dates, fill_value=False)
+  return df_valid_dates

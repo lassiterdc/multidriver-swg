@@ -1,0 +1,293 @@
+#%% stochastic storm rescaling
+lst_skip = ['compound_events', 'rain_events', "surge_events"]
+for event_type_key in dic_event_summaries:
+    modeled_stats = format_fitted_cdf_values_for_fitting_copula(event_type_key = event_type_key).columns
+    rain_intensity_stat = None
+    for col in modeled_stats:
+        if col == "precip_depth_mm":
+            continue
+        if "surge" in col:
+            continue
+        else:
+            rain_intensity_stat = col
+    if event_type_key in lst_skip:
+        print(f"Skipping {event_type_key} because it is in lst_skip")
+        continue
+    dir_tseries_outputs = f"{dir_over_sim}{event_type_key}_tseries/"
+    fpath_sim_summaries = f"{dir_over_sim}{event_type_key}_simulation_summaries_all.csv"
+    df_obs_event_summaries = dic_event_summaries[event_type_key]
+    if event_type_key in ["rain_events", "surge_events"]:
+        max_obs_strm_duration = max_strm_len  + np.timedelta64(timeseries_buffer_around_peaks_h*2, "h")# for rain and surge events, enforce maximum event duration defined in _inputs.py
+    elif event_type_key == "compound_events":
+        max_obs_strm_duration = (df_obs_event_summaries["event_end"] - df_obs_event_summaries["event_start"]).max()*compound_event_time_window_multiplier # allowing simulated time series to be longer than observed
+    df_sim_smry = dic_simulations[event_type_key].drop(columns = non_event_data_cols)
+    if pick_up_where_left_off and os.path.exists(fpath_sim_summaries):
+        df_sim_event_summaries_previous = pd.read_csv(fpath_sim_summaries)
+        df_sim_event_summaries_previous = df_sim_event_summaries_previous.set_index(["sim_event_id", "rescaling_attempt"])
+        event_id_to_resume_with = df_sim_event_summaries_previous.index.max()[0]
+        # exclude last event id in case it was incomplete
+        df_sim_event_summaries_previous = df_sim_event_summaries_previous.loc[pd.IndexSlice[0:(event_id_to_resume_with-1), :], :]
+        if event_id_to_resume_with == df_sim_smry.index.max():
+            print(f"{event_type_key} have already been rescaled. Not rescaling since pick_up_where_left_off={pick_up_where_left_off}")
+            continue
+        # subset summary dataset 
+        df_sim_smry = df_sim_smry.loc[event_id_to_resume_with:, :]
+        print(f"Resuming rescaling {event_type_key} beginning with event id {event_id_to_resume_with}")
+    else: # if not picking up where left off and clear outputs is true, clear outputs
+        if clear_tseries_outputs:
+            try:
+                shutil.rmtree(dir_tseries_outputs)
+                print(f"Deleteing and recreating folder {dir_tseries_outputs}")
+            except:
+                pass
+    Path(dir_tseries_outputs).mkdir(parents=True, exist_ok=True)
+
+    # initialize simulation event summary table
+    cols_data = dic_simulations[event_type_key].drop(columns = non_event_data_cols).columns
+    dic_col_rename = {}
+    for dvar in cols_data:
+        dic_col_rename[dvar] = f"{dvar}_target"
+    df_sim_event_summaries = dic_simulations[event_type_key] 
+    df_sim_event_summaries = df_sim_event_summaries.rename(columns = dic_col_rename)
+    # df_sim_event_summaries.loc[:, cols_data] = np.nan
+    # df_sim_event_summaries.loc[:, ["rain_rescaling_problems", "surge_rescaling_problems"]] = ""
+    df_sim_event_summaries.index.name = "sim_event_id"
+    lst_df_rain_event_summaries = []
+    lst_df_surge_event_summaries = []
+
+    # identify neighboring events to rescale for rainfall and storm surge time series
+    s_cols = pd.Series(df_sim_smry.columns) # all simulation summary columns
+    surge_data_cols = s_cols[s_cols.str.contains("surge") & ~s_cols.str.contains("after")].values
+    # subset all events with nonnull peak surge coming from desired data source
+    fltr_storms_to_rescale = (~df_all_events_summary["surge_peak_ft"].isna()) & (df_all_events_summary["wlevel_data_source"] == wlevel_data_source_for_rescaling)
+    df_obs_target_source_surge = df_all_events_summary[fltr_storms_to_rescale]
+    # subset all events with nonnull precip depths and coming from desired data source
+    rain_data_cols = s_cols[~s_cols.str.contains("surge")].values
+    fltr_storms_to_rescale = (~df_all_events_summary["precip_depth_mm"].isna()) & (df_all_events_summary["rain_data_source"] == rain_data_source_for_rescaling)
+    df_obs_target_source_rain = df_all_events_summary[fltr_storms_to_rescale]
+    sys.exit("I think i should combine all event statistics into a single nearest neighbors sample")
+    df_neighbors_rain = return_df_of_neighbors_w_rank_weighted_slxn_prob(df_obs_target_source_rain, df_sim_smry, rain_data_cols, n_neighbors)
+    df_neighbors_surge = return_df_of_neighbors_w_rank_weighted_slxn_prob(df_obs_target_source_surge, df_sim_smry, surge_data_cols, n_neighbors)
+    nghbr_idx = df_neighbors_rain.columns # same for both
+    # but just to make sure
+    if (~(df_neighbors_rain.columns == df_neighbors_surge.columns)).sum() > 0:
+        sys.exit("rain and surge neighbor dataframe do not have same column headers")
+    # lst_tmp_tseries = []
+    # lst_tmp_smries = []
+    print(f"Rescaling {len(df_sim_smry)} {event_type_key}....")
+
+    for n_events_processed, sim_event_id in tqdm(enumerate(df_sim_smry.index)):
+        lst_df_surge_sim_tseries = []
+        lst_df_rain_sim_tseries = []
+        # work
+        # n_events_processed, sim_event_id = 0, 0
+        # n_events_processed, sim_event_id = 1, 1
+        # lst_tmp_tseries = []
+        # lst_tmp_smries = []
+        # end work
+        trial_count = 0
+        for hydro_type in ["rain", "surge"]:
+        # for sim_event_id, obs_event_id in tqdm(s_nearest_obs_event.items()):
+            # create new row for final df_event_summary dataframe which will also be indexed on the rescaling attempt
+            lst_df_event_summary_rescaling_attempts = []
+            for i in np.arange(n_neighbors):
+                df_event_summary_row = df_sim_event_summaries.loc[sim_event_id, :].to_frame().T.copy()
+                df_event_summary_row.index.name = df_sim_event_summaries.index.name
+                df_event_summary_row["rescaling_attempt"] = i
+                df_event_summary_row = df_event_summary_row.reset_index().set_index(["sim_event_id", "rescaling_attempt"])
+                lst_df_event_summary_rescaling_attempts.append(df_event_summary_row)
+            df_event_summary_row = pd.concat(lst_df_event_summary_rescaling_attempts)
+
+            s_n_problems = pd.Series(data = 0, index = nghbr_idx).astype(int)
+            obs_event_selection_made = False
+            n_rescaling_attempts = -1
+            # work
+            trial_count += 1
+            # end work
+            while obs_event_selection_made == False:                
+                n_rescaling_attempts += 1
+                # if the previous attempt had no problems or if all neighbors have at least 1 problem, break the loop
+                prev_nbr_id = None
+                if n_rescaling_attempts > 0:
+                    prev_nbr_id = nghbr_idx[n_rescaling_attempts-1]
+                # if previous rescaling attempt resulted in no problems or if all neighboring events have been exhausted, break the loop
+                if ((prev_nbr_id is not None) and (s_n_problems.loc[prev_nbr_id] == 0)) or (n_rescaling_attempts >= len(nghbr_idx)):
+                    if hydro_type == "rain":
+                        lst_df_rain_event_summaries.append(df_event_summary_row)
+                    if hydro_type == "surge":
+                        lst_df_surge_event_summaries.append(df_event_summary_row)
+                    obs_event_selection_made = True
+                    break
+
+                # break
+                # distribute observed event over time
+                # get the time series
+                if hydro_type == "surge":
+                    #
+                    nbr_id, event_start, event_end, obs_event_id,\
+                          row_obs_event, row_sim_event = retrieve_obs_and_sim_info_for_rescaling(surge_data_cols, df_neighbors_surge,
+                                                                                                  sim_event_id, n_rescaling_attempts,
+                                                                                                    df_all_events_summary, df_sim_smry)
+                    #
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "surge_rescaling_problems"] = ""
+                    obs_tseries_surge = ds_event_tseries.sel(date_time = slice(event_start,event_end))["surge_ft"].reset_coords(drop = True).to_dataframe()
+                    if obs_tseries_surge.max().values != df_all_events_summary.loc[obs_event_id,'surge_peak_ft']:
+                        sys.exit("ERROR: THE EVENT SUMMARY AND EVENT TIME SERIES STATS DON'T LINE UP")
+                    surge_stat = "surge_peak_ft"
+                    diff = row_sim_event[surge_stat] - row_obs_event[surge_stat]
+                    sim_time_series = obs_tseries_surge + diff
+                    if not np.isclose(sim_time_series.max().values, row_sim_event[surge_stat]):
+                        sys.exit(F"ERROR: {surge_stat} FROM SIMULATED EVENT TIME SERIES DOES NOT EQUAL THE SIMULATED EVENT STATISTIC")
+                    # re-index 
+                    tstep = pd.Series(sim_time_series.index.diff()).mode().iloc[0]
+                    sim_time_series.index = pd.timedelta_range(start = "0 hours", periods = len(sim_time_series), freq=tstep)
+                    # sim_time_series.index.name = "timestep"
+                    # lst_df_hydro_sims.append(sim_time_series)
+                    if sim_time_series.index.max() > max_obs_strm_duration:
+                        txt_problems = f"|WARNING: simulated water level tseries duration is longer than max observed storm length ({sim_time_series.index.max()} vs. {max_obs_strm_duration})"
+                        df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "surge_rescaling_problems"] += txt_problems
+                        s_n_problems.loc[nbr_id] += 1
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "sim_surge_duration"] = sim_time_series.index.max()
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "surge_peak_ft"] = (sim_time_series).max().values[0]
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "obs_surge_peak_ft"] = row_obs_event["surge_peak_ft"]
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], f"obs_event_id_{hydro_type}"] = obs_event_id
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], f"obs_event_start_{hydro_type}"] = event_start
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], f"obs_event_end_{hydro_type}"] = event_end
+                    # add relevant identifiers for future indexing
+                    sim_time_series.index.name = "timestep"
+                    sim_time_series["sim_event_id"] = sim_event_id
+                    sim_time_series["rescaling_attempt"] = n_rescaling_attempts
+                    sim_time_series = sim_time_series.reset_index().set_index(["sim_event_id", "rescaling_attempt", "timestep"])
+                    lst_df_surge_sim_tseries.append(sim_time_series)
+                    # lst_tmp_smries.append(df_event_summary_row)
+                    # lst_tmp_tseries.append(sim_time_series)
+                elif hydro_type == "rain":
+                    # data_cols, df_neighbors, sim_event_id, n_rescaling_attempts, df_all_events_summary, df_sim_smry = rain_data_cols, df_neighbors_rain, sim_event_id, n_rescaling_attempts, df_all_events_summary, df_sim_smry
+                    nbr_id, event_start, event_end, obs_event_id,\
+                          row_obs_event, row_sim_event = retrieve_obs_and_sim_info_for_rescaling(rain_data_cols, df_neighbors_rain,
+                                                                                                  sim_event_id, n_rescaling_attempts,
+                                                                                                    df_all_events_summary, df_sim_smry)
+                    # load time series of selected neighbor
+                    obs_tseries_mm_p_h = df_obs_mrms.loc[event_start:event_end, :]
+                    obs_tseries_mm_p_h = obs_tseries_mm_p_h.rename(columns = dict(rain_mean = "mm_per_hr"))
+                    tstep_tdelta = pd.Series(obs_tseries_mm_p_h.index).diff().mode().iloc[0]
+                    # obs_tseries_mm_p_h = ds_event_tseries.sel(date_time = slice(event_start,event_end))["mm_per_hr"].reset_coords(drop = True).to_dataframe()
+                    tstep_hr = pd.Series(obs_tseries_mm_p_h.index).diff().mode().iloc[0] / np.timedelta64(1, "h")
+                    # trim leading and trailing zeros
+                    if obs_tseries_mm_p_h["mm_per_hr"].values.sum()>0:
+                        idx_last = obs_tseries_mm_p_h[obs_tseries_mm_p_h["mm_per_hr"] != 0].index.max()
+                        idx_first = obs_tseries_mm_p_h[obs_tseries_mm_p_h["mm_per_hr"] != 0].index.min()
+                        obs_tseries_mm_p_h = obs_tseries_mm_p_h.loc[idx_first:idx_last,:]
+                    # initialize rescaling problems column
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "rain_rescaling_problems"] = ""
+                    # check to make sure stats line up with event summaries
+                    obs_tseries_mm = ds_event_tseries.sel(date_time = slice(event_start,event_end))["mm"].reset_coords(drop = True).to_dataframe()
+                    if not np.isclose(obs_tseries_mm.sum().values, df_all_events_summary.loc[obs_event_id,'precip_depth_mm']):
+                        sys.exit("ERROR: THE EVENT SUMMARY AND EVENT TIME SERIES STATS DON'T LINE UP")
+                    # if the target depth is low and the intensity is such that a single timestep at that intensity would yield rainfall greater
+                    # than the target rain depth, consider this a 0 precipitation event;
+                    # also consider this a zero precipitation if the selected nearest neighbor has zero precipitation
+                    min_rainfall_minutes = row_sim_event["precip_depth_mm"] / row_sim_event[rain_intensity_stat] * 60
+                    target_tstep_min = pd.Series(obs_tseries_mm.index.diff()).mode().iloc[0] / np.timedelta64(1, "m")
+                    if (min_rainfall_minutes < target_tstep_min) or (obs_tseries_mm_p_h["mm_per_hr"].values.sum() == 0): # consider this event to have no rainfall
+                        sim_time_series = pd.DataFrame(columns=obs_tseries_mm_p_h.columns,
+                                                           index = obs_tseries_mm_p_h.index - obs_tseries_mm_p_h.index.min())
+                        # df_sim_time_series.index.name = "timestep"
+                        # df_sim_time_series["sim_event_id"] = sim_event_id
+                        # df_sim_time_series["rescaling_attempt"] = n_rescaling_attempts
+                        sim_time_series.loc[:, :] = 0
+                        # sim_time_series = df_sim_time_series["mm_per_hr"]
+                        # lst_idx_sim_impossible_to_rescale.append(sim_event_id)
+                        # txt_problems = f"|skipping rescaling event rainfall because it would require a shorter time series time step than {target_tstep_min} min to achieve target rain depth"
+                        # df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "rain_rescaling_problems"] += txt_problems
+                        # s_n_problems.loc[nbr_id] += 1
+                        # print(txt_problem)
+                        s_time_series_renameed = sim_time_series["mm_per_hr"]
+                        s_time_series_renameed.name = "mm_per_hr"
+                        sim_max_intensity = compute_sim_max_mean_rain_intensity(s_time_series_renameed.to_frame(), rain_intensity_stat)
+                        sim_precip_depth_mm = (sim_time_series["mm_per_hr"]*tstep_hr).sum()
+                    else: # otherweise, attempt rescaling
+                        # verbose = False
+                        sim_time_series, txt_problems = rescale_rainfall_timeseries(row_sim_event, obs_tseries_mm_p_h, max_obs_strm_duration, n_cutoff, rtol, atol, rain_intensity_stat=rain_intensity_stat, verbose = False)
+                        # make sure that the timesteps match the target timestep
+                        if (sim_time_series.index.diff().dropna() != tstep_tdelta).sum() > 0:
+                            sys.exit("irregular timestep encountered")
+                        if len(txt_problems) > 0:
+                            df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "rain_rescaling_problems"] += txt_problems
+                            s_n_problems.loc[nbr_id] += 2
+                        sim_max_intensity = compute_sim_max_mean_rain_intensity(sim_time_series["mm_per_hr"].to_frame(), rain_intensity_stat)
+                        sim_precip_depth_mm = (sim_time_series["mm_per_hr"]*tstep_hr).sum()
+                        if not np.isclose(sim_max_intensity, row_sim_event[rain_intensity_stat], rtol=rtol, atol=atol):
+                            txt_problems = f"|WARNING: simulated max 1 hr mean intensity is not within tolerance of target value ({sim_max_intensity:.3f} vs. {row_sim_event[rain_intensity_stat]:.3f})"
+                            df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "rain_rescaling_problems"] += txt_problems
+                            s_n_problems.loc[nbr_id] += 2
+                            if verbose:
+                                print(txt_problems)
+                        if not np.isclose(sim_precip_depth_mm, row_sim_event['precip_depth_mm'], rtol=rtol, atol=atol):
+                            txt_problems = f"|WARNING: simulated depth is not within tolerance of target value ({sim_precip_depth_mm:.3f} vs. {row_sim_event['precip_depth_mm']:.3f})"
+                            df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "rain_rescaling_problems"] += txt_problems
+                            s_n_problems.loc[nbr_id] += 2
+                            if verbose:
+                                print(txt_problems)
+                        if sim_time_series.index.max() > max_obs_strm_duration:
+                            txt_problems = f"|WARNING: simulated rainfall tseries duration is longer than max observed storm length ({sim_time_series.index.max()} vs. {max_obs_strm_duration})"
+                            df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "rain_rescaling_problems"] += txt_problems
+                            s_n_problems.loc[nbr_id] += 2
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "sim_rain_duration"] = sim_time_series.index.max()
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], rain_intensity_stat] = sim_max_intensity
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "precip_depth_mm"] = sim_precip_depth_mm
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "obs_rain_intensity_stat"] = row_obs_event[rain_intensity_stat]
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], "obs_precip_depth_mm"] = row_obs_event["precip_depth_mm"]
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], f"obs_event_id_{hydro_type}"] = obs_event_id
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], f"obs_event_start_{hydro_type}"] = event_start
+                    df_event_summary_row.loc[pd.IndexSlice[sim_event_id, n_rescaling_attempts], f"obs_event_end_{hydro_type}"] = event_end
+                    # add relevant identifiers for future indexing
+                    sim_time_series.index.name = "timestep"
+                    sim_time_series["sim_event_id"] = sim_event_id
+                    sim_time_series["rescaling_attempt"] = n_rescaling_attempts
+                    sim_time_series = sim_time_series.reset_index().set_index(["sim_event_id", "rescaling_attempt", "timestep"])
+                    lst_df_rain_sim_tseries.append(sim_time_series)
+                    # lst_tmp_smries.append(df_event_summary_row)
+                    # lst_tmp_tseries.append(sim_time_series)
+        # after processing event, write event-specific time series and all event summaries processed so far
+        if len(lst_df_surge_sim_tseries) > 1:
+            s_surge_tseries = pd.concat(lst_df_surge_sim_tseries)
+        else:
+            s_surge_tseries = lst_df_surge_sim_tseries[0]
+        if len(lst_df_rain_sim_tseries) > 1:
+            df_rain_tseries = pd.concat(lst_df_rain_sim_tseries)
+        else:
+            df_rain_tseries = lst_df_rain_sim_tseries[0]
+
+        s_surge_tseries = s_surge_tseries.astype(float)
+        df_rain_tseries = df_rain_tseries.astype(float)
+        
+        df_sim_event_tseries = pd.concat([s_surge_tseries, df_rain_tseries], axis = 1)
+        ds_sim_event_tseries = df_sim_event_tseries.to_xarray()
+        d_encoding = {}
+        for da_name in ds_sim_event_tseries.data_vars:
+            d_encoding[da_name] = {"zlib":True}
+        ds_sim_event_tseries.to_netcdf(f"{dir_tseries_outputs}{event_type_key}_simid_{sim_event_id}_time_series.nc", encoding=d_encoding)
+
+        # write simulated event summary outputs to file
+        df_surge_smries = pd.concat(lst_df_surge_event_summaries)
+        df_rain_smries = pd.concat(lst_df_rain_event_summaries)
+        overlapping_cols = df_surge_smries.columns[df_surge_smries.columns.isin(df_rain_smries.columns)]
+        if verbose:
+            print(f"removing the following columns from surge rescaling event summary dataframe for joining with the rain rescaling event summary dataframe:\n{overlapping_cols}")
+        df_surge_smries = df_surge_smries.drop(columns = overlapping_cols)
+        df_sim_event_summaries_processed = pd.concat([df_rain_smries, df_surge_smries], axis = 1)
+        # if either the rain and surge rescaling problems columns are NA, rescaling was not attempted because a previous attempt had succeeded
+        fltr_rescaling_completed = ~df_sim_event_summaries_processed["surge_rescaling_problems"].isna() | ~df_sim_event_summaries_processed["rain_rescaling_problems"].isna()
+        df_sim_event_summaries_processed = df_sim_event_summaries_processed[fltr_rescaling_completed]
+        if pick_up_where_left_off: # append newly processed data to previous dataframe for writing
+            # first make sure columns have same datatypes
+            dtype_mapping = df_sim_event_summaries_processed.dtypes.to_dict()
+            df_sim_event_summaries_previous = df_sim_event_summaries_previous.astype(dtype_mapping)
+            df_sim_event_summaries_processed = pd.concat([df_sim_event_summaries_previous, df_sim_event_summaries_processed])
+        df_sim_event_summaries_processed.to_csv(f"{dir_over_sim}{event_type_key}_simulation_summaries_all.csv")
+
+        # if n_to_try is not None:
+        #     if n_events_processed >= n_to_try:
+        #         sys.exit("end work")
+

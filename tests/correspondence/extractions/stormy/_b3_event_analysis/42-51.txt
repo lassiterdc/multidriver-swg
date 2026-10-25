@@ -1,0 +1,10 @@
+#%% full time series vs. event time series
+df_mrms_rainfall = pd.read_csv(f_mrms_rainfall, parse_dates=True, index_col = "time")
+df_mrms_rainfall.index.name = "date_time"
+s_mrms_bias_corrected = df_mrms_rainfall.bias_corrected
+s_mrms_rainfall_mm_per_hr = df_mrms_rainfall.rain_mean
+s_mrms_rainfall_mm_per_hr.name = "mm_per_hr"
+tstep_mrms = pd.Series(s_mrms_rainfall_mm_per_hr.index.diff()).mode().iloc[0]
+tstep_mrms_min = tstep_mrms / np.timedelta64(1, "h")*60
+s_mrms_rainfall_mm = s_mrms_rainfall_mm_per_hr * (tstep_mrms_min/60)
+s_mrms_rainfall_mm.name = "mm"

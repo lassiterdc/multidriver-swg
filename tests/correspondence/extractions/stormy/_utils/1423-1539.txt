@@ -1,0 +1,117 @@
+
+def surge_event_selection(s_surge, surge_threshold_to_determine_event_limits,
+                           max_event_duration_h, min_interevent_time, str_data_source,
+                           target_events_per_year = None, threshold = None):
+
+    tstep = pd.Series(s_surge.index.diff()).mode().iloc[0]
+
+    lst_surge_event_start = []
+    lst_surge_event_end = []
+    lst_event_peak = []
+    lst_event_max_surge_tstep = []
+    lst_event_ids = []
+    lst_event_duration = []
+
+    df_wlevel_event_tseries = pd.DataFrame()
+
+    s_surge_events_removed = s_surge.copy()
+    if target_events_per_year is not None:
+        tot_events = (len(pd.Series(s_surge.index.date).unique())/365.25) * target_events_per_year # (total years) * (events per year)
+    else:
+        tot_events = np.nan
+    possible_event_boundaries = s_surge_events_removed[s_surge_events_removed<=surge_threshold_to_determine_event_limits]
+    event_id = 1
+    event_selection_ongoing = True
+    while event_selection_ongoing:
+        max_surge_ft = s_surge_events_removed.max()
+        if threshold is not None:
+            if max_surge_ft < threshold:
+                event_selection_ongoing = False
+                break
+        tsep_max_surge_ft = s_surge_events_removed.idxmax()
+        # find next timestep below threshold
+        surge_event_start = possible_event_boundaries[:tsep_max_surge_ft].index[-1]
+        # find prior timestep below threshold
+        surge_event_end = possible_event_boundaries[tsep_max_surge_ft:].index[0]
+        # if the duration is less than the minimum interevent time, adjust start and end times to achieve that
+        if (surge_event_end - surge_event_start)< min_interevent_time:
+            buffer = (min_interevent_time - (surge_event_end - surge_event_start))/2
+            buffer = buffer.ceil(freq = tstep)
+            # buffer event start earlier
+            surge_event_start -= buffer
+            # buffere event end later
+            surge_event_end += buffer
+        # subset the surge time series
+        s_surge_event_tseries = s_surge[surge_event_start:surge_event_end]
+        # if duration is greater than max duration, subset portion with largest rolling mean
+        duration_h = (surge_event_end-surge_event_start)/np.timedelta64(1, "h")
+        if duration_h > max_event_duration_h:
+            duration_h = 0
+            preceding_hr = tsep_max_surge_ft - pd.Timedelta(1,"hour")
+            proceding_hr = tsep_max_surge_ft + pd.Timedelta(1,"hour")
+            surge_event_start = surge_event_end = tsep_max_surge_ft
+            while duration_h < max_event_duration_h:
+                # go hour by hour to build a max_event_duration_h event working out from the peak
+                preceding_hr_mean = s_surge[preceding_hr:preceding_hr+pd.Timedelta(1,"hour")].mean()
+                proceding_hr_mean = s_surge[proceding_hr-pd.Timedelta(1,"hour"):proceding_hr].mean()
+                use_proceding = True
+                if preceding_hr_mean > proceding_hr_mean:
+                    use_proceding = False
+                if use_proceding:
+                    surge_event_end = proceding_hr
+                    proceding_hr = proceding_hr + pd.Timedelta(1,"hour")
+                else:
+                    surge_event_start = preceding_hr
+                    preceding_hr = preceding_hr - pd.Timedelta(1,"hour")
+                s_surge_event_tseries = s_surge[surge_event_start:surge_event_end]
+                duration_h = (surge_event_end-surge_event_start)/np.timedelta64(1, "h")
+                # if the first and last timesteps are below the event limit threshold, break the loop
+                if (s_surge_event_tseries.iloc[0] <= surge_threshold_to_determine_event_limits) and (s_surge_event_tseries.iloc[-1] <= surge_threshold_to_determine_event_limits):
+                    break
+                if duration_h >= max_event_duration_h:
+                    break
+        # remove selected event from the time series
+        s_tsteps_to_remove = s_surge[(surge_event_start-min_interevent_time):(surge_event_end+min_interevent_time)]
+        s_surge_events_removed = s_surge_events_removed[~s_surge_events_removed.index.isin(s_tsteps_to_remove.index)]
+
+        # append lists
+        lst_surge_event_start.append(surge_event_start)
+        lst_surge_event_end.append(surge_event_end)
+        lst_event_peak.append(max_surge_ft)
+        lst_event_max_surge_tstep.append(tsep_max_surge_ft)
+        lst_event_ids.append(event_id)
+        lst_event_duration.append(surge_event_end - surge_event_start)
+        df_wlevel_event_tseries_subset = pd.DataFrame(s_surge_event_tseries)
+        df_wlevel_event_tseries_subset["surge_event_id"] = event_id
+        df_wlevel_event_tseries = pd.concat([df_wlevel_event_tseries, df_wlevel_event_tseries_subset])
+        # s_surge_event_tseries.plot()
+        event_id += 1
+        # break
+        # continue
+        if target_events_per_year is not None:
+            if event_id < round(tot_events)+1:
+                event_selection_ongoing = True
+            else:
+                break
+    df_wlevel_event_summaries = pd.DataFrame(dict(
+        surge_event_id = lst_event_ids,
+        surge_event_start = lst_surge_event_start,
+        surge_event_end = lst_surge_event_end,
+        duration = lst_event_duration,
+        max_surge_ft = lst_event_peak,
+        max_surge_tstep = lst_event_max_surge_tstep,
+    ))
+
+    df_wlevel_event_summaries.set_index('surge_event_id', inplace=True)
+    df_wlevel_event_tseries = df_wlevel_event_tseries.reset_index().set_index(["surge_event_id", "date_time"])
+    # compute derived surge event threshold
+    surge_event_threshold = df_wlevel_event_summaries.max_surge_ft.min()
+
+    df_wlevel_event_summaries["wlevel_data_source"] = str_data_source
+    df_wlevel_event_tseries["wlevel_data_source"] = str_data_source
+
+    n_events = len(df_wlevel_event_summaries)
+    n_years = (len(pd.Series(s_surge.index.date).unique())/365.25)
+    event_return_rate_n_per_year = n_events/n_years
+
+    return df_wlevel_event_summaries, df_wlevel_event_tseries, surge_event_threshold, event_return_rate_n_per_year

@@ -1,0 +1,34 @@
+
+
+def compare_stats(s1, s2, fig_title, plot = True, fname_savefig = None):
+    pval, cmv_result = perform_statistical_test(stats.cramervonmises_2samp, s1, s2, 0.05)
+    txt_cvm_results = "CVM: {} that data come from same dist. P-val = {:.3f}".format(cmv_result, pval)
+
+    # rank sum test
+    pval, ranksum_result = perform_statistical_test(stats.ranksums, s1, s2, 0.05)
+    txt_ranksum_results = "Ranksum: {} that data come from same dist. P-val = {:.3f}".format(ranksum_result, pval)
+
+    if plot:
+        s1_mean = s1.mean()
+        s2_mean = s2.mean()
+        txt_means = "{} mean, {} mean = {:.1f}, {:.1f} (perc dif = {:.0f}%)".format(s2.name, s1.name, s2_mean, s1_mean, (s2_mean-s1_mean)/s1_mean*100)
+
+        s1_med = s1.median()
+        s2_med = s2.median()
+        txt_meds = "{} median, {} median = {:.1f}, {:.1f} (perc dif = {:.0f}%)".format(s2.name, s1.name, s2_med, s1_med, (s2_med-s1_med)/s1_med*100)
+
+        df_combined = pd.concat([s1, s2])
+        hist, bin_edges = np.histogram(df_combined, density=True, bins = 10)
+        fig, ax = plt.subplots(1, 2, figsize = (7,4), sharex=True, sharey=True)
+        s1.hist(ax = ax[1], density = True, bins = bin_edges)
+        ax[1].set_title(s1.name)
+        s2.hist(ax = ax[0], density = True, bins = bin_edges)
+        ax[0].set_title(s2.name)
+        txt_fig_cap_txt = "{}\n{}\n{}\n{}".format(txt_means, txt_meds, txt_cvm_results, txt_ranksum_results)
+        fig.text(.5, -0.13, txt_fig_cap_txt, ha='center')
+        fig.suptitle(fig_title)
+        fig.tight_layout()
+        if fname_savefig is not None:
+            plt.savefig(fname_savefig, bbox_inches='tight')
+            plt.clf()
+    return cmv_result, ranksum_result

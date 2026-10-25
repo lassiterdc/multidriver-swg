@@ -1,0 +1,63 @@
+
+
+# create dictionaries with the arguments to the fitting functions
+gev = {
+       "args":{"fx":genextreme, "n_params":3}}
+
+# loggev = { 
+#        "args":{"fx":genextreme, "log":True, "n_params":3}}
+
+weibull_min_dist = { 
+           "args":{"fx":weibull_min, "n_params":3}}
+
+# logwweibull_min_dist = { 
+#            "args":{"fx":weibull_min, "log":True, "n_params":3}}
+
+weibull_max_dist = { 
+           "args":{"fx":weibull_max, "n_params":3}}
+
+# logwweibull_max_dist = { 
+#            "args":{"fx":weibull_max, "log":True, "n_params":3}}
+
+gumbel_right = { 
+          "args":{"fx":gumbel_r, "n_params":2}} # has lower bound of zero
+
+gumbel_left = { 
+          "args":{"fx":gumbel_l, "n_params":2}}
+
+# loggumbel = { 
+#           "args":{"fx":gumbel_r, "log":True, "n_params":3}}
+
+norm_dist = { 
+             "args":{"fx":norm, "n_params":2}}
+
+lognormal = { 
+             "args":{"fx":lognorm, "n_params":3}}
+
+student_t = { 
+             "args":{"fx":t, "n_params":3}}
+
+genpareto_dist = { 
+             "args":{"fx":genpareto, "n_params":3}}
+
+chi_dist = { 
+             "args":{"fx":chi, "n_params":3}}
+
+gamma_dist = { 
+             "args":{"fx":gamma, "n_params":3}}
+
+p3 = { 
+      "args":{"fx":pearson3, "n_params":3}}
+
+# lp3 = { 
+#       "args":{"fx":pearson3, "log":True, "n_params":3}}
+
+sep = { 
+      "args":{"fx":exponpow, "n_params":3}}
+
+fxs = [gev, weibull_min_dist, weibull_max_dist, gumbel_right, gumbel_left,
+       norm_dist, lognormal, student_t, genpareto_dist, chi_dist, gamma_dist, p3, sep]
+
+# fxs = [gev, loggev, weibull_min_dist, logwweibull_min_dist, weibull_max_dist, logwweibull_max_dist,
+#        gumbel_right, gumbel_left, loggumbel, norm_dist, lognormal, student_t, genpareto_dist, chi_dist, gamma_dist, p3, lp3, sep]
+# %%

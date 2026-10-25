@@ -1,0 +1,78 @@
+#%%******* all events ******* (not doing)
+# event_subset = "all events"
+# lst_s_selections = []
+# df_corrs_of_interest = df_combined_summaries_corrs_of_interest_all
+
+# # selecting surge statistics related to max_*_mean_mm_per_hr
+# var_of_interest = target_rainfall_intensity_variable
+# corrs_of_interest = "surge"
+# vars_to_filter_out = "after"
+# df_correlations_to_analyze = analyze_correlations(df_corrs_of_interest, var_of_interest, corrs_of_interest, vars_to_filter_out)
+# # print(df_correlations_to_analyze.head())
+# var1_manal_selection = "max_24hr_mean_surge"
+# var2_manual_selection = target_rainfall_intensity_variable
+# lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze)
+
+# # var1_manal_selection = "max_24hr_mean_surge"
+# # var2_manual_selection = target_rainfall_intensity_variable
+# # lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze)
+
+# # selecting rain statistics related to max_.*hr_mean_surge
+# # var_of_interest = "max_.*hr_mean_surge"
+# # corrs_of_interest = "mm_per_hr"
+# # vars_to_filter_out = "after"
+# # df_correlations_to_analyze = analyze_correlations(df_corrs_of_interest, var_of_interest, corrs_of_interest, vars_to_filter_out)
+# # # print(df_correlations_to_analyze.head())
+# # var1_manal_selection = "max_1hr_mean_surge"
+# # var2_manual_selection = target_rainfall_intensity_variable
+# # lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze)
+
+# # looking at time delay statistics related to max_1hr_mean_mm_per_hr
+# corrs_of_interest = "after"
+# vars_to_filter_out = ""
+# df_correlations_to_analyze = analyze_correlations(df_corrs_of_interest, var_of_interest, corrs_of_interest)
+# # print(df_correlations_to_analyze.head())
+# var1_manal_selection = "surge_peak_after_rain_peak_h"
+# var2_manual_selection = target_rainfall_intensity_variable
+# lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze)
+# # var1_manal_selection = "max_mean_24hrsurge_peak_after_16hrrain_peak_h"
+# # var2_manual_selection = target_rainfall_intensity_variable
+# # lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze)
+
+# # looking at surge statistics related to precip_depth_mm
+# var_of_interest = "precip_depth_mm"
+# corrs_of_interest = "surge"
+# vars_to_filter_out = "after"
+# df_correlations_to_analyze = analyze_correlations(df_corrs_of_interest, var_of_interest, corrs_of_interest, vars_to_filter_out)
+# # print(df_correlations_to_analyze.head())
+# var1_manal_selection = "max_24hr_mean_surge"
+# var2_manual_selection = "precip_depth_mm"
+# lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze)
+
+# # looking at time delay statistics related to precip_depth_mm (THERE ARE NO RELATIONSHIPS HERE)
+# # corrs_of_interest = "after"
+# # vars_to_filter_out = "precip_depth_mm"
+# # df_correlations_to_analyze = analyze_correlations(df_corrs_of_interest, var_of_interest, corrs_of_interest)
+# # print(df_correlations_to_analyze.head())
+# # # var1_manal_selection = "max_mean_24hrsurge_peak_after_1hrrain_peak_h"
+# # # var2_manual_selection = "precip_depth_mm"
+# # # lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections)
+
+# # looking at all statistics related to surge_peak_ft
+# var_of_interest =  "surge_peak_ft"
+# corrs_of_interest = "mm"
+# vars_to_filter_out = ""
+# df_correlations_to_analyze = analyze_correlations(df_corrs_of_interest, var_of_interest, corrs_of_interest)
+# # print(df_correlations_to_analyze.head())
+# var1_manal_selection = "surge_peak_ft"
+# var2_manual_selection = target_rainfall_intensity_variable
+# lst_s_selections = append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze)
+
+# df_variables_selected = pd.concat(lst_s_selections,axis = 1).T
+# df_variables_selected.index.names = ["var1", "var2"]
+# df_variables_selected.sort_values("abs_corr", ascending=False, inplace = True)
+
+# print("Variables with most promising correlations for {}".format(event_subset))
+# df_variables_selected_all = df_variables_selected
+# print(df_variables_selected_all)
+

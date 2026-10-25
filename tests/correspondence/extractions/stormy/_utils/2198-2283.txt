@@ -1,0 +1,86 @@
+
+def calculate_quantile_correlations(df_compound_event_summary_stats):
+    df_compound_event_summary_plotting_positions = calculate_plotting_positions(df_compound_event_summary_stats)
+    # compute correlations between possible variables of interest
+    df_corrs = df_compound_event_summary_plotting_positions.dropna().corr()
+    # initialize lists to contain the variable names and their correlations
+    lst_var1 = []
+    lst_var2 = []
+    lst_corr = []
+    # lst_str_combos = []
+
+    for var1, row in df_corrs.iterrows():
+        for var2, val in row.items():
+            if "surge" in var2: # only gonna house surge statistics as var1
+                continue
+            if var2 in lst_var1:
+                continue
+            unimportant = False
+            var1_surge_related = False
+            var2_surge_related = False
+            # correlation_already_analyzed = False
+            if "data_source" in [var1, var2]:
+                unimportant = True
+            if "event_selection_category" in [var1, var2]:
+                unimportant = True
+            if "tstep" in var1:
+                unimportant = True
+            if "tstep" in var2:
+                unimportant = True
+            if "start" in var1:
+                unimportant = True
+            if "start" in var2:
+                unimportant = True
+            if "end" in var1:
+                unimportant = True
+            if "end" in var2:
+                unimportant = True
+            if "surge" in var1:
+                var1_surge_related = True
+            if "surge" in var2:
+                var2_surge_related = True
+            if var1_surge_related and var2_surge_related:
+                unimportant = True
+            if sum([var1_surge_related, var2_surge_related])==0:
+                unimportant = True
+            # unimportant = False
+            if unimportant:
+                continue
+            # s_combo_1 = "{}_{}_{}".format(var1, var2, val)
+            # s_combo_2 = "{}_{}_{}".format(var2, var1, val)
+
+            # if (s_combo_1 in lst_str_combos) or (s_combo_2 in lst_str_combos):
+            #     unimportant = True
+            else:
+                lst_var1.append(var1)
+                lst_var2.append(var2)
+                lst_corr.append(df_corrs.loc[var1, var2])
+                # lst_str_combos.append(s_combo_1)
+                # lst_str_combos.append(s_combo_2)
+
+    df_corrs_of_interest = pd.DataFrame(dict(
+        var1 = lst_var1,
+        var2 = lst_var2,
+        corr = lst_corr
+    ))
+
+    # df_corrs_of_interest = df_corrs_of_interest.drop_duplicates()
+
+    df_corrs_of_interest["abs_corr"] = df_corrs_of_interest["corr"].abs()
+
+    # # remove redundant rows
+    # lst_vars_inspected = []
+    # lst_unique = []
+    # for idx, row in df_corrs_of_interest.iterrows():
+    #     df_dup_cors = df_corrs_of_interest[(df_corrs_of_interest.var1 == row.var2) & (df_corrs_of_interest.var2 == row.var1)]
+    #     # lst_vars = [row.var1, row.var2]
+    #     # lst_vars.sort()
+    #     if len(df_dup_cors) > 0:
+    #         lst_unique.append(False)
+    #         print("duplicate encountered")
+    #     else:
+    #         # lst_vars_inspected.append(lst_vars)
+    #         lst_unique.append(True)
+
+    # df_corrs_of_interest = df_corrs_of_interest[lst_unique]
+    return df_corrs_of_interest

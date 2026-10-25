@@ -1,0 +1,49 @@
+#%% MAKING FINAL SELECTION
+which_event_key = "surge_events"
+df_event_summaries = dic_event_summaries[which_event_key]
+print(f"Plotting {which_event_key} distributions.")
+lst_fname_of_interest = ["surge_peak_ft_cvm-0.86_notrns_dist-weibull_min_fixed_loc",
+                         "precip_depth_mm_cvm-0.72_trns_1_ub_dist-genpareto",
+                         "max_mean_1hrsurge_peak_after_4hrrain_peak_h_cvm-0.85_notrns_dist-gumbel_l",
+                         "max_4hr_mean_mm_per_hr_cvm-0.91_notrns_dist-genpareto_fixed_loc"
+                         ]
+
+final_selection_plot_and_write_csv(lst_fname_of_interest, which_event_key, dic_event_stats, dic_event_summaries,
+                                   dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff)
+
+which_event_key = "rain_events"
+df_event_summaries = dic_event_summaries[which_event_key]
+print(f"Plotting {which_event_key} distributions.")
+lst_fname_of_interest = ["surge_peak_ft_cvm-0.96_trns_1_ub_dist-exponpow",
+                         "precip_depth_mm_cvm-0.96_notrns_dist-weibull_min_fixed_loc",
+                         "max_mean_1hrsurge_peak_after_16hrrain_peak_h_cvm-0.98_notrns_dist-t",
+                         "max_4hr_mean_mm_per_hr_cvm-0.96_notrns_dist-chi"
+                         ]
+
+final_selection_plot_and_write_csv(lst_fname_of_interest, which_event_key, dic_event_stats, dic_event_summaries, 
+                                   dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff)
+
+which_event_key = "compound_events"
+df_event_summaries = dic_event_summaries[which_event_key]
+print(f"Plotting {which_event_key} distributions.")
+lst_fname_of_interest = ["surge_peak_ft_cvm-0.94_notrns_dist-weibull_min_fixed_loc",
+                         "precip_depth_mm_cvm-0.86_notrns_dist-genpareto",
+                         "max_mean_16hrsurge_peak_after_24hrrain_peak_h_cvm-0.94_notrns_dist-weibull_min",
+                         "max_4hr_mean_mm_per_hr_cvm-0.97_trns_1_bxcx_dist-t"
+                         ]
+
+final_selection_plot_and_write_csv(lst_fname_of_interest, which_event_key, dic_event_stats, dic_event_summaries, 
+                                   dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff)
+
+# which_event_key = "all_events"
+# df_event_summaries = dic_event_summaries[which_event_key]
+# print(f"Plotting {which_event_key} distributions.")
+# lst_fname_of_interest = ["surge_peak_ft_cvm-0.76_notrns_dist-gamma",
+#                          "surge_peak_after_rain_peak_h_cvm-1.0_notrns_dist-t",
+#                          "precip_depth_mm_cvm-1.0_trns_1_shift_dist-exponpow",
+#                          "max_mean_4hrsurge_peak_after_1hrrain_peak_h_cvm-0.97_notrns_dist-t",
+#                          "max_24hr_mean_surge_cvm-1.0_trns_1_bxcx_dist-weibull_min",
+#                          "max_1hr_mean_mm_per_hr_cvm-0.89_trns_1_bxcx_dist-chi"]
+
+# final_selection_plot_and_write_csv(lst_fname_of_interest, which_event_key, dic_event_stats, dic_event_summaries, 
+#                                    dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff)

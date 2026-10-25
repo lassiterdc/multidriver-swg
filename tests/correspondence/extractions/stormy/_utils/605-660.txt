@@ -1,0 +1,56 @@
+
+def compute_common_percentiles(df_obs, df_simulated, num_levels, percentile):
+    from scipy.stats import gaussian_kde
+    all_z_obs = []
+    all_z_sim = []
+    all_diffs = []
+    n_vars = df_obs.shape[1]
+    # Loop through all pairs of variables
+    for i in range(n_vars):
+        for j in range(i + 1, n_vars):
+            # Get observed and simulated data for the current pair
+            df_obs_subset = df_obs.iloc[:, [i, j]].dropna()
+            obs_x, obs_y = df_obs_subset.iloc[:, 0], df_obs_subset.iloc[:, 1]
+            # obs_x, obs_y = df_obs.iloc[:, i], df_obs.iloc[:, j]
+            sim_x, sim_y = df_simulated.iloc[:, i], df_simulated.iloc[:, j]
+
+            # Create grid for KDE evaluation
+            x_min = min(obs_x.min(), sim_x.min())
+            x_max = max(obs_x.max(), sim_x.max())
+            y_min = min(obs_y.min(), sim_y.min())
+            y_max = max(obs_y.max(), sim_y.max())
+
+            x_grid, y_grid = np.meshgrid(np.linspace(x_min, x_max, 100), np.linspace(y_min, y_max, 100))
+            grid_coords = np.vstack([x_grid.ravel(), y_grid.ravel()])
+
+            # KDE for observed and simulated data
+            kde_obs = gaussian_kde(np.vstack([obs_x, obs_y]))
+            kde_sim = gaussian_kde(np.vstack([sim_x, sim_y]))
+
+            z_obs = kde_obs(grid_coords).reshape(x_grid.shape)
+            z_sim = kde_sim(grid_coords).reshape(x_grid.shape)
+
+            # Collect all values of z_obs and z_sim to compute percentiles later
+            all_z_obs.extend(z_obs.ravel())
+            all_z_sim.extend(z_sim.ravel())
+
+            # Calculate the difference and store it for the percentile calculation
+            diff = z_obs - z_sim
+            all_diffs.extend(diff.ravel())
+    
+    # Convert lists to numpy arrays for percentile calculation
+    all_z_obs = np.array(all_z_obs)
+    all_z_sim = np.array(all_z_sim)
+    all_diffs = np.array(all_diffs)
+
+    # Calculate the specified percentile for z_obs, z_sim, and diff
+    z_max = np.percentile(np.concatenate([all_z_obs, all_z_sim]), percentile)
+    diff_min = np.percentile(all_diffs, 100 - percentile)
+    diff_max = np.percentile(all_diffs, percentile)
+
+    # Return the common z_max, and the difference percentiles
+    return {
+        'z_max': z_max,
+        'diff_min': diff_min,
+        'diff_max': diff_max
+    }

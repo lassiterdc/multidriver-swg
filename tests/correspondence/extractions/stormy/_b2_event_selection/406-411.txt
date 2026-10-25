@@ -1,0 +1,6 @@
+
+count_diffs_mrms_vs_aorc = pd.concat([mrms_annual_counts, aorc_annual_counts], axis = 1).dropna().diff(axis = 1).iloc[:, 1].values
+test_whether_mean_is_zero(count_diffs_mrms_vs_aorc, alpha = 0.05)
+
+count_diffs_mrms_vs_ncei = pd.concat([mrms_annual_counts, ncei_annual_counts], axis = 1).dropna().diff(axis = 1).iloc[:, 1].values
+test_whether_mean_is_zero(count_diffs_mrms_vs_ncei, alpha = 0.05)

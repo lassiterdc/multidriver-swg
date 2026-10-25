@@ -1,0 +1,16 @@
+
+def backtransform_data(s_data_transformed, s_fit):
+    s_data_untransformed = s_data_transformed.copy()
+    # in reverse order from function transform_data_for_fitting 
+    if s_fit["boxcox"] == True:
+        s_data_untransformed = inverse_boxcox(s_data_untransformed, s_fit["lambda"], s_fit["scalar_shift_for_boxcox"])
+    if s_fit["normalize"] == True:
+        s_data_untransformed = inverse_normalize(s_data_untransformed, s_fit["mean"], s_fit["std"])
+    # if s_fit["log"] == True:
+        # s_data_untransformed = np.exp(s_data_untransformed)
+        # sys.exit("I am not coding to perform log transformations (doing boxcox instead) so this is probably a mistake if log is set to True")
+    s_data_untransformed = unshift_data(s_data_untransformed,  s_fit["scalar_shift"])
+    # reverse upper bound application
+    if not np.isnan(s_fit["upper_bound"]):
+        s_data_untransformed = s_data_untransformed*-1 + s_fit["upper_bound"]
+    return pd.Series(s_data_untransformed)

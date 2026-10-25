@@ -1,0 +1,5 @@
+
+def normalize_data(s_data):
+    mean, std = np.mean(s_data), np.std(s_data)
+    s_data_nrmlzd = (s_data - mean)/std
+    return s_data_nrmlzd, mean, std

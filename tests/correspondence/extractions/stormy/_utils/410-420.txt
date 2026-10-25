@@ -1,0 +1,11 @@
+#%% Simulate data from the fitted vine copula
+def format_fitted_cdf_values_for_fitting_copula(event_type_key, verbose = True):
+    df_fitted_vs_empirical = pd.read_csv(f"{dir_fitting_maringals}{event_type_key}_empirical_vs_fitted.csv")
+    df_data = df_fitted_vs_empirical[["observation_id", "data", "cdf_fit"]]
+    df_obs = df_data.pivot(index='observation_id', columns='data', values='cdf_fit')
+    n_rows_with_atleast1_missing_val = df_obs.isnull().any(axis = 1).sum()
+    if n_rows_with_atleast1_missing_val > 0:
+        df_obs = df_obs.dropna() # only include those where all values are valid
+        if verbose:
+            print(f"Dropping {n_rows_with_atleast1_missing_val} obs. with missing rain or surge data from dataset leaving {len(df_obs)} observations for fitting")
+    return df_obs

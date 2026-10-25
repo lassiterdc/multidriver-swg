@@ -1,0 +1,9 @@
+
+def perform_statistical_test(test, x, y, alpha):
+    res = test(x, y)
+    pval = res.pvalue
+    if res.pvalue < alpha:
+        result = 'reject'
+    else:
+        result = 'fail_to_reject'
+    return pval, result

@@ -1,0 +1,28 @@
+#%% compound_events
+which_event_key = "compound_events"
+print(f"Plotting {which_event_key} distributions.")
+
+lst_fname_of_interest = ["surge_peak_ft_cvm-0.96_trns_1_bxcx_dist-weibull_min_fixed_loc",
+                         "surge_peak_ft_cvm-0.94_trns_2_shift_bxcx_dist-weibull_min_fixed_loc",
+                         "surge_peak_ft_cvm-0.94_trns_1_shift_dist-weibull_min_fixed_loc",
+                         "surge_peak_ft_cvm-0.94_notrns_dist-weibull_min_fixed_loc",
+                         "precip_depth_mm_cvm-0.91_trns_1_bxcx_dist-weibull_min_fixed_loc",
+                         "precip_depth_mm_cvm-0.86_notrns_dist-genpareto",
+                         "precip_depth_mm_cvm-0.85_trns_1_shift_dist-weibull_min_fixed_loc",
+                         "precip_depth_mm_cvm-0.85_notrns_dist-weibull_min_fixed_loc",
+                         "precip_depth_mm_cvm-0.83_trns_1_shift_dist-genpareto",
+                         "max_mean_16hrsurge_peak_after_24hrrain_peak_h_cvm-0.94_notrns_dist-weibull_min",
+                         "max_mean_16hrsurge_peak_after_24hrrain_peak_h_cvm-0.93_notrns_dist-genextreme",
+                         "max_4hr_mean_mm_per_hr_cvm-0.97_trns_1_bxcx_dist-t",
+                         "max_4hr_mean_mm_per_hr_cvm-0.67_trns_1_bxcx_dist-weibull_min_fixed_loc",
+                         "max_4hr_mean_mm_per_hr_cvm-0.81_notrns_dist-genextreme",
+                         "max_4hr_mean_mm_per_hr_cvm-0.75_notrns_dist-lognorm",
+                         "max_4hr_mean_mm_per_hr_cvm-0.65_notrns_dist-gamma",
+                         "max_4hr_mean_mm_per_hr_cvm-0.7_trns_1_bxcx_dist-weibull_min",
+                         "max_4hr_mean_mm_per_hr_cvm-0.5_notrns_dist-weibull_min_fixed_loc"
+                         ]
+s_vars_accounted_for = reproduce_select_plots_and_verify_all_vars_accounted_for(dic_event_stats, which_event_key, lst_fname_of_interest, dic_event_summaries,
+                                                                                dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff)
+print(f"{which_event_key} variables accounted for:\n{s_vars_accounted_for}")
+
+

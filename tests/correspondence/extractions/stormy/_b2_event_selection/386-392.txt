@@ -1,0 +1,7 @@
+#%% compare n events per year for overlapping years
+mrms_annual_counts = df_mrms_rainevent_summary.rain_event_start.dt.year.value_counts().sort_index()
+mrms_annual_counts.name = "mrms_counts"
+aorc_annual_counts = df_aorc_rainevent_summary.rain_event_start.dt.year.value_counts().sort_index()
+aorc_annual_counts.name = "aorc_counts"
+ncei_annual_counts = df_ncei_hrly_rainevent_summary.rain_event_start.dt.year.value_counts().sort_index()
+ncei_annual_counts.name = "ncei_counts"

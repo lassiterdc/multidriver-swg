@@ -1,0 +1,34 @@
+#%% compute event stats
+df_mrms_rainevent_summary = pd.read_csv(f_mrms_event_summaries, index_col = 0)
+df_mrms_rainevent_tseries = pd.read_csv(f_mrms_event_timeseries, index_col = [0,1], parse_dates=["date_time"])
+# aorc
+df_aorc_rainevent_summary = pd.read_csv(f_aorc_event_summaries, index_col = 0)
+df_aorc_rainevent_tseries = pd.read_csv(f_aorc_event_timeseries, index_col = [0,1], parse_dates=["date_time"])
+## ncei
+df_ncei_hrly_rainevent_summary = pd.read_csv(f_ncei_hrly_event_summaries, index_col = 0)
+df_ncei_hrly_rainevent_tseries = pd.read_csv(f_ncei_hrly_event_timeseries, index_col = [0,1], parse_dates=["date_time"])
+
+lst_time_durations_h_to_analyze = [1, 2, 4, 8, 16, 24]
+
+df_stats_mrms = compute_event_timeseries_statistics(df_mrms_rainevent_tseries.dropna().drop(columns = ["rain_data_source"]), lst_time_durations_h_to_analyze,
+                                                    "mm_per_hr", idx_name_time = "date_time", agg_stat = "mean")
+
+df_stats_aorc = compute_event_timeseries_statistics(df_aorc_rainevent_tseries.dropna().drop(columns = ["rain_data_source"]), lst_time_durations_h_to_analyze,
+                                                    "mm_per_hr", idx_name_time = "date_time", agg_stat = "mean")
+
+df_stats_ncei_hrly = compute_event_timeseries_statistics(df_ncei_hrly_rainevent_tseries.dropna().drop(columns = ["rain_data_source"]), lst_time_durations_h_to_analyze,
+                                                    "mm_per_hr", idx_name_time = "date_time", agg_stat = "mean")
+
+stat = "depth_mm"
+fig_title = "Comparison of event totals"
+s1 = df_mrms_rainevent_summary[stat]
+s1.name = "mrms_{}".format(stat)
+s2 = df_ncei_hrly_rainevent_summary[stat]
+s2.name = "ncei_hrly_{}".format(stat)
+fname_savefig = f"{dir_event_slxn_validing_distributions}mrms_vs_ncei_hrly_{stat}.png"
+compare_stats(s1, s2, fig_title, plot = True, fname_savefig=fname_savefig)
+
+s2 = df_aorc_rainevent_summary[stat]
+s2.name = "aorc_{}".format(stat)
+fname_savefig = f"{dir_event_slxn_validing_distributions}mrms_vs_aorc_{stat}.png"
+compare_stats(s1, s2, fig_title, plot = True, fname_savefig=fname_savefig)

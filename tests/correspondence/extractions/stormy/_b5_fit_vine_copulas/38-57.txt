@@ -1,0 +1,20 @@
+#%% function for performing two sample statistical tests comparing observed and simulated data
+def evaluate_copula_fit_based_on_comparing_simulated_marginals_with_obervations(df_obs, cop_fitted, n_samps, fldr_plots, alpha):
+    n_vars = len(df_obs.columns)
+    for col_iloc in range(n_vars):
+        s_obs = df_obs.iloc[:, col_iloc]
+        lst_results = []
+        for samp_id in np.arange(n_samps):
+            df_simulated_to_compare = simulate_from_copula(df_obs=df_obs, n=len(df_obs), cop_fitted=cop_fitted)
+            s_sim = df_simulated_to_compare.iloc[:, col_iloc]
+            # Perform tests
+            sys.exit('work: I think i should bootstrap the observations for each test; also, the rejection rate is just a test statistic; I need to createa  null distribution of the rejection rate by repeating this process with two samples from the vine copula repeated the same number of times.')
+            df_results = perform_two_sample_tests(s_obs, s_sim, alpha=alpha)
+            df_results["samp_id"] = samp_id
+            lst_results.append(df_results)
+
+        df_mc_results = pd.concat(lst_results).reset_index(drop = True)
+        fig_title = f"{s_obs.name}\n2-sample test results comparing observed and simulated data\nn-per-sample: {len(df_obs)} | n samples: {n_samps}"
+        plot_pvalue_distributions(df_mc_results, alpha=alpha,
+                    fig_title = fig_title,
+                    fname_savefig = f"{fldr_plots}obs_vs_sim_2samp_test_results_{s_obs.name}.png")

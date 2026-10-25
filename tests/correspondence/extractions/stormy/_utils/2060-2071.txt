@@ -1,0 +1,12 @@
+
+
+def classify_events(df_event_summary):
+    for idx, row in df_event_summary.iterrows():
+        if row["compound"] == True:
+            e_type = "compound"
+        elif row["surge_event"] == True:
+            e_type = "surge"
+        elif row["rain_event"] == True:
+            e_type = "rain"
+        df_event_summary.loc[idx, "event_type"] = e_type
+    return df_event_summary

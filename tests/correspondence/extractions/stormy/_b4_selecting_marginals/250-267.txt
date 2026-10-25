@@ -1,0 +1,18 @@
+#%% all_events
+# which_event_key = "all_events"
+
+# lst_fname_of_interest = ["surge_peak_ft_2_notransformation_cvmpval-0.23_aic-362.8_dist-weibull_min",
+# "surge_peak_ft_1_transformation_cvmpval-0.36_aic-293.3_dist-exponpow",
+# "surge_peak_after_rain_peak_h_2_notransformation_cvmpval-0.28_aic-832.6_dist-t",
+# "precip_depth_mm_2_notransformation_cvmpval-0.49_aic-1124.3_dist-gumbel_r",
+# "precip_depth_mm_2_notransformation_cvmpval-0.34_aic-1121.2_dist-genextreme",
+# "precip_depth_mm_1_transformation_cvmpval-0.49_aic-258.9_dist-gumbel_r",
+# "precip_depth_mm_1_transformation_cvmpval-0.32_aic-285.3_dist-pearson3",
+# "max_24hr_mean_surge_1_transformation_cvmpval-0.09_aic-289.1_dist-exponpow",
+# "max_1hr_mean_mm_per_hr_2_notransformation_cvmpval-0.88_aic-776.1_dist-exponpow",
+# "max_1hr_mean_mm_per_hr_2_notransformation_cvmpval-0.65_aic-822.3_dist-weibull_min",
+# "max_1hr_mean_mm_per_hr_1_transformation_cvmpval-0.88_aic-516.8_dist-weibull_min"]
+
+# for fname_of_interest in lst_fname_of_interest:
+#     plot_subset_of_fits(mode = "from_fname", which_event_key = which_event_key, fname_of_interest = fname_of_interest, subdir_name = "slxn_coarse")
+

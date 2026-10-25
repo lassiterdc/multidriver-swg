@@ -1,0 +1,12 @@
+#%% if needed, load and loop back through the fits
+cntrl_selection_alpha_alt = 0.05
+for key in dic_event_summaries:
+    fldr_cntrl_sensitivity = dir_vinecop + f"plots_{key}_control_testing/"
+    if key in ["compound_events", "surge_events"]: # ["rain_events", "compound_events"]:
+        continue
+    df_controls_and_results = pd.read_csv(f"{fldr_cntrl_sensitivity}copula_fit_sensitivity_analysis_results.csv")
+    filter_best_kendall_tau_ps = ((df_controls_and_results.filter(like="kendall_tau_pvalue")>=cntrl_selection_alpha_alt) & (df_controls_and_results.filter(like="kendall_tau_pvalue")<=(1-cntrl_selection_alpha_alt))).all(axis = 1)
+    df_controls_and_results_best = df_controls_and_results[filter_best_kendall_tau_ps]
+    df_controls_and_results_best  = df_controls_and_results_best[(df_controls_and_results_best.pvalue>=cntrl_selection_alpha_alt) & (df_controls_and_results_best.pvalue<=(1-cntrl_selection_alpha_alt))]
+    df_controls_and_results_best.to_csv(f"{fldr_cntrl_sensitivity}copula_fit_sensitivity_analysis_results_best.csv")
+

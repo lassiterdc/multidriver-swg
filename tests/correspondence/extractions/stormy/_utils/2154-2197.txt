@@ -1,0 +1,44 @@
+
+# def classify_event(df_wlevel_rain_summary_stats_og):
+#     df_wlevel_rain_summary_stats = df_wlevel_rain_summary_stats_og.copy()
+#     s_data_sources = pd.Series(df_wlevel_rain_summary_stats.data_source.unique())
+#     if 'event_selection_category' not in df_wlevel_rain_summary_stats.columns:
+#         df_wlevel_rain_summary_stats.insert(2, 'event_selection_category', "dummy")
+
+#     s_event_cat = df_wlevel_rain_summary_stats.event_selection_category.copy()
+
+#     s_data_sources_both = s_data_sources[s_data_sources.str.contains("and")]
+#     s_data_sources_remaining = s_data_sources[~s_data_sources.isin(s_data_sources_both)]
+#     s_data_sources_surge = s_data_sources_remaining[s_data_sources_remaining.str.contains("surge")]
+#     s_data_sources_remaining = s_data_sources_remaining[~s_data_sources_remaining.isin(s_data_sources_surge)]
+#     s_data_sources_rain = s_data_sources_remaining
+
+#     s_event_cat[df_wlevel_rain_summary_stats.data_source.isin(s_data_sources_both)] = "both"
+#     s_event_cat[df_wlevel_rain_summary_stats.data_source.isin(s_data_sources_surge)] = "surge"
+#     s_event_cat[df_wlevel_rain_summary_stats.data_source.isin(s_data_sources_rain)] = "rain"
+#     df_wlevel_rain_summary_stats.loc[:, "event_selection_category"] = s_event_cat
+
+#     return df_wlevel_rain_summary_stats
+
+
+def calculate_plotting_positions(df_compound_event_summary_stats):
+    """
+    Plotting posiitons are calculated for each statistic after first dropping all missing values
+    """
+    # computing plotting positions
+    lst_colnames = []
+    lst_s_plting_positions = []
+    for col, series in df_compound_event_summary_stats.items():
+        series_no_na = series.dropna()
+        # if a column has all missing values, skip it
+        if len(series_no_na) == 0:
+            print("all missing values encountered in column {}".format(col))
+            continue
+        idx_event_ids = series_no_na.index
+        s_plting_positions = pd.Series(stats.mstats.plotting_positions(series_no_na))
+        s_plting_positions.name = col
+        s_plting_positions.index = idx_event_ids
+        lst_s_plting_positions.append(s_plting_positions)
+    # combine plotting position results into a single dataframe
+    df_compound_event_summary_plotting_positions = pd.concat(lst_s_plting_positions, axis = 1)
+    return df_compound_event_summary_plotting_positions

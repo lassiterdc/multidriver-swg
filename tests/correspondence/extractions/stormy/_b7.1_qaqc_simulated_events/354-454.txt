@@ -1,0 +1,101 @@
+
+
+def plot_event_quantiles_over_time(df_tseries_combined, lst_s_to_plot, sep_plt_for_lines, ylab, txt_ax_title, add_cbar = False, fig=None, gs=None,
+                                    ax1 = None, ax2 = None, x_tick_tstep_hr = "6 hours", fname_savefig=None, return_fig_and_ax = False):
+    import matplotlib.gridspec as gridspec
+    plot_dfq = pd.DataFrame(index = df_tseries_combined.columns, columns=(df_tseries_combined.index / np.timedelta64(1, "m")).astype(int)).astype(float)
+    # plot_dfq = pd.DataFrame(index = df_tseries_combined.columns, columns=(df_tseries_combined.index).astype(float))
+
+    for col_iloc, colname in enumerate(df_tseries_combined.index):
+        col = df_tseries_combined.loc[colname, :].fillna(0).sort_values(ignore_index=True).copy()
+        plot_dfq.iloc[:,col_iloc] = col
+
+    quantiles=np.arange(1,len(plot_dfq)+1)
+    normalized_quantiles=(quantiles-quantiles.min())/(quantiles.max()-quantiles.min())
+
+    norm = Normalize(vmin=0, vmax=1)  # normalized_quantiles range from 0 to 1
+    cmap = plt.get_cmap('coolwarm_r')
+    mappable = ScalarMappable(norm=norm, cmap=cmap)
+
+    if fig is None and gs is None:
+        fig = plt.figure(figsize=(8, 10))  # Adjust the overall figure size
+        gs = gridspec.GridSpec(2, 2, width_ratios=[1, 0.05], height_ratios=[1, 1])
+    if ax1 is None:
+        ax1 = fig.add_subplot(gs[0, 0])
+    for i in range(len(plot_dfq)):
+        # print(normalized_quantiles[i])
+        color = cmap(normalized_quantiles[i])  # Ensure correct color mapping
+
+        if i == 0:
+            # ax1.fill_between(df_tseries_combined.index, min_value, df_tseries_combined.iloc[:, i],
+            #                 color=color, alpha=0.8)  # First fill from baseline to first quantile
+            pass
+        else:
+            ax1.fill_between(plot_dfq.columns, plot_dfq.iloc[i-1, :], plot_dfq.iloc[i, :],
+                            color=color, alpha=1)
+        # ax1.plot(plot_dfq.columns, plot_dfq.values[i], c=color)  # Apply color to line
+        # if i > 0:
+            # ax1.fill_between(plot_dfq.columns, plot_dfq.values[i-1], plot_dfq.values[i], color=color, alpha=0.5)  # Fill color between lines
+
+    # Add color bar in its own space
+    if add_cbar:
+        nrows, ncols = gs.get_geometry()
+        if nrows == 2:
+            row = 0
+        else:
+            row = np.ceil((nrows-1)/2).astype(int)
+        cbar_ax = fig.add_subplot(gs[row, 1])
+        cbar = plt.colorbar(mappable, cax=cbar_ax)
+        cbar.set_label('quantile')  # Set the label for the color bar
+    ax1.set_title(txt_ax_title)
+
+    if sep_plt_for_lines:
+        if ax2 is None:
+            ax2 = fig.add_subplot(gs[1, 0])
+    else:
+        ax2 = ax1
+    for i, s_to_plot in enumerate(lst_s_to_plot):
+        if s_to_plot.index.dtype != float:
+            s_to_plot.index = s_to_plot.index / np.timedelta64(1, "m")
+        color = None
+        try:
+            if s_to_plot.color == "lowest_cbar":
+                color = cmap(norm(0))
+            elif s_to_plot.color == "middle_cbar":
+                color = "grey"
+            elif s_to_plot.color == "highest_cbar":
+                color = cmap(norm(1))
+            else:
+                color = s_to_plot.color
+        except:
+            sys.exit("color not defined for the passed series")
+        ax2.plot(s_to_plot.index, s_to_plot.values, linewidth = 1, color = color, label = s_to_plot.name, alpha = 1)
+        if sep_plt_for_lines:
+            if s_to_plot.name.lower() == "original time series":
+                ax1.plot(s_to_plot.index, s_to_plot.values, linewidth = 1, color = "black", label = s_to_plot.name, alpha = 1)
+                ax1.legend()
+        ax2.legend()
+
+    if not sep_plt_for_lines:
+        axes = [ax1]
+    else:
+        axes = [ax1, ax2]
+    for ax in axes:
+        ax.set_xlim((df_tseries_combined.min().min(), df_tseries_combined.max().max()*1.1))
+        xticks_labs = (pd.Series(df_tseries_combined.index).dt.round(pd.to_timedelta(x_tick_tstep_hr)).unique() / np.timedelta64(1, "h")).astype(int)
+        xticks = xticks_labs * 60
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(xticks_labs,fontsize=10)
+        ax.set_xlabel("hours")
+        ax.set_ylabel(ylab)
+    
+    fig.tight_layout()
+
+    if fname_savefig is not None:
+        plt.savefig(fname_savefig, bbox_inches='tight')
+        plt.clf()
+    # else:
+    #     plt.show()
+    
+    if return_fig_and_ax == True:
+        return fig, axes

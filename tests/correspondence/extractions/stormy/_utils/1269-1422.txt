@@ -1,0 +1,154 @@
+    
+
+def event_selection_threshold_or_nstorms(s_rainfall_mm_per_hr, min_interevent_time, max_strm_len,
+                                           str_data_source, target_events_per_year = None,
+                                           threshold = None, threshold_duration = None, assign_0_to_missing = True):
+    sys.exit("need to update the code to include as a parameter threshold_duration; currently, the min_interevent_time is being treated as the threshold duration")
+    # s_rainfall_mm_per_hr, min_interevent_time, max_strm_len, str_data_source = s_rainfall_ncei_hrly_mrms_res_mm_per_hr,min_interevent_time,max_strm_len, str_data_source
+    if (target_events_per_year is not None) and (threshold is not None):
+        sys.exit("both target_events_per_year and threshold arguments passed, so event selection methodology is ambiguous. Remove one of these arguments.")
+    if threshold is not None:
+        print(f"Performing threshold-based event selection using a threshold of {threshold} mm...")
+    if target_events_per_year is not None:
+        print(f"Performing event selection targeting the largest {target_events_per_year} events per year...")
+        
+    bm_function = datetime.now()
+    # process rainfall data
+    # assign consistent index names
+    s_rainfall_mm_per_hr.index.name = "date_time"
+    # create a timeseries with depths in mm (converting from mm/hr to mm)
+    rain_tstep = pd.Series(s_rainfall_mm_per_hr.index.diff()).mode().iloc[0]
+    tstep_min = rain_tstep / np.timedelta64(1, "h")*60
+    s_rainfall_mm = s_rainfall_mm_per_hr * (tstep_min/60)
+    # perform event selection
+    # define lists
+    lst_rain_event_starts = []
+    lst_rain_event_ends = []
+    event_duration = []
+    event_ids = []
+    mean_intensities = []
+    max_intensities = []
+    max_intensity_tsteps = []
+    total_precip = []
+    event_id = 1
+    lst_s_intensities = []
+
+    event_selection_ongoing = True
+
+    
+
+    new_idx = pd.date_range(s_rainfall_mm.index.min(), s_rainfall_mm.index.max(), freq = rain_tstep) 
+    s_rainfall_mm = s_rainfall_mm.reindex(new_idx)
+    if s_rainfall_mm.isna().sum() > 0:
+        print("Warning: there are missing values in the rainfall dataset")
+        if assign_0_to_missing:
+            n_missing = s_rainfall_mm.isna().sum()
+            min_missing = tstep_min * n_missing
+            min_total = len(new_idx)*tstep_min
+            frac_missing = min_missing / min_total
+            print(f"Filling {n_missing} missing values with 0 for event selection representing {frac_missing*100:.1f}% of time from the first timestep to the last ({s_rainfall_mm.index.min()} to {s_rainfall_mm.index.max()})")
+            s_rainfall_mm = s_rainfall_mm.fillna(0)
+
+    # perform event selection finding n largest events per year
+    s_rainfall_mm_events_removed = s_rainfall_mm.copy()
+
+    while event_selection_ongoing:
+        # bm_whole_loop = datetime.now()
+        # dcl work
+        # print("extracting event {} out of {}....".format(event_id, round(tot_events)))
+        # end dcl work
+
+        # insert zeros for rainfall that has been accounted for
+        # bm_time_to_recompute_rolling_sum = datetime.now()
+        # compute 12-hour rolling sum to find possible event end times
+        rolling_sum_period_h = int(min_interevent_time / np.timedelta64(1, "h"))
+        min_periods = int(rolling_sum_period_h / (rain_tstep/np.timedelta64(1, "h")))
+        s_rain_rollingsum_mm = s_rainfall_mm_events_removed.rolling('{}h'.format(rolling_sum_period_h), min_periods = min_periods, closed = "left").sum().dropna()
+        # return_bm_string(bm_time_to_recompute_rolling_sum, "compute rolling sum after removing previous events")
+        # s_possible_storms = s_rain_rollingsum_mm[s_rain_rollingsum_mm > rainfall_threshold_mm]
+        # print(len(s_possible_storms))
+        # if len(s_possible_storms) == 0:
+        #     print("Found all storms in this time series")
+        #     all_events_found = True
+        #     break
+        # bm_pick_event_and_adjust_time_period = datetime.now()
+        s_event_gaps = s_rain_rollingsum_mm[s_rain_rollingsum_mm==0]
+
+        # pick largest event
+        threshold_mm = s_rain_rollingsum_mm.max()
+        end_most_intense_period_end = s_rain_rollingsum_mm.idxmax()
+        # find the nearest 12-hour period before and after this intense period with zero rainfall
+        rain_event_start = s_event_gaps[(s_event_gaps.index <= end_most_intense_period_end)].index.max() # - min_interevent_time
+        rain_event_end = s_event_gaps[(s_event_gaps.index >= end_most_intense_period_end)].index.min() - min_interevent_time
+        s_rainfall_mm_subset = s_rainfall_mm.loc[rain_event_start-rain_tstep:rain_event_end+rain_tstep]
+        # remove preceding and trailing zeros
+        idx_w_rain = s_rainfall_mm_subset[s_rainfall_mm_subset>0].index
+        rain_event_start = idx_w_rain.min()
+        rain_event_end = idx_w_rain.max()
+        s_rainfall_mm_subset = s_rainfall_mm_subset.loc[rain_event_start:rain_event_end]
+        if (rain_event_end - rain_event_start) > max_strm_len:
+            # choose the max storm duration with the largest rainfall
+            rolling_sum_period_h = int(max_strm_len / np.timedelta64(1, "h"))
+            min_periods = int(rolling_sum_period_h / (rain_tstep/np.timedelta64(1, "h")))
+            s_rain_rollingsum_mm = s_rainfall_mm_subset.rolling('{}h'.format(rolling_sum_period_h), min_periods = min_periods, closed = "left").sum().dropna()
+            rain_event_end = s_rain_rollingsum_mm[s_rain_rollingsum_mm == s_rain_rollingsum_mm.max()].index.max()
+            rain_event_start = rain_event_end - max_strm_len
+            s_rainfall_mm_subset = s_rainfall_mm.loc[rain_event_start:rain_event_end]
+            # remove preceding and trailing zeros
+            idx_w_rain = s_rainfall_mm_subset[s_rainfall_mm_subset>0].index
+            rain_event_start = idx_w_rain.min()
+            rain_event_end = idx_w_rain.max()
+            s_rainfall_mm_subset = s_rainfall_mm_subset.loc[rain_event_start:rain_event_end]
+        # return_bm_string(bm_pick_event_and_adjust_time_period, "select the largest event and update its time period if necessary")
+        # append the lists with relevant data
+        intensities = s_rainfall_mm_per_hr[rain_event_start:rain_event_end]
+        lst_rain_event_starts.append(rain_event_start)
+        lst_rain_event_ends.append(rain_event_end)
+        event_duration.append(rain_event_end - rain_event_start)
+        mean_intensities.append(intensities.mean())
+        max_intensities.append(intensities.max())
+        max_intensity_tsteps.append(intensities.idxmax())
+        total_precip.append(s_rainfall_mm_subset.sum())
+        event_ids.append(event_id)
+        event_id += 1
+        intensities.name = "mm_per_hour" # name becomes columnname of the concatenated dataframe
+        lst_s_intensities.append(intensities)
+        # return_bm_string(bm_whole_loop, "select single event")
+        # remove event from time series
+        event_index = ((s_rainfall_mm_events_removed.index >= rain_event_start) & (s_rainfall_mm_events_removed.index <= rain_event_end))
+        s_rainfall_mm_events_removed[event_index] = 0
+        # end loop if conditions are met based on threshold or target n storms
+        if threshold is not None:
+            if s_rain_rollingsum_mm.max() < threshold:
+                event_selection_ongoing = False
+                break
+        if target_events_per_year is not None:
+            tot_events = (len(pd.Series(s_rainfall_mm_per_hr.index.date).unique())/365.25) * target_events_per_year
+            if event_id < round(tot_events)+1:
+                event_selection_ongoing = True
+            else:
+                break
+
+    # combine results into dataframes
+    df_rainevent_summary = pd.DataFrame(dict(event_id = event_ids, rain_event_start = lst_rain_event_starts, rain_event_end = lst_rain_event_ends, 
+                                duration = event_duration, depth_mm = total_precip, 
+                                mean_mm_per_hr = mean_intensities, max_mm_per_hour = max_intensities,
+                                max_intensity_tstep = max_intensity_tsteps))
+    df_rainevent_summary.set_index("event_id", inplace=True)
+
+    # process time series data
+    df_rainevent_tseries = pd.concat(lst_s_intensities, keys=event_ids).reset_index()
+    df_rainevent_tseries = df_rainevent_tseries.rename(columns = {"level_0":"event_id"})
+    df_rainevent_tseries = df_rainevent_tseries.set_index(["event_id", s_rainfall_mm_per_hr.index.name])
+    
+    return_bm_string(bm_function, "complete event selection", verbose = True)
+
+    df_rainevent_summary["rain_data_source"] = str_data_source
+    df_rainevent_tseries["rain_data_source"] = str_data_source
+    n_events = len(df_rainevent_summary)
+    n_years = (len(pd.Series(s_rainfall_mm_per_hr.index.date).unique())/365.25)
+    event_return_rate_n_per_year = n_events/n_years
+    if threshold is not None:
+        threshold_mm = threshold
+
+    return df_rainevent_summary, df_rainevent_tseries, threshold_mm, event_return_rate_n_per_year # the threshold is the minimum 12-hour rainfall to trigger an event

@@ -1,0 +1,4 @@
+
+def shift_data(s_data, scalar_shift):
+    s_data_shifted = s_data + scalar_shift
+    return s_data_shifted

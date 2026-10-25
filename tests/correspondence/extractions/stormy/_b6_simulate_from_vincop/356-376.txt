@@ -1,0 +1,21 @@
+#%% analyze missing periods
+dir_plots_ommitted_time_periods = f"{dir_plot}event_occurence_simulations/"
+Path(dir_plots_ommitted_time_periods).mkdir(parents=True, exist_ok=True)
+
+lst_all_valid_dates_in_rejected_samples = []
+for idx, row in df_obs_annual_event_counts.iterrows():
+    if row["n_missing"] < 10:
+        continue
+    
+    idx_all_dates_over_period = pd.date_range(row["begin_date"], row["end_date"])
+    idx_valid_dates_over_period = idx_valid_dates[(idx_valid_dates >= row["begin_date"].date()) & (idx_valid_dates <= row["end_date"].date())]
+
+    s_valid_dates = pd.Series(data = True, index = idx_valid_dates_over_period)
+    s_valid_dates.name = "valid_date"
+    s_valid_dates = s_valid_dates.reindex(idx_all_dates_over_period, fill_value=False)
+    fig, ax = plt.subplots()
+    s_valid_dates.groupby(s_valid_dates.index.month).sum().plot.bar(ax=ax)
+    lst_all_valid_dates_in_rejected_samples.append(s_valid_dates)
+    ax.set_title(f"Valid Date Observation Count by Month\n{row['begin_date'].date()} to {row['end_date'].date()} (n_missing = {row['n_missing']})")
+    plt.savefig(f"{dir_plots_ommitted_time_periods}rejected_time_periods_{row['begin_date'].date()}_to_{row['end_date'].date()}.png", bbox_inches='tight')
+    plt.clf()

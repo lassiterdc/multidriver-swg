@@ -9,7 +9,11 @@ field. It is the head of the check chain: a check that reads the corpus can call
 `require_record()` first, and then reports that it did not measure, rather than failing,
 when the record itself is wrong — one broken record then shows as one failure with
 one cause instead of hundreds. Today the extent check calls it, from `extent.require_extent`,
-and the known-defect register's test reaches it through that call; the ledger's checks read the
+and the known-defect register's test reaches it through that call; `extraction_check.require_extractions`
+calls it, through `extraction_check.require_chain`, before it compares any stored text, while
+`extraction_findings` calls no record gate; the lift runner calls no record gate either, but it
+reads this record file through `extent._section` to find the section, so a record file that
+cannot be read stops it; the ledger's checks read the
 corpus through `extent` and call neither.
 
 Run as a script (`python -m tests.correspondence.corpus_record`) it prints one summary

@@ -1,0 +1,57 @@
+
+
+def plot_obs_vs_montecarlo_simulated_statstic(varname_test, s_mc_simulated_stat, val_obs_stat, pvalue, string_two_sided_test_result, alpha,
+                                                n_obs, n_mc_sims, fig_maintitle = "", fig = None, ax = None, clearfigs = True, f_savefig = None,
+                                                sim_type = "monte_carlo"):
+    if sim_type not in ["monte_carlo", "bootstrap"]:
+        sys.exit("sim_type not recognized")
+    if (ax is None) and (fig is None):
+        fig, ax = plt.subplots(figsize=(8,6), dpi = 300)
+    sns.histplot(s_mc_simulated_stat, bins=30, kde=False, ax=ax)
+    ax.set_xlabel(f"{varname_test}")
+    lower_boundary = s_mc_simulated_stat.quantile(alpha/2)
+    upper_boundary = s_mc_simulated_stat.quantile(1-alpha/2)
+    # Shade reject regions red
+    ax.axvspan(-9999, lower_boundary, color='red', alpha=alpha)
+    ax.axvspan(upper_boundary, 9999, color='red', alpha=alpha)
+    ax.axvspan(lower_boundary, upper_boundary, color='green', alpha=alpha)
+    # define x limits
+    ax.set_xlim((s_mc_simulated_stat.min(), s_mc_simulated_stat.max()))
+    # Add the blue dashed vertical line for the observed cvm stat
+    ax.axvline(x=val_obs_stat, color='blue', linestyle='--')
+    # Add text saying the percentile of the observed cvm stat in the distribution
+    fig_maintitle = textwrap.fill(fig_maintitle, width = 80)
+    if sim_type == "monte_carlo":
+        txt_ax_title = f"{fig_maintitle}\n{varname_test} Distribution from\n{n_mc_sims} {n_obs}-sample Monte-Carlo Simulations\n{string_two_sided_test_result} at significance = {alpha}"
+    elif sim_type == "bootstrap":
+        txt_ax_title = f"{fig_maintitle}\n{varname_test} Distribution from\n{n_mc_sims} n={n_obs} bootstrapped samples\n{string_two_sided_test_result} at significance = {alpha}"
+
+    ax_title = txt_ax_title
+    ax.set_title(ax_title, fontsize=12)
+    percentile_rounded = round(pvalue*100, 0)
+    remainder = percentile_rounded % 10
+    if remainder == 1:
+        sfx = "st"
+    elif remainder == 2:
+        sfx = "nd"
+    elif percentile_rounded == 12:
+        sfx = "th"
+    elif remainder == 3:
+        sfx = "rd"
+    else:
+        sfx = "th"
+    line_text = f"({(pvalue*100):.0f}{sfx}\npercentile)"
+    ax.text(val_obs_stat + 0.01, ax.get_ylim()[1]*0.88, line_text, color='blue')
+    # Create a custom legend
+    red_patch = mpatches.Patch(color='red', alpha=alpha, label='Reject')
+    green_patch = mpatches.Patch(color='green', alpha=alpha, label='Fail to\nReject')
+    blue_line = Line2D([0], [0], color='blue', linestyle='--', label=f'Observed\n{varname_test}')
+    # Add the legend
+    ax.legend(handles=[red_patch, green_patch, blue_line], loc='best')
+    if ax is None:
+        fig.tight_layout()
+    if f_savefig is not None:
+        plt.savefig(f_savefig, bbox_inches='tight')
+    if clearfigs:
+        plt.clf()
+    return fig, ax

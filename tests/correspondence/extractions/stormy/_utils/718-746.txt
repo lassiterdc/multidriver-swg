@@ -1,0 +1,29 @@
+
+
+def monte_carlo_tau_test(df_obs, col1_iloc, col2_iloc, df_simulated = None, cop_fitted = None, n_samples=1000, alpha=0.05):
+    df_obs_subset = df_obs.iloc[:, [col1_iloc, col2_iloc]].dropna()
+    # obs_x, obs_y = df_obs_subset.iloc[:, 0], df_obs_subset.iloc[:, 1]
+    tau_obs, _ = kendalltau(df_obs_subset.iloc[:, 0], df_obs_subset.iloc[:, 1])
+
+    simulated_taus = []
+
+    # Simulate n_simulations samples from the vine copula
+    for _ in range(n_samples):
+        # Simulate a sample from the fitted vine copula
+        if cop_fitted is not None:
+            df_sampled_for_tau = simulate_from_copula(df_obs, len(df_obs_subset), cop_fitted=cop_fitted)
+        else:
+            df_sampled_for_tau = df_simulated.sample(n = len(df_obs_subset), replace = True)
+        tau_simulated, _ = kendalltau(df_sampled_for_tau.iloc[:, col1_iloc], df_sampled_for_tau.iloc[:, col2_iloc])
+        simulated_taus.append(tau_simulated)
+
+    simulated_taus = pd.Series(simulated_taus)
+
+    pvalue = get_quantile_from_value(simulated_taus, tau_obs)
+    if pvalue < alpha/2:
+        mc_result = "reject"
+    elif pvalue > (1-(alpha/2)):
+        mc_result = "reject"
+    else:
+        mc_result = "fail to reject"
+    return mc_result, pvalue, simulated_taus, tau_obs

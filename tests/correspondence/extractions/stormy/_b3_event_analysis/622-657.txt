@@ -1,0 +1,36 @@
+#%% plotting key relationships
+## SURGE ONLY
+fldr_plots = dir_selecting_maringals+"plots/"
+try:
+    shutil.rmtree(fldr_plots)
+except:
+    pass
+Path(fldr_plots).mkdir(parents=True, exist_ok=True)
+abs_cors = df_variables_selected_surge.abs_corr
+var1s = df_variables_selected_surge.reset_index().var1
+var2s = df_variables_selected_surge.reset_index().var2
+s_savefig_fnames = fldr_plots + "surge_abs_corr_" + abs_cors.round(3).astype(str) + "_" + var1s.values + "." + var2s.values+  ".png"
+plot_event_statistic_relationships(df_variables_selected_surge,
+                                       df_surge_events, fig_title = "surge_events", s_savefig_fnames=s_savefig_fnames)
+df_variables_selected_surge.drop_duplicates().to_csv(f"{dir_selecting_maringals}surge_event_marginals.csv")
+
+## RAIN ONLY
+abs_cors = df_variables_selected_rain.abs_corr
+var1s = df_variables_selected_rain.reset_index().var1
+var2s = df_variables_selected_rain.reset_index().var2
+s_savefig_fnames = fldr_plots + "rain_abs_corr_" + abs_cors.round(3).astype(str) + "_" + var1s.values + "." + var2s.values+  ".png"
+
+plot_event_statistic_relationships(df_variables_selected_rain,
+                                       df_rain_events, fig_title = "rain_events",s_savefig_fnames=s_savefig_fnames)
+df_variables_selected_rain.drop_duplicates().to_csv(f"{dir_selecting_maringals}rain_event_marginals.csv")
+
+# COMPOUND
+abs_cors = df_variables_selected_surge_and_rain.abs_corr
+var1s = df_variables_selected_surge_and_rain.reset_index().var1
+var2s = df_variables_selected_surge_and_rain.reset_index().var2
+s_savefig_fnames = fldr_plots + "compound_abs_corr_" + abs_cors.round(3).astype(str) + "_" + var1s.values + "." + var2s.values+  ".png"
+
+plot_event_statistic_relationships(df_variables_selected_surge_and_rain,
+                                       df_combo_events, fig_title = "compound_events", s_savefig_fnames=s_savefig_fnames)
+df_variables_selected_surge_and_rain.to_csv(f"{dir_selecting_maringals}compound_event_marginals.csv")
+

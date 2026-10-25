@@ -1,0 +1,6 @@
+
+def simulate_from_poisson(lbda, n_years_to_simulate, random_seed, event_type):
+    n_per_year_sim = poisson.rvs(lbda, size=n_years_to_simulate, random_state = random_seed)
+    s_sim = pd.Series(n_per_year_sim)
+    s_sim.name = event_type
+    return s_sim

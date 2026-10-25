@@ -1,0 +1,14 @@
+
+
+def empirical_multivariate_cdf(df_samples):
+    n_samples = len(df_samples)
+    s_emp_cdf = pd.Series(index = df_samples.index).astype(float)
+    for emp_cdf_index, sample_values in df_samples.iterrows():
+        # Compare each column in df_samples to the current sample values
+        df_exceedance = (df_samples <= sample_values)
+        # Check where all variables are less than or equal to the sample
+        n_all_lessthan_or_equal_to = df_exceedance.all(axis=1).sum()
+        # Calculate the empirical CDF value
+        emp_cdf_val = n_all_lessthan_or_equal_to / (n_samples+1)
+        s_emp_cdf.loc[emp_cdf_index] = emp_cdf_val
+    return s_emp_cdf

@@ -1,0 +1,196 @@
+#%% create goodness of fit plots 
+for event_type_key in dic_event_summaries:
+    if event_type_key in lst_skip:
+        print(f"while script is in development, skipping {lst_skip}")
+        continue
+    # extract event type for indexing summary dataframe and 
+    event_type = ""
+    for e_type in ds_tseries_all["event_type"].values:
+        if e_type in event_type_key:
+            event_type = e_type
+    # make sure plot folder exists and clear it if specified
+    dir_plot_events = f"{dir_plot}{event_type_key}/"
+    if clear_plots:
+        try:
+            shutil.rmtree(dir_plot_events)
+            print(f"Deleteing and recreating folder {dir_plot_events}")
+        except:
+            pass
+    Path(dir_plot_events).mkdir(parents=True, exist_ok=True)
+    
+    df_sim_summaries = df_sim_summaries_all[df_sim_summaries_all["event_type"] == event_type]
+
+    for which_rain_data in ["mrms", "aorc", "all"]:
+        # create plot folder for subsets of the dataset
+        dir_plot_events = f"{dir_plot}{event_type_key}/{which_rain_data}_rain_data/"
+        if clear_plots:
+            try:
+                shutil.rmtree(dir_plot_events)
+                print(f"Deleteing and recreating folder {dir_plot_events}")
+            except:
+                pass
+        Path(dir_plot_events).mkdir(parents=True, exist_ok=True)
+
+        df_obs_summary = dic_event_summaries[event_type_key]
+        if which_rain_data == "all":
+            pass
+        else:
+            df_obs_summary = df_obs_summary[df_obs_summary["rain_data_source"] == which_rain_data]
+        
+        # double check that the correct thresholds are met
+        s_surge_unmet = df_sim_summaries["surge_peak_m"] < surge_event_threshold_m
+        s_rain_unmet = df_sim_summaries["precip_depth_mm"] < rain_event_threshold_mm
+        problem = False
+        if event_type_key in ["compound_events", "rain_events"]:
+            if s_rain_unmet.sum() > 0:
+                problem = True
+                sys.exit(f'WARNING 1: There are {s_rain_unmet.sum()} {event_type_key} that do not meet the rain event threshold. Dropping these from the analysis...')
+                df_sim_summaries = df_sim_summaries[~s_rain_unmet]
+        if event_type_key in ["compound_events", "surge_events"]:
+            if s_surge_unmet.sum() > 0:
+                problem = True
+                sys.exit(f'WARNING 2: There are {s_surge_unmet.sum()} {event_type_key} that do not meet the surge event threshold.')
+        s_surge_met = df_sim_summaries["surge_peak_m"] >= surge_event_threshold_m
+        s_rain_met = df_sim_summaries["precip_depth_mm"] >= rain_event_threshold_mm
+        if event_type_key == "surge_events":
+            if s_rain_met.sum() > 0:
+                problem = True
+                sys.exit(f"WARNING 3: There are {s_rain_met.sum()} {event_type_key} that also meet the rain event threshold.")
+        if event_type_key == "rain_events":
+            if s_surge_met.sum() > 0:
+                problem = True
+                sys.exit(f"WARNING 4: There are {s_surge_met.sum()} {event_type_key} that also meet the surge event threshold.")
+        # if problem:
+        #     break
+        # create plots comparing observed to simulated data
+        df_cdf_obs = format_fitted_cdf_values_for_fitting_copula(event_type_key=event_type_key, verbose = False)
+        # sys.exit('work')
+        df_cdf_obs = df_cdf_obs.rename(columns = dict(surge_peak_ft = "surge_peak_m"))
+        # Number of datasets and number of columns
+        num_datasets = len(df_cdf_obs.columns)
+        ncols = 2
+        nbins = 20
+        nrows = (num_datasets + ncols - 1) // ncols  # Calculate rows needed
+
+        # Create a larger figure and adjust aspect ratio
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(18, 7 * nrows), dpi = 250)  # Adjust height for each row
+        axes = axes.flatten()
+
+        for ds_idx, dataset in enumerate(df_cdf_obs.columns):
+            # Get the respective axes for plotting
+            ax_plot = axes[ds_idx]
+
+            sample1 = df_obs_summary[dataset].dropna()
+            sample2 = df_sim_summaries[dataset]
+            if (sample2.isna().any()):
+                sys.exit(f"There are missing values for {dataset}")
+
+            # Find the common range across both samples
+            combined_min = min(sample1.min(), sample2.min())
+            combined_max = max(sample1.max(), sample2.max())
+
+            # Calculate common bin edges
+            bin_edges = np.linspace(combined_min, combined_max, nbins + 1)
+
+            # Plot histogram and KDE for sample1 and sample2
+            ax_plot.hist(sample1, bins=bin_edges, color='blue', alpha=0.3, label='Observed Hist', density=True)
+            ax_plot.hist(sample2, bins=bin_edges, color='green', alpha=0.3, label='Simulated Hist', density=True)
+            sns.kdeplot(sample1, color='blue', label='Observed KDE', fill=False, ax=ax_plot)
+            sns.kdeplot(sample2, color='green', label='Simulated KDE', fill=False, ax=ax_plot)
+
+            # Add thresholds with text for surge and rain
+            if dataset == "surge_peak_m":
+                if event_type_key == "rain_events":
+                    txt_offset = -1.5
+                else:
+                    txt_offset = 0.5
+                ax_plot.axvline(surge_event_threshold_m, color='red', linestyle='--')
+                ax_plot.text(surge_event_threshold_m + txt_offset, ax_plot.get_ylim()[1] * 0.9,
+                            f'Surge\nevent\nthreshold (m) = {surge_event_threshold_m:.2f}', 
+                            color='red', bbox=dict(facecolor='white', alpha=0.5))
+
+            if dataset == "precip_depth_mm":
+                ax_plot.axvline(rain_event_threshold_mm, color='red', linestyle='--')
+                ax_plot.text(rain_event_threshold_mm + 0.5, ax_plot.get_ylim()[1] * 0.9,
+                            f'Rain\nevent\nthreshold (mm) = {rain_event_threshold_mm:.2f}', 
+                            color='red', bbox=dict(facecolor='white', alpha=0.5))
+
+            # Set the title and labels for each subplot
+            ax_plot.set_title(f'{dataset} (rain data source = {which_rain_data})')
+            ax_plot.set_xlabel(dataset, fontsize=12)
+            ax_plot.set_ylabel('Density', fontsize=12)
+            ax_plot.legend()
+
+            df_results = perform_two_sample_tests(sample1, sample2, alpha=0.05)
+            txt = ''
+            for result_idx, result_row in df_results.iterrows():
+                txt += f'{result_row["Test"]}: {result_row["p-value"]:.2f} ({result_row["Conclusion"]})\n'
+            ax_plot.text(0.2, -0.24, txt, ha='left', va='center', transform=ax_plot.transAxes, fontsize=8)
+        # Adjust layout to prevent overlap
+        fig.suptitle(f"{event_type_key} observed vs. simulated", fontsize=16)
+        fig.tight_layout(rect=[0, 0, 1, 0.96])  # Leave space for suptitle
+        plt.savefig(f"{dir_plot_events}simulated_vs_observed_{event_type_key}.png")
+        plt.clf()
+
+        # from scipy.stats import gaussian_kde, kendalltau
+        fig_main_title=""
+        cop_fitted = None
+        plot = True
+        n_for_montecarlo_tau_test = 1000
+        alpha = 0.05
+        idx_cols_of_interest = df_cdf_obs.columns
+        df_obs_realspace = df_obs_summary[idx_cols_of_interest]
+        df_simulated_realspace = df_sim_summaries[idx_cols_of_interest]
+
+        # calculate cdf value of obs and simulated
+        df_marginal_fits = pd.read_csv(f"{dir_fitting_maringals}{event_type_key}_distributions.csv")
+        df_obs_cdf = pd.DataFrame(index = df_obs_realspace.index, columns = df_obs_realspace.columns).astype(float)
+        df_simulated_cdf = pd.DataFrame(index = df_simulated_realspace.index, columns = df_simulated_realspace.columns).astype(float)
+        for idx, fitted_row in df_marginal_fits.iterrows():
+            s_fit = fitted_row
+            dataset = fitted_row["data"]
+            if dataset == "surge_peak_ft":
+                mltply = feet_per_meter
+                dataset = "surge_peak_m"
+            else:
+                mltply = 1
+            df_obs_valid = df_obs_realspace[dataset].dropna()
+            df_sim = df_simulated_realspace[dataset]
+            # store indices for filling in dataframe
+            sim_idx = df_sim.index
+            obs_idx = df_obs_valid.index
+            # transform according to fit
+            s_data_sim = transform_data_given_transformations(df_sim*mltply, fitted_row)
+            s_data_obs = transform_data_given_transformations(df_obs_valid*mltply, fitted_row)
+            # compute cdf values for each observation
+            n_params = fitted_row["n_params"]
+            fx = getattr(stats, fitted_row.loc["distribution"])
+            if n_params == 3:
+                x_obs_cdf = pd.Series(fx.cdf(s_data_obs, fitted_row["shape"], fitted_row["loc"], fitted_row["scale"]), name = "x_obs_cdf_fromfit").astype(float)
+                x_sim_cdf = pd.Series(fx.cdf(s_data_sim, fitted_row["shape"], fitted_row["loc"], fitted_row["scale"]), name = "x_sim_cdf_fromfit").astype(float)
+            if n_params == 2:
+                x_obs_cdf = pd.Series(fx.cdf(s_data_obs, fitted_row["loc"], fitted_row["scale"]), name = "x_obs_cdf_fromfit").astype(float)
+                x_sim_cdf = pd.Series(fx.cdf(s_data_sim, fitted_row["loc"], fitted_row["scale"]), name = "x_sim_cdf_fromfit").astype(float)
+            # populate dataframe of cdf values
+            x_obs_cdf.index = obs_idx
+            x_sim_cdf.index = sim_idx
+            if not np.isnan(s_fit["upper_bound"]):
+                print(f"Flipping cdf values for copula simluated {event_type_key} {dataset} because an upper bound transformation was applied to this dataset")
+                x_sim_cdf_untransformed = x_sim_cdf.copy()
+                x_obs_cdf_untransformed = x_obs_cdf.copy()
+                x_sim_cdf = 1 - x_sim_cdf
+                x_obs_cdf = 1 - x_obs_cdf
+
+            df_simulated_cdf.loc[sim_idx,dataset] = x_sim_cdf
+            df_obs_cdf.loc[obs_idx,dataset] = x_obs_cdf
+        # col1_iloc = i = 0
+        # col2_iloc = j = 1
+        df_obs = df_obs_cdf
+        cop_fitted=None
+        df_simulated=df_simulated_cdf
+        df_mc_results_combined = evaluate_copula_fit_based_on_comparing_kendalltaus_for_each_variable_pair(df_obs=df_obs, alpha=alpha,n_for_montecarlo_tau_test=n_for_montecarlo_tau_test, cop_fitted=None,
+                                                                                                            df_simulated=df_simulated, plot = True, fldr_plots = dir_plot_events,
+                                                                                                            fig_main_title=f"observed vs. stochastically simualted and rescaled {event_type_key} (rain data source = {which_rain_data})")
+
+
+

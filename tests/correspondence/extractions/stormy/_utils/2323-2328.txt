@@ -1,0 +1,6 @@
+
+
+def append_list_of_selected_vars(var1_manal_selection, var2_manual_selection, lst_s_selections, df_correlations_to_analyze):
+    s_variable_selection = df_correlations_to_analyze.set_index(['var1', "var2"]).loc[(var1_manal_selection,var2_manual_selection)]
+    lst_s_selections.append(s_variable_selection)
+    return lst_s_selections

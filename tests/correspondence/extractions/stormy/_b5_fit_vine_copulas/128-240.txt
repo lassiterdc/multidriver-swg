@@ -1,0 +1,113 @@
+#%% try a bunch of different fit controls to find all the combos that get a good CVM statistic p value
+import itertools
+from tqdm import tqdm
+n_for_density_plot = 1000
+n_for_montecarlo_cvm_test = 50
+n_for_montecarlo_tau_test = 200
+lst_selection_criterion = ["loglik", "aic", "bic"]
+lst_parametric_method = ["mle", "itau"]
+lst_tree_criterion = ["tau", "hoeffd", "rho", "mcor"]
+lst_select_trunc_lvl = [True, False]
+alpha = 0.05
+
+
+for key in dic_event_summaries:
+    if key == "surge_events":
+        continue # done
+    if key == "rain_events":
+        continue # done
+    if key == "compound_events":
+        continue # done
+    fldr_cntrl_sensitivity = dir_vinecop + f"plots_{key}_control_testing/"
+    try:
+        shutil.rmtree(fldr_cntrl_sensitivity)        
+    except:
+        pass
+    Path(fldr_cntrl_sensitivity).mkdir(parents=True, exist_ok=True)
+    # load observations
+    df_obs = format_fitted_cdf_values_for_fitting_copula(event_type_key = key)
+
+    # Create all combinations of the values in the lists
+    combinations = list(itertools.product(lst_selection_criterion, lst_parametric_method, lst_tree_criterion, lst_select_trunc_lvl))
+
+    # Create a pandas DataFrame with the combinations
+    df_controls = pd.DataFrame(combinations, columns=['selection_criterion', 'parametric_method', 'tree_criterion', 'select_trunc_lvl'])
+
+    dic_simulated_cvms = dict(control_set_index = [],
+                            simulated_cvm_stats = [])
+    df_results = pd.DataFrame(index = df_controls.index, columns = ["pvalue", "result", "cvm_obs", "nsims", "cvm_sims_lower_bound",
+                                                                    "cvm_sims_upper_bound", "cvm_sims_median", "f_vinecop_params",
+                                                                    "cvm_obs_before_exporting", "cvm_obs_after_loading_from_json",
+                                                                    "problems"])
+    for cntrl_set_idx, row_cntrl in tqdm(df_controls.iterrows()):
+        fitcontrols = pv.FitControlsVinecop()
+        fitcontrols.selection_criterion = row_cntrl["selection_criterion"]
+        fitcontrols.parametric_method = row_cntrl["parametric_method"]
+        fitcontrols.threshold=0.01
+        fitcontrols.tree_criterion=row_cntrl["tree_criterion"]
+        fitcontrols.select_trunc_lvl=row_cntrl["select_trunc_lvl"]
+        try:
+            vinecop = pv.Vinecop(data=df_obs, controls = fitcontrols)
+            vinecop.select(data=df_obs, controls = fitcontrols)
+        except Exception as e:
+            df_results.loc[cntrl_set_idx, "problems"] = e
+            continue
+        # create strings for figure and saving to json
+        txt_test_id = ""
+        txt_for_fname_fig = ""
+        for control_var, control_val in row_cntrl.items():
+            txt_test_id += f"{control_var}: {str(control_val)} |"
+            txt_for_fname_fig += f"{str(control_val)}_"
+        txt_test_id += f"trunc_lvl: {vinecop.trunc_lvl}"
+        varname_test="CVM_stat"
+        # save to json
+        df_results.loc[cntrl_set_idx, "f_vinecop_params"] = f"{fldr_cntrl_sensitivity}cntrl_idx{cntrl_set_idx}_vinecop_params_{txt_for_fname_fig}{vinecop.trunc_lvl}.json"
+        vinecop.to_json(df_results.loc[cntrl_set_idx, "f_vinecop_params"])
+        cvm_crit_obs = compute_obs_cvm_stat(df_obs, vinecop)
+        df_results.loc[cntrl_set_idx, "cvm_obs_before_exporting"] = cvm_crit_obs
+        vinecop = pv.Vinecop(df_results.loc[cntrl_set_idx, "f_vinecop_params"])
+        cvm_crit_obs_after_reloading_from_json = compute_obs_cvm_stat(df_obs, vinecop)
+        df_results.loc[cntrl_set_idx, "cvm_obs_after_loading_from_json"] = cvm_crit_obs_after_reloading_from_json
+        if not np.isclose(cvm_crit_obs_after_reloading_from_json, cvm_crit_obs, atol=1e-2):
+            print("WARNING: FOR SOME REASON THE COPULA IS REPORTING DIFFERENT CDF VALUES AFTER RE-LOADING FROM JSON")
+        # running tests
+        ## cvm values
+        mc_result, pvalue, cvm_crit_obs, s_cvm_crit_sim = compare_emp_cvm_criterion_to_dist_from_copula_sims(n_for_montecarlo_cvm_test, df_obs, vinecop, alpha)
+        ## kendall tau
+        # df_simulated = simulate_from_copula(df_obs=df_obs, n=n_for_density_plot, cop_fitted=vinecop)
+        df_kendalltau_fits = evaluate_copula_fit_based_on_comparing_kendalltaus_for_each_variable_pair(df_obs, alpha,
+                                                                                                        n_for_montecarlo_tau_test, cop_fitted = vinecop,
+                                                                                                          plot = False)#, df_simulated=df_simulated, plot = True)
+        # create column values to add to the results dataframe
+        for tau_idx, tau_row in df_kendalltau_fits.iterrows():
+            colname = f"{tau_row.var1}_vs_{tau_row.var2}_kendall_tau_pvalue"
+            val = tau_row.mc_pvalue
+            df_results.loc[cntrl_set_idx, colname] = val
+            colname = f"{tau_row.var1}_vs_{tau_row.var2}_kendall_tau_mc_result"
+            val = tau_row.mc_result
+            df_results.loc[cntrl_set_idx, colname] = val
+
+        dic_simulated_cvms["control_set_index"].append(cntrl_set_idx)
+        dic_simulated_cvms["simulated_cvm_stats"].append(s_cvm_crit_sim)
+        df_results.loc[cntrl_set_idx, "pvalue"] = pvalue
+        df_results.loc[cntrl_set_idx, "result"] = mc_result
+        df_results.loc[cntrl_set_idx, "cvm_obs"] = cvm_crit_obs
+        df_results.loc[cntrl_set_idx, "nsims"] = n_for_montecarlo_cvm_test
+        df_results.loc[cntrl_set_idx, "cvm_sims_lower_bound"] = s_cvm_crit_sim.quantile(alpha/2)
+        df_results.loc[cntrl_set_idx, "cvm_sims_upper_bound"] = s_cvm_crit_sim.quantile(1-alpha/2)
+        df_results.loc[cntrl_set_idx, "cvm_sims_median"] = s_cvm_crit_sim.quantile(.5)
+        df_results.loc[cntrl_set_idx, "trunc_lvl"] = vinecop.trunc_lvl
+
+        f_savefig = f'{fldr_cntrl_sensitivity}cntrl_idx{cntrl_set_idx}_{mc_result}_p{pvalue:.2f}_{txt_for_fname_fig}{vinecop.trunc_lvl}.png'
+
+        fig_maintitle = f"({key})\n{txt_test_id}"
+        plot_obs_vs_montecarlo_simulated_statstic(varname_test=varname_test, s_mc_simulated_stat = s_cvm_crit_sim,
+                                                    val_obs_stat = cvm_crit_obs, pvalue = pvalue, string_two_sided_test_result = mc_result, alpha=alpha,
+                                                            n_obs = len(df_obs), n_mc_sims=n_for_montecarlo_cvm_test,
+                                                                fig_maintitle = fig_maintitle, ax = None, clearfigs = True, f_savefig = f_savefig)
+   
+    df_controls_and_results = df_results.join(df_controls).sort_values("pvalue")
+    df_controls_and_results.index.name = "control_idx"
+
+    df_controls_and_results.to_csv(f"{fldr_cntrl_sensitivity}copula_fit_sensitivity_analysis_results.csv")
+

@@ -1,0 +1,26 @@
+
+def plot_event_statistic_relationships(df_variables_selected,
+                                       df_compound_event_summary_stats, fig_title = None,
+                                       s_fig_titles = None, s_savefig_fnames = None):
+    
+    df_compound_event_summary_plotting_positions = calculate_plotting_positions(df_compound_event_summary_stats)
+    # df_corrs_of_interest = calculate_quantile_correlations(df_compound_event_summary_stats)
+    count = -1
+    for vars, cors in df_variables_selected.iterrows():
+        count += 1
+        fig, axes = plt.subplots(nrows = 1, ncols = 2, dpi=150, figsize = (8,4))
+        df_plting_positions = df_compound_event_summary_plotting_positions.loc[:, [vars[0], vars[1]]]
+        df_plting_positions.dropna().plot.scatter(vars[0], vars[1], ax = axes[0])
+        df_realspace = df_compound_event_summary_stats.loc[:, [vars[0], vars[1]]]
+        df_realspace.dropna().plot.scatter(vars[0], vars[1], ax = axes[1])
+        fig_text1 = "Correlation of empirical quantiles (cunnane plotting position): {:.2f}".format(cors["corr"])
+        txt_fig_cap_txt = "{}".format(fig_text1)
+        fig.text(.5, -0.05, txt_fig_cap_txt, ha='center')
+        if s_fig_titles is not None:
+            fig.suptitle(s_fig_titles.iloc[count])
+        if fig_title is not None:
+            fig.suptitle(fig_title)
+        fig.tight_layout()
+        if s_savefig_fnames is not None:
+            plt.savefig(s_savefig_fnames.iloc[count], bbox_inches='tight')
+            plt.clf()

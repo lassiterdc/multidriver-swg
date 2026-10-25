@@ -1,0 +1,45 @@
+#%% investigating rain event selection using a range of thresholds
+manual_threshold_mm = 40
+print(f"Running event selection on a range of thresholds....")
+columns = ["thresholds_mm", "mrms_event_return_rate_n_per_year", "ncei_hrly_event_return_rate_n_per_year", "cvm_pval", "cvm_result", "ranksum_pval", "ranksum_result"]
+window_extend = 0.5
+ar_thresholds = np.linspace(manual_threshold_mm, manual_threshold_mm*(1+window_extend), 5)
+idx = np.arange(0, len(ar_thresholds))
+
+dic_mrms_event_results = {}
+dic_aorc_event_results = {}
+dic_ncei_hrly_event_results = {}
+
+for i, threshold in enumerate(ar_thresholds):
+  #
+  str_data_source = "ncei_hrly"
+  print(f"performing event selection on {str_data_source} data....")
+  df_ncei_hrly_rainevent_summary, df_ncei_hrly_rainevent_tseries, ncei_hrly_threshold_mm, ncei_hrly_event_return_rate_n_per_year = event_selection_threshold_or_nstorms(s_rainfall_ncei_hrly_mrms_res_mm_per_hr,
+                                                                                                  min_interevent_time,
+                                                                                                  max_strm_len, str_data_source,
+                                                                                                  threshold = threshold)
+  dic_ncei_hrly_event_results[f"threshold_{threshold:.1f}mm_event_summary"] = df_ncei_hrly_rainevent_summary
+  dic_ncei_hrly_event_results[f"threshold_{threshold:.1f}mm_event_tseries"] = df_ncei_hrly_rainevent_tseries
+  dic_ncei_hrly_event_results[f"threshold_{threshold:.1f}mm"] = ncei_hrly_threshold_mm
+  dic_ncei_hrly_event_results[f"threshold_{threshold:.1f}mm_event_return_rate"] = ncei_hrly_event_return_rate_n_per_year
+  #
+  str_data_source = "mrms"
+  print(f"performing event selection on {str_data_source} data....")
+  df_mrms_rainevent_summary, df_mrms_rainevent_tseries, mrms_threshold_mm, mrms_event_return_rate_n_per_year = event_selection_threshold_or_nstorms(s_mrms_rainfall_mm_per_hr,
+                                                                              min_interevent_time, max_strm_len, str_data_source,
+                                                                              threshold = threshold)
+  dic_mrms_event_results[f"threshold_{threshold:.1f}mm_event_summary"] = df_mrms_rainevent_summary
+  dic_mrms_event_results[f"threshold_{threshold:.1f}mm_event_tseries"] = df_mrms_rainevent_tseries
+  dic_mrms_event_results[f"threshold_{threshold:.1f}mm"] = mrms_threshold_mm
+  dic_mrms_event_results[f"threshold_{threshold:.1f}mm_event_return_rate"] = mrms_event_return_rate_n_per_year
+  #
+  str_data_source = "aorc"
+  print(f"performing event selection on {str_data_source} data....")
+  df_aorc_rainevent_summary, df_aorc_rainevent_tseries, aorc_threshold_mm, aorc_event_return_rate_n_per_year = event_selection_threshold_or_nstorms(s_aorc_rainfall_mm_per_hr,
+                                                                              min_interevent_time, max_strm_len, str_data_source,
+                                                                              threshold = threshold)
+  dic_aorc_event_results[f"threshold_{threshold:.1f}mm_event_summary"] = df_aorc_rainevent_summary
+  dic_aorc_event_results[f"threshold_{threshold:.1f}mm_event_tseries"] = df_aorc_rainevent_tseries
+  dic_aorc_event_results[f"threshold_{threshold:.1f}mm"] = aorc_threshold_mm
+  dic_aorc_event_results[f"threshold_{threshold:.1f}mm_event_return_rate"] = aorc_event_return_rate_n_per_year
+

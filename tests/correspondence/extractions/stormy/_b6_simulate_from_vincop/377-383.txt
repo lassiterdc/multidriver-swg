@@ -1,0 +1,7 @@
+#%%
+fig, ax = plt.subplots()
+s_all_valid_dates_of_rejected_samples = pd.concat(lst_all_valid_dates_in_rejected_samples)
+s_all_valid_dates_of_rejected_samples.groupby(s_all_valid_dates_of_rejected_samples.index.month).sum().plot.bar(ax=ax)
+ax.set_title(f"Valid Date Observation Count by Month\nfor all rejected time periods")
+plt.savefig(f"{dir_plots_ommitted_time_periods}rejected_time_periods_all.png", bbox_inches='tight')
+plt.clf()

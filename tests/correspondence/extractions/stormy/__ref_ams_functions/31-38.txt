@@ -1,0 +1,8 @@
+
+def inverse_boxcox(s_data_transformed, lmbda, scalar_shift_for_boxcox):
+    if lmbda == 0:
+        s_data_untransformed = np.exp(s_data_transformed)
+    else:
+        s_data_untransformed = np.power((s_data_transformed * lmbda) + 1, 1 / lmbda)
+    s_data_untransformed = s_data_untransformed - scalar_shift_for_boxcox
+    return s_data_untransformed

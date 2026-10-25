@@ -1,0 +1,38 @@
+
+def compute_event_timeseries_statistics(df_tseries_og, lst_time_durations_h_to_analyze, varname, idx_name_time = "timestep",
+                                         agg_stat = "mean", idx_event_id = "event_id"):
+    df_tseries = df_tseries_og.copy()
+    if len(df_tseries.index.names) > 1:
+        # idx_name_time = "timestep"
+        idxs_to_drop = []
+        for other_idxs in df_tseries.index.names:
+            if other_idxs not in [idx_event_id, idx_name_time]:
+                idxs_to_drop.append(other_idxs)
+        df_tseries = df_tseries.droplevel(idxs_to_drop)
+    else:
+        idx_event_id = None
+        idx_name_time = df_tseries.index.names[0]
+    # calculating additional rainfall statistics
+    # add columns to event summary table with max rainfall intensities over different periods of time
+    # convert to minutes
+    lst_time_durations_min_to_analyze = (np.asarray(lst_time_durations_h_to_analyze) * 60).astype(int)
+    lst_s_statistics = []
+    lst_s_statistic_index = []
+    for i, dur_min in enumerate(lst_time_durations_min_to_analyze):
+        dur_h = lst_time_durations_h_to_analyze[i]
+        # np.timedelta64(dur_h, "h")
+        sys.exit("i need to update the statistic timestep to fall in the middle of the rolling window")
+        if idx_event_id is not None:
+            s_statistic = df_tseries.reset_index().set_index(idx_name_time).groupby(idx_event_id).rolling("{}min".format(dur_min)).agg(agg_stat).groupby(level=idx_event_id).max().iloc[:,0]
+            s_statistic_tstep = df_tseries.reset_index().set_index(idx_name_time).groupby(idx_event_id).rolling("{}min".format(dur_min)).agg(agg_stat).reset_index().set_index(idx_name_time).dropna().groupby(idx_event_id).idxmax().iloc[:,0]
+        else: # assume a single event time series was provided
+            s_statistic = df_tseries.rolling("{}min".format(dur_min)).agg(agg_stat).max()
+            s_statistic_tstep = df_tseries.rolling("{}min".format(dur_min)).agg(agg_stat).dropna().idxmax()
+        if dur_h % 1 == 0:
+            dur_h = int(dur_h)
+        s_statistic.name = "max_{}hr_{}_{}".format(dur_h, agg_stat, varname)
+        s_statistic_tstep.name = "max_{}hr_{}_{}_tstep".format(dur_h, agg_stat, varname)
+        lst_s_statistics.append(s_statistic)
+        lst_s_statistic_index.append(s_statistic_tstep)
+    df_stats = pd.concat(lst_s_statistics+lst_s_statistic_index, axis = 1)
+    return df_stats

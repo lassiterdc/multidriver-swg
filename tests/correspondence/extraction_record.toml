@@ -1,0 +1,1176 @@
+# The record of the stored copies of cited legacy ranges: for each, the digest of the range cut from the corpus
+# and the digest of the stored copy, each labelled {rule}:{version}:{sha256}.
+# Generated; do not edit by hand. Regenerate with:
+#   python -m tests.correspondence.generate_extractions
+
+rule = "extraction-record:1"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 23
+last = 30
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/23-30.txt"
+cut = "cut-lines:1:861c7216b43ad1b88707d69279558cd3115d5120b67182a1a1488a2149e47460"
+stored = "stored-text:1:861c7216b43ad1b88707d69279558cd3115d5120b67182a1a1488a2149e47460"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 31
+last = 38
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/31-38.txt"
+cut = "cut-lines:1:19651879b8df3efb84101dfc7c6d6730a4056e76539d1b71ef9550729b5cb4b8"
+stored = "stored-text:1:19651879b8df3efb84101dfc7c6d6730a4056e76539d1b71ef9550729b5cb4b8"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 39
+last = 43
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/39-43.txt"
+cut = "cut-lines:1:fcbc03806cb3ee0268fb3d4a79d2492f6a3a36052e0828d298cbf889a9c1f56c"
+stored = "stored-text:1:fcbc03806cb3ee0268fb3d4a79d2492f6a3a36052e0828d298cbf889a9c1f56c"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 44
+last = 47
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/44-47.txt"
+cut = "cut-lines:1:fa9a3c07ac825aa2193af7cf461333193307ac90ac10d50dc1538a43d5bdb37a"
+stored = "stored-text:1:fa9a3c07ac825aa2193af7cf461333193307ac90ac10d50dc1538a43d5bdb37a"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 48
+last = 51
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/48-51.txt"
+cut = "cut-lines:1:70049577e51fc9dc45e73f05b2998a6045353ac250849c58c3f8e7ceceb31a4d"
+stored = "stored-text:1:70049577e51fc9dc45e73f05b2998a6045353ac250849c58c3f8e7ceceb31a4d"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 52
+last = 55
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/52-55.txt"
+cut = "cut-lines:1:56cb15bf030fde05bc8f9108ebfc02257f55b64ee9c511985f33896f9f9abc93"
+stored = "stored-text:1:56cb15bf030fde05bc8f9108ebfc02257f55b64ee9c511985f33896f9f9abc93"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 56
+last = 70
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/56-70.txt"
+cut = "cut-lines:1:235ab2e5ce84a43abb57e703008b13fbc81a2b4a3c65cae09168aadf84cb158d"
+stored = "stored-text:1:235ab2e5ce84a43abb57e703008b13fbc81a2b4a3c65cae09168aadf84cb158d"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 71
+last = 88
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/71-88.txt"
+cut = "cut-lines:1:de1c0df7f005101b0b132b9ace3f9359b148f12e14632440e3cf5357e4b71c3e"
+stored = "stored-text:1:de1c0df7f005101b0b132b9ace3f9359b148f12e14632440e3cf5357e4b71c3e"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 89
+last = 104
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/89-104.txt"
+cut = "cut-lines:1:d9b815e4ac92d98b897eac33306bc3dfdcf2b2a259e380021052acdbeaf983c9"
+stored = "stored-text:1:d9b815e4ac92d98b897eac33306bc3dfdcf2b2a259e380021052acdbeaf983c9"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 105
+last = 107
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/105-107.txt"
+cut = "cut-lines:1:41adab61721685701b64e8c2c48d958b6af414a4257781a4f9f85a0d196cd51e"
+stored = "stored-text:1:41adab61721685701b64e8c2c48d958b6af414a4257781a4f9f85a0d196cd51e"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 108
+last = 110
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/108-110.txt"
+cut = "cut-lines:1:c510f905fc8cbe2d018c67909bbdac27f7451ba01b1b57401844e5f06a891231"
+stored = "stored-text:1:c510f905fc8cbe2d018c67909bbdac27f7451ba01b1b57401844e5f06a891231"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 111
+last = 214
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/111-214.txt"
+cut = "cut-lines:1:325dca49eeee8ebd6f4b03561fe04f7c522471a84230dc21b0cfc33cb717429b"
+stored = "stored-text:1:325dca49eeee8ebd6f4b03561fe04f7c522471a84230dc21b0cfc33cb717429b"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 215
+last = 324
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/215-324.txt"
+cut = "cut-lines:1:174610d747c5455adc3ef4015275572301278a5e28aa4ab1b46de5c89010ab38"
+stored = "stored-text:1:174610d747c5455adc3ef4015275572301278a5e28aa4ab1b46de5c89010ab38"
+
+[[extraction]]
+section = "stormy"
+file = "__ref_ams_functions.py"
+first = 325
+last = 387
+path = "tests/correspondence/extractions/stormy/__ref_ams_functions/325-387.txt"
+cut = "cut-lines:1:62de10e8b8f60dcc5208d5944d4c3eddceb88b5c2c54dee3eee2ef20c093a171"
+stored = "stored-text:1:62de10e8b8f60dcc5208d5944d4c3eddceb88b5c2c54dee3eee2ef20c093a171"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 25
+last = 87
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/25-87.txt"
+cut = "cut-lines:1:7c11a800e575974dd7209eeb923eb993abaa4681a6d1897954ec7ef2ef851708"
+stored = "stored-text:1:7c11a800e575974dd7209eeb923eb993abaa4681a6d1897954ec7ef2ef851708"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 88
+last = 94
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/88-94.txt"
+cut = "cut-lines:1:b5bfe707673c4d519e616fec43a0bda4c16a2ff49a9992a5c7d6e44aad10ea18"
+stored = "stored-text:1:b5bfe707673c4d519e616fec43a0bda4c16a2ff49a9992a5c7d6e44aad10ea18"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 95
+last = 108
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/95-108.txt"
+cut = "cut-lines:1:269a20aa101e4c59a78d3319cd84c921324223e4ef35fa03948412810134c487"
+stored = "stored-text:1:269a20aa101e4c59a78d3319cd84c921324223e4ef35fa03948412810134c487"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 109
+last = 153
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/109-153.txt"
+cut = "cut-lines:1:8b0631b54d1e84489f9449f09f11129b05bb8b0684b3785d8e4ec37077d5a513"
+stored = "stored-text:1:8b0631b54d1e84489f9449f09f11129b05bb8b0684b3785d8e4ec37077d5a513"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 154
+last = 268
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/154-268.txt"
+cut = "cut-lines:1:56460a973d25e51f8fa6d70df874ec267c8547419b7372ec037ac9f071bfd3e3"
+stored = "stored-text:1:56460a973d25e51f8fa6d70df874ec267c8547419b7372ec037ac9f071bfd3e3"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 273
+last = 324
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/273-324.txt"
+cut = "cut-lines:1:703c37788800adcf44f55e10575bf59aff8202e518bcd4dc2751d16b64f52ccd"
+stored = "stored-text:1:703c37788800adcf44f55e10575bf59aff8202e518bcd4dc2751d16b64f52ccd"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 325
+last = 347
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/325-347.txt"
+cut = "cut-lines:1:b11c66045dbcbc2c5a321bbd49cf43a8075f36d05eaef48a4559e1420f48335b"
+stored = "stored-text:1:b11c66045dbcbc2c5a321bbd49cf43a8075f36d05eaef48a4559e1420f48335b"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 348
+last = 385
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/348-385.txt"
+cut = "cut-lines:1:0b8e4f7fa7ce15253abe85dabda1aad65669d5aebb1e70815d601a1a2afc7fff"
+stored = "stored-text:1:0b8e4f7fa7ce15253abe85dabda1aad65669d5aebb1e70815d601a1a2afc7fff"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 386
+last = 392
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/386-392.txt"
+cut = "cut-lines:1:0e4531c610a978118e70d38e855cf5e11a83e2a569a6700fd501534e736ae5da"
+stored = "stored-text:1:0e4531c610a978118e70d38e855cf5e11a83e2a569a6700fd501534e736ae5da"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 393
+last = 405
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/393-405.txt"
+cut = "cut-lines:1:41d7240c3c911f4c3bf6e4ae7d230fc74276a1a7d90c5a493ff0d97ec05c441f"
+stored = "stored-text:1:41d7240c3c911f4c3bf6e4ae7d230fc74276a1a7d90c5a493ff0d97ec05c441f"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 406
+last = 411
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/406-411.txt"
+cut = "cut-lines:1:146126ad471ad8c0295a350d66201b43f5b65b3ddef69fdf847d12b78a8952f5"
+stored = "stored-text:1:146126ad471ad8c0295a350d66201b43f5b65b3ddef69fdf847d12b78a8952f5"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 412
+last = 552
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/412-552.txt"
+cut = "cut-lines:1:8531b5e84e1f405219f38d88d1b9e9b8fb65b9dbab1b0b8b9e15d137f2e5eef0"
+stored = "stored-text:1:8531b5e84e1f405219f38d88d1b9e9b8fb65b9dbab1b0b8b9e15d137f2e5eef0"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 553
+last = 568
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/553-568.txt"
+cut = "cut-lines:1:4155914d67bffe77d34f28d6657078316e684885863fb1d3517165292923d20b"
+stored = "stored-text:1:4155914d67bffe77d34f28d6657078316e684885863fb1d3517165292923d20b"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 569
+last = 587
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/569-587.txt"
+cut = "cut-lines:1:aa669c046c33ca47c5ab033583599ba3f1c69ecb1177d12527060b037213fdb7"
+stored = "stored-text:1:aa669c046c33ca47c5ab033583599ba3f1c69ecb1177d12527060b037213fdb7"
+
+[[extraction]]
+section = "stormy"
+file = "_b2_event_selection.py"
+first = 588
+last = 617
+path = "tests/correspondence/extractions/stormy/_b2_event_selection/588-617.txt"
+cut = "cut-lines:1:76601714bf212a5772feb834b21078c832542b2a20deb20825af29e52719ede2"
+stored = "stored-text:1:76601714bf212a5772feb834b21078c832542b2a20deb20825af29e52719ede2"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 24
+last = 41
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/24-41.txt"
+cut = "cut-lines:1:b42b72d60c4c474573083d3cc079e026c29fd67f0a7f24163f0b2decb1303e5a"
+stored = "stored-text:1:b42b72d60c4c474573083d3cc079e026c29fd67f0a7f24163f0b2decb1303e5a"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 42
+last = 51
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/42-51.txt"
+cut = "cut-lines:1:dfde95e552a91eace8da469eff164b99b619cf853ad9bb6179a1732a6ddc2c6d"
+stored = "stored-text:1:dfde95e552a91eace8da469eff164b99b619cf853ad9bb6179a1732a6ddc2c6d"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 52
+last = 61
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/52-61.txt"
+cut = "cut-lines:1:37fa07e5f6e100f128fefc5f09db9457a5a3bccdfc51b81042ab43baf1831cd8"
+stored = "stored-text:1:37fa07e5f6e100f128fefc5f09db9457a5a3bccdfc51b81042ab43baf1831cd8"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 62
+last = 97
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/62-97.txt"
+cut = "cut-lines:1:015ce13fe40e9f5f5809099339619900f3a464612a1f2b034f0987663e64674a"
+stored = "stored-text:1:015ce13fe40e9f5f5809099339619900f3a464612a1f2b034f0987663e64674a"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 98
+last = 134
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/98-134.txt"
+cut = "cut-lines:1:94fd5defba102026577bc63c18f981bf5d52f1c35cf16fcb66031be6044f0cc3"
+stored = "stored-text:1:94fd5defba102026577bc63c18f981bf5d52f1c35cf16fcb66031be6044f0cc3"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 135
+last = 220
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/135-220.txt"
+cut = "cut-lines:1:64e1481edd75c069555ea08da0e21bc1206396ad34e1ea4cbf61afc1aed3bad8"
+stored = "stored-text:1:64e1481edd75c069555ea08da0e21bc1206396ad34e1ea4cbf61afc1aed3bad8"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 228
+last = 261
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/228-261.txt"
+cut = "cut-lines:1:e3cda87a249db1639535b093b38e06fb41f06ce8dd98c92aec0adf9f9baa4542"
+stored = "stored-text:1:e3cda87a249db1639535b093b38e06fb41f06ce8dd98c92aec0adf9f9baa4542"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 270
+last = 296
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/270-296.txt"
+cut = "cut-lines:1:a739d250fd77eee13ef8f11f78b5b71e1a9d6aa5c98fa752aba6496539df9898"
+stored = "stored-text:1:a739d250fd77eee13ef8f11f78b5b71e1a9d6aa5c98fa752aba6496539df9898"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 297
+last = 331
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/297-331.txt"
+cut = "cut-lines:1:88d2e4fcdcf06f74b9b1a208acbc5730c31808252c47f1e77f804c6c1539e7bb"
+stored = "stored-text:1:88d2e4fcdcf06f74b9b1a208acbc5730c31808252c47f1e77f804c6c1539e7bb"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 332
+last = 394
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/332-394.txt"
+cut = "cut-lines:1:80017c9d0357cccc3282d02b3fea381bf399d292e738b6798953d5a304972191"
+stored = "stored-text:1:80017c9d0357cccc3282d02b3fea381bf399d292e738b6798953d5a304972191"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 395
+last = 473
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/395-473.txt"
+cut = "cut-lines:1:bfdea9439539a103b3ba6a54ad95b0c5110ce0e8fe5c6d022626ea455f87f2ce"
+stored = "stored-text:1:bfdea9439539a103b3ba6a54ad95b0c5110ce0e8fe5c6d022626ea455f87f2ce"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 474
+last = 543
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/474-543.txt"
+cut = "cut-lines:1:0ef90791a6e633db53ac46c6d761943faaa351e3759734225338e966588df6c0"
+stored = "stored-text:1:0ef90791a6e633db53ac46c6d761943faaa351e3759734225338e966588df6c0"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 544
+last = 621
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/544-621.txt"
+cut = "cut-lines:1:849d6697f0c64ca47ccf2704c985f545a5265dfc149fd8a22c4ea0551bbc47cf"
+stored = "stored-text:1:849d6697f0c64ca47ccf2704c985f545a5265dfc149fd8a22c4ea0551bbc47cf"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 622
+last = 657
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/622-657.txt"
+cut = "cut-lines:1:c0fecd1b3d5800fa87fe1e340c7b318b05cbf81ce73b43087d8aa5fbe8a5dbbe"
+stored = "stored-text:1:c0fecd1b3d5800fa87fe1e340c7b318b05cbf81ce73b43087d8aa5fbe8a5dbbe"
+
+[[extraction]]
+section = "stormy"
+file = "_b3_event_analysis.py"
+first = 658
+last = 668
+path = "tests/correspondence/extractions/stormy/_b3_event_analysis/658-668.txt"
+cut = "cut-lines:1:a3705e9fc3993209a5a8138a289164c01a813be1c4c75daf98c15a32a0b6a24a"
+stored = "stored-text:1:a3705e9fc3993209a5a8138a289164c01a813be1c4c75daf98c15a32a0b6a24a"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 23
+last = 65
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/23-65.txt"
+cut = "cut-lines:1:511bd4723303b6638b3ce9f727849b31f2076fe33770f5c59c88c96a0729281a"
+stored = "stored-text:1:511bd4723303b6638b3ce9f727849b31f2076fe33770f5c59c88c96a0729281a"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 66
+last = 181
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/66-181.txt"
+cut = "cut-lines:1:31a75a8712f3718ce7e49b696dc59b38a20ac4d1e2f1da90908f75b60a4ea7a2"
+stored = "stored-text:1:31a75a8712f3718ce7e49b696dc59b38a20ac4d1e2f1da90908f75b60a4ea7a2"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 182
+last = 188
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/182-188.txt"
+cut = "cut-lines:1:264289152b3a1d9194a218204fff41ab81b15438c8ca9dcf8251fae612ecf803"
+stored = "stored-text:1:264289152b3a1d9194a218204fff41ab81b15438c8ca9dcf8251fae612ecf803"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 189
+last = 208
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/189-208.txt"
+cut = "cut-lines:1:eeba8f7b3e196dcac65d20f957ebafc75577cd85cc37120d226d866be7e43741"
+stored = "stored-text:1:eeba8f7b3e196dcac65d20f957ebafc75577cd85cc37120d226d866be7e43741"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 209
+last = 221
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/209-221.txt"
+cut = "cut-lines:1:3a38257a5462b4b542ba6892a4e1a3701684ab6901b8cd0e8f0bca00538a5365"
+stored = "stored-text:1:3a38257a5462b4b542ba6892a4e1a3701684ab6901b8cd0e8f0bca00538a5365"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 222
+last = 249
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/222-249.txt"
+cut = "cut-lines:1:4abed18876fb879bf87b516b54bd1449f577d2b78469f10b90ada10697a9a859"
+stored = "stored-text:1:4abed18876fb879bf87b516b54bd1449f577d2b78469f10b90ada10697a9a859"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 250
+last = 267
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/250-267.txt"
+cut = "cut-lines:1:11b628ca7b40e9c157d8aaa34b1d9e31b06cc0e1fc5ae162850da8c23b404e3f"
+stored = "stored-text:1:11b628ca7b40e9c157d8aaa34b1d9e31b06cc0e1fc5ae162850da8c23b404e3f"
+
+[[extraction]]
+section = "stormy"
+file = "_b4_selecting_marginals.py"
+first = 268
+last = 316
+path = "tests/correspondence/extractions/stormy/_b4_selecting_marginals/268-316.txt"
+cut = "cut-lines:1:300817b29429baebd8a41c5ab4b4f61639504d39bdd6cd7095b84bff89bba300"
+stored = "stored-text:1:300817b29429baebd8a41c5ab4b4f61639504d39bdd6cd7095b84bff89bba300"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 38
+last = 57
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/38-57.txt"
+cut = "cut-lines:1:cf07650fab513633921570bdc6cb5908f69b30151834e26e862639c7cdcf4025"
+stored = "stored-text:1:cf07650fab513633921570bdc6cb5908f69b30151834e26e862639c7cdcf4025"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 58
+last = 71
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/58-71.txt"
+cut = "cut-lines:1:8be614a46a8213b16672ec7a4dcf588adc63b56fbc661a7a1ceadd8f9ee3258c"
+stored = "stored-text:1:8be614a46a8213b16672ec7a4dcf588adc63b56fbc661a7a1ceadd8f9ee3258c"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 72
+last = 75
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/72-75.txt"
+cut = "cut-lines:1:ccbb3f556df6d718de11f1980cca6eb116ca913821018a2816c5155fc59a1b8f"
+stored = "stored-text:1:ccbb3f556df6d718de11f1980cca6eb116ca913821018a2816c5155fc59a1b8f"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 76
+last = 96
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/76-96.txt"
+cut = "cut-lines:1:4478de3f0d6a992d5dbb2571eba1f9d5efdc2c516d9402ef821f77bf4fe44b65"
+stored = "stored-text:1:4478de3f0d6a992d5dbb2571eba1f9d5efdc2c516d9402ef821f77bf4fe44b65"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 97
+last = 119
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/97-119.txt"
+cut = "cut-lines:1:1cee0038b11a5b982bcf6f10e6898be1513131fed3a5f8c17b3ae26ea978bd8d"
+stored = "stored-text:1:1cee0038b11a5b982bcf6f10e6898be1513131fed3a5f8c17b3ae26ea978bd8d"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 120
+last = 127
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/120-127.txt"
+cut = "cut-lines:1:d6ec7761d6d47ba44e6fd879ffc0b5d03b723e3f0d79bf4df82afed629be00c0"
+stored = "stored-text:1:d6ec7761d6d47ba44e6fd879ffc0b5d03b723e3f0d79bf4df82afed629be00c0"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 128
+last = 240
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/128-240.txt"
+cut = "cut-lines:1:1fbf47b7013526c0e6b7741eb42643354371c66d8d7a10baf5f365fcecca16a1"
+stored = "stored-text:1:1fbf47b7013526c0e6b7741eb42643354371c66d8d7a10baf5f365fcecca16a1"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 241
+last = 252
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/241-252.txt"
+cut = "cut-lines:1:f4ee30e6200ca37eba69c1f9032f1c1decef57ff8f9ccdb02431804a85b57e71"
+stored = "stored-text:1:f4ee30e6200ca37eba69c1f9032f1c1decef57ff8f9ccdb02431804a85b57e71"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 253
+last = 291
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/253-291.txt"
+cut = "cut-lines:1:9c716c7c2aae60509858fc3bfd4a4c7acd7761efdd49170664e17fd163ebf8e8"
+stored = "stored-text:1:9c716c7c2aae60509858fc3bfd4a4c7acd7761efdd49170664e17fd163ebf8e8"
+
+[[extraction]]
+section = "stormy"
+file = "_b5_fit_vine_copulas.py"
+first = 297
+last = 328
+path = "tests/correspondence/extractions/stormy/_b5_fit_vine_copulas/297-328.txt"
+cut = "cut-lines:1:8ff2d142005168627b39d69d39a2ece164fbb4c3b0b0e57f6f52565c0b3a76da"
+stored = "stored-text:1:8ff2d142005168627b39d69d39a2ece164fbb4c3b0b0e57f6f52565c0b3a76da"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 1
+last = 99
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/1-99.txt"
+cut = "cut-lines:1:1a0d396b662957a83bb1570342b251a40faacc91eab9a1738ae177fa7c02a2d4"
+stored = "stored-text:1:1a0d396b662957a83bb1570342b251a40faacc91eab9a1738ae177fa7c02a2d4"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 100
+last = 216
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/100-216.txt"
+cut = "cut-lines:1:6e030d881186fb90f35c5449431191bf7b187681e87773590d46b9a529118d55"
+stored = "stored-text:1:6e030d881186fb90f35c5449431191bf7b187681e87773590d46b9a529118d55"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 217
+last = 233
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/217-233.txt"
+cut = "cut-lines:1:5151e176bf44ce589beb90664b059e0c019843140c1498c52b470abe307f153a"
+stored = "stored-text:1:5151e176bf44ce589beb90664b059e0c019843140c1498c52b470abe307f153a"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 356
+last = 376
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/356-376.txt"
+cut = "cut-lines:1:8b020e3bb3b2d179ac5a5f46a90dbc76fea9b627a254d81e5bbca1aac399b136"
+stored = "stored-text:1:8b020e3bb3b2d179ac5a5f46a90dbc76fea9b627a254d81e5bbca1aac399b136"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 377
+last = 383
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/377-383.txt"
+cut = "cut-lines:1:17f575f42a3003ca3984263c66cbb8b2caeb83b56c61dd95a59e5b89ea6e60de"
+stored = "stored-text:1:17f575f42a3003ca3984263c66cbb8b2caeb83b56c61dd95a59e5b89ea6e60de"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 384
+last = 392
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/384-392.txt"
+cut = "cut-lines:1:2e984652da2ca000b65fe7240ce7581dc0f5c560a9d42ec0ed6918ead79abd01"
+stored = "stored-text:1:2e984652da2ca000b65fe7240ce7581dc0f5c560a9d42ec0ed6918ead79abd01"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 393
+last = 398
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/393-398.txt"
+cut = "cut-lines:1:e9e80b03320a2b1989a3f497bc371e57f0a433b44f98ea03373c12dd0b02b34c"
+stored = "stored-text:1:e9e80b03320a2b1989a3f497bc371e57f0a433b44f98ea03373c12dd0b02b34c"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 399
+last = 455
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/399-455.txt"
+cut = "cut-lines:1:012210a2458217d5f120ffe6b26b56be16f5a72870f76b362201df86c723ed12"
+stored = "stored-text:1:012210a2458217d5f120ffe6b26b56be16f5a72870f76b362201df86c723ed12"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 456
+last = 478
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/456-478.txt"
+cut = "cut-lines:1:d091cae0327bb037a58a5c9778b72a83c9de059347a68c644177f21637808432"
+stored = "stored-text:1:d091cae0327bb037a58a5c9778b72a83c9de059347a68c644177f21637808432"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 479
+last = 488
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/479-488.txt"
+cut = "cut-lines:1:7e8b9b2c95c60823c5f2ac771c9cd3aa3a2f3e34e80e92cc89a89d0849e92a97"
+stored = "stored-text:1:7e8b9b2c95c60823c5f2ac771c9cd3aa3a2f3e34e80e92cc89a89d0849e92a97"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 489
+last = 596
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/489-596.txt"
+cut = "cut-lines:1:e2a633f75d8d75c0fbb288b40aa2904193041268ced38046a04a67ed32700f1a"
+stored = "stored-text:1:e2a633f75d8d75c0fbb288b40aa2904193041268ced38046a04a67ed32700f1a"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 597
+last = 626
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/597-626.txt"
+cut = "cut-lines:1:7f37494e6d7038aa3d5633aaa7683b4552d653ed9955e49774441bcd692811d1"
+stored = "stored-text:1:7f37494e6d7038aa3d5633aaa7683b4552d653ed9955e49774441bcd692811d1"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 627
+last = 745
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/627-745.txt"
+cut = "cut-lines:1:e592a5297835c72cc5ada5158d695c956d3fabe71761ef67bde4029cfba72e53"
+stored = "stored-text:1:e592a5297835c72cc5ada5158d695c956d3fabe71761ef67bde4029cfba72e53"
+
+[[extraction]]
+section = "stormy"
+file = "_b6_simulate_from_vincop.py"
+first = 746
+last = 770
+path = "tests/correspondence/extractions/stormy/_b6_simulate_from_vincop/746-770.txt"
+cut = "cut-lines:1:dfec7794cf68f35d696ec25e024974fccc739f8d3429a046fa5f8b3df9f4f21e"
+stored = "stored-text:1:dfec7794cf68f35d696ec25e024974fccc739f8d3429a046fa5f8b3df9f4f21e"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 1
+last = 116
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/1-116.txt"
+cut = "cut-lines:1:c404ab2edac76baa9f70a3e1585cb567d76390af76104c4d6fe2b75fe439374c"
+stored = "stored-text:1:c404ab2edac76baa9f70a3e1585cb567d76390af76104c4d6fe2b75fe439374c"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 117
+last = 312
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/117-312.txt"
+cut = "cut-lines:1:309716d5441b693b23bda99e66e93d5de53a8c7471a904b327070427562ca53b"
+stored = "stored-text:1:309716d5441b693b23bda99e66e93d5de53a8c7471a904b327070427562ca53b"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 317
+last = 353
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/317-353.txt"
+cut = "cut-lines:1:4e6e2ce64280a9af9da5708845cd8dc7eff235c216d06bcf2c35919834aaf51d"
+stored = "stored-text:1:4e6e2ce64280a9af9da5708845cd8dc7eff235c216d06bcf2c35919834aaf51d"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 354
+last = 454
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/354-454.txt"
+cut = "cut-lines:1:2cfa9662d92c0a34fcbe02831c898821e79b8ba8021d4016d3c160ee1fffbcc2"
+stored = "stored-text:1:2cfa9662d92c0a34fcbe02831c898821e79b8ba8021d4016d3c160ee1fffbcc2"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 461
+last = 587
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/461-587.txt"
+cut = "cut-lines:1:280b37dee904d822c087e5a74f868622084adbe0ead58f57190c816976e60df1"
+stored = "stored-text:1:280b37dee904d822c087e5a74f868622084adbe0ead58f57190c816976e60df1"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 588
+last = 635
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/588-635.txt"
+cut = "cut-lines:1:51187e8ad061289135b25de29666973c9f42edcb522e6d3cf7a7014732a6ad3b"
+stored = "stored-text:1:51187e8ad061289135b25de29666973c9f42edcb522e6d3cf7a7014732a6ad3b"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 636
+last = 691
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/636-691.txt"
+cut = "cut-lines:1:b8cc75ad2778e60695703b1e61f397c54369cfcf6f3f1de2ede83553a1d559e6"
+stored = "stored-text:1:b8cc75ad2778e60695703b1e61f397c54369cfcf6f3f1de2ede83553a1d559e6"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 692
+last = 702
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/692-702.txt"
+cut = "cut-lines:1:c8b789f8b4ef80e44c339332b6d215608de8f66611d07546a18f93d6b4a17865"
+stored = "stored-text:1:c8b789f8b4ef80e44c339332b6d215608de8f66611d07546a18f93d6b4a17865"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 703
+last = 720
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/703-720.txt"
+cut = "cut-lines:1:b8fc360112d3fb336e406e9efa60bfe27c2bc0092ae961dba04b68012fc09270"
+stored = "stored-text:1:b8fc360112d3fb336e406e9efa60bfe27c2bc0092ae961dba04b68012fc09270"
+
+[[extraction]]
+section = "stormy"
+file = "_b7.1_qaqc_simulated_events.py"
+first = 721
+last = 749
+path = "tests/correspondence/extractions/stormy/_b7.1_qaqc_simulated_events/721-749.txt"
+cut = "cut-lines:1:0e0d13a76dca52686d353b34b489169ae4831f54ae1ace52327672014a3e1e51"
+stored = "stored-text:1:0e0d13a76dca52686d353b34b489169ae4831f54ae1ace52327672014a3e1e51"
+
+[[extraction]]
+section = "stormy"
+file = "_b7_generate_time_series_from_event_stats.py"
+first = 88
+last = 380
+path = "tests/correspondence/extractions/stormy/_b7_generate_time_series_from_event_stats/88-380.txt"
+cut = "cut-lines:1:6b45bac53856e6cfcc5fdc444341794e7fda021ccfc569dca1aaafeef6053e55"
+stored = "stored-text:1:6b45bac53856e6cfcc5fdc444341794e7fda021ccfc569dca1aaafeef6053e55"
+
+[[extraction]]
+section = "stormy"
+file = "_b7_generate_time_series_from_event_stats.py"
+first = 381
+last = 890
+path = "tests/correspondence/extractions/stormy/_b7_generate_time_series_from_event_stats/381-890.txt"
+cut = "cut-lines:1:46ea9dd3122db753224ed12fddb70abf5999021a9d86ff9a812d7dc3c43c26e4"
+stored = "stored-text:1:46ea9dd3122db753224ed12fddb70abf5999021a9d86ff9a812d7dc3c43c26e4"
+
+[[extraction]]
+section = "stormy"
+file = "_b7_generate_time_series_from_event_stats.py"
+first = 891
+last = 914
+path = "tests/correspondence/extractions/stormy/_b7_generate_time_series_from_event_stats/891-914.txt"
+cut = "cut-lines:1:6cdb33e4efb4be51e137aff54180f5aeab5f55e6caab3f40da6ba9ad86019dc6"
+stored = "stored-text:1:6cdb33e4efb4be51e137aff54180f5aeab5f55e6caab3f40da6ba9ad86019dc6"
+
+[[extraction]]
+section = "stormy"
+file = "_b7_generate_time_series_from_event_stats.py"
+first = 915
+last = 969
+path = "tests/correspondence/extractions/stormy/_b7_generate_time_series_from_event_stats/915-969.txt"
+cut = "cut-lines:1:e41d401340e477c2ca0626e47394e6139faabfaa3bf9e24c9a55448e2981e09b"
+stored = "stored-text:1:e41d401340e477c2ca0626e47394e6139faabfaa3bf9e24c9a55448e2981e09b"
+
+[[extraction]]
+section = "stormy"
+file = "_inputs.py"
+first = 37
+last = 199
+path = "tests/correspondence/extractions/stormy/_inputs/37-199.txt"
+cut = "cut-lines:1:f0b00fb4c072862b0f5db66b5220a821dc4fc1976e0781cb315045a19fc56ae1"
+stored = "stored-text:1:f0b00fb4c072862b0f5db66b5220a821dc4fc1976e0781cb315045a19fc56ae1"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 29
+last = 95
+path = "tests/correspondence/extractions/stormy/_utils/29-95.txt"
+cut = "cut-lines:1:474f473890c2b38cfd4b30ec75b5b1f8d3861018c943ee19a9ff15ef6adfbc06"
+stored = "stored-text:1:474f473890c2b38cfd4b30ec75b5b1f8d3861018c943ee19a9ff15ef6adfbc06"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 96
+last = 103
+path = "tests/correspondence/extractions/stormy/_utils/96-103.txt"
+cut = "cut-lines:1:c35e33551f652877f1f7d14d0970742b0ff71115d04a56ce4abf23fe554c3117"
+stored = "stored-text:1:c35e33551f652877f1f7d14d0970742b0ff71115d04a56ce4abf23fe554c3117"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 104
+last = 171
+path = "tests/correspondence/extractions/stormy/_utils/104-171.txt"
+cut = "cut-lines:1:f42ee83af8c96704fde47cbdf70c3c5885df7992f16947cc992f2a691d2c8eac"
+stored = "stored-text:1:f42ee83af8c96704fde47cbdf70c3c5885df7992f16947cc992f2a691d2c8eac"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 172
+last = 212
+path = "tests/correspondence/extractions/stormy/_utils/172-212.txt"
+cut = "cut-lines:1:dc9f4d073a18ed5ea8a4de3feba015d67c4896b443be6182c7f11bc5a4a2b884"
+stored = "stored-text:1:dc9f4d073a18ed5ea8a4de3feba015d67c4896b443be6182c7f11bc5a4a2b884"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 213
+last = 227
+path = "tests/correspondence/extractions/stormy/_utils/213-227.txt"
+cut = "cut-lines:1:645ac7903cdc11e305c98b34070b109b3ceb3882aeaf1cc3a30e8a79140f5a8d"
+stored = "stored-text:1:645ac7903cdc11e305c98b34070b109b3ceb3882aeaf1cc3a30e8a79140f5a8d"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 236
+last = 270
+path = "tests/correspondence/extractions/stormy/_utils/236-270.txt"
+cut = "cut-lines:1:6f325e7a7184579ebd85a15feacd83b7cb9069308204bb52643d4d93c9e19918"
+stored = "stored-text:1:6f325e7a7184579ebd85a15feacd83b7cb9069308204bb52643d4d93c9e19918"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 271
+last = 334
+path = "tests/correspondence/extractions/stormy/_utils/271-334.txt"
+cut = "cut-lines:1:0458536fe895225d087b4ffbccc0b8d32be2b22409e7e261bc177ffd9a86126c"
+stored = "stored-text:1:0458536fe895225d087b4ffbccc0b8d32be2b22409e7e261bc177ffd9a86126c"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 335
+last = 398
+path = "tests/correspondence/extractions/stormy/_utils/335-398.txt"
+cut = "cut-lines:1:8614a75a1efbbea4ed3172d4f136a0ca838026c7e2ddfe57371d706d4dddb70a"
+stored = "stored-text:1:8614a75a1efbbea4ed3172d4f136a0ca838026c7e2ddfe57371d706d4dddb70a"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 410
+last = 420
+path = "tests/correspondence/extractions/stormy/_utils/410-420.txt"
+cut = "cut-lines:1:c0f0f53e259dcbcf9ef15a91817aea99299930c746892cafe6700f9a1424baff"
+stored = "stored-text:1:c0f0f53e259dcbcf9ef15a91817aea99299930c746892cafe6700f9a1424baff"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 421
+last = 434
+path = "tests/correspondence/extractions/stormy/_utils/421-434.txt"
+cut = "cut-lines:1:4ef6e81b8733a313a33f666ed883055d16ca97779e8c7c13d1f63dfdb23def9d"
+stored = "stored-text:1:4ef6e81b8733a313a33f666ed883055d16ca97779e8c7c13d1f63dfdb23def9d"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 467
+last = 573
+path = "tests/correspondence/extractions/stormy/_utils/467-573.txt"
+cut = "cut-lines:1:6a84e2d13eb2383eed8893a9b7a9e1c934f66df3655c37d2f0f6d120785ba04e"
+stored = "stored-text:1:6a84e2d13eb2383eed8893a9b7a9e1c934f66df3655c37d2f0f6d120785ba04e"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 597
+last = 604
+path = "tests/correspondence/extractions/stormy/_utils/597-604.txt"
+cut = "cut-lines:1:efef30214c4a04554a2932afb505cf3fe056333ff4b223b46bd16ee7581d7394"
+stored = "stored-text:1:efef30214c4a04554a2932afb505cf3fe056333ff4b223b46bd16ee7581d7394"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 605
+last = 660
+path = "tests/correspondence/extractions/stormy/_utils/605-660.txt"
+cut = "cut-lines:1:f7cf4b0fef56d6956864824f37f042b5c47a53dea922996f83e8a55b2051e89b"
+stored = "stored-text:1:f7cf4b0fef56d6956864824f37f042b5c47a53dea922996f83e8a55b2051e89b"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 661
+last = 717
+path = "tests/correspondence/extractions/stormy/_utils/661-717.txt"
+cut = "cut-lines:1:7a6467a5addf894a7aa686d1890eb41a333984baa05b02227784168e53f320fe"
+stored = "stored-text:1:7a6467a5addf894a7aa686d1890eb41a333984baa05b02227784168e53f320fe"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 718
+last = 746
+path = "tests/correspondence/extractions/stormy/_utils/718-746.txt"
+cut = "cut-lines:1:303748bf356cb7c6339e2c0ec17bbbbd763b791fef286d81c2c660b3fa97ebbb"
+stored = "stored-text:1:303748bf356cb7c6339e2c0ec17bbbbd763b791fef286d81c2c660b3fa97ebbb"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 747
+last = 856
+path = "tests/correspondence/extractions/stormy/_utils/747-856.txt"
+cut = "cut-lines:1:9c39c8cfd602394a12629dd249401f6bfee7d305688b358193bc5d54d06b1ddd"
+stored = "stored-text:1:9c39c8cfd602394a12629dd249401f6bfee7d305688b358193bc5d54d06b1ddd"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 857
+last = 921
+path = "tests/correspondence/extractions/stormy/_utils/857-921.txt"
+cut = "cut-lines:1:3e0cbd9c540ac11b9f87e7993da1f4146b429e3ae6d54c828e9bfd189dce1c8e"
+stored = "stored-text:1:3e0cbd9c540ac11b9f87e7993da1f4146b429e3ae6d54c828e9bfd189dce1c8e"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 922
+last = 990
+path = "tests/correspondence/extractions/stormy/_utils/922-990.txt"
+cut = "cut-lines:1:cec2082f2179b8214be6828a5a2b22b73d52c27a5e247bf7492853a5841a587a"
+stored = "stored-text:1:cec2082f2179b8214be6828a5a2b22b73d52c27a5e247bf7492853a5841a587a"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 991
+last = 1055
+path = "tests/correspondence/extractions/stormy/_utils/991-1055.txt"
+cut = "cut-lines:1:3ba1b0d48bc7d0330a6f5120079e390e678349ac5cc20ebec05fad50b6e5fc2e"
+stored = "stored-text:1:3ba1b0d48bc7d0330a6f5120079e390e678349ac5cc20ebec05fad50b6e5fc2e"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1065
+last = 1197
+path = "tests/correspondence/extractions/stormy/_utils/1065-1197.txt"
+cut = "cut-lines:1:32479c81ba58951062e0b726bc65eb9ca849bbd89dd11c185ea62771c2583902"
+stored = "stored-text:1:32479c81ba58951062e0b726bc65eb9ca849bbd89dd11c185ea62771c2583902"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1198
+last = 1238
+path = "tests/correspondence/extractions/stormy/_utils/1198-1238.txt"
+cut = "cut-lines:1:f700014259fd05c2b5b331ae91e4c7ae655225bd0d2b4836dc4c54235d1df8b8"
+stored = "stored-text:1:f700014259fd05c2b5b331ae91e4c7ae655225bd0d2b4836dc4c54235d1df8b8"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1239
+last = 1256
+path = "tests/correspondence/extractions/stormy/_utils/1239-1256.txt"
+cut = "cut-lines:1:8776c74a18b7ecc0f0c3595ba1fade379fe84abf934ea79a9c83d77ebb8186bf"
+stored = "stored-text:1:8776c74a18b7ecc0f0c3595ba1fade379fe84abf934ea79a9c83d77ebb8186bf"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1269
+last = 1422
+path = "tests/correspondence/extractions/stormy/_utils/1269-1422.txt"
+cut = "cut-lines:1:545528afe9cec9b5d0031110744a573888f752a9978c5548aef65dda320ef849"
+stored = "stored-text:1:545528afe9cec9b5d0031110744a573888f752a9978c5548aef65dda320ef849"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1423
+last = 1539
+path = "tests/correspondence/extractions/stormy/_utils/1423-1539.txt"
+cut = "cut-lines:1:46a18710bf29ab15a07a10dc9a63d44de03acdab2f64d2887da9f397e53d2614"
+stored = "stored-text:1:46a18710bf29ab15a07a10dc9a63d44de03acdab2f64d2887da9f397e53d2614"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1540
+last = 1577
+path = "tests/correspondence/extractions/stormy/_utils/1540-1577.txt"
+cut = "cut-lines:1:67673605a5435a5c38e3a5117650376841ed64ee1f9a175eb5bdc3cf5616268b"
+stored = "stored-text:1:67673605a5435a5c38e3a5117650376841ed64ee1f9a175eb5bdc3cf5616268b"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1578
+last = 1595
+path = "tests/correspondence/extractions/stormy/_utils/1578-1595.txt"
+cut = "cut-lines:1:ba41404a980520f68941da806da59c472a8582911ec73544dbb9612038d49433"
+stored = "stored-text:1:ba41404a980520f68941da806da59c472a8582911ec73544dbb9612038d49433"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1596
+last = 1612
+path = "tests/correspondence/extractions/stormy/_utils/1596-1612.txt"
+cut = "cut-lines:1:9e9d6f5a7beddc7506e4a288778cbcf083e3042d25533bf28175515c4ebc426d"
+stored = "stored-text:1:9e9d6f5a7beddc7506e4a288778cbcf083e3042d25533bf28175515c4ebc426d"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1613
+last = 1785
+path = "tests/correspondence/extractions/stormy/_utils/1613-1785.txt"
+cut = "cut-lines:1:c077ec874df807b81f43c7e1c2af111737f94d2e670ba2b54ca835ca57747b88"
+stored = "stored-text:1:c077ec874df807b81f43c7e1c2af111737f94d2e670ba2b54ca835ca57747b88"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1786
+last = 1989
+path = "tests/correspondence/extractions/stormy/_utils/1786-1989.txt"
+cut = "cut-lines:1:af744209234c86910e2a893c693c7c6429b54d171b0c4f6e6aa12fbf4d129b65"
+stored = "stored-text:1:af744209234c86910e2a893c693c7c6429b54d171b0c4f6e6aa12fbf4d129b65"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 1990
+last = 2016
+path = "tests/correspondence/extractions/stormy/_utils/1990-2016.txt"
+cut = "cut-lines:1:dd997b83f435d40b0ee05cc11bb5f5be016596156a8be0a63a6496828b69368c"
+stored = "stored-text:1:dd997b83f435d40b0ee05cc11bb5f5be016596156a8be0a63a6496828b69368c"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2017
+last = 2025
+path = "tests/correspondence/extractions/stormy/_utils/2017-2025.txt"
+cut = "cut-lines:1:6cdad4daa1f181957c5911eeebcb7fafc93dea6c20b5bf4fab6006010dff9ba7"
+stored = "stored-text:1:6cdad4daa1f181957c5911eeebcb7fafc93dea6c20b5bf4fab6006010dff9ba7"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2026
+last = 2059
+path = "tests/correspondence/extractions/stormy/_utils/2026-2059.txt"
+cut = "cut-lines:1:959ef8eaa1cfeb59d590d1feace240178ffb6ccd29636d07ecc46aa95dc2e62f"
+stored = "stored-text:1:959ef8eaa1cfeb59d590d1feace240178ffb6ccd29636d07ecc46aa95dc2e62f"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2060
+last = 2071
+path = "tests/correspondence/extractions/stormy/_utils/2060-2071.txt"
+cut = "cut-lines:1:bc1a50ae5fa3b0464dcbf4884ae120e201747a1a0693ac749e0d1de82fed4951"
+stored = "stored-text:1:bc1a50ae5fa3b0464dcbf4884ae120e201747a1a0693ac749e0d1de82fed4951"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2075
+last = 2153
+path = "tests/correspondence/extractions/stormy/_utils/2075-2153.txt"
+cut = "cut-lines:1:e80dd910e6746f551b11ace4b82929f8bb3db7c58232d14bbfee8a836925ca84"
+stored = "stored-text:1:e80dd910e6746f551b11ace4b82929f8bb3db7c58232d14bbfee8a836925ca84"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2154
+last = 2197
+path = "tests/correspondence/extractions/stormy/_utils/2154-2197.txt"
+cut = "cut-lines:1:f70f3a06fadba2194207593c15180344d390ef9934ef10ee54dbcdccd55393a7"
+stored = "stored-text:1:f70f3a06fadba2194207593c15180344d390ef9934ef10ee54dbcdccd55393a7"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2198
+last = 2283
+path = "tests/correspondence/extractions/stormy/_utils/2198-2283.txt"
+cut = "cut-lines:1:ca6c1be6b02db3231ef9ea1e9df102acd8a7b50ed86a76280a2c4145e0579a56"
+stored = "stored-text:1:ca6c1be6b02db3231ef9ea1e9df102acd8a7b50ed86a76280a2c4145e0579a56"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2284
+last = 2309
+path = "tests/correspondence/extractions/stormy/_utils/2284-2309.txt"
+cut = "cut-lines:1:93c6442010ceca169dc37b71e02efd6f745f63eb7a00f4942f651c9066747d5d"
+stored = "stored-text:1:93c6442010ceca169dc37b71e02efd6f745f63eb7a00f4942f651c9066747d5d"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2310
+last = 2322
+path = "tests/correspondence/extractions/stormy/_utils/2310-2322.txt"
+cut = "cut-lines:1:55f6db240d9082022326db2f9e5cc56d3777e23949a6bdbc7c03a2320b8fd413"
+stored = "stored-text:1:55f6db240d9082022326db2f9e5cc56d3777e23949a6bdbc7c03a2320b8fd413"
+
+[[extraction]]
+section = "stormy"
+file = "_utils.py"
+first = 2323
+last = 2328
+path = "tests/correspondence/extractions/stormy/_utils/2323-2328.txt"
+cut = "cut-lines:1:954f2d77d18a1826cc00422f31445af09a5746f2467e2eebdcbb139ee2d82fda"
+stored = "stored-text:1:954f2d77d18a1826cc00422f31445af09a5746f2467e2eebdcbb139ee2d82fda"

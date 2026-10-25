@@ -1,0 +1,110 @@
+
+
+def evaluate_copula_fit_based_on_comparing_kendalltaus_for_each_variable_pair(df_obs, alpha,n_for_montecarlo_tau_test, cop_fitted=None,n_cop_sim_for_dnsty_plts = 10000,
+                                                                                df_simulated=None, plot = True, fldr_plots = None,
+                                                                                fig_main_title=""):
+    # work
+    # cop_fitted = vinecop
+    # plot = False
+    # n_cop_sim_for_dnsty_plts = 10000
+    # end work
+
+    if cop_fitted is not None:
+        df_simulated = simulate_from_copula(df_obs, n_cop_sim_for_dnsty_plts, cop_fitted=cop_fitted)
+    n_sim = len(df_simulated)
+    n_vars = len(df_obs.columns)
+    df_mc_results_combined = pd.DataFrame(columns = ["var1", "var2", "obs_kendalltau", "mc_result", "mc_pvalue", "lowerbound_sim_tau", "upperbound_sim_tau"])
+    idx_row = -1
+    for i in range(n_vars):
+        for j in range(i + 1, n_vars):  # Loop through each pair (i, j) where i != j
+            idx_row+=1
+            df_mc_results_combined.loc[idx_row,"var1"] = df_obs.columns[i]
+            df_mc_results_combined.loc[idx_row,"var2"] = df_obs.columns[j]
+            df_obs_subset = df_obs.iloc[:, [i, j]].dropna()
+            obs_x, obs_y = df_obs_subset.iloc[:, 0], df_obs_subset.iloc[:, 1]
+            # perform mc testing
+            if cop_fitted is not None:
+                sim_type = "monte_carlo"
+                n_samples=n_for_montecarlo_tau_test
+                col2_iloc=j
+                col1_iloc=i
+                mc_result, pvalue, simulated_taus, tau_obs = monte_carlo_tau_test(df_obs = df_obs, col1_iloc=i, col2_iloc=j, cop_fitted=cop_fitted,  n_samples=n_for_montecarlo_tau_test, alpha=alpha)
+            else:
+                # technically this is bootstrapping when a simulation dataframe is applied
+                sim_type = "bootstrap"
+                mc_result, pvalue, simulated_taus, tau_obs = monte_carlo_tau_test(df_obs = df_obs, col1_iloc=i, col2_iloc=j, df_simulated=df_simulated, n_samples=n_for_montecarlo_tau_test, alpha=alpha)
+
+            df_mc_results_combined.loc[idx_row,"obs_kendalltau"] = tau_obs
+            df_mc_results_combined.loc[idx_row,"mc_pvalue"] = pvalue
+            df_mc_results_combined.loc[idx_row,"mc_result"] = mc_result
+            df_mc_results_combined.loc[idx_row,"lowerbound_sim_tau"] = simulated_taus.quantile(alpha/2)
+            df_mc_results_combined.loc[idx_row,"upperbound_sim_tau"] = simulated_taus.quantile(1-alpha/2)
+            if plot:
+                sim_x, sim_y = df_simulated.iloc[:, i], df_simulated.iloc[:, j]
+                tau_sim, _ = kendalltau(sim_x, sim_y)
+
+                n_cols = 3
+
+                # Calculate the common x and y limits for all three plots
+                x_min = min(obs_x.min(), sim_x.min())
+                x_max = max(obs_x.max(), sim_x.max())
+                y_min = min(obs_y.min(), sim_y.min())
+                y_max = max(obs_y.max(), sim_y.max())
+
+                # Set the grid limits (slightly expand for better view)
+                x_limits = (min(x_min, 0),max(x_max, 1))
+                y_limits = (min(y_min, 0),max(y_max, 1))
+
+                # Define a grid over which to calculate densities
+                x_grid, y_grid = np.meshgrid(np.linspace(x_min, x_max, 100),
+                                            np.linspace(y_min, y_max, 100))
+
+                # Flatten the grid for input into the KDEs
+                grid_coords = np.vstack([x_grid.ravel(), y_grid.ravel()])
+
+                # Evaluate KDEs for observed and simulated data
+                kde_obs = gaussian_kde(np.vstack([obs_x, obs_y]))
+                kde_sim = gaussian_kde(np.vstack([sim_x, sim_y]))
+                z_obs = kde_obs(grid_coords).reshape(x_grid.shape)
+                z_sim = kde_sim(grid_coords).reshape(x_grid.shape)
+
+                # Determine the color limits for the density plots
+                dic_plot_params = compute_common_percentiles(df_obs, df_simulated, num_levels=20, percentile=98)
+                z_min = 0
+                z_max = round(dic_plot_params["z_max"], 2)
+                levels = np.linspace(z_min, z_max, 20)
+
+                # 1. Contour plot for observed data with a colorbar
+                ## also include scatter plot
+                fig, axes = plt.subplots(1, n_cols, figsize=(6*n_cols, 6))
+                fig.suptitle(f'{fig_main_title}\n[{df_obs.columns[i]}] vs. [{df_obs.columns[j]}]', fontsize=16)
+                contour_obs = axes[0].contourf(x_grid, y_grid, z_obs, cmap="Blues", levels=levels,
+                                                vmin=z_min, vmax=z_max, extend='both')
+                fig.colorbar(contour_obs, ax=axes[0])
+                axes[0].scatter(obs_x, obs_y, facecolors='none', edgecolors='black')
+                axes[0].set_xlim(x_limits)
+                axes[0].set_ylim(y_limits)
+                axes[0].set_title(f"Observed Data (n={len(df_obs_subset)})\nKendall's Tau: {tau_obs:.2f}")
+
+                # 2. Contour plot for simulated data with the same color scale and colorbar
+                contour_sim = axes[1].contourf(x_grid, y_grid, z_sim, cmap="Blues", levels=levels,
+                                                vmin=z_min, vmax=z_max, extend='both')
+                fig.colorbar(contour_sim, ax=axes[1])
+                axes[1].set_xlim(x_limits)
+                axes[1].set_ylim(y_limits)
+                axes[1].set_title(f"Simulated Data (n={n_sim})\nKendall's Tau: {tau_sim:.2f}")
+                # perform monte carlo test to see if simulated alpha dataset is plausible compared to observed tau
+                varname_test="Kendall Tau"
+                fig, new_axis = plot_obs_vs_montecarlo_simulated_statstic(varname_test=varname_test, s_mc_simulated_stat = simulated_taus,
+                                                        val_obs_stat = tau_obs, pvalue = pvalue, string_two_sided_test_result = mc_result, alpha=alpha,
+                                                                    n_obs = len(df_obs_subset), n_mc_sims=n_for_montecarlo_tau_test,
+                                                                    fig_maintitle = fig_main_title, ax = axes[2], fig = fig, clearfigs = False, f_savefig = None,
+                                                                    sim_type = sim_type)
+                fig.tight_layout()
+                # plt.show()
+                if fldr_plots is not None:
+                    f_savefig = f'{fldr_plots}contours_{df_obs.columns[i]}_vs_{df_obs.columns[j]}.png'
+                    plt.savefig(f_savefig, bbox_inches='tight')
+                    plt.clf()
+    #
+    return df_mc_results_combined

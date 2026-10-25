@@ -1,0 +1,13 @@
+
+
+def test_whether_mean_is_zero(count_diffs, alpha = 0.05):
+  from scipy.stats import ttest_1samp
+  t_stat, p_value = ttest_1samp(count_diffs, 0)
+  # alpha = 0.05
+  if p_value < alpha:
+      print(f"The mean is significantly different from zero (reject H0). p-value = {p_value}")
+      result = "reject"
+  else:
+      print(f"The mean is not significantly different from zero (fail to reject H0). p-value = {p_value}")
+      result = "fail_to_reject"
+  return result

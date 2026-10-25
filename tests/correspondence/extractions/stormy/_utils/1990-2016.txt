@@ -1,0 +1,27 @@
+
+def process_ncei_data(s_rainfall_ncei_in_og, target_res_min, years_to_exclude = []):
+    # assign time zone (it's definitely local time, I think it's EST because there doesn't seem to be a change in the fall)
+    s_rainfall_ncei_in = s_rainfall_ncei_in_og.copy()
+    s_rainfall_ncei_in.index = s_rainfall_ncei_in.copy().index.tz_localize('EST')
+    s_rainfall_ncei_daily_mm_per_tstep = s_rainfall_ncei_in*mm_per_inch
+    og_tstep = pd.Series(s_rainfall_ncei_in.index).diff().mode()[0]
+    hrs_per_tstep = pd.Series(s_rainfall_ncei_in.index).diff().mode()[0] / np.timedelta64(1, "h")
+    s_rainfall_ncei_daily_mm_per_hr = s_rainfall_ncei_daily_mm_per_tstep / hrs_per_tstep
+
+    # comnbert to target timestep for event selection
+    ## add extra timestep at the end to avoid truncation
+    s_rainfall_ncei_daily_mm_per_hr[(s_rainfall_ncei_daily_mm_per_tstep.index.max() + pd.Timedelta(hrs_per_tstep, "hr"))] = 0
+    ## resample to target timestep
+    s_rainfall_ncei_trgt_res_mm_per_hr = s_rainfall_ncei_daily_mm_per_hr.resample(f'{target_res_min:.0f}min').asfreq()
+    ## in order to avoid forward filling in long swaths of missing data, need to do this by grouping according to original tstep
+    s_rainfall_ncei_trgt_res_mm_per_hr = s_rainfall_ncei_trgt_res_mm_per_hr.groupby(pd.Grouper(level='DATE', freq=og_tstep)).ffill()
+    # convert from eastern standard time to UT
+    new_idx = s_rainfall_ncei_trgt_res_mm_per_hr.index.tz_convert('UTC')
+    new_idx = new_idx.tz_localize(None)
+    s_rainfall_ncei_trgt_res_mm_per_hr.index = new_idx
+    # subset years to include
+    s_rainfall_ncei_trgt_res_mm_per_hr = s_rainfall_ncei_trgt_res_mm_per_hr[~s_rainfall_ncei_trgt_res_mm_per_hr.index.year.isin(years_to_exclude)]
+    s_rainfall_ncei_trgt_res_mm = s_rainfall_ncei_trgt_res_mm_per_hr * (target_res_min/60) # mm/hour * 5 min/tstep * 1/60 hr/min = mm per tstep
+    s_rainfall_ncei_trgt_res_mm_per_hr.name = "mm_per_hr"
+    s_rainfall_ncei_trgt_res_mm.name = "mm"
+    return s_rainfall_ncei_trgt_res_mm_per_hr, s_rainfall_ncei_trgt_res_mm

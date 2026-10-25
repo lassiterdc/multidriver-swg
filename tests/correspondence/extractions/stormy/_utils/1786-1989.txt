@@ -1,0 +1,204 @@
+
+# df_compound_event_summaries = determine_compound_event_start_and_end_times(df_6min_wlevel_event_tseries, df_6min_wlevel_event_summaries, df_mrms_rainevent_tseries, df_mrms_rainevent_summary)
+# extract the event statistics
+def determine_combined_event_statistics(df_wlevel_event_tseries, df_wlevel_event_summaries, df_rainevent_tseries, df_rainevent_summary,
+                                        df_water_levels_trgt_res, s_rainfall_mm_per_hr, s_rainfall_mm):
+    # work
+    # MRMS
+    # df_wlevel_event_tseries, df_wlevel_event_summaries, df_rainevent_tseries, df_rainevent_summary, df_water_levels_trgt_res, s_rainfall_mm_per_hr, s_rainfall_mm = df_6min_wlevel_event_tseries, df_6min_wlevel_event_summaries, df_mrms_rainevent_tseries,df_mrms_rainevent_summary,df_6min_water_levels_5min,s_mrms_rainfall_mm_per_hr, s_mrms_rainfall_mm
+    # NCEI
+    # df_wlevel_event_tseries, df_wlevel_event_summaries, df_rainevent_tseries, df_rainevent_summary, df_water_levels_trgt_res, s_rainfall_mm_per_hr, s_rainfall_mm = df_6min_wlevel_event_tseries, df_6min_wlevel_event_summaries, df_ncei_hrly_rainevent_tseries,df_ncei_hrly_rainevent_summary,df_6min_water_levels_5min,s_rainfall_ncei_hrly_5min_mm_per_hr, s_rainfall_ncei_hrly_5min_mm
+    # end work
+    df_compound_event_summaries = determine_compound_event_start_and_end_times(df_wlevel_event_tseries, df_wlevel_event_summaries,
+                                                                                df_rainevent_tseries, df_rainevent_summary)
+
+    # do any events overlap?
+    count_overlapping = 0
+    lst_idx_overlapping = []
+    for e_id, row in df_compound_event_summaries.iterrows():
+        strt = row.event_start
+        end = row.event_end
+        # events overlap if the end comes before the end and after the start of another event
+        # OR if the start comes after the start and before the end of another event
+        filter_end = (end <= df_compound_event_summaries["event_end"]) & (end >= df_compound_event_summaries["event_start"])
+        filter_start = (strt <= df_compound_event_summaries["event_end"]) & (strt >= df_compound_event_summaries["event_start"])
+        if (filter_end | filter_start).sum() > 1:
+            count_overlapping += 1
+            lst_idx_overlapping += list(df_compound_event_summaries[filter_end | filter_start].index)
+    if count_overlapping>0:
+        print(f"found {count_overlapping} overlapping events")
+        df_ovelap = df_compound_event_summaries.loc[pd.Series(lst_idx_overlapping).unique(), ["event_start", "event_end"]]
+        print(df_ovelap)
+
+
+    lst_dfs_compound_tseries = []
+    lst_total_precip = []
+    lst_event_peak = []
+    lst_max_intensities = []
+    lst_max_precip_intensity_tsteps = []
+    lst_event_max_surge_tstep = []
+    lst_surge_peak_after_rain_peak = []
+    # lst_rainfall_data_source = []
+    # lst_surge_data_source = []
+    wlevel_data_source = np.nan
+    rain_data_source = np.nan
+    # lst_surge_event = []
+    # lst_rain_event = []
+
+    for event_id, event in df_compound_event_summaries.iterrows():
+        # if event.event_start == pd.Timestamp('2015-10-03 11:06:00'):
+        #     break
+        # if event.event_end.year == 2020:
+        #     break
+        s_surge_subset = df_water_levels_trgt_res.surge_ft.loc[event.event_start:event.event_end]
+        s_wlevel_subset = df_water_levels_trgt_res.waterlevel_ft.loc[event.event_start:event.event_end]
+        s_rainfall_mm_per_hr_subset = s_rainfall_mm_per_hr.loc[event.event_start:event.event_end]
+        s_rainfall_mm_subset = s_rainfall_mm.loc[event.event_start:event.event_end]
+        
+        # buffer surge and rainfall time series
+
+        df_tseries = pd.concat([s_surge_subset,s_wlevel_subset,s_rainfall_mm_per_hr_subset, s_rainfall_mm_subset], axis = 1)
+        og_dur = df_tseries.index.max() - df_tseries.index.min()
+        df_tseries = reindex_to_buffer_significant_rain_and_surge(df_tseries, arbirary_start_date = None)#, idx_name = "date_time")
+        if og_dur != (df_tseries.index.max() - df_tseries.index.min()):
+            # update the time series and the event summary information
+            s_surge_subset = df_water_levels_trgt_res.surge_ft.loc[df_tseries.index.min():df_tseries.index.max()]
+            s_wlevel_subset = df_water_levels_trgt_res.waterlevel_ft.loc[df_tseries.index.min():df_tseries.index.max()]
+            s_rainfall_mm_per_hr_subset = s_rainfall_mm_per_hr.loc[df_tseries.index.min():df_tseries.index.max()]
+            s_rainfall_mm_subset = s_rainfall_mm.loc[df_tseries.index.min():df_tseries.index.max()]
+            df_tseries = pd.concat([s_surge_subset,s_wlevel_subset,s_rainfall_mm_per_hr_subset, s_rainfall_mm_subset], axis = 1)
+
+        df_tseries["event_id"] = event_id
+        df_tseries = df_tseries.reset_index().set_index(["event_id", "date_time"])
+        lst_dfs_compound_tseries.append(df_tseries)
+
+        # compute summary statistics 
+        ## rainfall
+        tot_precip = max_intensity = tstep_max_intensity = np.nan
+        if len(s_rainfall_mm_per_hr_subset) > 0:
+            tstep = pd.Series(s_rainfall_mm_per_hr_subset.index.diff()).mode().iloc[0]
+            tstep_min = tstep / np.timedelta64(1, "h")*60
+            s_rainfall_mm_subset = s_rainfall_mm_per_hr_subset * (tstep_min/60)
+            tot_precip = s_rainfall_mm_subset.sum()
+            max_intensity = s_rainfall_mm_per_hr_subset.max()
+            if s_rainfall_mm_per_hr_subset.isna().all():
+                tstep_max_intensity = np.nan
+            else:
+                tstep_max_intensity = s_rainfall_mm_per_hr_subset.idxmax()
+            rain_data_source = df_compound_event_summaries["rain_data_source"].iloc[0]
+        # lst_rainfall_data_source.append(rain_data_source)
+        lst_total_precip.append(tot_precip)
+        lst_max_intensities.append(max_intensity)
+        lst_max_precip_intensity_tsteps.append(tstep_max_intensity)
+        # surge
+        peak_surge = tstep_peak_surge = np.nan
+        if len(s_surge_subset) > 0:
+            peak_surge = s_surge_subset.max()
+            tstep_peak_surge = s_surge_subset.idxmax()
+            wlevel_data_source = df_compound_event_summaries["wlevel_data_source"].iloc[0]
+        # lst_surge_data_source.append(wlevel_data_source)
+        lst_event_peak.append(peak_surge)
+        lst_event_max_surge_tstep.append(tstep_peak_surge)
+
+        surge_peak_after_rain_peak = np.nan
+        if not pd.Series([tstep_max_intensity,tstep_peak_surge]).isna().any():
+            surge_peak_after_rain_peak = (tstep_max_intensity-tstep_peak_surge)/np.timedelta64(1, "h")
+        lst_surge_peak_after_rain_peak.append(surge_peak_after_rain_peak)
+
+
+    df_compound_event_tseries = pd.concat(lst_dfs_compound_tseries)
+
+    df_rain_summaries = compute_event_timeseries_statistics(df_compound_event_tseries[s_rainfall_mm_per_hr_subset.name], lst_time_durations_h_to_analyze, varname=s_rainfall_mm_per_hr_subset.name,
+                                                            idx_name_time = "date_time", agg_stat = "mean")
+
+    df_stats_surge = compute_event_timeseries_statistics(df_compound_event_tseries.surge_ft, lst_time_durations_h_to_analyze, varname="surge",
+                                                            idx_name_time = "date_time", agg_stat = "mean")
+    # create event start and end datetimes (since these were derived from each datasets original timestep but are no consolidated to the same timestep)
+    lst_event_starts = []
+    lst_event_ends = []
+    prev_e_id = -1
+    for e_id, df_event_tseries in df_compound_event_tseries.groupby("event_id"):
+        lst_event_starts.append(df_event_tseries.reset_index()["date_time"].min())
+        lst_event_ends.append(df_event_tseries.reset_index()["date_time"].max())
+        if e_id - prev_e_id != 1:
+            sys.exit("event ids are out of order")
+        prev_e_id = e_id
+
+    df_compound_event_summary_stats = pd.DataFrame(dict(
+        event_id = df_compound_event_summaries.index,
+        event_start = lst_event_starts,
+        event_end = lst_event_ends,
+        compound = df_compound_event_summaries.compound,
+        rain_event = df_compound_event_summaries.rain_event,
+        surge_event = df_compound_event_summaries.surge_event,
+        rain_data_source = rain_data_source,
+        wlevel_data_source = wlevel_data_source,
+        surge_peak_ft = lst_event_peak,
+        precip_depth_mm = lst_total_precip,
+        precip_max_intensity = lst_max_intensities,
+        precip_max_intensity_tstep = lst_max_precip_intensity_tsteps,
+        surge_peak_tstep = lst_event_max_surge_tstep,
+        surge_peak_after_rain_peak_h = lst_surge_peak_after_rain_peak
+    ))
+
+    df_compound_event_summary_stats.set_index(["event_id"], inplace = True)
+
+    df_compound_event_summary_stats = df_compound_event_summary_stats.join(df_rain_summaries).join(df_stats_surge)
+
+    # compute time differences between surge and rainfall aggregated statistics
+    lst_stats_tdiffs = []
+    for agg_stat_duration in lst_time_durations_h_to_analyze:
+        # return the surge and rainfall column names associated with this stat
+        duration_substring_surge = "{}hr".format(agg_stat_duration)
+        colnames = df_compound_event_summary_stats.columns[df_compound_event_summary_stats.columns.str.contains(duration_substring_surge)]
+        colnames = colnames[colnames.str.contains("tstep")]
+        surge_colname = colnames[colnames.str.contains("surge")][0]
+        for agg_stat_duration in lst_time_durations_h_to_analyze:
+            duration_substring_rain = "{}hr".format(agg_stat_duration)
+            colnames = df_compound_event_summary_stats.columns[df_compound_event_summary_stats.columns.str.contains(duration_substring_rain)]
+            colnames = colnames[colnames.str.contains("tstep")]
+            rain_colname = colnames[colnames.str.contains("mm_per_hr")][0]
+            surge_peak_after_rain_peak = df_compound_event_summary_stats[rain_colname]-df_compound_event_summary_stats[surge_colname]
+            surge_peak_after_rain_peak = surge_peak_after_rain_peak / np.timedelta64(1, "h")
+            surge_peak_after_rain_peak.name = "max_mean_{}surge_peak_after_{}rain_peak_h".format(duration_substring_surge, duration_substring_rain)
+            lst_stats_tdiffs.append(surge_peak_after_rain_peak)
+
+    df_stat_tdiffs = pd.concat(lst_stats_tdiffs, axis = 1)
+    df_compound_event_summary_stats = df_compound_event_summary_stats.join(df_stat_tdiffs)
+
+
+    # properly classify compound events
+    ## surge events that are compound
+    filter_surge_evnts = ((df_compound_event_summary_stats["surge_event"] == True) & (df_compound_event_summary_stats["compound"] == False))
+    filter_precip_depth_meets_threshold = (df_compound_event_summary_stats["precip_depth_mm"] >= df_rainevent_summary["depth_mm"].min())
+    idx_surge_events_that_are_actually_compound = df_compound_event_summary_stats[filter_surge_evnts & filter_precip_depth_meets_threshold].index
+    ## rain events that are compound
+    filter_rain_evnts = ((df_compound_event_summary_stats["rain_event"] == True) & (df_compound_event_summary_stats["compound"] == False))
+    filter_surge_meets_threshold = (df_compound_event_summary_stats["surge_peak_ft"] >= df_wlevel_event_summaries["max_surge_ft"].min())
+    idx_rain_events_that_are_actually_compound = df_compound_event_summary_stats[filter_rain_evnts & filter_surge_meets_threshold].index
+
+    if len(idx_surge_events_that_are_actually_compound) > 0:
+        print(f"{len(idx_surge_events_that_are_actually_compound)} surge events have been reclassified as a compound event because the rain threshold was exceeded during the event.")
+    if len(idx_rain_events_that_are_actually_compound) > 0:
+        print(f"{len(idx_rain_events_that_are_actually_compound)} rain events have been reclassified as a compound event because the surge threshold was exceeded during the event.")
+    df_compound_event_summary_stats.loc[idx_surge_events_that_are_actually_compound, "compound"] = True
+    df_compound_event_summary_stats.loc[idx_surge_events_that_are_actually_compound, "rain_event"] = True
+
+    df_compound_event_summary_stats.loc[idx_rain_events_that_are_actually_compound, "compound"] = True
+    df_compound_event_summary_stats.loc[idx_rain_events_that_are_actually_compound, "surge_event"] = True
+
+    df_wlevel_rain_summary = df_compound_event_summary_stats.dropna()
+    df_wlevel_rain_tseries = df_compound_event_tseries.dropna()
+    for e_id, row in df_wlevel_rain_summary.iterrows():
+        event_start = row["event_start"]
+        event_end = row["event_end"]
+        row["precip_depth_mm"]
+        rainsum_tseries = df_wlevel_rain_tseries.loc[pd.IndexSlice[:, event_start:event_end], :]["mm"].sum()
+        if not np.isclose(rainsum_tseries, row["precip_depth_mm"]):
+            print("warning: discrepancy between rain series sum and rain sum reported in event summary table")
+            print(f"event_start = {event_start}, event_end = {event_end}")
+
+    # add data source columns to time series
+    df_compound_event_tseries["wlevel_data_source"] = wlevel_data_source
+    df_compound_event_tseries["rain_data_source"] = rain_data_source
+    return df_compound_event_summary_stats, df_compound_event_tseries

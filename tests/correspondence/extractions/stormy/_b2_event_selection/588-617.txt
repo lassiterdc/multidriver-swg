@@ -1,0 +1,30 @@
+#%% compound event analysis
+# any event that meets the surge characteristic that also experiences the rain event threshold within a 12-hour
+# # moving window of the peak surge i am considering a compound event
+
+# df_wlevel_event_tseries, df_wlevel_event_summaries, df_rainevent_tseries, df_rainevent_summary, df_water_levels_mrms_res, s_rainfall_mm_per_hr, s_rainfall_mm = df_6min_wlevel_event_tseries, df_6min_wlevel_event_summaries, df_mrms_rainevent_tseries,df_mrms_rainevent_summary,df_6min_water_levels_mrms_res,s_mrms_rainfall_mm_per_hr, s_mrms_rainfall_mm
+
+
+df_6min_wlevel_mrms_event_summary_stats, df_6min_wlevel_mrms_event_tseries = determine_combined_event_statistics(df_6min_wlevel_event_tseries, df_6min_wlevel_event_summaries, df_mrms_rainevent_tseries,
+                                                                                                                  df_mrms_rainevent_summary,df_6min_water_levels_mrms_res,
+                                                                                                                    s_mrms_rainfall_mm_per_hr, s_mrms_rainfall_mm)
+
+df_6min_wlevel_aorc_event_summary_stats, df_6min_wlevel_aorc_event_tseries = determine_combined_event_statistics(df_6min_wlevel_event_tseries, df_6min_wlevel_event_summaries, df_aorc_rainevent_tseries,
+                                                                                                                  df_aorc_rainevent_summary,df_6min_water_levels_mrms_res,
+                                                                                                                    s_aorc_rainfall_mm_per_hr, s_aorc_rainfall_mm)
+
+# check to make sure that the total rain depth in each event summary matches the manual sum from the time series
+
+df_6min_wlevel_hrly_ncei_event_summary_stats, df_6min_wlevel_hrly_ncei_event_tseries = determine_combined_event_statistics(df_6min_wlevel_event_tseries, df_6min_wlevel_event_summaries, df_ncei_hrly_rainevent_tseries,
+                                                                                                                  df_ncei_hrly_rainevent_summary,df_6min_water_levels_mrms_res,
+                                                                                                                    s_rainfall_ncei_hrly_mrms_res_mm_per_hr, s_rainfall_ncei_hrly_mrms_res_mm)
+
+
+df_6min_wlevel_mrms_event_summary_stats.to_csv(f_6m_wlevel_mrms_event_summaries)
+df_6min_wlevel_mrms_event_tseries.to_csv(f_6m_wlevel_mrms_event_timeseries)
+
+df_6min_wlevel_aorc_event_summary_stats.to_csv(f_6m_wlevel_aorc_event_summaries)
+df_6min_wlevel_aorc_event_tseries.to_csv(f_6m_wlevel_aorc_event_timeseries)
+
+df_6min_wlevel_hrly_ncei_event_summary_stats.to_csv(f_6min_wlevel_hrly_ncei_event_summaries)
+df_6min_wlevel_hrly_ncei_event_tseries.to_csv(f_6min_wlevel_hrly_ncei_event_timeseries)

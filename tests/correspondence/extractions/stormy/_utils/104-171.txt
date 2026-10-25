@@ -1,0 +1,68 @@
+
+def rescale_rainfall_timeseries(row_sim_event, obs_tseries_mm_p_h, max_obs_strm_duration, n_cutoff, rtol, atol, rain_intensity_stat, verbose = False):
+    # row_sim_event, obs_tseries_mm_p_h, max_obs_strm_duration, n_cutoff, rtol, atol, verbose = False
+    if verbose:
+        print(f"Rescaling observed rainfall time series match targeted event stats with a relative tolerance of {rtol} and an absolute tolerance of {atol}")
+    target_tstep_tdelta = tstep_tdelta = pd.Series(obs_tseries_mm_p_h.index.diff()).mode().iloc[0]
+    target_sim_intensity = row_sim_event[rain_intensity_stat]
+    target_sim_depth = row_sim_event["precip_depth_mm"]
+    tstep_hr = tstep_tdelta / np.timedelta64(1, "h")
+    sim_time_series = obs_tseries_mm_p_h.copy()
+    threshold_unmet = True
+    n_attempts = 0
+    txt_problems = ""
+    cols_gridcell = [col for col in sim_time_series.columns if 'mm_per_hr' not in col]
+    while threshold_unmet:
+        n_attempts += 1
+        # first compute the max intensity statistic (rain_intensity_stat)
+        sim_max_intensity = compute_sim_max_mean_rain_intensity(sim_time_series["mm_per_hr"].to_frame(), rain_intensity_stat)
+        mltplier = target_sim_intensity / sim_max_intensity
+        sim_time_series = sim_time_series * mltplier
+        # recalc watershed wide mean intensity
+        sim_time_series["mm_per_hr"]  = sim_time_series.loc[:, cols_gridcell].mean(axis = 1)
+        # recompute max intensity to perform check
+        sim_max_intensity = compute_sim_max_mean_rain_intensity(sim_time_series["mm_per_hr"].to_frame(), rain_intensity_stat)
+        # check to make sure target intensity is met
+        if not np.isclose(sim_max_intensity, target_sim_intensity):
+            continue
+            sys.exit(F"ERROR: {rain_intensity_stat} FROM SIMULATED EVENT TIME SERIES DOES NOT EQUAL THE SIMULATED EVENT STATISTIC")
+        # sys.exit("work")
+        # modify timesteps to achieve desired precip depth
+        sim_time_series = rescale_rain_tseries_to_match_target_depth(sim_time_series, target_sim_depth, target_tstep_tdelta)
+        if (sim_time_series.index.diff().dropna() != tstep_tdelta).sum() > 0:
+            sys.exit("irregular timestep encountered")
+        # recalculate watershed wide mean intensity
+        sim_time_series["mm_per_hr"]  = sim_time_series.loc[:, cols_gridcell].mean(axis = 1)
+        # re-verify precip statistics
+        sim_precip_depth_mm = (sim_time_series["mm_per_hr"] * tstep_hr).sum()
+        # recompute max intensity after scaling
+        sim_max_intensity = compute_sim_max_mean_rain_intensity(sim_time_series["mm_per_hr"].to_frame(), rain_intensity_stat)
+        if n_attempts == n_cutoff:
+            threshold_unmet = False
+            txt_problems = f"Cutting off for loop after {n_cutoff} attempts while there is still a difference between simulated max intensity and target max intensity (sim. - target: {sim_max_intensity:.4f} - {target_sim_intensity:.4f} = {sim_max_intensity-target_sim_intensity:.4f})"
+            if verbose:
+                print(txt_problems)
+            break
+        elif sim_time_series.index.max() >= max_obs_strm_duration*2: # cutoff if the duration is too long
+            txt_problems = f"|WARNING: breaking rescaling loop because simulated rainfall tseries already double the max observed storm length ({sim_time_series.index.max()} vs. {max_obs_strm_duration})"
+            if verbose:
+                print(txt_problems)
+            break
+        elif not np.isclose(sim_precip_depth_mm, target_sim_depth, rtol = rtol, atol = atol): 
+            # sys.exit(F"ERROR: {rain_stat} FROM SIMULATED EVENT TIME SERIES DOES NOT EQUAL THE SIMULATED EVENT STATISTIC")
+            if verbose:
+                print(f"The precip depth statistic is not close enough (sim. - target: {sim_precip_depth_mm:.4f} - {target_sim_depth:.4f} = {(sim_precip_depth_mm-target_sim_depth):.4f})")
+            continue
+        # sim_time_series = obs_tseries_surge * mltplier
+        elif not np.isclose(sim_max_intensity, target_sim_intensity, rtol = rtol, atol = atol):
+            # sys.exit(F"ERROR: {rain_stat} FROM SIMULATED EVENT TIME SERIES DOES NOT EQUAL THE SIMULATED EVENT STATISTIC")
+            if verbose:
+                print(f"The max intensity statistic is not close enough (sim. - target: {sim_max_intensity:.4f} - {target_sim_intensity:.4f} = {(sim_max_intensity-target_sim_intensity):.4f})")
+            continue
+        else:
+            # if n_attempts > 1:
+            if verbose:
+                print(f"Observed event successfully rescaled to match target event statistics after {n_attempts} iterations")
+            threshold_unmet = False
+            break
+    return sim_time_series, txt_problems

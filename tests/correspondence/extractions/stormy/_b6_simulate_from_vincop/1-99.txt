@@ -1,0 +1,99 @@
+#%%
+from tqdm import tqdm
+import pyvinecopulib as pv
+from _inputs import *
+from _utils import *
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import probplot
+from scipy import stats
+import matplotlib.patches as mpatches
+import shutil
+from matplotlib.lines import Line2D
+from scipy.stats import gaussian_kde, kendalltau
+from scipy.stats import poisson
+n_years_to_simulate = np.ceil(1.5 * n_years_of_weather_to_generate).astype(int) # i over simulate by some amount in case there are invalid simulated events
+alpha = 0.05
+random_seed_np = np.random.RandomState(234)
+
+# Set the random seed for reproducibility
+random_seed = 24
+
+dir_plot = f"{dir_simulate_from_copula}plots/"
+Path(dir_plot).mkdir(parents=True, exist_ok=True)
+
+df_all_events_summary = pd.read_csv(f_combined_event_summaries, 
+                                    parse_dates=["event_start", "event_end", "surge_peak_tstep",
+                                                "precip_max_intensity_tstep"])
+df_surge_events = df_all_events_summary[df_all_events_summary["event_type"] == "surge"]
+df_rain_events = df_all_events_summary[df_all_events_summary["event_type"] == "rain"]
+df_combo_events = df_all_events_summary[df_all_events_summary["event_type"] == "compound"]
+
+lst_all_event_stats = []
+lst_surge_event_stats = []
+lst_rain_event_stats = []
+lst_compound_event_stats = []
+
+dic_event_stats = {}
+
+dic_event_summaries = {#"all_events":df_all_events_summary,
+                       "compound_events":df_combo_events,
+                       "rain_events":df_rain_events,
+                       "surge_events":df_surge_events}
+
+# load event time series
+df_combined_tseries = pd.read_csv(f_combined_event_tseries_csv, parse_dates = ["date_time"])
+# load original mrms time series
+df_rain_tseries = pd.read_csv(f_mrms_rainfall, index_col="time", parse_dates = ["time"])
+# load water level data
+ds_6min_water_levels_trgt_res = xr.open_dataset(f_6min_wlevel_resampled_to_mrms_res_nc)
+
+# load copulas
+dic_copulas = {}
+for key in dic_event_summaries:
+    cop_json = f"{dir_vinecop}vinecop_params_{key}.json"
+    with open(cop_json, "r") as f:
+        json_str = f.read()
+    copula_from_json = pv.Vinecop.from_json(json_str)
+    # copula_from_json = pv.Vinecop()
+    dic_copulas[key] = copula_from_json
+
+# load raw hydro data
+# ncei hourly
+# df_rainfall_ncei_hourly_in = pd.read_csv(f_hourlyprecip_airport, parse_dates=["DATE"])
+# s_rainfall_ncei_hourly_in = df_rainfall_ncei_hourly_in.loc[:, ["DATE", "HPCP"]].drop_duplicates().set_index("DATE").HPCP
+# mrms
+df_rainfall = pd.read_csv(f_mrms_rainfall, parse_dates=True, index_col = "time")
+df_rainfall.index.name = "date_time"
+s_mrms_rainfall_trgt_res_mm_per_hr = df_rainfall.rain_mean
+s_mrms_rainfall_trgt_res_mm_per_hr.name = "mm_per_hr"
+# 6-min water level data
+df_6min_water_levels = pd.read_csv(f_water_level_storm_surge, parse_dates=True, index_col="date_time")
+
+# determine return rates for any event, compound event, surge event, and rain event using mrms and 6 min ncei data
+# ncei_rain_dates = pd.Series(data = "rain", index=pd.Series(s_rainfall_ncei_hourly_in.index.date).unique())
+# ncei_rain_dates.name = "ncei_rain_data"
+
+mrms_rain_dates = pd.Series(data = "rain", index=pd.Series(s_mrms_rainfall_trgt_res_mm_per_hr.index.date).unique())
+mrms_rain_dates.name = "mrms_rain_data"
+
+df_aorc_rainfall = pd.read_csv(f_aorc_rainfall, parse_dates=True, index_col = "time")
+df_aorc_rainfall.index.name = "date_time"
+s_aorc_rainfall_trgt_res_mm_per_hr = df_aorc_rainfall["rain_mean"]
+aorc_rain_dates = pd.Series(data = "rain", index=pd.Series(s_aorc_rainfall_trgt_res_mm_per_hr.index.date).unique())
+aorc_rain_dates.name = "aorc_rain_data"
+
+
+idx_valid_rainfall = pd.concat([mrms_rain_dates, aorc_rain_dates]).index.unique().sort_values()
+all_rain_dates = pd.Series(data = "rain", index=pd.Series(idx_valid_rainfall))
+all_rain_dates.name = "all_rain_data"
+
+wlevel_dates = pd.Series(data = "wlevel", index=pd.Series(df_6min_water_levels.index.date).unique())
+wlevel_dates.name = "wlevel_data"
+
+idx_valid_dates = pd.concat([all_rain_dates, wlevel_dates], join = "inner", axis = 1).index
+idx_valid_dates = pd.to_datetime(idx_valid_dates)
+df_valid_dates = pd.concat([all_rain_dates, wlevel_dates], axis = 1)
+# df_valid_dates = pd.concat([mrms_rain_dates, wlevel_dates], join = "outer", axis = 1).index

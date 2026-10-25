@@ -1,0 +1,18 @@
+
+def reproduce_select_plots_and_verify_all_vars_accounted_for(dic_event_stats, which_event_key, lst_fname_of_interest, dic_event_summaries,
+                                                             dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff):
+    vars_all = dic_event_stats[which_event_key]
+    s_vars_accounted_for = pd.Series(data=False, index = vars_all).astype(bool)
+    for fname_of_interest in lst_fname_of_interest:
+        mode = "from_fname"
+        subdir_name = "slxn_coarse"
+        plot_subset_of_fits(dic_event_summaries, dic_event_stats, dir_plots_all_fitted_marginals, cvm_cutoff, ks_cutoff,
+                             mode = mode, which_event_key = which_event_key, fname_of_interest = fname_of_interest, subdir_name = subdir_name)
+        for var in vars_all:
+            if var in fname_of_interest:
+                s_vars_accounted_for.loc[var] = True
+    if (~s_vars_accounted_for).sum() != 0:
+        print("WARNING! NOT ALL EVENT STATISTICS ACCOUNTED FOR!")
+    return s_vars_accounted_for
+
+

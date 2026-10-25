@@ -1,0 +1,4 @@
+
+def unshift_data(s_data_shifted, scalar_shift):
+    s_data_unshifted = s_data_shifted - scalar_shift
+    return s_data_unshifted

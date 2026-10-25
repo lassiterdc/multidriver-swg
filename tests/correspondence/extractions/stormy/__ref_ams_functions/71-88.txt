@@ -1,0 +1,18 @@
+
+def transform_data_for_fitting(s_data_untransformed, upper_bound = np.nan, scalar_shift = 0, normalize=False, boxcox=False):
+    s_data_for_fitting = s_data_untransformed.copy()
+    # apply upper bound
+    if not np.isnan(upper_bound):
+        s_data_for_fitting = (s_data_for_fitting - upper_bound)*-1
+    # apply shift
+    s_data_for_fitting = shift_data(s_data_for_fitting, scalar_shift)
+    # normalize
+    mean = std = np.nan
+    if normalize == True:
+        s_data_for_fitting, mean, std = normalize_data(s_data_for_fitting)
+    # boxcox
+    scalar_shift_for_boxcox = np.nan
+    lmbda = np.nan
+    if boxcox == True:
+        s_data_for_fitting, lmbda, scalar_shift_for_boxcox = boxcox_transformation(s_data_for_fitting)
+    return pd.Series(s_data_for_fitting), scalar_shift_for_boxcox, lmbda, mean, std

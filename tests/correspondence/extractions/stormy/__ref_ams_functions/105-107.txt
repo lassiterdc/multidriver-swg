@@ -1,0 +1,3 @@
+
+def comp_msdi(empirical, fitted):
+    return sum(((empirical - fitted)/empirical)**2)/len(empirical)

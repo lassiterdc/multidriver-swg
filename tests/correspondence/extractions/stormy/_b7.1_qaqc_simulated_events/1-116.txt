@@ -1,0 +1,116 @@
+#%% import libararies
+from _inputs import *
+from _utils import *
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import shutil
+import numpy as np
+from matplotlib.gridspec import GridSpec
+from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import StandardScaler
+import dask.dataframe as dd
+from tqdm import tqdm
+dir_plot = f"{dir_storm_rescaling}plots/"
+Path(dir_plot).mkdir(parents=True, exist_ok=True)
+alpha=0.05
+
+
+# plotting design storms for comparison
+# df_rain_design_storms = pd.read_csv(f_csv_design_storms, parse_dates = ["datetime"], sep = "\t", index_col="datetime")*mm_per_inch
+# fig, ax = plt.subplots(dpi = 300)
+# trim_factor = 40
+# df_rain_design_storms = df_rain_design_storms.iloc[trim_factor:-trim_factor, :]
+# df_rain_design_storms.index = df_rain_design_storms.index - df_rain_design_storms.index.min()
+# df_rain_design_storms.index = df_rain_design_storms.index / np.timedelta64(1, "h")
+# df_rain_design_storms.loc[:, ["1_year", "10_year", "100_year"]].plot(ax=ax)
+# ax.set_ylabel("mm per hour")
+# ax.set_xlabel("time (hours)")
+
+df_all_events_summary = pd.read_csv(f_combined_event_summaries, index_col="event_id",
+                                    parse_dates=["event_start", "event_end", "surge_peak_tstep",
+                                                "precip_max_intensity_tstep"])
+
+# convert units of surge peak to meters
+df_all_events_summary = df_all_events_summary.rename(columns = dict(surge_peak_ft = "surge_peak_m"))
+df_all_events_summary["surge_peak_m"] = df_all_events_summary["surge_peak_m"] / feet_per_meter
+
+ds_event_tseries = xr.open_dataset(f_combined_event_tseries_netcdf)
+# convert units of water level and surge peak to meters
+ds_event_tseries = ds_event_tseries.rename(dict(waterlevel_ft = "waterlevel_m", surge_ft = "surge_m"))
+ds_event_tseries["waterlevel_m"] = ds_event_tseries["waterlevel_m"] / feet_per_meter
+ds_event_tseries["surge_m"] = ds_event_tseries["surge_m"] / feet_per_meter
+# ds_event_tseries["tide_m"] = ds_event_tseries["tide_m"] / feet_per_meter
+
+
+
+df_surge_events = df_all_events_summary[df_all_events_summary["event_type"] == "surge"]
+df_rain_events = df_all_events_summary[df_all_events_summary["event_type"] == "rain"]
+df_combo_events = df_all_events_summary[df_all_events_summary["event_type"] == "compound"]
+
+dic_event_summaries = {#"all_events":df_all_events_summary,
+                       "compound_events":df_combo_events,
+                       "rain_events":df_rain_events,
+                       "surge_events":df_surge_events}
+
+surge_event_threshold_m = df_surge_events.surge_peak_m.min()
+rain_event_threshold_mm = df_rain_events.precip_depth_mm.min()
+
+clear_plots = True
+lst_skip = []# ['rain_events', 'compound_events']#,"surge_events" 'rain_events', 'compound_events']
+lst_df_summaries = []
+lst_ds_tseries = []
+
+
+df_sim_summaries_all = pd.read_csv(f"{dir_storm_rescaling}combined_simulation_summaries.csv", index_col = ["event_type", "year", "event_id"])
+ds_tseries_all = xr.open_dataset(f"{dir_storm_rescaling}combined_simulation_time_series.nc", chunks = dict(year = "auto"))
+
+# reclassify events if necessary
+df_sim_summaries_all["surge_event"] = df_sim_summaries_all["surge_peak_m"] >= surge_event_threshold_m
+sys.exit("rain events are classified as rain events based on both the rain event threshold but also over a specific duration")
+df_sim_summaries_all["rain_event"] = df_sim_summaries_all["precip_depth_mm"] >= rain_event_threshold_mm
+df_sim_summaries_all["compound"] = df_sim_summaries_all["surge_event"] & df_sim_summaries_all["rain_event"]
+
+
+
+df_sim_summaries_all = df_sim_summaries_all.sort_index()
+df_sim_summaries_all = df_sim_summaries_all.reset_index().drop(columns = "event_type")
+df_sim_summaries_all = classify_events(df_sim_summaries_all)
+
+
+# idx_new_compound = df_sim_summaries_all[(df_sim_summaries_all["compound"] == True) & (df_sim_summaries_all["max_mean_16hrsurge_peak_after_16hrrain_peak_h"].isna())].index
+# idx_no_longer_compound = df_sim_summaries_all[(df_sim_summaries_all["compound"] == False) & (~df_sim_summaries_all["max_mean_16hrsurge_peak_after_16hrrain_peak_h"].isna())].index
+
+
+
+# def fill_timedelay_stats(ds_tseries_all, df_sim_summaries, idx_to_fill, delay_stat, dur_h):
+#     for idx in idx_to_fill:
+#         # sys.exit("work")
+#         df_tseries = ds_tseries_all.sel(event_type = idx[0], year = idx[1], event_id = idx[2]).to_dataframe()
+#         # compute time delay stat for compound events
+#         df_rain_summaries = compute_event_timeseries_statistics(df_tseries["mm_per_hr"].to_frame(), lst_time_durations_h_to_analyze=[dur_h], varname=df_tseries["mm_per_hr"].name,
+#                                                 agg_stat = "mean")
+#         current_max_xhr_mean_mm_per_hr_tstep = df_rain_summaries.iloc[0,1]
+#         ## surge stat
+#         df_stats_surge = compute_event_timeseries_statistics(df_tseries["surge_m"].to_frame(), lst_time_durations_h_to_analyze=[dur_h], varname="surge",
+#                                                             agg_stat = "mean")
+#         current_max_xhr_mean_surge_tstep = df_stats_surge.iloc[0,1]
+#         # diff
+#         current_surge_after_rain_peak_h = (current_max_xhr_mean_surge_tstep - current_max_xhr_mean_mm_per_hr_tstep) / np.timedelta64(1, "h")
+#         # add value for time diff column
+#         df_sim_summaries.loc[idx, delay_stat] = current_surge_after_rain_peak_h
+#     return df_sim_summaries
+
+# # sys.exit()
+# delay_stat, dur_h = "max_mean_16hrsurge_peak_after_16hrrain_peak_h", 16
+# idx_to_fill = idx_new_compound
+# df_sim_summaries_all = fill_timedelay_stats(ds_tseries_all, df_sim_summaries_all, idx_to_fill, delay_stat, dur_h)
+
+# delay_stat, dur_h = "surge_peak_after_rain_peak_h", 1
+# idx_to_fill = idx_no_longer_compound
+# df_sim_summaries_all = fill_timedelay_stats(ds_tseries_all, df_sim_summaries_all, idx_to_fill, delay_stat, dur_h)
+
+
+

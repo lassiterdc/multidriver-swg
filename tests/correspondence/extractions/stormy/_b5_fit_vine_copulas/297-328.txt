@@ -1,0 +1,32 @@
+#%% create plots to evaluate fit
+n_for_density_plot = n_for_marginal_cdf_comparison = 1000
+n_for_montecarlo_cvm_test = n_for_montecarlo_tau_test = 500
+alpha = 0.05
+for key in dic_event_summaries:
+    fldr_cntrl_sensitivity = dir_vinecop + f"plots_{key}_control_testing/"
+    if key == "surge_events":
+        continue # done
+        control_idx = control_idx_selected_surge
+    if key == "rain_events":
+        continue # done
+        control_idx = control_idx_selected_rain
+    if key == "compound_events":
+        continue # done
+        control_idx = control_idx_selected_compound
+    df_controls_and_results = pd.read_csv(f"{fldr_cntrl_sensitivity}copula_fit_sensitivity_analysis_results.csv", index_col = "control_idx")
+    fldr_plots = dir_vinecop + f"plots_{key}/"
+    try:
+        shutil.rmtree(fldr_plots)
+    except:
+        pass
+    Path(fldr_plots).mkdir(parents=True, exist_ok=True)
+    # building vine copula directly from data
+    df_obs = format_fitted_cdf_values_for_fitting_copula(event_type_key = key)    
+    cop_json = f"{dir_vinecop}vinecop_params_{key}.json"
+    # copy json to the main folder
+    shutil.copy(df_controls_and_results.loc[control_idx, "f_vinecop_params"], cop_json)
+    # load copula fit
+    vinecop = pv.Vinecop(cop_json)
+    print(f"Plotting copula fits for {key}")
+    create_vinecop_gof_plots(df_obs=df_obs, cop_fitted=vinecop, n_for_density_plot=n_for_density_plot, n_for_marginal_cdf_comparison=n_for_marginal_cdf_comparison, n_for_montecarlo_tau_test=n_for_montecarlo_tau_test, n_for_montecarlo_cvm_test=n_for_montecarlo_cvm_test,
+                            alpha=alpha, fldr_plots=fldr_plots, event_key=key)

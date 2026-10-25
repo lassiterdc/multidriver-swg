@@ -1,0 +1,38 @@
+#%% plotting
+fig_title = "MRMS Events"
+fname_savefig = f"{fldr_plt_selected_events}rain_event_nstorms_per_year_mrms.png"
+plot_annual_rainfall_totals(df_mrms_rainevent_summary, s_mrms_rainfall_mm_per_hr,
+                             rain_event_threshold_mm_selected, mrms_event_return_rate_n_per_year, fig_title, fname_savefig)
+
+fig_title = "AORC Events"
+fname_savefig = f"{fldr_plt_selected_events}rain_event_nstorms_per_year_aorc.png"
+plot_annual_rainfall_totals(df_aorc_rainevent_summary, s_aorc_rainfall_mm_per_hr,
+                             rain_event_threshold_mm_selected, aorc_event_return_rate_n_per_year, fig_title, fname_savefig)
+
+fig_title = "NCEI Hourly Events"
+fname_savefig = f"{fldr_plt_selected_events}rain_event_nstorms_per_year_ncei_hrly.png"
+plot_annual_rainfall_totals(df_ncei_hrly_rainevent_summary, s_rainfall_ncei_hrly_mrms_res_mm_per_hr,
+                             rain_event_threshold_mm_selected, ncei_hourly_event_return_rate_n_per_year, fig_title, fname_savefig)
+
+n_bootstrap = 1000
+dir_savefig = fldr_plt_selected_events
+figtitle_supplementary_text = f"(threshold = {rain_event_threshold_mm_selected}mm)"
+fig_fname_prefix = f"threshold_{rain_event_threshold_mm_selected}mm"
+cols_to_compare = new_data_columns
+cols_to_compare.append("depth_mm")
+for dataset in cols_to_compare:
+  s_dataset1 = df_mrms_rainevent_summary[dataset]
+  s_dataset1.name = "mrms"
+  s_dataset2 = df_ncei_hrly_rainevent_summary[dataset]
+  s_dataset2.name = "ncei_hrly"
+  n_per_sample = len(df_mrms_rainevent_summary)
+  compare_2_distributions(s_dataset1, s_dataset2, dataset, n_bootstrap, n_per_sample, alpha, bins = 30, include_kde = True,
+                              dir_savefig = dir_savefig, figtitle_supplementary_text = figtitle_supplementary_text,
+                                fig_fname_prefix = fig_fname_prefix)
+  s_dataset2 = df_aorc_rainevent_summary[dataset]
+  s_dataset2.name = "aorc"
+  n_per_sample = len(df_mrms_rainevent_summary)
+  compare_2_distributions(s_dataset1, s_dataset2, dataset, n_bootstrap, n_per_sample, alpha, bins = 30, include_kde = True,
+                              dir_savefig = dir_savefig, figtitle_supplementary_text = figtitle_supplementary_text,
+                                fig_fname_prefix = fig_fname_prefix)
+  
