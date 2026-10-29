@@ -32,4 +32,5 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Usage: usage.md
+  - Estate Bindings: estate-bindings.md
   - API Reference: api.md
