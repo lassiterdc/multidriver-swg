@@ -14,7 +14,7 @@ import sys
 import pytest
 
 import tests.registrations as registrations
-from tests.correspondence import binding, proofs
+from tests.correspondence import binding, proofs, write_root
 
 pytestmark = pytest.mark.state_check
 
@@ -24,7 +24,9 @@ INI = (
     "    refactor_reminder(unit, system, part): a synthetic reminder\n"
 )
 INNER_CONFTEST = (
-    "from tests.correspondence import proofs\n\n\ndef pytest_addoption(parser):\n    proofs.add_options(parser)\n"
+    'pytest_plugins = ["tests.correspondence.record"]\n\n\n'
+    "def pytest_addoption(parser):\n    from tests.correspondence import proofs, record\n\n"
+    "    proofs.add_options(parser)\n    record.add_options(parser)\n"
 )
 LICENCE = (
     "class Plus:\n"
@@ -223,3 +225,199 @@ def test_the_run_record_carries_whether_each_test_was_bound(pytester, monkeypatc
     _inner_run(pytester, body, f"--run-record={record}", with_binding=True)
     lines = _lines(record)
     assert [(line["outcome"], line["bound"]) for line in lines] == [("passed", True), ("failed", False)], lines
+
+
+RECORD_PAIRS = (
+    ("--proof-record", "--run-record"),
+    ("--proof-record", "--result-record"),
+    ("--run-record", "--result-record"),
+)
+
+
+def _refusal_run(pytester, body, *args):
+    """Run `body` as the inner tree's one test file with the recorder loaded, keeping both output streams.
+
+    `runpytest` rather than `inline_run`: a refusal prints to the terminal and to stderr, and only
+    the in-process `RunResult` keeps both for assertion. The inner conftest declares all three record
+    options, so an arm may pass any of them without the inner run refusing the argument itself.
+    """
+    pytester.makeini(INI)
+    pytester.makeconftest(INNER_CONFTEST)
+    pytester.makepyfile(test_inner=body)
+    return pytester.runpytest("-p", "no:cacheprovider", "-p", "tests.correspondence.proofs", *args)
+
+
+def _output(result):
+    """Everything a run printed, stdout first and stderr after, so one substring check covers both."""
+    return "\n".join(result.outlines) + "\n" + "\n".join(result.stderr.lines)
+
+
+@pytest.mark.parametrize(("first", "second"), RECORD_PAIRS)
+def test_a_pair_of_record_options_naming_one_path_is_refused(pytester, first, second):
+    """Property: any pair among the three record options that resolves to one path is refused, naming both flags and the path.
+
+    Class: every pair formed from the three record channels, which is the finite population the
+    refusal ranges over -- each pair nameable here is one member, so a refusal wired to only the
+    proof/run pair fails this test on the two members it does not cover. Why: the channels write
+    differently, so one path serving two of them means one channel's write destroys another's
+    record, and which survives depends on hook order. Killed by: refusing only the pair the decision
+    text names (proof/run); resolving the options nowhere, so two spellings of one file are not
+    caught; and asserting on the exit code alone, which an undeclared option also produces. Second
+    correct implementation: one that compares `os.path.realpath` of the option values instead of
+    `Path.resolve` refuses the same pairs, provided the message names both flags.
+    """
+    record = pytester.path / "one.jsonl"
+    result = _refusal_run(pytester, "def test_ok():\n    pass\n", f"{first}={record}", f"{second}={record}")
+    out = _output(result)
+    assert result.ret == 4, out
+    assert "INTERNALERROR" not in out, out
+    assert first in out and second in out, out
+    assert str(record.resolve()) in out, out
+    assert "unrecognized arguments" not in out, out
+    assert not record.exists(), record
+
+
+def test_distinct_record_paths_are_not_refused(pytester):
+    """Property: three record options naming three different paths run normally.
+
+    Class: the satisfying input for the refusal -- every pair distinct, which is the configuration
+    an invoker actually uses. Why: a refusal that fires on distinct paths makes every recorded run
+    fail, so the arm is what separates a pairwise check from a "more than one record option" check.
+    Killed by: refusing whenever two record options are set; comparing option VALUES without
+    resolving, which refuses two spellings of one path but also nothing else -- the negative
+    direction is what this arm holds. Second correct implementation: one that refuses only on a
+    collision found by set cardinality over resolved paths behaves identically here.
+    """
+    paths = [pytester.path / name for name in ("proofs.jsonl", "run.jsonl", "result.json")]
+    result = _refusal_run(
+        pytester,
+        "def test_ok():\n    pass\n",
+        f"--proof-record={paths[0]}",
+        f"--run-record={paths[1]}",
+        f"--result-record={paths[2]}",
+    )
+    out = _output(result)
+    assert result.ret == 0, out
+    assert "name one resolved path" not in out, out
+
+
+def test_two_spellings_of_one_record_path_are_refused(pytester):
+    """Property: a pair whose values are two spellings of one record file is refused, so the check compares resolved paths and not the text typed.
+
+    Class: any pair among the three record options whose values differ as text and resolve to one
+    file -- here a symlink and its target, the spelling difference only resolution can see, beside
+    the same-literal colliding input and the distinct-path input the arms above already carry.
+    Why: two channels must not share a file, and an invocation that reaches one file through a link
+    collides exactly as one that types the same path twice; a check comparing the values as typed
+    admits it, and the truncating channel then destroys the appending channel's record. The link's
+    target is asserted absent because that is what distinguishes a refusal from a run that wrote.
+    Killed by: comparing the option values as typed (`Path(value)` in place of
+    `Path(value).resolve()`). Second correct implementation: comparing `os.path.realpath` of both
+    values refuses the same pairs, provided the message names both flags.
+    """
+    target = pytester.path / "one.jsonl"
+    link = pytester.path / "link.jsonl"
+    link.symlink_to(target)
+    result = _refusal_run(pytester, "def test_ok():\n    pass\n", f"--proof-record={link}", f"--run-record={target}")
+    out = _output(result)
+    assert result.ret == 4, out
+    assert "--proof-record" in out and "--run-record" in out, out
+    assert "unrecognized arguments" not in out, out
+    assert not target.exists(), out
+
+
+def test_the_admission_gate_classifies_the_resolved_proof_record_path(pytester, monkeypatch):
+    """Property: the admission gate reads the RESOLVED proof-record path, so a link into a refused mount is refused as its target is.
+
+    Class: a proof-record option whose value is a symlink under an admitted mount pointing into a
+    mount the predicate refuses -- the spelling difference is the whole input, and the arm beside it
+    (a plain path on a refused mount) cannot reach it, because there the raw and the resolved
+    spelling answers agree. Why: the bytes land on the target's filesystem, not on the link's, so a
+    gate classifying the text typed admits a shared root it cannot make safe; the target is asserted
+    absent because a refusal and a run that wrote are otherwise indistinguishable in the output.
+    Killed by: calling `admitted()` with the raw option value instead of the resolved one. Second
+    correct implementation: one that resolves inside `admitted()` before classifying answers the
+    same and refuses the same path.
+    """
+    portal = pytester.path / "portal"
+    portal.mkdir()
+    target = portal / "proofs.jsonl"
+    link = pytester.path / "link.jsonl"
+    link.symlink_to(target)
+    fixture_table = pytester.path / "mounts"
+    fixture_table.write_text(
+        f"/dev/root / ext4 rw,relatime 0 0\nportaldev {portal} fuse.portal rw,nosuid 0 0\n", encoding="utf-8"
+    )
+    measured = write_root.filesystem_class
+
+    def _fixture_class(path, table=None):
+        """Read the fixture table whatever table `admitted` passes, which is its import-time default."""
+        return measured(path, fixture_table)
+
+    monkeypatch.setattr(write_root, "filesystem_class", _fixture_class)
+    result = _refusal_run(pytester, "def test_ok():\n    pass\n", f"--proof-record={link}")
+    out = _output(result)
+    assert result.ret == 4, out
+    assert "--proof-record" in out, out
+    assert "fuse.portal" in out, out
+    assert not target.exists(), out
+
+
+def test_an_inadmissible_proof_record_path_is_refused_naming_the_measured_type(pytester, monkeypatch):
+    """Property: a proof-record path on a network mount is refused at configure time, and the refusal names the type measured.
+
+    Class: a proof path the write-root predicate refuses, injected through a fixture mount table
+    reporting `nfs4`, with the distinct-path arm above as the satisfying input on an admitted mount.
+    Why: the proof record is the one shared root this tree declares, so a path the predicate will not
+    admit must stop the run rather than be written; and the reason must name the type, or an invoker
+    cannot tell a network mount from a typo. Killed by: skipping the admission gate; applying it to
+    the RAW option value rather than the resolved one; and refusing with a message that omits the
+    measured type. Second correct implementation: one that calls the predicate at `pytest_configure`
+    with the resolved path and formats the same refusal answers identically.
+    """
+    nfs = pytester.path / "nfs"
+    fixture_table = pytester.path / "mounts"
+    fixture_table.write_text(
+        f"/dev/root / ext4 rw,relatime 0 0\nhost:/export {nfs} nfs4 rw,vers=4 0 0\n", encoding="utf-8"
+    )
+    measured = write_root.filesystem_class
+
+    def _fixture_class(path, table=None):
+        """Read the fixture table whatever table `admitted` passes, which is its import-time default."""
+        return measured(path, fixture_table)
+
+    monkeypatch.setattr(write_root, "filesystem_class", _fixture_class)
+    result = _refusal_run(pytester, "def test_ok():\n    pass\n", f"--proof-record={nfs / 'proofs.jsonl'}")
+    out = _output(result)
+    assert result.ret == 4, out
+    assert "INTERNALERROR" not in out, out
+    assert "--proof-record" in out, out
+    assert "nfs4" in out, out
+    assert not (nfs / "proofs.jsonl").exists(), out
+
+
+def test_an_over_bound_record_line_is_refused_through_the_usage_channel(pytester):
+    """Property: a record line the bound refuses ends the run with a named error, and appends no line.
+
+    Class: one over-long record line -- here a unit literal longer than the 4096-byte bound, which
+    reaches the recorder through the marker the inventory reads; the satisfying input is any unit
+    under the bound, which every other arm in this file exercises. Why: an untranslated raise from a
+    hook is an INTERNALERROR with a traceback that abandons the rest of the run, while the usage
+    channel names the option and the observed length. Killed by: letting `RecordLineTooLong` escape
+    untranslated; translating it into a plain `ValueError`; and appending a truncated line instead of
+    refusing. Second correct implementation: one that catches the error at the hook and raises the
+    same usage error there, rather than inside `_append`, matches the exit code and the message.
+    """
+    record = pytester.path / "proofs.jsonl"
+    body = (
+        "import pytest\n\n\n"
+        f"@pytest.mark.equivalence(unit={'u' * 4100!r}, system='a-system')\n"
+        "def test_one():\n    assert 1 == 2\n"
+    )
+    result = _refusal_run(pytester, body, f"--proof-record={record}")
+    out = _output(result)
+    assert result.ret == 4, out
+    assert "INTERNALERROR" not in out, out
+    assert "--proof-record" in out, out
+    assert "exceeds the 4096-byte bound" in out, out
+    assert not record.exists(), record

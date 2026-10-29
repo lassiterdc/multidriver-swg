@@ -21,14 +21,13 @@ tracked proof records' form.
 from __future__ import annotations
 
 import contextlib
-import json
 import sys
 import tomllib
 from pathlib import Path
 
 import pytest
 
-from tests.correspondence import binding, corpus_record, inventory
+from tests.correspondence import binding, corpus_record, inventory, write_root
 
 REPO_ROOT = corpus_record.REPO_ROOT
 FAMILIES = ("equivalence", "refactor_reminder")
@@ -42,6 +41,55 @@ def add_options(parser) -> None:
     group = parser.getgroup("correspondence proofs")
     group.addoption("--proof-record", default=None, help="append one JSON line per classified equivalence failure")
     group.addoption("--run-record", default=None, help="write one JSON line per family test: outcome and binding")
+
+
+# The three record channels, in the order the refusal below reports them, so a configuration with
+# more than one collision names the same pair on every run. The result record is declared by
+# `record.py`; `getoption` answers its default here when that plugin is not loaded, which is how one
+# module can refuse a pair involving an option it does not declare.
+RECORD_OPTIONS = ("proof_record", "run_record", "result_record")
+RECORD_OPTION_PAIRS = (
+    ("proof_record", "run_record"),
+    ("proof_record", "result_record"),
+    ("run_record", "result_record"),
+)
+
+
+def _flag(option: str) -> str:
+    """The command-line spelling of a record option's name, so a message names the flag the invoker typed."""
+    return "--" + option.replace("_", "-")
+
+
+def pytest_configure(config):
+    """Refuse a record configuration that cannot be honoured, before anything has been written.
+
+    The three record options write differently -- the proof record is appended across runs, the run
+    record is truncated at session start, and the result record rewrites its whole object at every
+    hook point -- so two of them naming one path means one channel's write destroys another's
+    record, and what survives depends on which hook ran first. A pair that resolves to one path is
+    therefore refused here, which is the earliest hook that receives `config` and runs before any
+    record write.
+
+    `pytest.UsageError` is the channel rather than a bare exception: a raise from a hook without it
+    reaches the terminal as an INTERNALERROR with a traceback, while this prints a named `ERROR:`
+    line and ends the run before collection.
+
+    Deliberately NOT `pytest_sessionstart`: that is the hook that performs the truncation, so
+    check-before-truncate inside one function is one edit away from being wrong, and an
+    earlier-registered `sessionstart` could already have written.
+    """
+    values = {option: config.getoption(option, None) for option in RECORD_OPTIONS}
+    set_options = {option: value for option, value in values.items() if value}
+    if not set_options:
+        return
+    resolved = {option: Path(value).resolve() for option, value in set_options.items()}
+    for first, second in RECORD_OPTION_PAIRS:
+        if first in resolved and second in resolved and resolved[first] == resolved[second]:
+            raise pytest.UsageError(f"{_flag(first)} and {_flag(second)} name one resolved path: {resolved[first]}")
+    if "proof_record" in resolved:
+        admitted, reason = write_root.admitted(resolved["proof_record"])
+        if not admitted:
+            raise pytest.UsageError(f"--proof-record: {reason}")
 
 
 def _family(item):
@@ -94,10 +142,23 @@ def _bound(item) -> bool:
     return item.stash.get(binding.BOUND, False)
 
 
-def _append(path: Path, line: dict) -> None:
-    """Append one JSON line to a record file."""
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(line, sort_keys=True) + "\n")
+def _append(path: Path, line: dict, option: str) -> None:
+    """Append one JSON line to a record file, reporting an over-long line as the invoker's mistake.
+
+    The write itself belongs to `write_root`, which owns the shared root; this function supplies the
+    one thing that module cannot know -- which option's path was handed to it -- so a refusal can
+    name the flag the invoker typed.
+
+    Only `RecordLineTooLong` is translated. A `ShortRecordWrite` is deliberately left alone: it is an
+    environment failure, and the usage channel would blame the invoker for a filesystem that
+    accepted fewer bytes than it was given.
+    """
+    try:
+        write_root.append_line(path, line)
+    except write_root.RecordLineTooLong as exc:
+        raise pytest.UsageError(
+            f"{option}: {path}: record line {exc.length} bytes exceeds the {exc.bound}-byte bound"
+        ) from exc
 
 
 def pytest_sessionstart(session):
@@ -132,10 +193,10 @@ def pytest_runtest_makereport(item, call):
         return report
     proof_path = _record_path(item.config, "proof_record")
     if proof_path is not None and family == "equivalence" and report.when == "call" and report.failed:
-        _append(proof_path, {**_key(family, mark), **_classification(call.excinfo, item)})
+        _append(proof_path, {**_key(family, mark), **_classification(call.excinfo, item)}, "--proof-record")
     run_path = _record_path(item.config, "run_record")
     if run_path is not None and (report.when == "call" or (report.when == "setup" and not report.passed)):
-        _append(run_path, {**_key(family, mark), "outcome": report.outcome, "bound": _bound(item)})
+        _append(run_path, {**_key(family, mark), "outcome": report.outcome, "bound": _bound(item)}, "--run-record")
     return report
 
 
