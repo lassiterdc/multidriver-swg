@@ -1,0 +1,393 @@
+{
+  "E-01": {
+    "section_name": "Bias correcting MRMS data",
+    "line_range": [
+      220,
+      220
+    ],
+    "verbatim_span": "\\beta(x', y', t') = \\text{clip} \\left( \\frac{\\hat{P_T}(x', y', t')}{P_C(x', y', t')},\\ 0.01,\\ 20 \\right)",
+    "defect_list": [
+      "implemented in `hydro-fetch`; unbindable here"
+    ]
+  },
+  "E-02": {
+    "section_name": "Bias correcting MRMS data",
+    "line_range": [
+      224,
+      228
+    ],
+    "verbatim_span": "\\mathcal{F}(x', y', t') =\n    \\begin{cases}\n    \\hat{P_T}(x', y', t'), & \\text{if } \\hat{P_T}(x', y', t') = 0 \\text{ and } P_C(x', y', t') > 0 \\\\\n    0, & \\text{otherwise}\n    \\end{cases}",
+    "defect_list": [
+      "CROSS-REPO"
+    ]
+  },
+  "E-03": {
+    "section_name": "Bias correcting MRMS data",
+    "line_range": [
+      234,
+      234
+    ],
+    "verbatim_span": "P_T(x, y, t) = \\hat{P_T}(x, y, t) \\cdot \\beta(x, y, t) + \\mathcal{F}(x, y, t)",
+    "defect_list": [
+      "CROSS-REPO"
+    ]
+  },
+  "E-04": {
+    "section_name": "Rain event selection",
+    "line_range": [
+      250,
+      250
+    ],
+    "verbatim_span": "\\bar{P}(t) = \\frac{1}{n_{g}} \\sum_{i=1}^{n_{g}} P(x,y,t)",
+    "defect_list": [
+      "n_g identified by column NEGATION (`_utils:117`), so any extra column silently enters the mean"
+    ]
+  },
+  "E-05": {
+    "section_name": "Rain event selection",
+    "line_range": [
+      254,
+      254
+    ],
+    "verbatim_span": "S_{R}(t_{s})=\\sum_{t=t_{s}-D_{thresh}}^{t_{s}} \\bar{P}(t)\\Delta t",
+    "defect_list": [
+      "the window is set from `min_interevent_time`, not `D_{\\text{thresh}}`; author-acknowledged at `_utils:1274`"
+    ]
+  },
+  "E-06": {
+    "section_name": "Rain event selection",
+    "line_range": [
+      256,
+      256
+    ],
+    "verbatim_span": "Beginning with the $t_{s}$ associated with $S_{R}^{\\text{max}} = \\mathop{\\max}\\limits_t S_{R}(t_{s})$, identify the event start $t_{0}$ and event end $t_{1}$ based on the nearest $D_{I}$-long-periods with no rainfall. If $t_{1}-t_{0}>D_{e}^\\text{max}$, update $t_{0}$ and $t_{1}$ to maximize rain depth while satisfying $t_{1}-t_{0} \\leq D_{e}^\\text{max}$.",
+    "defect_list": [
+      "UNREACHABLE past `_utils:1274`"
+    ]
+  },
+  "E-07": {
+    "section_name": "Storm surge event selection",
+    "line_range": [
+      268,
+      268
+    ],
+    "verbatim_span": "s(t)=w(t)-a(t)",
+    "defect_list": [
+      "implemented in `hydro-fetch`; `surge_ft` is produced upstream"
+    ]
+  },
+  "E-08": {
+    "section_name": "Storm surge event selection",
+    "line_range": [
+      275,
+      276
+    ],
+    "verbatim_span": "\\text{if } s(t_{0}-\\Delta t) >s(t_{1}+\\Delta t), \\text{ }t_{0} \\overset{\\text{set}}{=} t_{0}-\\Delta t \\\\\n    \\text{else } t_{1}\\overset{\\text{set}}{=}t_{1}+\\Delta t",
+    "defect_list": [
+      "`_utils:1477-1481` compares one-hour means, not the pointwise values the equation writes"
+    ]
+  },
+  "E-09": {
+    "section_name": "Combined event identification",
+    "line_range": [
+      289,
+      289
+    ],
+    "verbatim_span": "If the peak surge of a surge event occurs during a rain event, create a new event by combining the two time series and classify the combined time series as a combined event.",
+    "defect_list": [
+      "`_utils:1633-1640` triggers on ANY span overlap; the paper's rule survives only in the docstring at `_utils:1617`",
+      "A third, superseded 12-hour-moving-window rule sits commented at `_b2:589-590`"
+    ]
+  },
+  "E-10": {
+    "section_name": "Choosing statistics to represent events and their dependence structure",
+    "line_range": [
+      334,
+      336
+    ],
+    "verbatim_span": "The event-maximum $z$-hr rolling rain depth\n        \\item The event-maximum $z$-hr rolling surge mean\n        \\item For each combination of rain and surge summary statistics, compute the lag time given by the time of peak surge minus the time of peak rain",
+    "defect_list": [
+      "UNREACHABLE past `_utils:1563`, whose message states the timestamp convention is wrong (right-edge, should be window-centre) — which shifts every lag statistic"
+    ]
+  },
+  "E-11": {
+    "section_name": "Choosing statistics to represent events and their dependence structure",
+    "line_range": [
+      339,
+      339
+    ],
+    "verbatim_span": "Compute the Spearman rank correlation coefficient for each pair of marginals while omitting combinations of two different measures of rainfall intensity and two different measures of maximum surge.",
+    "defect_list": [
+      "`_utils:2200-2202` computes Pearson on Cunnane plotting positions, and the per-column `dropna` at `_utils:2185` is applied before a frame-level `dropna` at `_utils:2202`, so columns are ranked over different sample sizes and then correlated on the intersection",
+      "Pair filtering is by substring match on variable names (`_utils:2211-2242`)"
+    ]
+  },
+  "E-12": {
+    "section_name": "Univariate modeling of marginal event statistics",
+    "line_range": [
+      350,
+      360
+    ],
+    "verbatim_span": "fit each distribution in [genextreme, weibull min, weibull max, gumbel r, gumbel l, norm, lognorm, t, genpareto, chi, gamma,  pearson3, exponpow]\n    \\begin{itemize}\n        \\item  considering boxcox and standardization transformations\n        \\item  for distributions defined over zero to infinity\n        \\begin{itemize}\n            \\item trial an upper bound by subtracting the upper limit and multiplying the result by -1 (applied to peak surge for rain events and total precipitation for surge events)\n            \\item trial a lower bound by subtracting the lower limit (applied to total rain depth for rain events and combined events, peak surge for surge events and combined events)\n        \\end{itemize}\n        \\item  for distributions whose lower bound is controlled by the loc parameter, trial lower bound by assigning it as the loc parameter (applied to total rain depth for rain events and combined events, peak surge for surge events and combined events)\n    \\end{itemize}\n    \\item Return the p-value of the Cramer-von Mises (CVM) goodness of fit test and the Kolmogorov-Smirnov goodness of fit test, and relative goodness-of-fit metrics, the Akaike information criterion, the Bayesian information criterion, the mean square deviation index, and the mean absolute deviation index (equations for the latter 2 metrics are defined in \\cite{teegavarapu_chapter_2019}).",
+    "defect_list": []
+  },
+  "E-13": {
+    "section_name": "Multivariate modeling of dependence structure with vine copulas",
+    "line_range": [
+      386,
+      386
+    ],
+    "verbatim_span": "T_{\\text{cvm}}(\\boldsymbol{x}) = \\sum_{i=0}^n \\left[ \\hat{F}(\\vec{x}_{i}) - C_{0}(F_{1}(x_{1}),\\dots,F_{4}(x_{4})) \\right]^2",
+    "defect_list": [
+      "Manuscript does not state the ECDF's n+1 denominator (`_b5:69`)"
+    ]
+  },
+  "E-14": {
+    "section_name": "Multivariate modeling of dependence structure with vine copulas",
+    "line_range": [
+      387,
+      390
+    ],
+    "verbatim_span": "$\\hat{F}_{\\text{cvm},n}(t) = P(T_{\\text{cvm}}\\leq t|n, H_{0})$\n    \t\t\t\\item critical threshold $c$ given by the inverse null distribution operated at target significance level $\\alpha$, $c=\\hat{F}^{-1}_{\\text{cvm},n}(\\alpha)$\n    \t\t\t\\item rejection region $R = \\left\\{t: t < c\\right\\}$\n    \t\t\t\\item p-value is given by the null distribution operated at the test statistic of the observed sample, $t_{obs}$, $\\text{p-value}=\\hat{F}_{\\text{cvm},n}(t_{obs})$.",
+    "defect_list": [
+      "`_b5:90-95` implements a TWO-sided rejection at alpha/2; the paper specifies one-sided",
+      "Author-acknowledged verbatim at `_b5:78`: `sys.exit(\"i need to update this function so that it is a one-sided test\")`, which is the first statement of the function"
+    ]
+  },
+  "E-15": {
+    "section_name": "Multivariate modeling of dependence structure with vine copulas",
+    "line_range": [
+      402,
+      410
+    ],
+    "verbatim_span": "$H_{0}: \\tau^{x_{i},x_{j}} = \\tau_0^{x_{i},x_{j}}$\n                \\item $H_{1}: \\tau^{x_{i},x_{j}} \\neq \\tau_0^{x_{i},x_{j}}$\n                \\item Method:\n                \\begin{itemize}\n                    \\item Test statistic, $T_{\\tau}$ is given by the Kendall's Tau Coefficient for a bivariate sample $$T_{\\tau}(\\vec{x}_{i}, \\vec{x}_{j})=\\frac{2}{n(n-1)}\\sum_{1\\leq p \\leq q \\leq n}\n                    \\begin{cases}\n                    1 \\text{ if } (x_{p,i}- x_{q,i})(x_{p,j}- x_{q,j})>0 \\\\\n                    -1 \\text{ otherwise}\n                    \\end{cases}",
+    "defect_list": [
+      "`_utils:723,734` call `scipy.stats.kendalltau`, which is tau-b (tie-corrected denominator, 0 for ties)",
+      "The paper writes tau-a with `-1 otherwise`, so ties score `-1`",
+      "The two differ whenever ties exist"
+    ]
+  },
+  "E-16": {
+    "section_name": "Multivariate modeling of dependence structure with vine copulas",
+    "line_range": [
+      411,
+      414
+    ],
+    "verbatim_span": "Monte-Carlo-derived null distribution of $T_{\\tau}$ from $b$ samples of the vine copula given number of observations $n$, $\\hat{F}_{\\tau,n}(t)=P(T_{\\tau}\\leq t|n,H_{0})$\n                    \\item The lower and upper critical thresholds for this two sided test, $c_{\\text{l}}$ and $c_{\\text{u}}$, to achieve target significance level $\\alpha$ are given by $c_{l}=\\hat{F}^{-1}_{\\tau,n}\\left( \\frac{\\alpha}{2} \\right)$ and $c_{u}=\\hat{F}^{-1}_{\\tau,n}\\left( 1- \\frac{\\alpha}{2} \\right)$\n                    \\item rejection region $R={t:(t<c_{l}) \\text{ or } (t>c_{u}})$\n                    \\item p-value is given by the null distribution operated at the test statistic of the observed sample, $t_{obs}$, $\\text{p-value}=\\hat{F}_{\\tau,n}(t_{obs})$.",
+    "defect_list": [
+      "p-value DIVERGENT in estimator: `get_quantile_from_value:598-604` returns the `rank(pct=True)` of the nearest simulated value, not F-hat evaluated at t_obs"
+    ]
+  },
+  "E-17": {
+    "section_name": "Multivariate modeling of dependence structure with vine copulas",
+    "line_range": [
+      443,
+      448
+    ],
+    "verbatim_span": "\\hat{t}=\\frac{1}{s} \\sum_{i=0}^s \\text{two-sample test}(\\vec{x}_{\\text{obs}}, \\vec{x}_{\\text{sim,}i})$$\n                    \\begin{itemize}\n                        \\item Where $$\\text{two-sample test}(\\vec{x}_{\\text{obs}}, \\vec{x}_{\\text{sim}})=\\begin{cases}\n                            1 \\text{ if p-value}<\\alpha_{\\text{two-sample}} \\\\\n                            0 \\text{ others}\n                            \\end{cases}",
+    "defect_list": [
+      "the paper names six tests; `_utils.perform_two_sample_tests:858-921` runs seven (Welch's t at `:902` is unlisted)",
+      "Unreachable past `_b5:48`, whose message is the paper's own stated future work at L452"
+    ]
+  },
+  "E-18": {
+    "section_name": "Simulating annual occurrence counts for events of each type",
+    "line_range": [
+      489,
+      490
+    ],
+    "verbatim_span": "\\boldsymbol{n}_{\\text{obs}}=\\{[n_{\\text{rain},1}, n_{\\text{surge},1}, n_{\\text{combined},1}], \\dots, [n_{\\text{rain},y}, n_{\\text{surge},y}, n_{\\text{combined},y}]\\}$$\n    \\item Bootstrap $\\boldsymbol{n}_{\\text{obs}}$ $y_g$ times, yielding annual event counts for $y_g$ years, $\\boldsymbol{n}_g$",
+    "defect_list": [
+      "the bootstrap resamples the joint vector, preserving inter-type correlation — a substantive choice the paper's notation implies but does not state",
+      "Code draws 1.5y_g years (`_b6:17`), not y_g"
+    ]
+  },
+  "E-19": {
+    "section_name": "Generating event summary statistics for each event occurrence",
+    "line_range": [
+      502,
+      502
+    ],
+    "verbatim_span": "\\{T_{1}^{-1}(F_{1}^{-1}(u_{1})),\\dots,\\{T_{d}^{-1}(F_{d}^{-1}(u_{d}))\\}",
+    "defect_list": [
+      "The 1-u reflection at `_b6:535-538` for upper-bounded marginals is required by the fit and is absent from the paper"
+    ]
+  },
+  "E-20": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      528,
+      528
+    ],
+    "verbatim_span": "\\vec{s}_{s} = \\vec{s}_{h} + (\\text{PS}_{h} - \\text{PS}_{g})",
+    "defect_list": [
+      "SIGN ERROR IN THE PAPER. `_b7:224-225` computes `diff = PS_g - PS_h` then `sim = obs + diff`, i.e. s_h+(PS_g-PS_h)",
+      "The code is correct (it makes the simulated peak equal PS_g, verified at `_b7:226-227`); the manuscript's sign is reversed"
+    ]
+  },
+  "E-21": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      536,
+      536
+    ],
+    "verbatim_span": "\\vec{r}_{g}=\\vec{r}_{h} \\frac{PR_{g}}{PR_{h}}",
+    "defect_list": []
+  },
+  "E-22": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      539,
+      539
+    ],
+    "verbatim_span": "\\Delta t'=\\frac{TD_{g}}{\\sum_{t=0}^T r_{g,t}}",
+    "defect_list": []
+  },
+  "E-23": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      541,
+      541
+    ],
+    "verbatim_span": "Resample back to the original timestep by taking the average of $\\vec{r}_{g}$ for each $\\Delta t$ window",
+    "defect_list": [
+      "implemented as an overlap-duration-weighted sum, which is not a plain average when a dilated step straddles a boundary; the paper says \"the average\""
+    ]
+  },
+  "E-24": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      542,
+      542
+    ],
+    "verbatim_span": "|\\hat{PR}_{g}-PR_{g}|< \\text{tol}_{r}\\cdot|PR_{g}|+\\text{tol}_{a}",
+    "defect_list": []
+  },
+  "E-25": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      543,
+      543
+    ],
+    "verbatim_span": "Until the test is passed, update the peak intensity with $\\vec{r}_{g}=\\vec{r}_{g} \\frac{PR_{g}}{\\hat{PR}_{g}}$ and repeat steps 2-5.",
+    "defect_list": [
+      "the paper states no termination other than success",
+      "`_utils:143-148` caps at `n_cutoff = 50` and `_utils:149-153` breaks when duration reaches 2x the max observed",
+      "Both exits keep the event, flagged"
+    ]
+  },
+  "E-26": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      548,
+      548
+    ],
+    "verbatim_span": "Shift the time series to match the generated time delay statistic between $PR_{g}$ and $PS_{g}$.",
+    "defect_list": [
+      "Window durations are recovered by parsing the column name (`_b7:532-533,805-806,852-853`)"
+    ]
+  },
+  "E-27": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      549,
+      553
+    ],
+    "verbatim_span": "Clip events that exceed duration limits.\n        \\begin{enumerate}\n        \t\\item For surge and rain events, the maximum duration, $D^{\\text{max}}_{\\text{obs}}$, was a user defined parameter in threshold-based multi-driver event selection, $D_{e}^{\\text{max}}$. For combined events, the maximum duration computed by multiplying $D^{\\text{max}}_{\\text{obs}}$ by a user defined multiplier, $m_{\\text{comb}}$, to allow for longer-than-observed combined events.\n        \t\\item For rain events, clip to the $D^{\\text{max}}_{\\text{obs}}$-hour period that maximizes storm surge while including all timesteps with non-zero rainfall.\n        \t\\item Clip combined events to the $m_{\\text{comb}}D^{\\text{max}}_{\\text{obs}}$-hour period and surge events to $D^{\\text{max}}_{\\text{obs}}$-hour period that maximizes rainfall while including all timesteps with storm surge above the lower limit used to define the start and end of a surge event in threshold-based multi-driver event selection, $s_{\\text{lim}}$. If the latter region exceeds the duration threshold, choose the period that maximizes storm surge.",
+    "defect_list": [
+      "the rain-event branch is UNREACHABLE past `_b7:628`, whose message questions the very parameter the paper specifies"
+    ]
+  },
+  "E-28": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      556,
+      556
+    ],
+    "verbatim_span": "Ensure that each time series extends $D^{\\text{buffer}}_{\\text{peaks}}$-hours before and after the peak surge and after the last $D^{\\text{buffer}}_{\\text{peaks}}$-hour period of rainfall producing a fraction of the total rainfall greater than or equal to $R_{\\text{frac}}$. Also ensure that each time series extends $D^{\\text{buffer}}_{\\text{pre}}$-hours before the first timestep with rainfall.",
+    "defect_list": [
+      "the \"significant plug\" windows are non-overlapping and anchored at the series END (`_utils:368`, `origin=\"end\"`), which the paper does not state"
+    ]
+  },
+  "E-29": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      557,
+      557
+    ],
+    "verbatim_span": "Recompute event summary statistics based on finalized time series and, re-classify as surge, rain, or combined based on selection criteria defined in threshold-based multi-driver event selection. This should affect a relatively small number of events and has in the past resulted in rain events being reclassified as combined events.",
+    "defect_list": [
+      "UNREACHABLE past `_b7.1:72`, whose message says the simulated-side rain criterion is missing the duration constraint the observed side uses",
+      "`_b7:771-795` assigns before comparing, so its three drift guards can never fire"
+    ]
+  },
+  "E-30": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      569,
+      569
+    ],
+    "verbatim_span": "bootstrapped-derived null distribution of $T_{\\tau}$ from $b$ samples of the generated dataset given number of observations $n$, $\\hat{F}_{\\tau,n}(t)=P(T_{\\tau}\\leq t|n,H_{0})",
+    "defect_list": []
+  },
+  "E-31": {
+    "section_name": "Creating time series for each generated event",
+    "line_range": [
+      590,
+      590
+    ],
+    "verbatim_span": "Apply an astronomical tide time series selected within a continuous uniformly distributed $h$-hour window centered on the original observed event, $U \\sim \\left( -\\frac{h}{2}, \\frac{h}{2} \\right)$. Modify the year of the time series by drawing from a discrete uniform random variable defined by the most recent complete year of water level observations, $y_{r}$,. and a user-defined most recent number of years to draw from, $n_{\\text{tide yrs}}$: $U \\sim \\{y_{r}-n_{\\text{tide yrs}},\\dots, y_{r}\\}$",
+    "defect_list": [
+      "`_utils:238` slices `[-(n+1):-1]`, which EXCLUDES the most recent year y_r; the paper's set includes it",
+      "Both draws are UNSEEDED (`_utils:243,247`)"
+    ]
+  },
+  "E-32": {
+    "section_name": "Validating stochastically generated weather using probability plot correlation test in each grid cell",
+    "line_range": [
+      631,
+      631
+    ],
+    "verbatim_span": "T_{\\text{PPCC}}(\\vec{w}_{s}) = \\rho(\\vec{w}_{s}, \\vec{q}_{0})=\\frac{\\sum_{i=1}^n(w_{i}-\\bar{w})(q_{i}-\\bar{q})}{\\left( \\sum_{i=1}^n(w_{i}-\\bar{w})^2 \\sum_{i=1}^n(q_{i}-\\bar{q})^2 \\right)^{0.5}}",
+    "defect_list": [
+      "runs on flood-model output in `ss-fha`"
+    ]
+  },
+  "E-33": {
+    "section_name": "Validating stochastically generated weather using probability plot correlation test in each grid cell",
+    "line_range": [
+      654,
+      654
+    ],
+    "verbatim_span": "T_{\\text{rej}}=\\frac{1}{g}\\sum_{i=1}^g I(T_{\\text{PPCC}}(\\vec{w}_{i}) < c)",
+    "defect_list": [
+      "CROSS-REPO"
+    ]
+  },
+  "E-34": {
+    "section_name": "implicit — no manuscript equation",
+    "line_range": null,
+    "verbatim_span": "",
+    "defect_list": [
+      "implicit — no manuscript equation; the paper omits this modelling assumption, which a reviewer will ask about"
+    ]
+  },
+  "E-35": {
+    "section_name": "implicit — no manuscript equation",
+    "line_range": null,
+    "verbatim_span": "",
+    "defect_list": [
+      "implicit — no manuscript equation; the paper omits it (L526 says only \"nearest neighbor resampling\")",
+      "This is the Lall-Sharma kernel and is a citable methodological choice"
+    ]
+  },
+  "E-36": {
+    "section_name": "implicit — no manuscript equation",
+    "line_range": null,
+    "verbatim_span": "",
+    "defect_list": [
+      "implicit — no manuscript equation; the paper omits it",
+      "interacts with a defect: such events are scored problem-free (`_b7:288-290` commented out) and therefore preferentially selected at `_b7:446`"
+    ]
+  }
+}
