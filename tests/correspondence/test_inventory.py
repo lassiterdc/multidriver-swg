@@ -14,7 +14,7 @@ import sys
 
 import pytest
 
-from tests.correspondence import inventory, system_scope
+from tests.correspondence import inventory, record_schema, system_scope
 
 pytestmark = pytest.mark.state_check
 
@@ -244,6 +244,159 @@ def test_the_capture_counts_items_before_the_job_expression_deselects_them(tmp_p
     assert f"PASSED tests/correspondence/test_inventory.py::{CROSS_CHECK}" in out.splitlines(), out
     probe = re.search(r"^CAPTURE_PROBE captured=(\d+) selected=(\d+)$", out, re.M)
     assert probe and int(probe.group(1)) > int(probe.group(2)), out
+
+
+# Loaded into the inner run below as a `-p` plugin registered AFTER inventory, deliberately. Pluggy
+# calls equal-priority hook implementations LATEST-REGISTERED-FIRST, so a plain probe registered
+# after a plain inventory hook wins the dispatch -- which is what makes the test isolate `tryfirst`
+# from registration order instead of confounding the two. This probe is PLAIN (no tryfirst), so what
+# it can read is exactly what the record plugin, whose finish hook is also plain, would read.
+POPULATION_PROBE = """\
+def pytest_collection_finish(session):
+    from tests.correspondence import record_schema
+
+    population = session.config.stash.get(record_schema.POPULATION, [])
+    excluded = session.config.stash.get(record_schema.EXCLUDED, [])
+    session.config._population_line = (
+        f"POPULATION_PROBE population={len(population)} excluded={len(excluded)}"
+        f" surviving={len(session.items)} excluded_ids={'|'.join(excluded)}"
+    )
+
+
+def pytest_terminal_summary(terminalreporter, config):
+    terminalreporter.write_line(getattr(config, "_population_line", "POPULATION_PROBE missing"))
+"""
+
+
+def test_the_exclusion_is_stashed_before_a_plain_finish_hook_runs(pytester, monkeypatch):
+    """Property: after `-k` drops one test, a PLAIN finish hook already reads a populated exclusion, and the population still holds the dropped id.
+
+    Class (input): any run that deselects, which the State check job's run always does -- here a small
+    tree whose `-k` drops one of its two tests; artifact: `inventory.pytest_collection_finish`'s
+    `tryfirst=True`. Build class: NEW CAPABILITY -- the plausible wrong implementation drops
+    `tryfirst` from the new finish hook; pluggy dispatches equal-priority hooks
+    latest-registered-first, and the probe is registered after inventory, so the plain probe then
+    dispatches first and reads an empty exclusion (measured: `population=2 excluded=0 surviving=1`).
+    A second wrong implementation captures the population at finish, which makes the population equal
+    the survivors (measured: `population=1 excluded=0`). This test is red under both. Why: the record
+    plugin's own finish hook is plain, so without tryfirst the record reads an exclusion nobody has
+    written yet, and an empty exclusion reads as "nothing was deselected" -- the one wrong answer that
+    looks like a clean run. Both-states anchor: the assertion turns on whether a hook registered
+    EARLIER can still be made to dispatch first, a property of `tryfirst` rather than of registration
+    order or of the stash-key names this change introduces. Invocation isolation: not isolatable from
+    this tree -- discrimination shown instead: deleting `tryfirst=True` from the new finish hook reds
+    this test on the exclusion count while the population count stays right, pasted in the returning
+    seat's report. Killed by: dropping `tryfirst`; taking the population at finish; or stashing an
+    exclusion that does not name the deselected node id. Second correct implementation: the same
+    exclusion stashed from a separate plugin module registered with `tryfirst=True` rather than from
+    `inventory.py`'s hook -- this test reads what the plain consumer could see and is indifferent to
+    which module produced it.
+    """
+    pytester.mkdir("tests")  # a plain directory: the outer session already holds a `tests` package
+    pytester.path.joinpath("tests", "test_pair.py").write_text(
+        "def test_alpha():\n    pass\n\n\ndef test_beta():\n    pass\n"
+    )
+    pytester.path.joinpath("population_probe.py").write_text(POPULATION_PROBE, encoding="utf-8")
+    # The probe is a `-p` plugin rather than a conftest hook, so it must be importable as a module;
+    # the inner session runs in this process, so the path insertion reaches it.
+    monkeypatch.syspath_prepend(str(pytester.path))
+    result = pytester.runpytest(
+        "-p",
+        "no:cacheprovider",
+        "-p",
+        "tests.correspondence.inventory",
+        "-p",
+        "population_probe",
+        "-k",
+        "not test_beta",
+        "tests",
+    )
+    result.assert_outcomes(passed=1, deselected=1)
+    out = "\n".join(result.outlines)
+    pattern = r"^POPULATION_PROBE population=(\d+) excluded=(\d+) surviving=(\d+) excluded_ids=(\S*)$"
+    probe = re.search(pattern, out, re.M)
+    assert probe, out
+    population, excluded, surviving, ids = probe.groups()
+    assert (population, excluded, surviving) == ("2", "1", "1"), out
+    assert ids.split("|") == ["tests/test_pair.py::test_beta"], ids
+
+
+def test_the_capture_stashes_the_whole_population_and_the_exclusion_is_its_difference(request):
+    """Property: on the live tree the population holds every collected node id and the exclusion set is exactly population minus surviving.
+
+    Class (input): any run of this suite, deselected or not and narrowed or not, because both sets come
+    from one collection; artifact: `inventory.pytest_collection_modifyitems` and
+    `inventory.pytest_collection_finish`. Build class: NEW CAPABILITY -- the plausible wrong
+    implementation takes the population at `pytest_collection_finish`, where it equals the survivors
+    and the exclusion is always empty; a second wrong implementation derives the exclusion from the
+    static `listing()` instead of from this run's collected ids, which reports every listed but
+    unselected test as excluded. This test is red under both. Why: the record's exclusion field
+    exists to say what a run did NOT measure, so an exclusion derived from anything but this run's own
+    collection describes a different run. Both-states anchor: the assertion turns on set relations
+    among three values captured from one collection, a property of the relation rather than of the
+    names this change introduces. Invocation isolation: not isolatable from this tree --
+    discrimination shown instead: taking the population inside the finish hook reds the first
+    assertion below (measured `assert 2 == 11`, pasted in the returning seat's report). Killed by:
+    capturing after deselection; deriving the exclusion from the static listing; or an exclusion that
+    overlaps the survivors. Second correct implementation: a single finish hook that stashes both
+    sets, provided it reads the population from a value captured earlier, or a population stored as a
+    tuple.
+    """
+    population = request.config.stash[record_schema.POPULATION]
+    excluded = request.config.stash[record_schema.EXCLUDED]
+    surviving = [item.nodeid for item in request.session.items]
+    assert len(population) == request.config.stash[inventory.COLLECTED]
+    # The count identity alone would admit an exclusion of the wrong members, so the relation is
+    # asserted as sets: the excluded and surviving halves must partition the population.
+    assert set(excluded).isdisjoint(surviving)
+    assert set(surviving) | set(excluded) == set(population)
+    assert len(population) - len(excluded) == len(surviving)
+
+
+def test_a_collection_that_fails_before_the_capture_reports_a_usage_error():
+    """Property: a run whose collection raises before `pytest_collection_modifyitems` reports pytest's usage error, never an internal error.
+
+    Class (input): every invocation whose collection raises before the capture hook -- a path under
+    `tests/` that does not exist, which is the case driven here, and, by the same call path, a
+    `pytest.exit` raised by an earlier collection hook or an interrupt. Artifact:
+    `inventory.pytest_collection_finish`, which reads `stash[record_schema.POPULATION]` and is
+    therefore reached by a collection that never captured. Build class: REGRESSION -- red on the
+    current tree with exit 3 and an `INTERNALERROR ... KeyError` traceback into this plugin, pasted in
+    the reviewing seat's report; the behaviour asserted here is what a run of this tree did before the
+    hook was added. Why: pytest calls `pytest_collection_finish` from the `finally` around collection
+    (`Session.perform_collect`), so a collection that raised still runs this hook, and an unguarded
+    stash read then replaces the usage error with an internal error plus a traceback into this plugin,
+    for every mistyped path under `tests/`. Both-states anchor: the assertion turns on the process
+    exit code and on whether the output carries an internal error, both properties of any pytest
+    invocation rather than of the names this change adds. Invocation isolation: this red is not
+    manufactured by the tree and is not isolatable from it -- discrimination shown instead: guarding
+    the stash read (a `stash.get` with an early return) greens this input, exit 4 and no internal
+    error, and the same input with the plugin absent (`--noconftest`) also exits 4. Killed by: reading
+    the population from the stash unguarded, as the landed hook does. Second correct implementation: a
+    guard that returns early when either stash key is missing; a `stash.get` whose "no capture" result
+    is recorded as a distinct state the record can read; or a capture flag set at `pytest_configure`.
+    """
+    root = inventory.REPO_ROOT
+    env = dict(os.environ, PYTHONPATH=os.pathsep.join([str(root), str(root / "src"), os.environ.get("PYTHONPATH", "")]))
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-B",
+            "-m",
+            "pytest",
+            "-p",
+            "no:cacheprovider",
+            "-q",
+            "tests/correspondence/does_not_exist.py",
+        ],
+        cwd=root,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    out = proc.stdout + proc.stderr
+    assert "INTERNALERROR" not in out, out[-2000:]
+    assert proc.returncode == pytest.ExitCode.USAGE_ERROR, (proc.returncode, out[-2000:])
 
 
 def test_reminders_are_counted_per_system(tmp_path):

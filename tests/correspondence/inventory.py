@@ -8,6 +8,11 @@ library, fails (never skips) on a decorator it cannot read, prints the list, and
 collection capture that the cross-check test compares with: pytest's item list taken before any
 `-m` or `-k` deselection, because a list taken after deselection would report every deselected
 test as missing.
+
+It also holds the result record's two collection-time fields: the population, every collected node
+id taken at that same pre-deselection point, and the exclusion, that population minus the ids that
+survived deselection. The cross-check still compares the family capture, which is a check on the
+population rather than the population itself.
 """
 
 from __future__ import annotations
@@ -18,7 +23,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.correspondence import corpus_record
+from tests.correspondence import corpus_record, record_schema
 
 REPO_ROOT = corpus_record.REPO_ROOT
 FAMILIES = ("equivalence", "refactor_reminder")
@@ -134,9 +139,43 @@ def captured_from(items) -> list[dict]:
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(session, config, items):
-    """Record every collected family test, and the number of collected items, before `-m` or `-k` deselection."""
+    """Record every collected family test, the count, and every collected node id, before deselection.
+
+    pytest performs `-m`/`-k` deselection inside its own plain-tier
+    `pytest_collection_modifyitems` hook, so whether a capture here sees the full list depends on
+    DISPATCH ORDER, and `tryfirst=True` is what puts this hook ahead of that one whatever order the
+    two were registered in. A set taken later would describe the survivors and report every
+    deselected test as never collected. The node-id list is the result record's population, and
+    `pytest_collection_finish` below derives the exclusion from it.
+    """
     config.stash[CAPTURE] = captured_from(items)
     config.stash[COLLECTED] = len(items)
+    config.stash[record_schema.POPULATION] = sorted(item.nodeid for item in items)
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_collection_finish(session):
+    """Stash the collected node ids that deselection removed, before any plain finish hook reads them.
+
+    `tryfirst=True`, not registration order, is what makes the exclusion readable: the result
+    record's own `pytest_collection_finish` is plain, so tryfirst dispatches this hook first whatever
+    order the two plugins were registered in. Without it the record reads an exclusion nobody has
+    written yet, and an empty exclusion reads as "nothing was deselected".
+
+    A MISSING capture is left missing rather than defaulted or indexed. pytest calls this hook from
+    the `finally` around collection (`Session.perform_collect`), so it runs even when collection
+    raised before the capture hook did -- a mistyped path is the everyday case. Indexing the stash
+    there raises `KeyError` inside that `finally`, which replaces the error in flight and turns
+    pytest's usage error (exit 4) into an INTERNALERROR (exit 3) with a traceback into this plugin;
+    defaulting to an empty list instead would report the same "nothing was deselected" as a clean
+    run. So `EXCLUDED` stays unset when the population is absent, and a consumer must read absence as
+    "this run never collected" rather than as an empty exclusion.
+    """
+    population = session.config.stash.get(record_schema.POPULATION, None)
+    if population is None:
+        return
+    surviving = {item.nodeid for item in session.items}
+    session.config.stash[record_schema.EXCLUDED] = sorted(set(population) - surviving)
 
 
 def cross_check(entries: list[dict], captured: list[dict]) -> list[str]:

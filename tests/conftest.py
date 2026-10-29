@@ -2,9 +2,10 @@
 
 It registers the markers that scope a test to its family and its owning system, and the
 plugins of the pre-refactor correspondence harness: the collection-time refusals, the test
-inventory's collection capture, the binding to new code, the proof recorder and the
-subject-location check. The comparison helper is registered for assertion rewriting before
-anything imports it, so a failure inside the helper reads as the test's own assertion.
+inventory's collection capture, the binding to new code, the proof recorder, the
+subject-location check and the result-record emitter. The comparison helper is registered for
+assertion rewriting before anything imports it, so a failure inside the helper reads as the
+test's own assertion.
 """
 
 import pytest
@@ -26,14 +27,19 @@ def pytest_configure(config):
     """Register the three marker names and the harness plugins on every run of the test tree."""
     for line in MARKERS:
         config.addinivalue_line("markers", line)
-    from tests.correspondence import inventory, legacy_execution, markers, proofs, subject
+    from tests.correspondence import inventory, legacy_execution, markers, proofs, record, subject
 
-    for plugin in (markers, inventory, proofs, subject, legacy_execution):
+    # `record` LAST so that, on the hooks it shares with `subject`, it is dispatched FIRST: pluggy
+    # calls equal-priority implementations latest-registered-first, and `subject` may end the session
+    # at session start. Registered there, the record still reports the checkout and the VOID verdict
+    # that a stopped run should leave behind.
+    for plugin in (markers, inventory, proofs, subject, legacy_execution, record):
         config.pluginmanager.register(plugin, f"correspondence-{plugin.__name__.rsplit('.', 1)[-1]}")
 
 
 def pytest_addoption(parser):
-    """Add the proof recorder's two opt-in record options."""
-    from tests.correspondence import proofs
+    """Add the proof recorder's two opt-in record options and the result record's one."""
+    from tests.correspondence import proofs, record
 
     proofs.add_options(parser)
+    record.add_options(parser)
