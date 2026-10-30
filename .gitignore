@@ -241,6 +241,3 @@ __marimo__/
 # workflow writes from an encrypted repository secret. Never commit either.
 /scripts/anonymization_blocklist.local.txt
 /scripts/anonymization_ledger.local.txt
-
-# A per-machine Codex harness config: a symlink into the local agentic-workspace
-# checkout, whose target path is machine-specific. Never commit it.
