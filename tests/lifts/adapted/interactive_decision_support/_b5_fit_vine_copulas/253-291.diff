@@ -1,0 +1,22 @@
+--- stored
++++ adapted
+@@ -1,13 +1,13 @@
+ #%% looking closer at some of the well-performing control configurations
+-n_for_density_plot = n_for_marginal_cdf_comparison = 1000
+-n_for_montecarlo_tau_test = 500
+-n_for_montecarlo_cvm_test = 500
++n_for_density_plot = n_for_marginal_cdf_comparison = 50
++n_for_montecarlo_tau_test = 50
++n_for_montecarlo_cvm_test = 50
+ alpha = 0.05
+ 
+ # manually select control indices that resulted in a defensible fit
+-lst_surge_control_idx = [0, 37, 1]
+-lst_rain_control_idx = [7,5,1]
+-lst_compound_control_idx = [1,3,4,0]
++lst_surge_control_idx = [0]
++lst_rain_control_idx = [7]
++lst_compound_control_idx = [1]
+ 
+ for key in dic_event_summaries:
+     fldr_cntrl_sensitivity = dir_vinecop + f"plots_{key}_control_testing/"

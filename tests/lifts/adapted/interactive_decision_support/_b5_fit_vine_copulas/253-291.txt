@@ -1,0 +1,39 @@
+#%% looking closer at some of the well-performing control configurations
+n_for_density_plot = n_for_marginal_cdf_comparison = 50
+n_for_montecarlo_tau_test = 50
+n_for_montecarlo_cvm_test = 50
+alpha = 0.05
+
+# manually select control indices that resulted in a defensible fit
+lst_surge_control_idx = [0]
+lst_rain_control_idx = [7]
+lst_compound_control_idx = [1]
+
+for key in dic_event_summaries:
+    fldr_cntrl_sensitivity = dir_vinecop + f"plots_{key}_control_testing/"
+    if key == "surge_events":
+        # continue # done
+        lst_control_idx = lst_surge_control_idx
+    if key == "rain_events":
+        # continue # done
+        lst_control_idx = lst_rain_control_idx
+    if key == "compound_events":
+        # continue # done
+        lst_control_idx = lst_compound_control_idx
+    df_controls_and_results = pd.read_csv(f"{fldr_cntrl_sensitivity}copula_fit_sensitivity_analysis_results.csv", index_col = "control_idx")
+    for control_idx in lst_control_idx:
+        print(f"Plotting copula fits for {key} for copula control idx {control_idx}")
+        # df_fits = pd.read_csv(f"{dir_fitting_maringals}{key}_distributions.csv")
+        fldr_plots = f"{fldr_cntrl_sensitivity}cntrl_idx{control_idx}/"
+        try:
+            shutil.rmtree(fldr_plots)
+        except:
+            pass
+        Path(fldr_plots).mkdir(parents=True, exist_ok=True)
+        # load vine copula from json
+        df_obs = format_fitted_cdf_values_for_fitting_copula(event_type_key = key)
+        cop_json = df_controls_and_results.loc[control_idx, "f_vinecop_params"]
+        vinecop = pv.Vinecop(cop_json)
+        create_vinecop_gof_plots(df_obs=df_obs, cop_fitted=vinecop, n_for_density_plot=n_for_density_plot, n_for_marginal_cdf_comparison=n_for_marginal_cdf_comparison, n_for_montecarlo_tau_test=n_for_montecarlo_tau_test, n_for_montecarlo_cvm_test=n_for_montecarlo_cvm_test,
+                                alpha=alpha, fldr_plots=fldr_plots, event_key=key)
+

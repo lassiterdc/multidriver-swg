@@ -1,0 +1,75 @@
+rule = "proof-record:1"
+statement = "One row per proven equivalence test. A test with no row is counted unproven by the port-state declaration."
+
+[[proof]]
+family = "equivalence"
+unit = "_b6_simulate_from_vincop.py:597-626"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_b6_simulate_from_vincop.py:746-770"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:597-604"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:605-660"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:661-717"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:718-746"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:718-746"
+part = "draw-law"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:747-856"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:857-921"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "38a4050eb5e01bc7df1cf3b40f0446612a12a7f8"

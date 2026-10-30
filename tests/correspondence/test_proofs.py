@@ -9,16 +9,23 @@ record file is written under the inner tree, by a path the inner run is given.
 """
 
 import json
+import shutil
 import sys
 
 import pytest
 
 import tests.registrations as registrations
-from tests.correspondence import binding, proofs, write_root
+from tests.correspondence import binding, proofs, system_scope, write_root
 
 pytestmark = pytest.mark.state_check
 
 UNIT = "a.py:1-2"
+SYSTEM = (
+    "dependence-modelling"  # a system of the real system-scope file, whose proof file is `dependence_modelling.toml`
+)
+OTHER_UNIT = "b.py:1-2"
+OTHER_SYSTEM = "event-occurrence-modelling"
+ROW = f'[[proof]]\nfamily = "equivalence"\nunit = "{UNIT}"\nroute = "authoring-red"\n'
 INI = (
     "[pytest]\nmarkers =\n    equivalence(unit, system, part): a synthetic equivalence test\n"
     "    refactor_reminder(unit, system, part): a synthetic reminder\n"
@@ -163,13 +170,22 @@ def test_nothing_is_written_without_an_explicit_record_path(pytester):
     assert after == before, sorted(set(after) - set(before))
 
 
-def _records_file(tmp_path, rows):
-    """A synthetic root holding one equivalence test of `UNIT` and a proof-record file with `rows`."""
+def _proof_tree(tmp_path, files, tests=((UNIT, SYSTEM),)):
+    """A synthetic root: one equivalence test per (unit, system) of `tests`, the real system-scope file, and one proof file per name of `files`.
+
+    `files` maps a file name to the rows written after the header; `None` writes no proof directory at all.
+    """
     (tmp_path / "tests" / "correspondence").mkdir(parents=True)
-    (tmp_path / "tests" / "test_x.py").write_text(
-        f"import pytest\n\n\n@pytest.mark.equivalence(unit='{UNIT}', system='a-system')\ndef test_one():\n    pass\n"
-    )
-    (tmp_path / "tests" / "correspondence" / "proofs.toml").write_text('rule = "proof-record:1"\n' + rows)
+    shutil.copyfile(system_scope.REPO_ROOT / system_scope.SCOPE_PATH, tmp_path / system_scope.SCOPE_PATH)
+    body = "import pytest\n"
+    for n, (unit, system) in enumerate(tests):
+        body += f"\n\n@pytest.mark.equivalence(unit='{unit}', system='{system}')\ndef test_{n}():\n    pass\n"
+    (tmp_path / "tests" / "test_x.py").write_text(body)
+    if files is not None:
+        directory = tmp_path / proofs.RECORDS
+        directory.mkdir(parents=True)
+        for name, rows in files.items():
+            (directory / name).write_text('rule = "proof-record:1"\n' + rows)
     return tmp_path
 
 
@@ -181,7 +197,7 @@ def test_a_proof_rows_route_is_one_of_two(tmp_path):
     stated. Killed by: accepting any string. Second correct implementation: a schema check of the
     whole row that rejects the field among others.
     """
-    root = _records_file(tmp_path, f'[[proof]]\nfamily = "equivalence"\nunit = "{UNIT}"\nroute = "luck"\n')
+    root = _proof_tree(tmp_path, {proofs.file_name(SYSTEM): ROW.replace("authoring-red", "luck")})
     _rows, findings = proofs.load(root)
     assert any({"1:", "route"} <= set(f.split()) for f in findings), findings
 
@@ -193,9 +209,101 @@ def test_a_proof_row_names_an_existing_test(tmp_path):
     that does not exist inflates the proven count. Killed by: skipping the inventory lookup.
     Second correct implementation: collecting the tree with pytest and matching node markers.
     """
-    root = _records_file(tmp_path, '[[proof]]\nfamily = "equivalence"\nunit = "x.py:1-2"\nroute = "mutation"\n')
+    row = '[[proof]]\nfamily = "equivalence"\nunit = "x.py:1-2"\nroute = "mutation"\n'
+    root = _proof_tree(tmp_path, {proofs.file_name(SYSTEM): row})
     _rows, findings = proofs.load(root)
     assert any({"1:", "equivalence:x.py:1-2"} <= set(f.split()) for f in findings), findings
+
+
+def test_a_row_filed_under_another_systems_file_is_a_finding_and_under_its_own_file_is_not(tmp_path):
+    """Property: a proof row whose test the inventory lists under one owning system is a finding when it sits in another system's file, and none when it sits in its own.
+
+    Class: any proof row of an existing test filed in the proof file of an owning system other than the
+    test's own; the satisfying input is the same row, byte for byte, in its own system's file. Reachability:
+    both systems are slugs of the system-scope file and both file names are valid, so the only thing wrong
+    in the first arm is the pairing of row and file; artifact: the inventory lists `UNIT` under `SYSTEM`.
+    Why: two systems write their rows in parallel, each into its own file, so a row typed into the
+    neighbour's file would otherwise count its test proven and conflict with nothing until the neighbour
+    records the same test, and a count of proven tests that a misfiled row can raise is not the count the
+    port-state declaration prints. The assertion turns on the file's system against the test's owning
+    system, which the current and the changed reader both hold. Killed by: reading each file's rows
+    without asking which system the file belongs to. Second correct implementation: deriving each row's
+    expected file name from the inventory and comparing names, in place of comparing slugs.
+    """
+    tests = ((UNIT, SYSTEM), (OTHER_UNIT, OTHER_SYSTEM))
+    wrong = _proof_tree(tmp_path / "wrong", {proofs.file_name(OTHER_SYSTEM): ROW}, tests)
+    _rows, wrong_findings = proofs.load(wrong)
+    assert len(wrong_findings) == 1 and {"1:", SYSTEM, OTHER_SYSTEM} <= set(
+        wrong_findings[0].replace(",", "").split()
+    ), wrong_findings
+    right = _proof_tree(tmp_path / "right", {proofs.file_name(SYSTEM): ROW}, tests)
+    assert proofs.load(right) == ([{"family": "equivalence", "unit": UNIT, "route": "authoring-red"}], [])
+
+
+def test_the_rows_of_every_systems_file_are_read_in_file_name_order(tmp_path):
+    """Property: `load` returns the rows of every proof file, in file-name order, whatever order the files were written in.
+
+    Class: any set of two or more proof files, each holding a row of a test of its own system; here
+    the later-named file is written first. Why: the port-state declaration and the command count the
+    union of the systems' rows, so a reader that stops after the first file, or that returns the files
+    in the order the filesystem lists them, would print an unproven count that moves with how the
+    directory happens to be listed. Killed by: reading one file only; and sorting the files in
+    descending name order. Second correct implementation: collecting each file's rows in a dict keyed
+    by file name and joining them in sorted key order, in place of sorting the paths first.
+    """
+    other_row = ROW.replace(UNIT, OTHER_UNIT)
+    files = {proofs.file_name(OTHER_SYSTEM): other_row, proofs.file_name(SYSTEM): ROW}
+    root = _proof_tree(tmp_path, files, ((UNIT, SYSTEM), (OTHER_UNIT, OTHER_SYSTEM)))
+    rows, findings = proofs.load(root)
+    assert findings == [], findings
+    assert [row["unit"] for row in rows] == [UNIT, OTHER_UNIT], rows
+
+
+@pytest.mark.parametrize(
+    ("name", "clean"),
+    [
+        ("dependence_modelling.toml", True),
+        ("dependence-modelling.toml", False),
+        ("not_a_system.toml", False),
+        ("dependence_modelling.txt", False),
+    ],
+)
+def test_a_proof_file_must_be_named_for_an_owning_system_with_underscores(tmp_path, name, clean):
+    """Property: a file of the proof directory whose name is not an owning system's slug with its hyphens as underscores and `.toml` is a finding naming the file.
+
+    Class: any file name in the proof directory that is not `{slug with underscores}.toml` for a
+    slug of the system-scope file — a name no system has, a slug with its hyphens kept, and a slug
+    with another suffix; the satisfying input is the correctly spelled name holding the same row.
+    Reachability: the row is one of an existing test of that system in every case, so the file name
+    is the only thing that differs between arms. Why: a row is attributed to its owning system by the
+    name of the file it sits in, so a file no system owns attributes it to nobody and its rows would be
+    counted without being checked against an owner. The assertion turns on the name against the
+    slugs, which the current and the changed reader both hold. Killed by: reading every file of the
+    directory without checking its name; and comparing the stem to the slug without turning hyphens
+    into underscores. Second correct implementation: building the expected file name of each system
+    in the system-scope file and testing membership, in place of recovering a slug from the stem.
+    """
+    root = _proof_tree(tmp_path, {name: ROW})
+    _rows, findings = proofs.load(root)
+    if clean:
+        assert findings == [], findings
+    else:
+        assert len(findings) == 1 and name in findings[0], findings
+
+
+def test_a_missing_proof_directory_reads_as_no_rows_and_no_finding(tmp_path):
+    """Property: a tree with no proof directory has zero proof rows and no finding, as does one whose directory is empty.
+
+    Class: any tree before its first proof file is written, which is the tree the toolkit is in
+    when the shared file is gone and no owning system has recorded a proof. Why: the port-state
+    declaration must still print, with every equivalence test unproven, before any proof exists.
+    Killed by: listing the directory without checking that it exists, which raises. Second correct
+    implementation: catching the missing-directory error around the listing and returning no rows.
+    """
+    missing = _proof_tree(tmp_path / "missing", None)
+    assert proofs.load(missing) == ([], [])
+    empty = _proof_tree(tmp_path / "empty", {})
+    assert proofs.load(empty) == ([], [])
 
 
 def test_the_run_record_carries_whether_each_test_was_bound(pytester, monkeypatch, request):

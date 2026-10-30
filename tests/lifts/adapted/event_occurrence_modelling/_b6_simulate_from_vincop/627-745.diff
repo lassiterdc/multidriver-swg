@@ -1,0 +1,11 @@
+--- stored
++++ adapted
+@@ -31,7 +31,7 @@
+     # create multi-index
+     df_event_sims.reset_index(drop = True, inplace = True)
+     df_event_sims.set_index(["year", "event_id"])
+-    df_event_sims.to_csv(f"{dir_simulate_from_copula}{event_type_key}_simulated_event_summaries.csv")
++    written_sims[event_type_key] = df_event_sims.copy()  # adapted: the file write is kept in memory
+     # double check that the correct thresholds are met
+     s_surge_unmet = df_event_sims["surge_peak_ft"] < surge_event_threshold
+     s_rain_unmet = df_event_sims["precip_depth_mm"] < rain_event_threshold

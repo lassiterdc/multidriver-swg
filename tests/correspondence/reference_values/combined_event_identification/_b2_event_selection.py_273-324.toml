@@ -1,0 +1,18 @@
+unit = "_b2_event_selection.py:273-324"
+
+[key]
+cuts = ["cut-lines:1:703c37788800adcf44f55e10575bf59aff8202e518bcd4dc2751d16b64f52ccd"]
+fixtures = ["rain_mrms=npz-bytes:1:7858022a652bff48733bb32b66e917a85d1b4875738cce472147bb1520c6cf0a", "rain_aorc=npz-bytes:1:2269e423918f9d497e8008059a103a754e658990f4b37fb8d3d8e1a8f9e43881", "rain_ncei=npz-bytes:1:5dfb4e69eec0f8c8593a2de2a0d5e8492f1fbb8822dd6924d0461e94522998e7"]
+lift = "lift:1:ae7b6333ec41277b4a2a4b664107de1b5a27e14d70fb84bbbc5c22c587955a97"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b2_event_selection.py_273-324.npz"
+digest = "npz-bytes:1:5961f671e71042b634481aa247fe6ce14f17e19e3b110eb251843195dfcffdd3"

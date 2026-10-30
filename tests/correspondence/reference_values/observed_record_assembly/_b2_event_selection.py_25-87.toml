@@ -1,0 +1,18 @@
+unit = "_b2_event_selection.py:25-87"
+
+[key]
+cuts = ["cut-lines:1:7c11a800e575974dd7209eeb923eb993abaa4681a6d1897954ec7ef2ef851708"]
+fixtures = ["ora_mrms=npz-bytes:1:e6fae89c8ba7fd595a00147a9d989f4f420cd1ea0e41719f4a4595f673d6a3b3", "ora_hourly_ncei=npz-bytes:1:c6364173ea293c4b1e6a44aa0a30146559678b57aca56f9772a248c0b73573a4", "ora_aorc=npz-bytes:1:fd92151c81f1d7d38ab77447792bdd87e858dd0a86891eed0169d8f2a7a176ec", "ora_wl_6min=npz-bytes:1:2248a08387905969f67c17f796d2b03ba70bd7826ad165eaebb2fa0a1362fe9e", "ora_wl_hourly=npz-bytes:1:0c6bb096365df2e70647fca699c49ff92eebc9701c36ef43dcfa060496e978a5"]
+lift = "lift:1:35e0d1e8d913b3016f2e56d684a80f42ac647e06d4454efe3345da52197cf6b8"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b2_event_selection.py_25-87.npz"
+digest = "npz-bytes:1:2aa071a213f49a16da3b4bf72c0210b8747729e1e2f09e1ec50800a4c3b36bec"

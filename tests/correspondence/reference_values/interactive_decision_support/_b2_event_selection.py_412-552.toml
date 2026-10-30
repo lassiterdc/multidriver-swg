@@ -1,0 +1,18 @@
+unit = "_b2_event_selection.py:412-552"
+
+[key]
+cuts = ["cut-lines:1:8531b5e84e1f405219f38d88d1b9e9b8fb65b9dbab1b0b8b9e15d137f2e5eef0"]
+fixtures = ["ids_wlevels_6min=npz-bytes:1:040c77e5c5fb7d43fe040c686eb751edc20642645e35be94959e3c395bdf1cb5", "ids_wlevels_hrly=npz-bytes:1:21c49294a9704e8eee9f72c12e731cfdcc8fb05de16f6bc445f2ff1e9d9614a9"]
+lift = "lift:1:6984ac8b9f0340d2544f95299c88ff1bcb7f24fe2d1dcd3a3f457627849f925a"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b2_event_selection.py_412-552.npz"
+digest = "npz-bytes:1:a3a8a5b32500cbdf49294ed91a6f84f0314758255499c9ba6bd34ef2af178771"

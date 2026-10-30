@@ -1,0 +1,18 @@
+unit = "_b3_event_analysis.py:228-261,270-296"
+
+[key]
+cuts = ["cut-lines:1:e3cda87a249db1639535b093b38e06fb41f06ce8dd98c92aec0adf9f9baa4542", "cut-lines:1:a739d250fd77eee13ef8f11f78b5b71e1a9d6aa5c98fa752aba6496539df9898"]
+fixtures = ["oea_summary_mrms=npz-bytes:1:123bca6970f28a85ef55684eecf62a02718ba9e2507340d44c3118bb8c763f0e", "oea_summary_aorc=npz-bytes:1:8221fc815606705abbcade2b18729007206b48c7a87ae93bc9de34d769d4b571", "oea_summary_ncei=npz-bytes:1:2754f090d28b1f3dd712421aabc8e48681c9dda9c1a62411732f8f447ff6f86a", "oea_tseries_mrms=npz-bytes:1:84c17fddbb0e1b1e989b1cd1aa7199d0990ceb063917b74de81e995084ad5217", "oea_tseries_aorc=npz-bytes:1:4592b9edafe67537b375ac8db12ebe3f5642d8fbccf9eec95936b4884c03baf9", "oea_tseries_ncei=npz-bytes:1:af594797dc8c572a55e1d087671ed36f0c2e803c7fe0b71cd178b8da190c42b5"]
+lift = "lift:1:ba232286f27c64158b842c7d15d5f5094c3a625d0d90b58dfe6932c78d62a01c"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b3_event_analysis.py_228-261_270-296.npz"
+digest = "npz-bytes:1:7e8be25f82bafaaf2f427b8372f03392f735bb19396b711553dd49f0ebde621f"

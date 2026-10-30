@@ -1,0 +1,36 @@
+[[entry]]
+unit = "_b7_generate_time_series_from_event_stats.py:891-914"
+part = "lst_summaries"
+cuts = ["cut-lines:1:6cdb33e4efb4be51e137aff54180f5aeab5f55e6caab3f40da6ba9ad86019dc6"]
+lift = "lift:1:1dfe111c4098197157c15daa654eaf38b8b2dba01e4b17c9b0a39576ae819462"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [892, 893, 895, 896, 897, 898, 899, 900, 901, 902, 904, 906, 909, 912, 913]
+
+[[entry]]
+unit = "_b7_generate_time_series_from_event_stats.py:891-914"
+part = "lst_ds_tseries"
+cuts = ["cut-lines:1:6cdb33e4efb4be51e137aff54180f5aeab5f55e6caab3f40da6ba9ad86019dc6"]
+lift = "lift:1:63bff146b19e9b86e993c562c0d9d5e666a84b93785a53b80730c5609c47b117"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [892, 893, 895, 896, 897, 898, 899, 900, 901, 902, 904, 906, 909, 912, 913]
+
+[[entry]]
+unit = "_b7_generate_time_series_from_event_stats.py:915-969"
+part = "written_summaries"
+cuts = ["cut-lines:1:e41d401340e477c2ca0626e47394e6139faabfaa3bf9e24c9a55448e2981e09b"]
+lift = "lift:1:29f6ca2957293094b934626323c916f9cf1b31d879c2bafa69c1333a6cb262c9"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [916, 917, 920, 921, 922, 924, 925, 926, 935, 938, 939, 940, 941, 943, 944, 945, 951, 952, 954, 956, 957, 960, 961, 963, 964, 966, 968]
+
+[[entry]]
+unit = "_b7_generate_time_series_from_event_stats.py:915-969"
+part = "written_time_series"
+cuts = ["cut-lines:1:e41d401340e477c2ca0626e47394e6139faabfaa3bf9e24c9a55448e2981e09b"]
+lift = "lift:1:12b7b9fa7392eb6cac92d5ce812feb738378c0dec521557ca154f98b0b36af35"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [916, 917, 920, 921, 922, 924, 925, 926, 935, 938, 939, 940, 941, 943, 944, 945, 951, 952, 954, 956, 957, 960, 961, 963, 964, 966, 968]
+

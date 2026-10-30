@@ -1,0 +1,141 @@
+#%% comparing hourly to 6 minute surge events using a range of thresholds
+# columns = ["thresholds_ft", "surge_6min_event_n_per_year", "surge_hrly_event_n_per_year", "cvm_pval", "cvm_result", "ranksum_pval", "ranksum_result"]
+ar_thresholds = np.linspace(3.5, 2.2, 5)
+idx = np.arange(0, len(ar_thresholds))
+df_threhsold_experiment_results = pd.DataFrame(index = idx, columns=columns)
+# s_hrly_surge = df_hrly_water_levels_mrms_res.surge_ft
+# s_6min_surge = df_6min_water_levels_mrms_res.surge_ft
+
+print('6-minute water level data has been resampled to hourly for comparing event statistics between hourly and 6-minute datasets')
+s_6min_surge = df_6min_water_levels_mrms_res["surge_ft"].resample('h').nearest()
+s_hrly_surge = df_hrly_water_levels["surge_ft"]
+
+print(f"Running water level event selection on a range of thresholds....")
+dic_hrly_wlevel_results = {}
+
+dic_6min_wlevelt_results = {}
+
+for i, threshold in tqdm(enumerate(ar_thresholds)):
+  str_data_source = "hourly_surge_data"
+  n_events_per_year = 4
+  df_hrly_wlevel_event_summaries, df_hrly_wlevel_event_tseries, hrly_surge_event_threshold, surge_hrly_event_n_per_year = surge_event_selection(s_hrly_surge,
+                                                                                                    surge_threshold_to_determine_event_limits, max_event_duration_h,
+                                                                                                    min_interevent_time, str_data_source, threshold = threshold)
+  dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_summaries"] = df_hrly_wlevel_event_summaries
+  dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_tseries"] = df_hrly_wlevel_event_tseries
+  dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_threshold"] = hrly_surge_event_threshold
+  dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_n_per_year"] = surge_hrly_event_n_per_year
+  
+  str_data_source = "6min_surge_data"
+  df_6min_wlevel_event_summaries, df_6min_wlevel_event_tseries, _6min_surge_event_threshold, surge_6min_event_n_per_year = surge_event_selection(s_6min_surge,
+                                                                                                    surge_threshold_to_determine_event_limits, max_event_duration_h,
+                                                                                                    min_interevent_time, str_data_source, threshold = threshold)
+
+  dic_6min_wlevelt_results[f"wlevel_threshold{threshold:.1f}ft_event_summaries"] = df_6min_wlevel_event_summaries
+  dic_6min_wlevelt_results[f"wlevel_threshold{threshold:.1f}ft_event_tseries"] = df_6min_wlevel_event_tseries
+  dic_6min_wlevelt_results[f"wlevel_threshold{threshold:.1f}ft_event_threshold"] = _6min_surge_event_threshold
+  dic_6min_wlevelt_results[f"wlevel_threshold{threshold:.1f}ft_event_n_per_year"] = surge_6min_event_n_per_year
+
+  # perform statistical test on the resulting number of storms per year
+  counts_surge_hrly_event_n_per_year = df_hrly_wlevel_event_summaries.surge_event_start.dt.year.value_counts()
+  counts_surge_6min_event_n_per_year = df_6min_wlevel_event_summaries.surge_event_start.dt.year.value_counts()
+
+  # cmv_pval, cmv_result = perform_statistical_test(stats.cramervonmises_2samp, counts_surge_hrly_event_n_per_year, counts_surge_6min_event_n_per_year, 0.05)
+  # txt_cvm_results = "CVM: {} that data come from same dist. P-val = {:.3f}".format(cmv_result, cmv_pval)
+  # ranksum_pval, ranksum_result = perform_statistical_test(stats.ranksums, counts_surge_hrly_event_n_per_year, counts_surge_6min_event_n_per_year, 0.05)
+  # txt_ranksum_results = "Ranksum: {} that data come from same dist. P-val = {:.3f}".format(ranksum_result, ranksum_pval)
+  # df_threhsold_experiment_results.loc[i, "cvm_pval"] = cmv_pval
+  # df_threhsold_experiment_results.loc[i, "cvm_result"] = cmv_result
+  # df_threhsold_experiment_results.loc[i, "ranksum_pval"] = ranksum_pval
+  # df_threhsold_experiment_results.loc[i, "ranksum_result"] = ranksum_result
+  # print(txt_cvm_results)
+  # print(txt_ranksum_results)
+  # df_threhsold_experiment_results.loc[i, "thresholds_ft"] = threshold
+  # df_threhsold_experiment_results.loc[i, "surge_hrly_event_n_per_year"] = surge_hrly_event_n_per_year
+  # df_threhsold_experiment_results.loc[i, "surge_6min_event_n_per_year"] = surge_6min_event_n_per_year
+  # print(df_threhsold_experiment_results)
+
+# create water level plots to see about using the hourly and 6 minute datasets
+n_yrs_wlevel_6min = int(np.ceil(len(pd.Series(s_6min_surge.index.date).unique())/365))
+
+n_bootstrap = 50
+
+fldr_plots_threshold_selection = dir_event_selection + "plots_rain_and_surge_event_selection/threshold_selection_surge/"
+try:
+    shutil.rmtree(fldr_plots_threshold_selection)
+except:
+    pass
+Path(fldr_plots_threshold_selection).mkdir(parents=True, exist_ok=True)
+
+# df_threhsold_experiment_results = pd.DataFrame(index = idx, columns=columns)
+for i, threshold in tqdm(enumerate(ar_thresholds)):
+  # load data from dictionaries
+  df_hrly_wlevel_event_summaries = dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_summaries"]
+  df_hrly_wlevel_event_tseries = dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_tseries"]
+  # hrly_surge_event_threshold = dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_threshold"]
+  surge_hrly_event_n_per_year = dic_hrly_wlevel_results[f"wlevel_threshold{threshold:.1f}ft_event_n_per_year"]
+
+  df_6min_wlevel_event_summaries = dic_6min_wlevelt_results[f"wlevel_threshold{threshold:.1f}ft_event_summaries"]
+  df_6min_wlevel_event_tseries = dic_6min_wlevelt_results[f"wlevel_threshold{threshold:.1f}ft_event_tseries"]
+  # _6min_surge_event_threshold = dic_6min_wlevelt_results[f"wlevel_threshold{threshold:.1f}ft_event_threshold"]
+
+  surge_6min_event_n_per_year = len(df_6min_wlevel_event_summaries) / (len(pd.Series(s_6min_surge.index.date).unique())/365)
+
+  # compute rolling max mean intensities
+  df_surge_stats_6min = compute_event_timeseries_statistics(df_6min_wlevel_event_tseries["surge_ft"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="surge_ft", idx_name_time="date_time", idx_event_id="surge_event_id",
+                                            agg_stat = "mean")
+  df_surge_stats_hrly = compute_event_timeseries_statistics(df_hrly_wlevel_event_tseries["surge_ft"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="surge_ft", idx_name_time="date_time", idx_event_id="surge_event_id",
+                                            agg_stat = "mean")
+
+  data_columns = list(df_surge_stats_hrly.columns[df_surge_stats_hrly.columns.str.contains(r'^(?!.*tstep).*$')])
+  # data_columns.append("max_surge_ft")
+  df_hrly_wlevel_event_summaries = df_hrly_wlevel_event_summaries.join(df_surge_stats_hrly, rsuffix = "_right")
+  df_6min_wlevel_event_summaries = df_6min_wlevel_event_summaries.join(df_surge_stats_6min, rsuffix = "_right")
+
+  # build dataset of n events in every valid continuous 365-day moving window
+  df_valid_dates_6min = find_dates_with_data(s_6min_surge)
+  df_valid_dates_hrly = find_dates_with_data(s_hrly_surge)
+
+  df_valid_and_occurance_6min = generate_annual_event_occurance_df(df_valid_dates_6min, df_6min_wlevel_event_summaries, event_date_column="surge_event_start")
+  df_valid_and_occurance_hrly = generate_annual_event_occurance_df(df_valid_dates_hrly, df_hrly_wlevel_event_summaries, event_date_column="surge_event_start")
+
+  # perform statistical test on the resulting number of storms per year
+  n_per_year_6min = df_valid_and_occurance_6min[f'n_events_prev{t_window_d}d']
+  n_per_year_6min.name = "wlevel_6min_resampled_to_hourly"
+  n_per_year_hrly = df_valid_and_occurance_hrly[f'n_events_prev{t_window_d}d']
+  n_per_year_hrly.name = "wlevel_hrly"
+  
+  # figuring out how far back i can go with hourly data
+  increment_yr = 10
+  for start_year in np.arange(n_per_year_6min.index.min().year, n_per_year_hrly.index.min().year-increment_yr, -increment_yr):
+    dataset = "n_per_year"
+    n_per_sample = n_yrs_wlevel_6min
+    s_dataset1 = n_per_year_6min.resample('YE').nearest()
+    s_dataset2 = n_per_year_hrly[n_per_year_hrly.index.year >= start_year].resample('YE').nearest()
+    figtitle_supplementary_text = f"\n(threshold = {threshold:.1f}ft, hrly data from {start_year} to {s_dataset2.index.max().year}, 6min data from {s_dataset1.index.min().year} to {s_dataset1.index.max().year})"
+    dir_savefig = fldr_plots_threshold_selection
+    fig_fname_prefix = f"threshold_{threshold:.1f}ft_hrly_data_startyear_{start_year}"
+    bins = np.arange(0, max(s_dataset1.max(), s_dataset2.max()) + 1, 1)
+    compare_2_distributions(s_dataset1, s_dataset2, dataset, n_bootstrap, n_per_sample, alpha, bins = bins, include_kde = False,
+                                  dir_savefig = dir_savefig, figtitle_supplementary_text = figtitle_supplementary_text,
+                                    fig_fname_prefix = fig_fname_prefix, do_bootstrapping = False, plot_hist = True)
+    for dataset in data_columns:
+      s_dataset1 = df_6min_wlevel_event_summaries[dataset]
+      filter_daterange = df_hrly_wlevel_event_summaries["surge_event_start"].dt.year >= start_year
+      s_dataset2 = df_hrly_wlevel_event_summaries[filter_daterange][dataset]
+      s_dataset1.name = "wlevel_6min_resampled_to_hourly"
+      s_dataset2.name = "wlevel_hrly"
+
+      # calculate n per year for each one
+      filter_s_hrly_data = s_hrly_surge.index.year >= start_year
+      surge_hourly_event_n_per_year = len(s_dataset2) / (len(pd.Series(s_hrly_surge[filter_s_hrly_data].index.date).unique())/365)
+      surge_6min_event_n_per_year = len(s_dataset1) / (len(pd.Series(s_6min_surge.index.date).unique())/365)
+
+      figtitle_supplementary_text = f"\nthreshold = {threshold:.1f}ft\nhrly data from {start_year} to {s_hrly_surge.index.max().year}, 6min data from {s_6min_surge.index.min().year} to {s_6min_surge.index.max().year})"
+      figtitle_supplementary_text += f"\nn and n-per-year for 6min ({len(s_dataset1):.0f}, {surge_6min_event_n_per_year:.2f}) and hourly ({len(s_dataset2):.0f}, {surge_hourly_event_n_per_year:.2f}) datasets"
+      n_per_sample = len(s_dataset1)
+      compare_2_distributions(s_dataset1, s_dataset2, dataset, n_bootstrap, n_per_sample, alpha, bins = 30, include_kde = True,
+                                  dir_savefig = dir_savefig, figtitle_supplementary_text = figtitle_supplementary_text,
+                                    fig_fname_prefix = fig_fname_prefix, do_bootstrapping = False, plot_hist = True)
+
+

@@ -1,0 +1,20 @@
+--- stored
++++ adapted
+@@ -14,7 +14,7 @@
+ # compute all summary stats that are not shared
+ 
+ 
+-df_summary_combined.to_csv(f"{dir_storm_rescaling}combined_simulation_summaries.csv")
++written_summaries = df_summary_combined.copy()  # adapted: the file write is kept in memory
+ 
+ 
+ # ds_tseries_combined
+@@ -30,7 +30,7 @@
+ for da_name in ds_tseries_combined.data_vars:
+     d_encoding[da_name] = {"zlib":True}
+ 
+-ds_tseries_combined.to_netcdf(f"{dir_storm_rescaling}combined_simulation_time_series.nc", encoding=d_encoding)
++written_time_series = ds_tseries_combined.copy()  # adapted: the file write is kept in memory
+ 
+ # final check that the total rainfall and peak surges line up
+ # compare rain depths

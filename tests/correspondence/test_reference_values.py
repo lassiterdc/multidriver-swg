@@ -376,24 +376,79 @@ def test_main_prints_one_line_naming_the_uncharacterized_count(tmp_path, monkeyp
     assert out.count("\n") == 1 and "1 UNCHARACTERIZED" in out and out.startswith("reference values: 1 stored")
 
 
-def test_the_real_tree_holds_no_stored_value_and_the_check_passes():
-    """Property: on this checkout the store is empty, the state check has no finding, and the summary counts zero stored values.
+def _expected_counts(root: Path) -> dict[str, int]:
+    """The summary a tree must show: every declared lift not declared unseeded is stored and uncharacterized, none is stale.
 
-    Class: the committed tree, where no stored value is committed by this row. Why it is required: the
-    uncharacterized count is expected to read 0 until values are committed. Killed by: a check that raises on an absent
-    store directory. Second correct implementation: none other. Not established: that it stays empty once
-    later work adds values.
+    A lift declared `unseeded` is never stored, so it is the one declared lift with no stored value. Derived from
+    the declarations alone, never from the store, so that it can disagree with `summary`.
+    """
+    declared = lift.discover(root)
+    stored = sum(1 for d in declared if d.draws != "unseeded")
+    return {"stored": stored, "uncharacterized": stored, "stale": 0, "no_stored_value": len(declared) - stored}
+
+
+def test_the_real_tree_stores_a_value_for_each_declared_lift_not_declared_unseeded_and_none_is_stale():
+    """Property: on this checkout the state check has no finding and the summary equals `_expected_counts`.
+
+    Class: the committed tree, whatever lifts it holds. Why it is required: the store grows with the lifts, so the
+    earlier "zero uncharacterized" assertion went red on the first stored value; the relation holds at every state
+    of the tree, zero included. Killed by: a store missing the value of one declared lift, a value stored for a lift
+    declared unseeded, or any stale value. Second correct implementation: comparing the four counts one by one
+    passes. Not established: that the relation distinguishes two errors that cancel, a missing value of one lift and
+    a value stored for an unseeded one, in one tree; the synthetic tests below take each error alone.
     """
     extraction_check.require_extractions(reference_values.REPO_ROOT)
     assert reference_values.stored_value_findings(reference_values.REPO_ROOT) == []
-    assert reference_values.summary(reference_values.REPO_ROOT)["uncharacterized"] == 0
+    assert reference_values.summary(reference_values.REPO_ROOT) == _expected_counts(reference_values.REPO_ROOT)
+
+
+def test_a_declared_lift_with_no_stored_value_breaks_the_relation_and_a_stored_one_restores_it(tmp_path, monkeypatch):
+    """Property: `summary` differs from `_expected_counts` while a declared lift is unstored and equals it once stored.
+
+    Class: the one-lift synthetic tree, before and after `store`. Why it is required: it shows the repaired real-tree
+    assertion can fail, which an empty committed tree cannot show. Killed by: an expectation computed from the
+    store's own descriptors, which is equal to `summary` in both states. Second correct implementation: counting
+    `lift.discover(root)` and the descriptors on disk separately passes.
+    """
+    root = _build(tmp_path, monkeypatch)
+    assert reference_values.summary(root) != _expected_counts(root)
+    reference_values.store(_declaration(root), 12)
+    assert reference_values.summary(root) == _expected_counts(root)
+
+
+def test_a_lift_declared_unseeded_is_expected_unstored_and_a_value_stored_for_it_breaks_the_relation(
+    tmp_path, monkeypatch
+):
+    """Property: with the one lift declared `unseeded`, an empty store matches `_expected_counts` and a stored value does not.
+
+    Class: the same tree with `draws="unseeded"` declared, a position the lift above does not take. Why it is
+    required: the expectation excludes unseeded lifts, and a rule that expected every declared lift stored would
+    pass the test above and fail here. Killed by: counting every declared lift as expected stored. Second correct
+    implementation: filtering on `draws != "unseeded"` as here, or on the descriptors' units, passes.
+    """
+    root = _build(tmp_path, monkeypatch, extra=', draws="unseeded"')
+    assert (
+        reference_values.summary(root)
+        == _expected_counts(root)
+        == {
+            "stored": 0,
+            "uncharacterized": 0,
+            "stale": 0,
+            "no_stored_value": 1,
+        }
+    )
+    reference_values.store(_declaration(root), 12)
+    assert reference_values.summary(root) != _expected_counts(root)
 
 
 def test_the_command_line_prints_its_one_summary_line():
-    """Property: `python -m tests.correspondence.reference_values` exits 0 and prints one line naming the UNCHARACTERIZED count.
+    """Property: `python -m tests.correspondence.reference_values` exits 0 and prints exactly the one line `_expected_counts` gives.
 
-    Class: a child interpreter on this checkout. Why it is required: a person runs this command to read the count. Killed by: a
-    module with no `__main__` block. Second correct implementation: none other.
+    Class: a child interpreter on this checkout. Why it is required: a person runs this command to read the count.
+    The earlier assertion looked for the substring `0 UNCHARACTERIZED`, which is also true of a count ending in 0, so
+    it passed at 10 stored values; the whole line is compared instead. Killed by: a module with no `__main__` block,
+    or a line whose counts differ from the relation. Second correct implementation: formatting the line from
+    `summary` passes.
     """
     run = subprocess.run(
         [sys.executable, "-m", "tests.correspondence.reference_values"],
@@ -401,8 +456,12 @@ def test_the_command_line_prints_its_one_summary_line():
         capture_output=True,
         text=True,
     )
+    counts = _expected_counts(reference_values.REPO_ROOT)
     assert run.returncode == 0, run.stderr
-    assert run.stdout.count("\n") == 1 and "UNCHARACTERIZED" in run.stdout and "0 UNCHARACTERIZED" in run.stdout
+    assert run.stdout == (
+        f"reference values: {counts['stored']} stored, {counts['uncharacterized']} UNCHARACTERIZED, "
+        f"{counts['stale']} stale, {counts['no_stored_value']} declared lift(s) with no stored value\n"
+    )
 
 
 def test_an_input_that_cannot_be_read_is_a_not_measured_report_and_not_an_exception(tmp_path, monkeypatch):

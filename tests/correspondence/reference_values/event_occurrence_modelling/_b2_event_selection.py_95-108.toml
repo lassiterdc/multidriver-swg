@@ -1,0 +1,18 @@
+unit = "_b2_event_selection.py:95-108"
+
+[key]
+cuts = ["cut-lines:1:269a20aa101e4c59a78d3319cd84c921324223e4ef35fa03948412810134c487"]
+fixtures = ["occ_valid_dates=npz-bytes:1:0c43671c1b2c2d7008af582750b12158176de426d8d5ae395bda9ab6f37e177c", "occ_rain_events=npz-bytes:1:4fe704100b4f845466b0453b25a8b736c8d28d502bcccb9d9186f42a2c2fda30", "occ_surge_events=npz-bytes:1:d51126032eccc8dadcbe8e9826571761ac6670422600e32e652ae63aa4a4e9de"]
+lift = "lift:1:5a4f92ccce1c87a359473ed322a664a44d9ecc61fa5ef079652885a5bc5abaa1"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b2_event_selection.py_95-108.npz"
+digest = "npz-bytes:1:03758b47b519f5f4c3c79f00eba95081c90cf8d6a63967b60843d15ab006a92b"

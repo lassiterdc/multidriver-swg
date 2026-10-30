@@ -1,0 +1,19 @@
+unit = "_utils.py:421-434"
+part = "draw-law"
+
+[key]
+cuts = ["cut-lines:1:4ef6e81b8733a313a33f666ed883055d16ca97779e8c7c13d1f63dfdb23def9d"]
+fixtures = ["obs=npz-bytes:1:873ed07b9502ff021a3c1fdb6256c58f3a1f72049655ce0733ba5aea7d4dca69", "vinecop_json=npz-bytes:1:b4efd450a56415eb0282a29de00c918a24a429be06f5009dfbd45093e4cdba81"]
+lift = "lift:1:acdfb0330228f9c26d180b512114185680511af7a858377204f0544c98215041"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_421-434__draw-law.npz"
+digest = "npz-bytes:1:44940dbd44ab18323e37125ef00393185c03119134997532d03a0f1d34e5462d"

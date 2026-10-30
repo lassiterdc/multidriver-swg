@@ -54,6 +54,7 @@ RUNNER_VERSION = 1
 FORMS = ("unchanged", "adapted")
 DRAWS = ("none", "seeded", "unseeded")
 INTERNAL_PACKAGES = ("tests", "multidriver_swg")
+NON_PATH_ORIGINS = ("built-in", "frozen")  # a spec origin that names a kind of module and not a file
 _COMPILED: list[types.CodeType] = []
 
 
@@ -189,7 +190,11 @@ def _top_level_bindings(tree: ast.Module) -> dict[str, list[ast.AST]]:
 
 
 def _admitted_import(node: ast.AST, root: Path) -> bool:
-    """Whether an import binds a library that lies outside the checkout `root` and is not one of its packages."""
+    """Whether an import binds a library that lies outside the checkout `root` and is not one of its packages.
+
+    A module whose spec origin is `built-in` or `frozen` is outside the checkout whatever the working directory;
+    a namespace package (origin `None`) is judged by the directories it searches.
+    """
     if isinstance(node, ast.ImportFrom):
         modules = [node.module or ""] if node.level == 0 else []
     elif isinstance(node, ast.Import):
@@ -208,6 +213,11 @@ def _admitted_import(node: ast.AST, root: Path) -> bool:
             return False
         if spec is None:
             return False
+        # A built-in or frozen module's origin is the word `built-in` or `frozen`, not a path: resolving it
+        # as one reads it against the working directory, which lies under the checkout when a run starts at
+        # the root, and would refuse `sys` or `os` there and admit them from anywhere else.
+        if spec.origin in NON_PATH_ORIGINS:
+            continue
         # A namespace package has no origin; its directories say where it lies.
         places = list(spec.submodule_search_locations or []) if spec.origin is None else [spec.origin]
         for place in places:

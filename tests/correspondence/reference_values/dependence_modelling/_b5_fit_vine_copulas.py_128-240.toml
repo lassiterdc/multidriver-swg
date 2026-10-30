@@ -1,0 +1,18 @@
+unit = "_b5_fit_vine_copulas.py:128-240"
+
+[key]
+cuts = ["cut-lines:1:1fbf47b7013526c0e6b7741eb42643354371c66d8d7a10baf5f365fcecca16a1"]
+fixtures = ["fitted_cdf_long=npz-bytes:1:d6023103bb1f811c8878b8ef9e497859642a58fdc8313b6db4ede8e05fa680ab", "seed=npz-bytes:1:369e29bf1dd97b8813d953dd0ab5ca10b2c691029984c3b6dee43a3a9c81ed06"]
+lift = "lift:1:329aa1325e6f2802180084916a5b6c7a0ef68c300295d1fa09a746c3958eaf3e"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b5_fit_vine_copulas.py_128-240.npz"
+digest = "npz-bytes:1:18addca3586ba3adf94e7600ffd2663075c5045fe06ca4e653cb341c126e1fca"

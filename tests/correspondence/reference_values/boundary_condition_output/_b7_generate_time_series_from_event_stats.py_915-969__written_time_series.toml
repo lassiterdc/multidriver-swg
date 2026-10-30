@@ -1,0 +1,19 @@
+unit = "_b7_generate_time_series_from_event_stats.py:915-969"
+part = "written_time_series"
+
+[key]
+cuts = ["cut-lines:1:e41d401340e477c2ca0626e47394e6139faabfaa3bf9e24c9a55448e2981e09b"]
+fixtures = ["summaries_rain=npz-bytes:1:2694e91919a6850475bac006cc2370f9bc837301258432b54bf0d125896028a2", "summaries_surge=npz-bytes:1:d4d2a2d9c53c6294e56c6837599497f31a0ad61d59dd5179b9257d3466738c04", "summaries_compound=npz-bytes:1:f5379ad3b9770b8ce0c272497612f8144a321050e63f6da90e2a67709dae67ce", "series_rain=npz-bytes:1:c3d66b3e7d4c0e6fd0c54315bd33c007b33229c9d0005101c20336f495c26de1", "series_surge=npz-bytes:1:d185622fd88645e43ade46f2f24f8521fb09ae5fc495ba645e92e8a391d792a9", "series_compound=npz-bytes:1:42be9357b8af77fb9ae6a31f1613c4f6585c3b0187e0498c681aeeaad1e2e8d7"]
+lift = "lift:1:12b7b9fa7392eb6cac92d5ce812feb738378c0dec521557ca154f98b0b36af35"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b7_generate_time_series_from_event_stats.py_915-969__written_time_series.npz"
+digest = "npz-bytes:1:5a927ccadf9072e47d99bf665f72e14257389dc3122ee8ae3ac83e37a95328b7"

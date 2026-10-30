@@ -1,0 +1,18 @@
+unit = "_b2_event_selection.py:393-405"
+
+[key]
+cuts = ["cut-lines:1:41d7240c3c911f4c3bf6e4ae7d230fc74276a1a7d90c5a493ff0d97ec05c441f"]
+fixtures = []
+lift = "lift:1:1d6ca390b8819b561a1a017ed9f3502600fb7015c9b92648e348dea96a4f4059"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b2_event_selection.py_393-405.npz"
+digest = "npz-bytes:1:3f255dbb0ffa07c559be535ca1b63d5f5609dc6a67d370fad86ff275da4a73f8"

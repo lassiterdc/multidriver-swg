@@ -1,0 +1,9 @@
+--- stored
++++ adapted
+@@ -6,5 +6,5 @@
+ compare_sim_vs_obs_event_occurances(df_occurences_sim.iloc[0:n_years_of_weather_to_generate, :], df_occurences_obs, txt_fig_caption = txt_fig_caption, savefig_filename=savefig_filename, plot_n_count = True)
+ 
+ df_occurences_sim.index.name = "year"
+-df_occurences_sim.iloc[0:n_years_of_weather_to_generate, :].to_csv(f"{dir_simulate_from_copula}simulated_event_counts_{n_years_of_weather_to_generate}yrs.csv")
++written_event_counts = df_occurences_sim.iloc[0:n_years_of_weather_to_generate, :].copy()  # adapted: the file write is kept in memory
+ 

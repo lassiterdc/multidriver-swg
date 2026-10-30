@@ -1,0 +1,186 @@
+rule = "proof-record:1"
+statement = "One row per proven equivalence test. A test with no row is counted unproven by the port-state declaration."
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:215-324"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b2_event_selection.py:109-153"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b2_event_selection.py:154-268"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b2_event_selection.py:325-347"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b2_event_selection.py:412-552"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b3_event_analysis.py:297-331"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b3_event_analysis.py:332-394"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b3_event_analysis.py:395-473"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b3_event_analysis.py:474-543"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b3_event_analysis.py:622-657"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b4_selecting_marginals.py:182-188"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b4_selecting_marginals.py:189-208"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b4_selecting_marginals.py:209-221"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b4_selecting_marginals.py:222-249"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b5_fit_vine_copulas.py:241-252"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_b5_fit_vine_copulas.py:253-291"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:1065-1197"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:1239-1256"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:2154-2197"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:2198-2283"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:2284-2309"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:2310-2322"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:2323-2328"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "9a17c456f516c893daf0f7149f6a48c8b41d9f92"

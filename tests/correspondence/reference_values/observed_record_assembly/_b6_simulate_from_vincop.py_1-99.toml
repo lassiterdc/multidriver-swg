@@ -1,0 +1,18 @@
+unit = "_b6_simulate_from_vincop.py:1-99"
+
+[key]
+cuts = ["cut-lines:1:1a0d396b662957a83bb1570342b251a40faacc91eab9a1738ae177fa7c02a2d4"]
+fixtures = ["orb_combined_events=npz-bytes:1:37ec122383cf830ae11b4240bf69dfc1e0becf74b3e689b8e829b9b3883c7e9b", "orb_combined_tseries=npz-bytes:1:29dadd4fbabb54ff1a29ad350552106fd0353df0c426c4cd97dc6f554ea36dfd", "ora_mrms=npz-bytes:1:e6fae89c8ba7fd595a00147a9d989f4f420cd1ea0e41719f4a4595f673d6a3b3", "ora_wl_6min=npz-bytes:1:2248a08387905969f67c17f796d2b03ba70bd7826ad165eaebb2fa0a1362fe9e", "ora_aorc=npz-bytes:1:fd92151c81f1d7d38ab77447792bdd87e858dd0a86891eed0169d8f2a7a176ec", "orb_wlevel_resampled=npz-bytes:1:9b30edac32c41b69e8d77387e04d39688c5a6772bddbd76d6d163d9e43106f98", "orb_vinecop_json=npz-bytes:1:f7448ce523d2e8c423328e4d6295c1510091dc8f974363b6c28bf5dcd02a66e3"]
+lift = "lift:1:b4d108a1615e92a9005632c47c956545f49173d2ca9c352643ff716e0dba414d"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b6_simulate_from_vincop.py_1-99.npz"
+digest = "npz-bytes:1:b28cfcd3c57da9d1571a3a0f72d4ae6ee574b4d4a26f20130c9575c8eae51f3f"

@@ -1,0 +1,152 @@
+[[entry]]
+unit = "_b2_event_selection.py:25-87"
+cuts = ["cut-lines:1:7c11a800e575974dd7209eeb923eb993abaa4681a6d1897954ec7ef2ef851708"]
+lift = "lift:1:35e0d1e8d913b3016f2e56d684a80f42ac647e06d4454efe3345da52197cf6b8"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [28, 32, 34, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 54, 55, 56, 57, 60, 70, 74, 75, 77, 78, 79, 81, 82, 83, 84, 85, 86]
+
+[[entry]]
+unit = "_b2_event_selection.py:348-385"
+cuts = ["cut-lines:1:0b8e4f7fa7ce15253abe85dabda1aad65669d5aebb1e70815d601a1a2afc7fff"]
+lift = "lift:1:99b942b4d0affdd23943bf8a0ce7067839d42ad8e788a2d4b753f822fe573551"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [349, 350, 351, 352, 354, 355, 356, 357, 359, 360, 361, 362, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384]
+
+[[entry]]
+unit = "_b2_event_selection.py:386-392,406-411"
+cuts = ["cut-lines:1:0e4531c610a978118e70d38e855cf5e11a83e2a569a6700fd501534e736ae5da", "cut-lines:1:146126ad471ad8c0295a350d66201b43f5b65b3ddef69fdf847d12b78a8952f5"]
+lift = "lift:1:da78e7c7be5918d89a6acdac003e208b2c5c1295f314d1e2673e779e178e7f47"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [387, 388, 389, 390, 391, 392, 407, 408, 410, 411]
+
+[[entry]]
+unit = "_b2_event_selection.py:393-405"
+cuts = ["cut-lines:1:41d7240c3c911f4c3bf6e4ae7d230fc74276a1a7d90c5a493ff0d97ec05c441f"]
+lift = "lift:1:1d6ca390b8819b561a1a017ed9f3502600fb7015c9b92648e348dea96a4f4059"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [395, 396, 397, 399, 400, 401, 403, 404, 405]
+
+[[entry]]
+unit = "_b2_event_selection.py:88-94"
+cuts = ["cut-lines:1:b5bfe707673c4d519e616fec43a0bda4c16a2ff49a9992a5c7d6e44aad10ea18"]
+lift = "lift:1:c4935efcb0b36b052c30dd2d4b259bceca7624341ded034024107d8367ec19f7"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [89, 90, 91, 92, 93, 94]
+
+[[entry]]
+unit = "_b3_event_analysis.py:135-220"
+cuts = ["cut-lines:1:64e1481edd75c069555ea08da0e21bc1206396ad34e1ea4cbf61afc1aed3bad8"]
+lift = "lift:1:7bedad2e8decff7e5a76bbd7a3be7dc4c7fda50ef3884a3c9b85838bb9f26593"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [142, 143, 157, 159, 161, 162, 163, 216]
+
+[[entry]]
+unit = "_b3_event_analysis.py:228-261,270-296"
+cuts = ["cut-lines:1:e3cda87a249db1639535b093b38e06fb41f06ce8dd98c92aec0adf9f9baa4542", "cut-lines:1:a739d250fd77eee13ef8f11f78b5b71e1a9d6aa5c98fa752aba6496539df9898"]
+lift = "lift:1:ba232286f27c64158b842c7d15d5f5094c3a625d0d90b58dfe6932c78d62a01c"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [229, 230, 232, 233, 235, 236, 238, 240, 241, 243, 244, 246, 247, 249, 250, 251, 252, 253, 254, 255, 256, 258, 259, 260, 261, 272, 273, 275, 276, 277, 278, 279, 280, 281, 282, 283, 285, 286, 288, 289, 290, 291, 294, 295]
+
+[[entry]]
+unit = "_b3_event_analysis.py:42-51"
+cuts = ["cut-lines:1:dfde95e552a91eace8da469eff164b99b619cf853ad9bb6179a1732a6ddc2c6d"]
+lift = "lift:1:04dcef849babbf9a94e2a4c9822132385324edc1e1f07e761404c2bdacf134a2"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [43, 44, 45, 46, 47, 48, 49, 50, 51]
+
+[[entry]]
+unit = "_b3_event_analysis.py:52-61"
+cuts = ["cut-lines:1:37fa07e5f6e100f128fefc5f09db9457a5a3bccdfc51b81042ab43baf1831cd8"]
+lift = "lift:1:3960ad15b40b7297eadaef7d68c4e464554a8876bc358f42e8dd0cbcd16cdc26"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [54, 56, 57, 58, 59, 60]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:1-99"
+cuts = ["cut-lines:1:1a0d396b662957a83bb1570342b251a40faacc91eab9a1738ae177fa7c02a2d4"]
+lift = "lift:1:b4d108a1615e92a9005632c47c956545f49173d2ca9c352643ff716e0dba414d"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 24, 25, 27, 28, 30, 31, 32, 34, 35, 36, 37, 39, 41, 42, 43, 44, 47, 49, 51, 54, 55, 56, 57, 58, 59, 61, 68, 69, 70, 71, 73, 79, 80, 82, 83, 84, 85, 86, 89, 90, 91, 93, 94, 96, 97, 98]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:356-376"
+cuts = ["cut-lines:1:8b020e3bb3b2d179ac5a5f46a90dbc76fea9b627a254d81e5bbca1aac399b136"]
+lift = "lift:1:07e05daafdfb4a396d101d35f6709c3376942913a91f81501ab3060027aa16f7"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [357, 358, 360, 361, 362, 363]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:377-383"
+cuts = ["cut-lines:1:17f575f42a3003ca3984263c66cbb8b2caeb83b56c61dd95a59e5b89ea6e60de"]
+lift = "lift:1:0e541d359313fbeef1b92be8fde5d8dac78f4238afb1f3c02943a69b1e3b3963"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [378, 379, 380, 381, 382, 383]
+
+[[entry]]
+unit = "_utils.py:1990-2016"
+cuts = ["cut-lines:1:dd997b83f435d40b0ee05cc11bb5f5be016596156a8be0a63a6496828b69368c"]
+lift = "lift:1:6b57f6a909ec19831c9d2d6f29270724678fd00d5af9cbb5aa8829683108bbe8"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [1991, 1993, 1994, 1995, 1996, 1997, 1998, 2002, 2004, 2006, 2008, 2009, 2010, 2012, 2013, 2014, 2015, 2016]
+
+[[entry]]
+unit = "_utils.py:2017-2025"
+cuts = ["cut-lines:1:6cdad4daa1f181957c5911eeebcb7fafc93dea6c20b5bf4fab6006010dff9ba7"]
+lift = "lift:1:2e1ce8b46d285a7085feff908410c59508d7eeae627f2d4c852c1db2299607f2"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [2018, 2019, 2020, 2021, 2022, 2024, 2025]
+
+[[entry]]
+unit = "_utils.py:2026-2059"
+cuts = ["cut-lines:1:959ef8eaa1cfeb59d590d1feace240178ffb6ccd29636d07ecc46aa95dc2e62f"]
+lift = "lift:1:df9256d047c47ac3ff71dc7c780d2cff13669d9d0dab6f03d08bedcd311647f6"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [2028, 2029, 2030, 2033, 2034, 2036, 2037, 2038, 2039, 2041, 2042, 2043, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059]
+
+[[entry]]
+unit = "_utils.py:2075-2153"
+cuts = ["cut-lines:1:e80dd910e6746f551b11ace4b82929f8bb3db7c58232d14bbfee8a836925ca84"]
+lift = "lift:1:8b867e9870e24d55c8a6b48245c7bd61b85be85630f6a668c6a71603f1aada60"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [2076, 2079, 2087, 2089, 2090, 2099, 2110, 2111, 2113, 2114, 2115, 2117, 2118, 2119, 2121, 2122, 2123, 2125, 2126, 2129, 2130, 2131, 2132, 2133, 2134, 2135, 2137, 2139, 2140, 2143, 2145, 2146, 2147, 2148, 2150, 2151, 2153]
+
+[[entry]]
+unit = "_utils.py:922-990"
+cuts = ["cut-lines:1:cec2082f2179b8214be6828a5a2b22b73d52c27a5e247bf7492853a5841a587a"]
+lift = "lift:1:590be5ede65b4be8faa5a78116beb62e4ce0ad3b30c5ca831a22acd31340ec46"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [923, 924, 926, 929, 930, 931, 932, 935, 938, 941, 942, 945, 948, 949, 952, 955, 957, 960, 961, 962, 965, 968, 972, 976, 977, 980, 982, 983, 985, 986, 987, 988, 990]
+
+[[entry]]
+unit = "_utils.py:991-1055"
+cuts = ["cut-lines:1:3ba1b0d48bc7d0330a6f5120079e390e678349ac5cc20ebec05fad50b6e5fc2e"]
+lift = "lift:1:c964a1bcde99a308120d95a9c53d69856e2c658dc05934cff442f1aba5b9aa04"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [993, 994, 996, 997, 1000, 1001, 1002, 1003, 1004, 1006, 1007, 1008, 1009, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029, 1030, 1033, 1034, 1035, 1036, 1037, 1038, 1039, 1040, 1041, 1042, 1043, 1044, 1045, 1046, 1047, 1048, 1049, 1050, 1051, 1052, 1054, 1055]
+
+[[entry]]
+unit = "_utils.py:991-1055"
+part = "draw-law"
+cuts = ["cut-lines:1:3ba1b0d48bc7d0330a6f5120079e390e678349ac5cc20ebec05fad50b6e5fc2e"]
+lift = "lift:1:be5f09cc4bfc68fee5f1a740d09976e7f3b6096245969305f73815a5679d80c3"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [993, 994, 996, 997, 1000, 1001, 1003, 1006, 1007, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029, 1030, 1033, 1034, 1035, 1038, 1039, 1040, 1041, 1042, 1043, 1044, 1045, 1046, 1047, 1048, 1049, 1054, 1055]

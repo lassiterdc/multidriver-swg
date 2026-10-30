@@ -20,11 +20,12 @@ MARKERS = (
     "guard(system): a guard case of one system; runs the whole-ledger checks when that system's tests are selected",
     "equivalence(unit, system, part): an equivalence test of one legacy unit, owned by one system",
     "refactor_reminder(unit, system, part): a failing reminder that a scoped-in unit has no equivalence test yet",
+    "slow: a test whose run takes far longer than the suite's others; marked so it can be found and triaged",
 )
 
 
 def pytest_configure(config):
-    """Register the three marker names and the harness plugins on every run of the test tree."""
+    """Register the four marker names and the harness plugins on every run of the test tree."""
     for line in MARKERS:
         config.addinivalue_line("markers", line)
     from tests.correspondence import inventory, legacy_execution, markers, proofs, record, subject

@@ -1,0 +1,130 @@
+rule = "proof-record:1"
+statement = "One row per proven equivalence test. A test with no row is counted unproven by the port-state declaration."
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:105-107"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:108-110"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:111-214"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:23-30"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:31-38"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:325-387"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:48-51"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:52-55"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:56-70"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:71-88"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "__ref_ams_functions.py:89-104"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "_b4_selecting_marginals.py:23-65"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "_b4_selecting_marginals.py:268-316"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "_b4_selecting_marginals.py:66-181"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:1198-1238"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"
+
+[[proof]]
+family = "equivalence"
+unit = "_utils.py:410-420"
+route = "authoring-red"
+site = "tests/correspondence/compare.py:180"
+exception = "AssertionError"
+commit = "63a71ae2ab569eadf9801128d6274a0e54ea1cc9"

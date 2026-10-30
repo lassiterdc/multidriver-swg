@@ -8,7 +8,10 @@ Every test class here is a NEW CAPABILITY: no runner existed, so a failure is sh
 implementation a docstring names.
 """
 
+import ast
 import hashlib
+import importlib
+import importlib.util
 import sys
 import types
 from pathlib import Path
@@ -243,6 +246,70 @@ def test_a_nested_helper_and_a_library_import_are_not_refused(tmp_path):
     )
     root = _root(tmp_path, lifts={"sys_a": source})
     assert lift.run_lift(_declaration(root)) == 6.0
+
+
+def _import_node(name: str) -> ast.Import:
+    """An `import {name}` statement as the runner's rule reads it."""
+    return ast.Import(names=[ast.alias(name=name)], lineno=1, col_offset=0)
+
+
+@pytest.mark.parametrize("module", ["sys", "os", "time", "itertools"])
+@pytest.mark.parametrize("start", ["at the root", "outside the root"])
+def test_a_built_in_or_frozen_module_is_admitted_wherever_the_run_starts(tmp_path, monkeypatch, module, start):
+    """Property: `sys`, `os`, `time` and `itertools` are admitted for a checkout root whether the working directory lies under it or not.
+
+    Class: four modules whose spec origin is the word `built-in` or `frozen`, with the working directory at the
+    checkout root and in a directory outside it. Why it is required: the origin is not a path, and resolving it
+    as one reads the word against the working directory, so the verdict flipped with where a run started
+    (refused at the root, admitted elsewhere). Killed by: resolving every origin as a path. Second correct
+    implementation: classing a module as built-in with `sys.builtin_module_names` and `sys.stdlib_module_names`
+    passes the same eight inputs. Not established: that the origin names are the same on another interpreter.
+    """
+    root = tmp_path / "checkout"
+    outside = tmp_path / "elsewhere"
+    root.mkdir()
+    outside.mkdir()
+    monkeypatch.chdir(root if start == "at the root" else outside)
+    assert importlib.util.find_spec(module).origin in lift.NON_PATH_ORIGINS
+    assert lift._admitted_import(_import_node(module), root) is True
+
+
+def test_a_namespace_package_inside_the_root_is_refused_and_one_outside_is_admitted(tmp_path, monkeypatch):
+    """Property: a namespace package (spec origin None) is judged by the directories it searches.
+
+    Class: one directory with no `__init__.py` planted under the root and one planted outside it, both put on
+    `sys.path`, with the working directory under the root. Why it is required: the correction for built-in and
+    frozen origins must not turn the origin-None case into an admit. Killed by: admitting every module whose
+    origin is not a path. Second correct implementation: judging an origin-None module by `spec.loader` passes
+    the same two inputs.
+    """
+    root, outside = tmp_path / "checkout", tmp_path / "elsewhere"
+    (root / "zz_mdswg_ns_inside").mkdir(parents=True)
+    (outside / "zz_mdswg_ns_outside").mkdir(parents=True)
+    monkeypatch.syspath_prepend(str(root))
+    monkeypatch.syspath_prepend(str(outside))
+    monkeypatch.chdir(root)
+    importlib.invalidate_caches()
+    assert importlib.util.find_spec("zz_mdswg_ns_inside").origin is None
+    assert lift._admitted_import(_import_node("zz_mdswg_ns_inside"), root) is False
+    assert lift._admitted_import(_import_node("zz_mdswg_ns_outside"), root) is True
+
+
+def test_a_regular_module_with_a_path_origin_is_still_judged_by_that_path(tmp_path, monkeypatch):
+    """Property: a module file inside the root is refused and an installed library outside it is admitted.
+
+    Class: a one-file module planted under the root and `json`, whose origin is a file of the interpreter.
+    Why it is required: the correction must leave the path test in place for every origin that is a path.
+    Killed by: admitting every module. Second correct implementation: comparing `spec.origin` to the root with
+    `str.startswith` after resolving it passes.
+    """
+    root = tmp_path / "checkout"
+    root.mkdir()
+    (root / "zz_mdswg_mod.py").write_text("", encoding="utf-8")
+    monkeypatch.syspath_prepend(str(root))
+    importlib.invalidate_caches()
+    assert lift._admitted_import(_import_node("zz_mdswg_mod"), root) is False
+    assert lift._admitted_import(_import_node("json"), root) is True
 
 
 def test_findings_name_checkout_imports_relative_imports_and_the_declaration_itself(tmp_path):

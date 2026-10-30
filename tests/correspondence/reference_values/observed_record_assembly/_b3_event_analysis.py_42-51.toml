@@ -1,0 +1,18 @@
+unit = "_b3_event_analysis.py:42-51"
+
+[key]
+cuts = ["cut-lines:1:dfde95e552a91eace8da469eff164b99b619cf853ad9bb6179a1732a6ddc2c6d"]
+fixtures = ["ora_mrms=npz-bytes:1:e6fae89c8ba7fd595a00147a9d989f4f420cd1ea0e41719f4a4595f673d6a3b3"]
+lift = "lift:1:04dcef849babbf9a94e2a4c9822132385324edc1e1f07e761404c2bdacf134a2"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b3_event_analysis.py_42-51.npz"
+digest = "npz-bytes:1:87880962b36178f9e5bc3e62d89e8fd9d887a82cbb16cc07d5ea8277d7846c9e"

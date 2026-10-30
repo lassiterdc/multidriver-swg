@@ -1,0 +1,18 @@
+unit = "__ref_ams_functions.py:56-70"
+
+[key]
+cuts = ["cut-lines:1:235ab2e5ce84a43abb57e703008b13fbc81a2b4a3c65cae09168aadf84cb158d"]
+fixtures = ["series_positive=npz-bytes:1:7c249888ceaea9998315731ce84fb710eff60598ecd4928233cd9d44b1ecda56"]
+lift = "lift:1:8cecfe711138ed088bbee079f13c39acf9d22ebf316a036c174b4576136ad0d0"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "__ref_ams_functions.py_56-70.npz"
+digest = "npz-bytes:1:a127eed3e7b9c8d364d5779603d0f4c2e305f1be58352ae6b3c5990878fd3f77"

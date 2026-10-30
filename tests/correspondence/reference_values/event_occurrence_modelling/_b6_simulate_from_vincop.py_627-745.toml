@@ -1,0 +1,18 @@
+unit = "_b6_simulate_from_vincop.py:627-745"
+
+[key]
+cuts = ["cut-lines:1:e592a5297835c72cc5ada5158d695c956d3fabe71761ef67bde4029cfba72e53"]
+fixtures = ["sim_occurrences=npz-bytes:1:30bd2a3aedf0ef1a467067effa564b641318d3c9bca00ab9a858ddfb7dc50fa5", "sim_obs_surge=npz-bytes:1:ea46a9ef131f6482fb0318e5b7e7cb46ec9d0dd2ca18f5ef5f95d06b82308cf7", "sim_obs_rain=npz-bytes:1:2e2254ef491ed168cf76c6b7ec92219cf368f526392f3b56796852710ec9b5ac", "sim_obs_compound=npz-bytes:1:861c6d9eccd5ccb1369c113c0c85789d2de8ff94c29f0dbd96fbe76158c5974d", "sim_sim_surge=npz-bytes:1:03c6ef0a191d6ba9ae1ba94f2db5351f221bddd05bb109d9d0f790dc2323a885", "sim_sim_rain=npz-bytes:1:e090b3ac68e9ccf3aa7580a27e14ec6200749438fd20b49acc22f242caec420a", "sim_sim_compound=npz-bytes:1:d1877e9ac19341737a5e74a7ee07a1f487cf9eb933cf87c332f591dd885c9869", "sim_cdf_surge=npz-bytes:1:1255723645477d729e3822cf241da09382edfe3f879c7f787c91fcdac4111b60", "sim_cdf_rain=npz-bytes:1:283d12d03e46cd004a9361f673156a160101bfb2bd2b5eb885b66cac691b98f9", "sim_cdf_compound=npz-bytes:1:532cf011b042327b7f3a426ac7e559dbcb7557320660c7e17d4c525d7ea4d921"]
+lift = "lift:1:8df62627da3668067b2546f128caf5e3c74f3910172ea9835be78bc57f29cb5b"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b6_simulate_from_vincop.py_627-745.npz"
+digest = "npz-bytes:1:c8c88a35639a7313763da25a38a96eb4cae0f7f95d2b8104d56f906e560466dd"

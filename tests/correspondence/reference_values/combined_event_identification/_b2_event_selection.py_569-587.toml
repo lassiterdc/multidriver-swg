@@ -1,0 +1,18 @@
+unit = "_b2_event_selection.py:569-587"
+
+[key]
+cuts = ["cut-lines:1:aa669c046c33ca47c5ab033583599ba3f1c69ecb1177d12527060b037213fdb7"]
+fixtures = ["surge_series_6min=npz-bytes:1:916f0a0c6b4bb062fa59bcb9955f697a18f9f74dcf81c167edf9a8c82ef38d89", "surge_event_summaries=npz-bytes:1:2bb6a9453c9c8e74010b88595e0d656172017e07bdf930342d70bd566cff1cb2", "surge_event_tseries=npz-bytes:1:85870eb23695fb26e800e3021e556c73109f75b1c5e9e5f93bb2e21dda0354d7"]
+lift = "lift:1:a5f13e6832d2e497bdcb0009525976327414c701854ad19a37a4eac017155db9"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b2_event_selection.py_569-587.npz"
+digest = "npz-bytes:1:9e5bcccde31e944c6f5a034afe3af5f715b7cba8720687e9d8ad59a4c2deffa2"

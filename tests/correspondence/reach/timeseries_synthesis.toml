@@ -1,0 +1,92 @@
+# THREE declarations of this system are named below as absences rather than entered: `_b7_generate_time_series_from_event_stats.py:88-380`
+# (row 119's adapted cell), `_b7_generate_time_series_from_event_stats.py:381-890` (row 120) and `_utils.py:271-334`.
+# Each `[[named]]` table states the measurement that shows why no real input has been shown to run its lift. The
+# guards and reads that fail, and every real input set tried, are recorded in chunk 6a.9's second round in the
+# scratch. Under U-24 outcome 1 no input was constructed to make them run.
+
+[[named]]
+unit = "_b7_generate_time_series_from_event_stats.py:88-380"
+reason = "This cell compares event dates with a series indexed by date. Every real observed event series the estate kept carries dimensions year, event_type, event_id and timestep and no time axis, and the paired 6m_wlevel_mrms summary inputs instead trip the cell's own guard THE EVENT SUMMARY AND EVENT TIME SERIES STATS DON'T LINE UP. Measured by chunk 6a.9's second round, and no declaration change has been shown to supply the axis the cell reads."
+
+[[named]]
+unit = "_b7_generate_time_series_from_event_stats.py:381-890"
+reason = "This cell addresses each simulated event by a sim_event_id column, and the estate's kept rescaled product keys its events by year and event_id and carries no such column, so one event's slice raises KeyError sim_event_id. Measured by chunk 6a.9's second round. A declaration-level rename has not been measured against the real product, so the declaration is named rather than changed in this chunk."
+
+[[named]]
+unit = "_utils.py:271-334"
+reason = "The guard at _utils.py:320-324 requires the observed surge window, after being shifted onto the simulated series' time base, to equal the series used to fill its missing values to a zero absolute difference. The declaration constructs that five-step simulated series, so only an observed window built to match it passes, and U-24 outcome 1 forbids constructing one. Measured by chunk 6a.9's second round."
+
+
+[[entry]]
+unit = "_utils.py:104-171"
+cuts = ["cut-lines:1:f42ee83af8c96704fde47cbdf70c3c5885df7992f16947cc992f2a691d2c8eac"]
+lift = "lift:1:9b200b13ef01805852b769c110b4a3036fc6c56e15e9e157100a39965ec6eeaa"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [105, 107, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 121, 122, 123, 125, 127, 129, 130, 134, 135, 138, 140, 142, 143, 149, 154, 160, 162, 164, 167, 169, 170, 171]
+
+[[entry]]
+unit = "_utils.py:172-212"
+cuts = ["cut-lines:1:dc9f4d073a18ed5ea8a4de3feba015d67c4896b443be6182c7f11bc5a4a2b884"]
+lift = "lift:1:65af83519a488d3ce6dc6b80c37bf2d4a2cbdc2c5d959102d8b629f929e288fb"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [173, 174, 175, 176, 177, 178, 179, 181, 182, 183, 184, 186, 187, 189, 191, 193, 195, 196, 197, 199, 200, 202, 203, 204, 205, 206, 207, 210, 211, 212]
+
+[[entry]]
+unit = "_utils.py:172-212"
+part = "draw-law"
+cuts = ["cut-lines:1:dc9f4d073a18ed5ea8a4de3feba015d67c4896b443be6182c7f11bc5a4a2b884"]
+lift = "lift:1:f3b66a1f639aa6d65819e7f60d9a8d2901895db10c9b98f62cfa3ebdaeb1106e"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [173, 174, 175, 176, 177, 178, 179, 181, 182, 183, 184, 186, 187, 189, 191, 193, 195, 196, 197, 199, 200, 202, 203, 204, 205, 206, 207, 210, 211, 212]
+
+[[entry]]
+unit = "_utils.py:213-227"
+cuts = ["cut-lines:1:645ac7903cdc11e305c98b34070b109b3ceb3882aeaf1cc3a30e8a79140f5a8d"]
+lift = "lift:1:0446275b09a71601f01ea39222d7b1b8336512b4cdddd07e2859d97ac7ea91e3"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [214, 216, 217, 220, 221, 222, 223, 225, 226, 227]
+
+[[entry]]
+unit = "_utils.py:29-95"
+cuts = ["cut-lines:1:474f473890c2b38cfd4b30ec75b5b1f8d3861018c943ee19a9ff15ef6adfbc06"]
+lift = "lift:1:65ed9fe4a90a1b3b5cbafcc39952a56d244a3d38dd8c325c9f27dabac3765518"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [37, 38, 44, 45, 46, 49, 50, 51, 53, 54, 55, 56, 59, 61, 62, 63, 64, 65, 67, 68, 69, 70, 73, 75, 77, 79, 81, 83, 85, 87, 88, 89, 93, 94, 95]
+
+[[entry]]
+unit = "_utils.py:335-398"
+cuts = ["cut-lines:1:8614a75a1efbbea4ed3172d4f136a0ca838026c7e2ddfe57371d706d4dddb70a"]
+lift = "lift:1:b68a5318a7a99c766537f272cb87907bf6a28c315f5c5e392cc7ce380f5c59df"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [336, 337, 339, 340, 341, 343, 344, 345, 347, 350, 351, 353, 356, 357, 358, 361, 362, 363, 364, 365, 367, 368, 369, 370, 371, 372, 374, 377, 378, 380, 387, 388, 391, 392, 394, 397, 398]
+
+[[entry]]
+unit = "_utils.py:96-103"
+cuts = ["cut-lines:1:c35e33551f652877f1f7d14d0970742b0ff71115d04a56ce4abf23fe554c3117"]
+lift = "lift:1:4456cbbbab6183fac2bcc0848b6c36bbcbf7120510cbc1ce223523406adb5907"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [97, 98, 99, 100, 102, 103]
+
+[[entry]]
+unit = "_utils.py:236-270"
+cuts = ["cut-lines:1:6f325e7a7184579ebd85a15feacd83b7cb9069308204bb52643d4d93c9e19918"]
+lift = "lift:1:78628f86ec0266693eb342b60702fe7150579b543a811712dc202e1223089a86"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [237, 238, 239, 241, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 265, 266, 267, 268, 269, 270]
+
+[[entry]]
+unit = "_utils.py:236-270"
+part = "draw-law"
+cuts = ["cut-lines:1:6f325e7a7184579ebd85a15feacd83b7cb9069308204bb52643d4d93c9e19918"]
+lift = "lift:1:4c7d2445b597dab2e38e72f33ffa040213928a0dddcbbdd85e4d941b518cb5f7"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [237, 238, 239, 241, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 265, 266, 267, 268, 269, 270]

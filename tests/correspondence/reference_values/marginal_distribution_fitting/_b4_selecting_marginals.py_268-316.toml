@@ -1,0 +1,18 @@
+unit = "_b4_selecting_marginals.py:268-316"
+
+[key]
+cuts = ["cut-lines:1:300817b29429baebd8a41c5ab4b4f61639504d39bdd6cd7095b84bff89bba300"]
+fixtures = ["msel_surge_events=npz-bytes:1:d53a7a38095752a4812192b2c27927eacab47724582f789640a20d73ed8bf6a9", "msel_rain_events=npz-bytes:1:507d998c324bef32d613adcede96a8eab0129562795d181c6343d57106701bdd", "msel_compound_events=npz-bytes:1:17704dd767a90f687807184bde38cd5fce61da01d03de6e37fd5f711b0d158e2", "msel_perf_surge_events=npz-bytes:1:9f4eff213b17daeb3430d75b49f63f20e698b98c55669deae87708fba63a7e1d", "msel_perf_rain_events=npz-bytes:1:169c5965013f7532f44fa943ec5cb667441a29e143b562d1de22daec25f801fc", "msel_perf_compound_events=npz-bytes:1:a8412a96e62b4622bd13d5d90db20e60d3a2a60e0fd5c53200cf6af3127eb82d"]
+lift = "lift:1:a9d8368cc4b144845ce86dedf9bf45bfa3219a9a0905cab584cdc66d0ea86295"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b4_selecting_marginals.py_268-316.npz"
+digest = "npz-bytes:1:9ec6da9a4713264ed46e34a04db9ca0db5df209b8d5fae1857a21460e163adb7"

@@ -1,0 +1,97 @@
+# The five entries chunk 6a.4 withdrew under U-24 outcome 1 are MEASURED and committed here as of 2026-10-30.
+# They were measured in process on the estate's real intersection of the rainfall and water-level records: the
+# day table carries a `valid` flag, the two event tables are the per-source rain and surge summaries (the legacy
+# function is called once per table, so the declaration binds them separately), the observed events are the kept
+# compound-event summaries, and the occurrence counts are those events grouped by year and type. No input was
+# invented. The declarations changed in this chunk: `_b2_event_selection.py:95-108` now takes the two event tables
+# its two calls need instead of one table carrying both columns. The other four already ran unchanged; 6a.4's
+# "cannot run" for them was a wrong-input symptom.
+
+[[entry]]
+unit = "_b3_event_analysis.py:98-134"
+cuts = ["cut-lines:1:94fd5defba102026577bc63c18f981bf5d52f1c35cf16fcb66031be6044f0cc3"]
+lift = "lift:1:eb6a70698d4d2b86b6fbdea3764ff3fcc73c45bd71838b49e0b6e878f6ea6fda"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:456-478"
+cuts = ["cut-lines:1:d091cae0327bb037a58a5c9778b72a83c9de059347a68c644177f21637808432"]
+lift = "lift:1:77d69d431cd2c186753ad9e9147f9f817f340731c1cdf6a884764845e8968ba5"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [457, 458, 460, 461, 462, 463, 466, 467, 468, 469, 472, 473, 474, 475, 477, 478]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:479-488"
+cuts = ["cut-lines:1:7e8b9b2c95c60823c5f2ac771c9cd3aa3a2f3e34e80e92cc89a89d0849e92a97"]
+lift = "lift:1:956bee6a65e32f311d54fdd6564f66eddcfda2fbb7f23a26094bc34124b59f1b"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [480, 481, 482, 483, 484, 486]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:479-488"
+part = "draw-law"
+cuts = ["cut-lines:1:7e8b9b2c95c60823c5f2ac771c9cd3aa3a2f3e34e80e92cc89a89d0849e92a97"]
+lift = "lift:1:28a3c0a1962db1d5b006026fdd45c6211912c78587ac220833ac855c5f5fad25"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [480, 481, 482, 483, 484, 486]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:627-745"
+cuts = ["cut-lines:1:e592a5297835c72cc5ada5158d695c956d3fabe71761ef67bde4029cfba72e53"]
+lift = "lift:1:8df62627da3668067b2546f128caf5e3c74f3910172ea9835be78bc57f29cb5b"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [628, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 650, 651, 652, 653, 655, 656, 658, 659, 662, 663, 664, 665, 669, 670, 673, 674, 675, 676, 677, 678, 679, 683, 684]
+
+[[entry]]
+unit = "_utils.py:467-573"
+cuts = ["cut-lines:1:6a84e2d13eb2383eed8893a9b7a9e1c934f66df3655c37d2f0f6d120785ba04e"]
+lift = "lift:1:8b71de503f825178361674017008e6e198f1783871d83977d8a1c3a004e80c1f"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [468, 469, 470, 471, 473, 474, 479, 480, 483, 484, 485, 487, 488, 489, 492, 493, 494, 495, 496, 504, 505, 507, 508, 509, 510, 511, 512, 515, 516, 517, 518, 519, 521, 522, 523, 524, 525, 526, 527, 530, 531, 532, 533, 534, 536, 537, 538, 539, 540, 541, 544, 545, 546, 547, 548, 552, 554, 555, 556, 558, 559, 560, 562, 563, 564, 565, 567, 569, 570, 571, 573]
+
+[[entry]]
+unit = "_b2_event_selection.py:95-108"
+cuts = ["cut-lines:1:269a20aa101e4c59a78d3319cd84c921324223e4ef35fa03948412810134c487"]
+lift = "lift:1:5a4f92ccce1c87a359473ed322a664a44d9ecc61fa5ef079652885a5bc5abaa1"
+measured = "2026-10-30"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:100-216"
+cuts = ["cut-lines:1:6e030d881186fb90f35c5449431191bf7b187681e87773590d46b9a529118d55"]
+lift = "lift:1:1a6bb7a6c4b8cb005a17b9ff1d9e4ea1d331dae3b8e76e8a9c1afa67db3419c8"
+measured = "2026-10-30"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [101, 103, 104, 105, 106, 107, 108, 109, 110, 111, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 126, 127, 128, 129, 130, 131, 133, 134, 135, 136, 137, 138, 139, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 152, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 167, 168, 169, 170, 171, 216]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:217-233"
+cuts = ["cut-lines:1:5151e176bf44ce589beb90664b059e0c019843140c1498c52b470abe307f153a"]
+lift = "lift:1:00f8723d35ebe26db9b1e7a326d7292a146e09546df21bca9ef45bf3f683c60e"
+measured = "2026-10-30"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [220, 221, 222, 223, 224, 226, 227, 230, 231, 232, 233]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:384-392"
+cuts = ["cut-lines:1:2e984652da2ca000b65fe7240ce7581dc0f5c560a9d42ec0ed6918ead79abd01"]
+lift = "lift:1:bcc7e5c4cbfec4d339cb53b352ed18c4d58d857d755ec8906226714d0d5947a8"
+measured = "2026-10-30"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [385, 386, 387, 388, 389, 390, 391, 392]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:399-455"
+cuts = ["cut-lines:1:012210a2458217d5f120ffe6b26b56be16f5a72870f76b362201df86c723ed12"]
+lift = "lift:1:65adc04f0356b19da392e4167a166a1f17d30bf88adf08b23e790a3eec4272d1"
+measured = "2026-10-30"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [402, 403, 406, 407, 410, 411]

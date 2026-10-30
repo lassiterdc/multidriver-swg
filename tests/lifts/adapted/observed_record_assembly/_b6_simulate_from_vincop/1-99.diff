@@ -1,0 +1,13 @@
+--- stored
++++ adapted
+@@ -1,8 +1,8 @@
+ #%%
+ from tqdm import tqdm
+ import pyvinecopulib as pv
+-from _inputs import *
+-from _utils import *
++# adapted: the names this star-import supplied are bound by the declaration, not imported
++# adapted: the names this star-import supplied are bound by the declaration, not imported
+ import numpy as np
+ import pandas as pd
+ import matplotlib.pyplot as plt

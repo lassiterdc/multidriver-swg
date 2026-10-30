@@ -1,0 +1,9 @@
+--- stored
++++ adapted
+@@ -1,5 +1,5 @@
+ #%% stochastic storm rescaling
+-lst_skip = ['compound_events', 'rain_events', "surge_events"]
++lst_skip = []
+ for event_type_key in dic_event_summaries:
+     modeled_stats = format_fitted_cdf_values_for_fitting_copula(event_type_key = event_type_key).columns
+     rain_intensity_stat = None

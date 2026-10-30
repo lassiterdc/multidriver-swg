@@ -1,0 +1,14 @@
+--- stored
++++ adapted
+@@ -82,9 +82,9 @@
+   surge_6min_event_n_per_year = len(df_6min_wlevel_event_summaries) / (len(pd.Series(s_6min_surge.index.date).unique())/365)
+ 
+   # compute rolling max mean intensities
+-  df_surge_stats_6min = compute_event_timeseries_statistics(df_6min_wlevel_event_tseries["surge_ft"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="surge_ft",
++  df_surge_stats_6min = compute_event_timeseries_statistics(df_6min_wlevel_event_tseries["surge_ft"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="surge_ft", idx_name_time="date_time", idx_event_id="surge_event_id",
+                                             agg_stat = "mean")
+-  df_surge_stats_hrly = compute_event_timeseries_statistics(df_hrly_wlevel_event_tseries["surge_ft"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="surge_ft",
++  df_surge_stats_hrly = compute_event_timeseries_statistics(df_hrly_wlevel_event_tseries["surge_ft"], lst_time_durations_h_to_analyze=lst_time_durations_h_to_analyze, varname="surge_ft", idx_name_time="date_time", idx_event_id="surge_event_id",
+                                             agg_stat = "mean")
+ 
+   data_columns = list(df_surge_stats_hrly.columns[df_surge_stats_hrly.columns.str.contains(r'^(?!.*tstep).*$')])

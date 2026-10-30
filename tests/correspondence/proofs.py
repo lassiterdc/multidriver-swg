@@ -4,7 +4,10 @@ A test is worth keeping only if it can fail for the reason it claims to check. F
 equivalence test that reason is its own comparison: a test written before its new code proves
 itself by failing at its assertion against the placeholder, and a test written afterwards proves
 itself by failing at its assertion under a deliberate break of that code. Both are recorded by
-hand in `tests/correspondence/proofs.toml`, from facts this module's report hook supplies.
+hand, from facts this module's report hook supplies, in the owning system's own proof file,
+`tests/correspondence/proofs/{system slug with hyphens as underscores}.toml`: one file per owning
+system, because two systems' proof rows written into one shared file conflict when their changes
+are merged.
 
 The hook classifies each failure of a test carrying `equivalence` by its LAST traceback frame:
 an assertion when the exception is an `AssertionError` raised in the test's own file or in the
@@ -16,6 +19,18 @@ The hook writes nothing unless a run asks: `--proof-record={path}` appends one J
 classified failure, and `--run-record={path}` writes one JSON line per family test with its
 outcome and whether `new_side` reached a registered callable. `load` and the command check the
 tracked proof records' form.
+
+A proof file starts `rule = "proof-record:1"` and a `statement`, then holds one `[[proof]]` table
+per proven equivalence test, with these fields:
+
+    family = "equivalence", unit = "{unit key}", part = "{part}" (optional),
+    route = "authoring-red" | "mutation", site = "{path}:{line}", exception = "AssertionError",
+    commit = "{40 hex}", and for route "mutation": mutation = "{the change made}", restored = true
+
+`load` reads every file of the directory in name order and returns the union of their rows. It
+refuses a file whose name is no owning system's, and a row whose test the inventory lists under a
+different owning system than the file names, so a row filed under the wrong system is loud rather
+than counted. A missing directory reads as zero rows.
 """
 
 from __future__ import annotations
@@ -27,13 +42,13 @@ from pathlib import Path
 
 import pytest
 
-from tests.correspondence import binding, corpus_record, inventory, write_root
+from tests.correspondence import binding, corpus_record, inventory, system_scope, write_root
 
 REPO_ROOT = corpus_record.REPO_ROOT
 FAMILIES = ("equivalence", "refactor_reminder")
 HELPER = Path("tests/correspondence/compare.py")
 ROUTES = ("authoring-red", "mutation")
-RECORDS = Path("tests/correspondence/proofs.toml")
+RECORDS = Path("tests/correspondence/proofs")
 
 
 def add_options(parser) -> None:
@@ -200,31 +215,71 @@ def pytest_runtest_makereport(item, call):
     return report
 
 
-def _route_findings(n: int, row: dict) -> list[str]:
+def file_name(system: str) -> str:
+    """The proof file of an owning system: its slug with hyphens as underscores, and `.toml`."""
+    return f"{system.replace('-', '_')}.toml"
+
+
+def _route_findings(where: str, n: int, row: dict) -> list[str]:
     """A row whose route is not one of the two ways a test is proven."""
     route = row.get("route")
     if route in ROUTES:
         return []
-    return [f"proof row {n}: route {route!r} is not one of {', '.join(ROUTES)}"]
+    return [f"{where}: proof row {n}: route {route!r} is not one of {', '.join(ROUTES)}"]
 
 
-def _test_findings(n: int, row: dict, tests: set) -> list[str]:
+def _test_findings(where: str, n: int, row: dict, owners: dict) -> list[str]:
     """A row that names no test the inventory lists."""
     key = (row.get("family"), row.get("unit"), row.get("part"))
-    if key in tests:
+    if key in owners:
         return []
     name = ":".join(str(v) for v in key if v is not None)
-    return [f"proof row {n}: {name} names no existing test"]
+    return [f"{where}: proof row {n}: {name} names no existing test"]
+
+
+def _owner_findings(where: str, n: int, row: dict, owners: dict, system: str) -> list[str]:
+    """A row whose test the inventory lists under other owning systems than the file's own.
+
+    A row naming no listed test is left to `_test_findings`, so one row draws one finding.
+    """
+    key = (row.get("family"), row.get("unit"), row.get("part"))
+    if key not in owners or system in owners[key]:
+        return []
+    name = ":".join(str(v) for v in key if v is not None)
+    listed = ", ".join(sorted(owners[key]))
+    return [f"{where}: proof row {n}: {name} is a test of {listed}, not of {system}"]
 
 
 def load(root: Path = REPO_ROOT) -> tuple[list[dict], list[str]]:
-    """Return the tracked proof rows and every row that breaks their form."""
-    data = tomllib.loads((root / RECORDS).read_text(encoding="utf-8"))
-    rows = data.get("proof", [])
-    tests = {(e["family"], e["unit"], e["part"]) for e in inventory.listing(root)[0]}
-    findings = []
-    for n, row in enumerate(rows, 1):
-        findings += _route_findings(n, row) + _test_findings(n, row, tests)
+    """Return the tracked proof rows of every owning system's file, in file-name order, and every finding.
+
+    A file whose name is no owning system's proof file (`file_name` of a slug of the system-scope
+    file) is a finding and its rows are still read, so a misnamed file cannot hide a bad row. A
+    missing directory reads as zero rows.
+    """
+    directory = root / RECORDS
+    if not directory.is_dir():
+        return [], []
+    entries = inventory.listing(root)[0]
+    owners: dict[tuple, set[str]] = {}
+    for entry in entries:
+        owners.setdefault((entry["family"], entry["unit"], entry["part"]), set()).add(entry["system"])
+    system_of = {file_name(slug): slug for slug in system_scope.slugs(root)}
+    rows: list[dict] = []
+    findings: list[str] = []
+    for path in sorted(p for p in directory.iterdir() if p.is_file()):
+        where = f"{RECORDS.as_posix()}/{path.name}"
+        system = system_of.get(path.name)
+        if system is None:
+            findings.append(
+                f"{where}: no owning system has this proof file name (expected `{{slug with underscores}}.toml`)"
+            )
+        file_rows = tomllib.loads(path.read_text(encoding="utf-8")).get("proof", [])
+        rows += file_rows
+        for n, row in enumerate(file_rows, 1):
+            findings += _route_findings(where, n, row) + _test_findings(where, n, row, owners)
+            if system is not None:
+                findings += _owner_findings(where, n, row, owners, system)
     return rows, findings
 
 

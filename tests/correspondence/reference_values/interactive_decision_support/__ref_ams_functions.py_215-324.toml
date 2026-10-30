@@ -1,0 +1,18 @@
+unit = "__ref_ams_functions.py:215-324"
+
+[key]
+cuts = ["cut-lines:1:174610d747c5455adc3ef4015275572301278a5e28aa4ab1b46de5c89010ab38"]
+fixtures = ["ids_fit_plain=npz-bytes:1:669b690e51cac2b6ab36ab46a78b90ece817154679aad7249f34d441538e3a25", "ids_table_plain=npz-bytes:1:f75ba3801ecfbbfc29e394630c622c07d03635cc875919cf2fc772fa93daa875", "ids_fit_transformed=npz-bytes:1:7ce98d0e06e33cb0ca0104aeeb3855e0ce23a8ac9053a90f756885fa3e0d0de7", "ids_table_transformed=npz-bytes:1:000831c81509c9ed7d1bc4bbb53ca60ae2249d528f6690fec256ac8a3ca34ce1", "ids_fit_shifted=npz-bytes:1:35d9d33cc0f59961cd8fd9e84fc7aabf64ea54d3356acc4e2896740c186b7f52", "ids_table_shifted=npz-bytes:1:486531d60347e97f061e3f9cf0e12bcc333c9e821b4f295d7e430a6520dc5646"]
+lift = "lift:1:860be8d1d71c0e80fe98eb217e2565fa8c0ca862a58bef6a0ca7e2137803dd68"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "__ref_ams_functions.py_215-324.npz"
+digest = "npz-bytes:1:d3fb7eab2a727bc7051c77971e3b90164b0ade3071da5e37e2d3159c9d453d97"

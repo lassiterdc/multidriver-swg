@@ -1,0 +1,18 @@
+unit = "_b6_simulate_from_vincop.py:384-392"
+
+[key]
+cuts = ["cut-lines:1:2e984652da2ca000b65fe7240ce7581dc0f5c560a9d42ec0ed6918ead79abd01"]
+fixtures = ["sim_counts=npz-bytes:1:bc7a70830237ba063acd19fc3177ae1dac6c7c871f8fe0ce845bdaaf752dd3da", "sim_valid_dates=npz-bytes:1:6c0d863b49a4e660d5a9e72bccea932bd665e62ab7ebcebed0aeb4ac57c88f64"]
+lift = "lift:1:bcc7e5c4cbfec4d339cb53b352ed18c4d58d857d755ec8906226714d0d5947a8"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b6_simulate_from_vincop.py_384-392.npz"
+digest = "npz-bytes:1:0f3c3e8204a88812d498c542e5e51139ae5551b9c9c42da139c20d4319e317c3"

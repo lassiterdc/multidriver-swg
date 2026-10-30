@@ -1,0 +1,18 @@
+unit = "_utils.py:2310-2322"
+
+[key]
+cuts = ["cut-lines:1:55f6db240d9082022326db2f9e5cc56d3777e23949a6bdbc7c03a2320b8fd413"]
+fixtures = ["ids_corr_listing=npz-bytes:1:0b02ee155a36f79c3cebf5f71e2c3a9962fd4578a603a21bea050b612d364d11"]
+lift = "lift:1:88a64a72b04c43a01267583ee39f55a33cd8a27ca668dfe20bd71213b512deba"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_2310-2322.npz"
+digest = "npz-bytes:1:63da31c84b54d274483f98b302165a2e6148050cd0824b71f2b1d7f1ad508275"

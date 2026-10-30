@@ -1,0 +1,18 @@
+unit = "_utils.py:1269-1422"
+
+[key]
+cuts = ["cut-lines:1:545528afe9cec9b5d0031110744a573888f752a9978c5548aef65dda320ef849"]
+fixtures = ["rain_mrms=npz-bytes:1:7858022a652bff48733bb32b66e917a85d1b4875738cce472147bb1520c6cf0a"]
+lift = "lift:1:97ff3608a515eaa25bce9768b09a49d9802dea4437a5d4a7beee6a43ff4fa2d8"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_1269-1422.npz"
+digest = "npz-bytes:1:6787868ddc5a25783abcf533ff7f8d3473a182d52ac63c7a7244f1984a7fdb76"

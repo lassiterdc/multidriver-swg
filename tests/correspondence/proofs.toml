@@ -1,6 +1,0 @@
-rule = "proof-record:1"
-statement = "One row per proven equivalence test. A test with no row is counted unproven by the port-state declaration."
-# [[proof]]
-# family = "equivalence", unit = "{unit key}", part = "{part}" (optional),
-# route = "authoring-red" | "mutation", site = "{path}:{line}", exception = "AssertionError",
-# commit = "{40 hex}", and for route "mutation": mutation = "{the change made}", restored = true

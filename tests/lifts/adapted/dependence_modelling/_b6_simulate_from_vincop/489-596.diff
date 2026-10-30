@@ -1,0 +1,11 @@
+--- stored
++++ adapted
+@@ -27,7 +27,7 @@
+ lst_df_simulated_realspace = []
+ dic_frac_invalid = {}
+ dic_full_over_sim = {}
+-from __ref_ams_functions import *
++# adapted: the names the legacy functions module supplies are bound by the declaration, not imported
+ for event_type_key in dic_copulas:
+     if event_type_key in lst_sim_to_skip: # not modeling all events at the same time since the marginal fit qualities were poor
+         continue 

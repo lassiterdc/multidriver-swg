@@ -15,9 +15,10 @@ run, so without a run record the ported count is `not measured` — except in a 
 equivalence test at all, in which case no unit can be ported and the count is a measured 0. That exception is
 what makes the declaration usable before the first equivalence test is written.
 
-A test is unproven when the tracked proof records (`tests/correspondence/proofs.toml`) hold no row
-for it. Only equivalence tests are counted: a refactor reminder is written to fail until an
-equivalence test takes its place, so there is no proof of it to record.
+A test is unproven when the tracked proof records (the owning systems' files under
+`tests/correspondence/proofs/`, read together by `proofs.load`) hold no row for it. Only
+equivalence tests are counted: a refactor reminder is written to fail until an equivalence test
+takes its place, so there is no proof of it to record.
 
 Run as `python -m tests.correspondence.port_state [--run-record {path}]`; it prints the line and
 exits 0. It writes nothing.

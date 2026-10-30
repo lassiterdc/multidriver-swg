@@ -1,0 +1,18 @@
+unit = "_inputs.py:37-199"
+
+[key]
+cuts = ["cut-lines:1:f0b00fb4c072862b0f5db66b5220a821dc4fc1976e0781cb315045a19fc56ae1"]
+fixtures = []
+lift = "lift:1:bca2299d4c97878c3c636482d40aebd44faff93576e1ed82d2b9b19bc62631f8"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_inputs.py_37-199.npz"
+digest = "npz-bytes:1:26a01967bda508034deacb63f7a2aa4e18cc4bc11689f073cc911b39b5989bc2"

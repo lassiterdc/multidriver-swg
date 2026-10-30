@@ -1,0 +1,18 @@
+unit = "_utils.py:1239-1256"
+
+[key]
+cuts = ["cut-lines:1:8776c74a18b7ecc0f0c3595ba1fade379fe84abf934ea79a9c83d77ebb8186bf"]
+fixtures = ["ids_marg_summary_surge=npz-bytes:1:577538eb7de703df8a36a8afc087b98cf48a0934a51d54e62180d7599559feb2", "ids_marg_summary_rain=npz-bytes:1:399c8243e2924e58dd4e02d15a70e7e9d51bdb75be9a94d18703683b12cae9f8", "ids_marg_summary_compound=npz-bytes:1:139f634180903daf8d6684cfce4f1a4090a24359b74029ff52c929191cf6d9df", "ids_marg_perf_surge=npz-bytes:1:274f182e14c9c9d957ebce64ad1af2ff01617a8e7b27c6a8fc90c14018de20ff", "ids_marg_perf_rain=npz-bytes:1:4e59488064875917c545fa788ce30f5b483f1b31d3835b7dd8318cfddc749b36", "ids_marg_perf_compound=npz-bytes:1:b4475b99639d60ebe7e8fc7935d23664e2fa88c935e5dcfb90cf9c04c7bdeb27"]
+lift = "lift:1:099315300f7c6a85fb13a75248363559ad6dc0253efcd33e4809949ff4f450ed"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_1239-1256.npz"
+digest = "npz-bytes:1:3b1872f7d1f808ab20e40a34c2067783509d205ee8d1c83f510842469d77ea51"

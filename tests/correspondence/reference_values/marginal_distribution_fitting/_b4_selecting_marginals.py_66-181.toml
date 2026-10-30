@@ -1,0 +1,18 @@
+unit = "_b4_selecting_marginals.py:66-181"
+
+[key]
+cuts = ["cut-lines:1:31a75a8712f3718ce7e49b696dc59b38a20ac4d1e2f1da90908f75b60a4ea7a2"]
+fixtures = ["msel_surge_events=npz-bytes:1:d53a7a38095752a4812192b2c27927eacab47724582f789640a20d73ed8bf6a9", "msel_rain_events=npz-bytes:1:507d998c324bef32d613adcede96a8eab0129562795d181c6343d57106701bdd", "msel_compound_events=npz-bytes:1:17704dd767a90f687807184bde38cd5fce61da01d03de6e37fd5f711b0d158e2"]
+lift = "lift:1:116c31932d30f3059502169af8f56d3b33621279c97f002aea6fdd4f6969b93a"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b4_selecting_marginals.py_66-181.npz"
+digest = "npz-bytes:1:4bc96c2811968d03b01fbae675b39de8fe107ad608991186ccf9ee4be1ccffa0"

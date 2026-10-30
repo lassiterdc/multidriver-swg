@@ -1,0 +1,18 @@
+unit = "_b3_event_analysis.py:135-220"
+
+[key]
+cuts = ["cut-lines:1:64e1481edd75c069555ea08da0e21bc1206396ad34e1ea4cbf61afc1aed3bad8"]
+fixtures = ["oea_wl_mrms_tseries=npz-bytes:1:0f1a5977fd853b69bfc976b36abf6a63f17c97ff00e6c5ce89a1a0382ccdaeb5", "oea_wl_aorc_tseries=npz-bytes:1:61684246e6faa772c7d3883d8750e585560b2b1cdb070284fe6a8ef6fac623c4", "oea_wl_mrms_summary=npz-bytes:1:adc5ce23eab9e15d3e107714c468c578d6862a7c1cdc9c6d624f98193a6b1557", "oea_wl_aorc_summary=npz-bytes:1:8ba2da610fb1923ac0e8da2b3e0c391a7fbe85bc7de53bc72c13c6f0a73b78d0", "oea_partial_tseries_mrms=npz-bytes:1:e325e7bfa1653dcb46ad6639f4c2375d98876f85992efb17c4e5f35bbe69b314", "oea_partial_tseries_aorc=npz-bytes:1:205cb6c892756b3ab7016bec90b5e1a2fdbb44e4eeee00f4b28fbfbb00077c75", "oea_partial_summary_mrms=npz-bytes:1:6287c7f724e426d4c23b980f74a5760d4a0cb4ca630bb81ed1aa025725eb81fd", "oea_partial_summary_aorc=npz-bytes:1:83679d6b7ea2c5fcb43d57d1c9b1f54e9b97e2475a5a3f9a58b3d25dbdcde5c6"]
+lift = "lift:1:7bedad2e8decff7e5a76bbd7a3be7dc4c7fda50ef3884a3c9b85838bb9f26593"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b3_event_analysis.py_135-220.npz"
+digest = "npz-bytes:1:86da92b74e417f6962be31980e8a761cdb976783fd17977997553bfd4d8654e9"

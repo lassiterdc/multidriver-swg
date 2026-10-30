@@ -1,0 +1,18 @@
+unit = "_b2_event_selection.py:386-392,406-411"
+
+[key]
+cuts = ["cut-lines:1:0e4531c610a978118e70d38e855cf5e11a83e2a569a6700fd501534e736ae5da", "cut-lines:1:146126ad471ad8c0295a350d66201b43f5b65b3ddef69fdf847d12b78a8952f5"]
+fixtures = ["ora_events_mrms=npz-bytes:1:269a43bb4aa70b88e5b8c408ab7a64190bf6dfe433554b37046a16a76b01f35f", "ora_events_aorc=npz-bytes:1:89c6a0eabb4e1f6bce5b82510b22b85bbc924c425a3cd3ac42ee6b2b87c3caaa", "ora_events_ncei=npz-bytes:1:f62c86f5accbef04473a8fbeb7caba5321e808d5e7fcd8403b8e252d55741c1c"]
+lift = "lift:1:da78e7c7be5918d89a6acdac003e208b2c5c1295f314d1e2673e779e178e7f47"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b2_event_selection.py_386-392_406-411.npz"
+digest = "npz-bytes:1:10a106171332979d560cf9bc1ddea7e2d99c4b16937293f8e8a1d2a3efdf83b8"

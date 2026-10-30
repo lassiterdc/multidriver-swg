@@ -1,0 +1,19 @@
+unit = "_b6_simulate_from_vincop.py:479-488"
+part = "draw-law"
+
+[key]
+cuts = ["cut-lines:1:7e8b9b2c95c60823c5f2ac771c9cd3aa3a2f3e34e80e92cc89a89d0849e92a97"]
+fixtures = ["sim_observed_occurrences=npz-bytes:1:485a0b654ff7093a0735dc8e5b2dc77d4bc8e122455baad643bbce10fa8e6016"]
+lift = "lift:1:28a3c0a1962db1d5b006026fdd45c6211912c78587ac220833ac855c5f5fad25"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b6_simulate_from_vincop.py_479-488__draw-law.npz"
+digest = "npz-bytes:1:93a2fce740d0fe396a8dc3adb6e451218dc21ba24f872d4d3518a9af5ba2bf91"

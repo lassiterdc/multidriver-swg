@@ -1,0 +1,10 @@
+#%% generating event occurenaces by bootstrapping with replacement
+df_occurences_sim = df_occurences_obs.sample(n=n_years_to_simulate, replace = True, random_state = random_seed).reset_index(drop = True)
+df_occurences_sim = df_occurences_sim.astype(int)
+savefig_filename = f"{dir_plot}event_occurences_simulated_{n_years_of_weather_to_generate}yrs.png"
+txt_fig_caption = f"n={n_years_of_weather_to_generate} years of event occurences simulated by sampling with replacement {len(df_occurences_obs)} continuous 365-day event counts"
+compare_sim_vs_obs_event_occurances(df_occurences_sim.iloc[0:n_years_of_weather_to_generate, :], df_occurences_obs, txt_fig_caption = txt_fig_caption, savefig_filename=savefig_filename, plot_n_count = True)
+
+df_occurences_sim.index.name = "year"
+written_event_counts = df_occurences_sim.iloc[0:n_years_of_weather_to_generate, :].copy()  # adapted: the file write is kept in memory
+

@@ -1,0 +1,18 @@
+unit = "_utils.py:410-420"
+
+[key]
+cuts = ["cut-lines:1:c0f0f53e259dcbcf9ef15a91817aea99299930c746892cafe6700f9a1424baff"]
+fixtures = ["msel_cdf_long=npz-bytes:1:bdb562b83666621a6acde4aa3ae184a7af30a70edc6a1371662c354cabf00eac"]
+lift = "lift:1:9df43c68b61ec8c7b744b1d1b6d0c2de6da93d70c330e662b46ac83775627fa0"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_410-420.npz"
+digest = "npz-bytes:1:a1052ffe0b3cd02e707f494bf89f03fcb9d2a801a3f4eadebebba682adedac3d"

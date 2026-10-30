@@ -1,0 +1,18 @@
+unit = "_utils.py:922-990"
+
+[key]
+cuts = ["cut-lines:1:cec2082f2179b8214be6828a5a2b22b73d52c27a5e247bf7492853a5841a587a"]
+fixtures = ["ou_monte_carlo_results=npz-bytes:1:5002addabdfd5c0139e77780a2ee4b1f026762b432d9af32673b0463f521529e"]
+lift = "lift:1:590be5ede65b4be8faa5a78116beb62e4ce0ad3b30c5ca831a22acd31340ec46"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_922-990.npz"
+digest = "npz-bytes:1:d1b051c39ac80a5c98c6ad91eb58ba905038bb83bc91913a7f78a995fc80fe89"

@@ -1,0 +1,18 @@
+unit = "_utils.py:1990-2016"
+
+[key]
+cuts = ["cut-lines:1:dd997b83f435d40b0ee05cc11bb5f5be016596156a8be0a63a6496828b69368c"]
+fixtures = ["ou_ncei_hourly=npz-bytes:1:8be24e4b192230d3245cb95f34d8c96769028380cad338f55f8dc64bdfdab7b7"]
+lift = "lift:1:6b57f6a909ec19831c9d2d6f29270724678fd00d5af9cbb5aa8829683108bbe8"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_1990-2016.npz"
+digest = "npz-bytes:1:ddbbb7bcd2a3cc35dd0cb86ce6d160fc830efe759646cd698f7623d9ce3e0fbd"

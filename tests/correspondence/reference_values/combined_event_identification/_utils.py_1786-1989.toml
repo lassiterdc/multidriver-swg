@@ -1,0 +1,18 @@
+unit = "_utils.py:1786-1989"
+
+[key]
+cuts = ["cut-lines:1:af744209234c86910e2a893c693c7c6429b54d171b0c4f6e6aa12fbf4d129b65"]
+fixtures = ["wlevels_6min=npz-bytes:1:398f10d3a0ac6f557cd3ccd49e6b449b8ee06d221aa5f5e9563876ef3ba09156", "cmb_surge_summary=npz-bytes:1:d5d79fe2def2de3c4fc91114227fc464dc4180c4c2c6da5fde3aa64a4fcdcc0a", "cmb_surge_tseries=npz-bytes:1:5ad8502e1c31bfec431d7a4cd85a249000fe24ae0a745041408423a55258fe8f", "cmb_rain_mrms_series=npz-bytes:1:7395734f24b7972994609ad9297833aef55573341938395da95fc3e4507d9677", "cmb_rain_mrms_summary=npz-bytes:1:de9e04e339c794382f111e383ee9e52613366c30d0be854e4c1178f7bc4b1b75", "cmb_rain_mrms_tseries=npz-bytes:1:307931d93c82035347f6df1b2f043fc1630a4deb0be053dcbc449609489d0e89", "cmb_rain_ncei_series=npz-bytes:1:399a5887ddeedf0837fb8fe5c5442e5d3513698e99097f2f96ca781669e7e7e3", "cmb_rain_ncei_summary=npz-bytes:1:41c2083c0749210e2bc963c52f1e6333a707b7bd792cfe9f301237e0b6395179", "cmb_rain_ncei_tseries=npz-bytes:1:a94c5398300e9748cdd2c959b0bcefdabd889e378547923c31ec93d07365e77d"]
+lift = "lift:1:fe507cd5bb49fc2891840ed16d5b5a1c8fb4ced2c3d925b47dc7b2a1603b928f"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_1786-1989.npz"
+digest = "npz-bytes:1:5373f20793ef6bffe0ced7529d3217e4c110fe217b66dd9bc4fc8c298b5ae38a"

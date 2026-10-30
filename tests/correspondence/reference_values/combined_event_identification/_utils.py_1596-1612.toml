@@ -1,0 +1,18 @@
+unit = "_utils.py:1596-1612"
+
+[key]
+cuts = ["cut-lines:1:9e9d6f5a7beddc7506e4a288778cbcf083e3042d25533bf28175515c4ebc426d"]
+fixtures = ["cmb_surge_summary=npz-bytes:1:d5d79fe2def2de3c4fc91114227fc464dc4180c4c2c6da5fde3aa64a4fcdcc0a", "cmb_surge_tseries=npz-bytes:1:5ad8502e1c31bfec431d7a4cd85a249000fe24ae0a745041408423a55258fe8f", "wlevels_6min=npz-bytes:1:398f10d3a0ac6f557cd3ccd49e6b449b8ee06d221aa5f5e9563876ef3ba09156"]
+lift = "lift:1:e7dda4de20600e86cc3ea8d5efae2769aff37a64fa04dee65892021a6358132d"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_utils.py_1596-1612.npz"
+digest = "npz-bytes:1:13333a8eea615252d5e14b254affa7023bfe281f0325655c9b8038f6df8d3d1a"

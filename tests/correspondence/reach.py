@@ -24,6 +24,11 @@ This module holds the three parts of that remedy.
 - The check: `reach_findings` runs every entry's lift on its committed fixtures and names the lines
   of the entry that the run did not reach, and names an entry whose digests no longer match its unit's
   stored texts or its lift as stale instead of trusting it.
+- The named absence: a `[[named]]` table in the same file records a declaration that has no entry and
+  that no real input has been shown to measure, with the reason stating the measurement that shows the
+  absence. It is a record, not an exemption: a named declaration that also has an entry, or that matches
+  no declared lift, is a finding, and the count `summary_line` prints is the declarations that are
+  neither entered nor named, so a named absence is visible beside it rather than folded into it.
 
 `python -m tests.correspondence.reach measure --system {slug} --unit {key} [--part {part}] --inputs
 {directory}` runs the declared lift once on real inputs and prints the entry for its author to commit.
@@ -56,6 +61,7 @@ from tests.correspondence import extraction, lift, value_codec
 REPO_ROOT = extraction.REPO_ROOT
 REACH = Path("tests/correspondence/reach")
 _FIELDS = ("unit", "cuts", "lift", "measured", "commit", "lines")
+_NAMED_FIELDS = ("unit", "reason")
 
 
 class ReachError(Exception):
@@ -252,16 +258,51 @@ class ReachReport:
     findings: list[str]
     declared: int
     entries: int
+    named: int
     without_entry: int
+
+
+def read_named(root: Path = REPO_ROOT) -> list[tuple[str, dict]]:
+    """Every `[[named]]` table under `{root}/tests/correspondence/reach/`, as (system, table), refusing a malformed or duplicated one.
+
+    A named table records a declaration with no entry that no real input has been shown to measure: its unit, its
+    part where it has one, and the reason, which states the measurement that shows the absence. A table lacking a
+    field or holding an empty reason is refused naming the file and the unit; so are two tables of one (unit, part)
+    in one file.
+    """
+    directory = Path(root) / REACH
+    if not directory.is_dir():
+        return []
+    named = []
+    for path in sorted(directory.glob("*.toml")):
+        try:
+            document = tomllib.loads(path.read_text(encoding="utf-8"))
+        except (tomllib.TOMLDecodeError, UnicodeDecodeError) as exc:
+            raise ReachError(f"{path}: not readable TOML ({exc})") from exc
+        seen: set[tuple[str, str | None]] = set()
+        for table in document.get("named", []):
+            where = f"{path}: named {table.get('unit')!r}"
+            missing = [name for name in _NAMED_FIELDS if name not in table]
+            if missing:
+                raise ReachError(f"{where} lacks the fields {missing}")
+            if not isinstance(table["reason"], str) or not table["reason"].strip():
+                raise ReachError(f"{where}: the reason must be a non-empty string")
+            key = (table["unit"], table.get("part"))
+            if key in seen:
+                raise ReachError(f"{where}: recorded twice")
+            seen.add(key)
+            named.append((path.stem, table))
+    return named
 
 
 def reach_findings(root: Path = REPO_ROOT) -> ReachReport:
     """Run every entry's lift on its committed fixtures and report the entry lines it did not reach.
 
     An entry is stale, and is reported as such without running anything, when its cut digests or its
-    lift digest differ from the unit's now. An entry that matches no declared lift is reported. The
-    report also counts the declared lifts that have no entry at all, so that a pass over no entries
-    reads as what it is.
+    lift digest differ from the unit's now. An entry that matches no declared lift is reported. A named
+    absence that matches no declared lift, or that also has an entry, is reported. The report also counts
+    the declared lifts that are neither entered nor named, so that a pass over no entries reads as what
+    it is.
     """
     root = Path(root)
     declarations = lift.discover(root)
@@ -291,7 +332,20 @@ def reach_findings(root: Path = REPO_ROOT) -> ReachReport:
         missed = sorted(set(entry["lines"]) - reached.lines)
         if missed:
             findings.append(f"{label}: the committed fixtures do not reach legacy lines {missed}")
-    return ReachReport(findings, len(declarations), len(entries), len(set(by_key) - covered))
+    absent: set[tuple[str, str, str | None]] = set()
+    for system, table in read_named(root):
+        key = (system, table["unit"], table.get("part"))
+        label = f"named absence {table['unit']!r}" + (f" part {table['part']!r}" if "part" in table else "")
+        if key not in by_key:
+            findings.append(f"{label} of system {system!r}: no declared lift matches it")
+            continue
+        if key in covered:
+            findings.append(
+                f"{label} of system {system!r}: it has a reach entry, so naming it as absent contradicts the entry"
+            )
+            continue
+        absent.add(key)
+    return ReachReport(findings, len(declarations), len(entries), len(absent), len(set(by_key) - covered - absent))
 
 
 def summary_line(report: ReachReport) -> str:
@@ -299,7 +353,7 @@ def summary_line(report: ReachReport) -> str:
     return (
         f"reach: {report.entries} entr{'y' if report.entries == 1 else 'ies'}, "
         f"{report.declared} declared lift(s), {report.without_entry} declared lift(s) with no entry, "
-        f"{len(report.findings)} finding(s)"
+        f"{report.named} named absence(s), {len(report.findings)} finding(s)"
     )
 
 

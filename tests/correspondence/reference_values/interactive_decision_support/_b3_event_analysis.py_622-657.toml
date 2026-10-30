@@ -1,0 +1,18 @@
+unit = "_b3_event_analysis.py:622-657"
+
+[key]
+cuts = ["cut-lines:1:c0fecd1b3d5800fa87fe1e340c7b318b05cbf81ce73b43087d8aa5fbe8a5dbbe"]
+fixtures = ["ids_combined_summaries=npz-bytes:1:32f800048554982914888329333846584074f4b6e4c158f370f5ce834ece956e"]
+lift = "lift:1:7ac45e2338e4271100f53afdde70732ff2db3078f60cfa0ee9f25ed900d26a61"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b3_event_analysis.py_622-657.npz"
+digest = "npz-bytes:1:259931b124f7fc684fdb2437771f98a0a7afa02152fe3a1a6353e2463e74653b"

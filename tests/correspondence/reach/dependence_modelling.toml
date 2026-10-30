@@ -1,0 +1,89 @@
+[[entry]]
+unit = "_b5_fit_vine_copulas.py:120-127"
+cuts = ["cut-lines:1:d6ec7761d6d47ba44e6fd879ffc0b5d03b723e3f0d79bf4df82afed629be00c0"]
+lift = "lift:1:66b4b11cd6e07088d24bf8ae5be90a1f08fd8fad93f5cda3b63c6624fbe0395b"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [121, 122, 123, 124, 125]
+
+[[entry]]
+unit = "_b5_fit_vine_copulas.py:128-240"
+cuts = ["cut-lines:1:1fbf47b7013526c0e6b7741eb42643354371c66d8d7a10baf5f365fcecca16a1"]
+lift = "lift:1:329aa1325e6f2802180084916a5b6c7a0ef68c300295d1fa09a746c3958eaf3e"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 155, 158, 161, 163, 164, 165, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 183, 184, 185, 186, 187, 188, 189, 191, 192, 193, 194, 195, 196, 197, 198, 202, 205, 206, 207, 209, 210, 211, 212, 213, 214, 215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 228, 230, 231, 232, 233, 234, 236, 237, 239]
+
+[[entry]]
+unit = "_b5_fit_vine_copulas.py:297-328"
+cuts = ["cut-lines:1:8ff2d142005168627b39d69d39a2ece164fbb4c3b0b0e57f6f52565c0b3a76da"]
+lift = "lift:1:0988773fa7e8cbb3c8c26676c182dab833be604953eee2776836770e662be4ff"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [298, 299, 300, 301, 302, 303, 304, 306, 307, 309, 310, 312, 313, 314, 315, 316, 317, 318, 320, 321, 323, 325, 326, 327, 328]
+
+[[entry]]
+unit = "_b5_fit_vine_copulas.py:58-71"
+cuts = ["cut-lines:1:8be614a46a8213b16672ec7a4dcf588adc63b56fbc661a7a1ceadd8f9ee3258c"]
+lift = "lift:1:ce36445b803d8030ac5fb3dc992309a972e094ede23c26583d617ede0443347c"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [60, 61, 62, 63, 65, 67, 69, 70, 71]
+
+[[entry]]
+unit = "_b5_fit_vine_copulas.py:72-75"
+cuts = ["cut-lines:1:ccbb3f556df6d718de11f1980cca6eb116ca913821018a2816c5155fc59a1b8f"]
+lift = "lift:1:05a960d1104c2f00741114dcee0a0fc81b9839e246a7d82b911c11f3219cf0ab"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [73, 74, 75]
+
+[[entry]]
+unit = "_b5_fit_vine_copulas.py:76-96"
+cuts = ["cut-lines:1:4478de3f0d6a992d5dbb2571eba1f9d5efdc2c516d9402ef821f77bf4fe44b65"]
+lift = "lift:1:da5ae75927f23c2bc89d46afc67223417a5100c913e130e6f44d4c1196495fe0"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 92, 95, 96]
+
+[[entry]]
+unit = "_b5_fit_vine_copulas.py:97-119"
+cuts = ["cut-lines:1:1cee0038b11a5b982bcf6f10e6898be1513131fed3a5f8c17b3ae26ea978bd8d"]
+lift = "lift:1:c6da728ad2ad37428cb927718e551f4d321b7cf11d86e68e344ba35503096c19"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [100, 101, 102, 104, 107, 108, 109, 110, 111, 112, 113, 114, 116, 117, 118, 119]
+
+[[entry]]
+unit = "_utils.py:421-434"
+cuts = ["cut-lines:1:4ef6e81b8733a313a33f666ed883055d16ca97779e8c7c13d1f63dfdb23def9d"]
+lift = "lift:1:dab0833d9d33c40efc1e63a5b0967a8aeef1e760224a34d1173d0be8601cd57e"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [422, 424, 425, 426, 427, 428, 429, 431, 432, 433, 434]
+
+[[entry]]
+unit = "_utils.py:421-434"
+part = "draw-law"
+cuts = ["cut-lines:1:4ef6e81b8733a313a33f666ed883055d16ca97779e8c7c13d1f63dfdb23def9d"]
+lift = "lift:1:acdfb0330228f9c26d180b512114185680511af7a858377204f0544c98215041"
+measured = "2026-10-29"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [422]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:489-596"
+cuts = ["cut-lines:1:e2a633f75d8d75c0fbb288b40aa2904193041268ced38046a04a67ed32700f1a"]
+lift = "lift:1:131fd33426e968bf2a87f2f4d858ce8162650f16a3ba50528c9f5235eacaf38c"
+measured = "2026-10-30"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [491, 492, 494, 495, 496, 497, 499, 500, 501, 503, 504, 505, 507, 508, 509, 510, 512, 514, 515, 516, 517, 519, 520, 523, 524, 525, 526, 527, 529, 530, 531, 532, 533, 535, 536, 537, 538, 540, 541, 542, 543, 544, 545, 547, 548, 550, 551, 552, 553, 554, 555, 556, 557, 558, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 576, 580, 582, 583, 588, 589, 590, 591, 593]
+
+[[entry]]
+unit = "_b6_simulate_from_vincop.py:489-596"
+part = "draw-law"
+cuts = ["cut-lines:1:e2a633f75d8d75c0fbb288b40aa2904193041268ced38046a04a67ed32700f1a"]
+lift = "lift:1:93e890b2d047cfd5b68b9b7265b47a29c1292359f9da4d8e155434a18a7a7db6"
+measured = "2026-10-30"
+commit = "8deabbbd5fa7775e77aca46547d12b2e2d7f8ddc"
+lines = [491, 492, 494, 495, 496, 497, 499, 500, 501, 503, 504, 505, 507, 508, 509, 510, 512, 514, 515, 516, 517, 519, 520, 523, 524, 525, 526, 527, 529, 530, 531, 532, 533, 535, 540, 541, 542, 543, 544, 547, 548, 550, 551, 552, 553, 554, 555, 556, 557, 558, 560, 561, 562, 563, 566, 569, 570, 571, 576, 580, 582, 583, 588, 589, 590, 591, 593, 594]

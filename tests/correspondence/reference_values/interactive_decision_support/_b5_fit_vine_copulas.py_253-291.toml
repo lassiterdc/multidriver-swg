@@ -1,0 +1,18 @@
+unit = "_b5_fit_vine_copulas.py:253-291"
+
+[key]
+cuts = ["cut-lines:1:9c716c7c2aae60509858fc3bfd4a4c7acd7761efdd49170664e17fd163ebf8e8"]
+fixtures = ["ids_cdf_long_surge=npz-bytes:1:6205bc4a0e9c2c93b2883a977beed9dd2da4c99c52022a1eed75fb78c21172b1", "ids_cdf_long_rain=npz-bytes:1:a28338bcd55ae947d0a492da6caef47797c5a9f353fa4b501bb1cfab45de511f", "ids_cdf_long_compound=npz-bytes:1:e76b46211a98814be542c4cab3f63412a86f173568afd69b08923cdd02c550d1", "ids_vinecop_json=npz-bytes:1:97e95a9c620269ac8af7ffe67ed66938ec1e42ecf5cd02d15afa1db200fa1cd2", "ids_sensitivity_results=npz-bytes:1:34aa509c30b3f3f54b70f7eefb697bd5bd1953404c0aff9a0e7b4555e563a68f", "seed=npz-bytes:1:a53af0b9710ff4073920b39aa598a9ed5ed4823e0a4c52fd5700fe4962d82de3"]
+lift = "lift:1:c4d4de630ad8cd185f2fa68b073de833f3f70ef18984683289caba740e9f4f1e"
+environment = "UNCHARACTERIZED"
+
+[diagnostics]
+python = "3.11.17"
+numpy = "2.4.6"
+pandas = "2.3.3"
+xarray = "2026.9.0"
+scipy = "1.17.1"
+
+[payload]
+file = "_b5_fit_vine_copulas.py_253-291.npz"
+digest = "npz-bytes:1:168a9133ac4385d156b8b2fce206dc5f95ae9deaac2770c3257e790e414065f6"

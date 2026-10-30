@@ -2,7 +2,7 @@
 
 The synthetic cases copy the corpus record, the tracked legacy corpus, the ledger and the system-scope
 file into a git repository inside `tmp_path` (staged, never committed), then add a synthetic test file whose
-equivalence tests bear the key of the first retained unit, a proof-record file, and, where the
+equivalence tests bear the key of the first retained unit, the owning system's proof-record file, and, where the
 case needs one, a synthetic run record in the form the recorder writes. Each synthetic case reads
 the declaration's counts rather than its printed line, so a change to how the line is rendered
 reds only the two line tests.
@@ -22,6 +22,8 @@ from tests.correspondence import corpus_record, extent, ledger, port_state, proo
 pytestmark = pytest.mark.state_check
 
 SYSTEM = "pre-refactor-correspondence"
+# The owning system's proof file, spelled here and not by the module under test.
+PROOF_FILE = f"{SYSTEM.replace('-', '_')}.toml"
 PROOFS_HEADER = 'rule = "proof-record:1"\nstatement = "synthetic"\n'
 RULE_TEXT = (
     "a unit is ported once it has one or more equivalence tests and each of them "
@@ -67,7 +69,8 @@ def _tree(tmp_path: Path, parts: list[str], proof_parts: list[str] = ()) -> tupl
         f'\n[[proof]]\nfamily = "equivalence"\nunit = "{key}"\npart = "{part}"\nroute = "authoring-red"\n'
         for part in proof_parts
     )
-    (tmp_path / proofs.RECORDS).write_text(PROOFS_HEADER + rows, encoding="utf-8")
+    (tmp_path / proofs.RECORDS).mkdir(parents=True)
+    (tmp_path / proofs.RECORDS / PROOF_FILE).write_text(PROOFS_HEADER + rows, encoding="utf-8")
     return tmp_path, key
 
 
@@ -237,7 +240,7 @@ def _independent_counts(root: Path) -> dict:
     the declaration's count while every row names an enumerated unit, which the ledger's check 1
     enforces. Not established: that a row's key names an enumerated unit, which this count does not
     test. The equivalence tests are the decorators that begin a line in the listed test files, and a
-    test is unproven when no `[[proof]]` row of the proof records names its unit and part.
+    test is unproven when no `[[proof]]` row of any file in the proof-records directory names its unit and part.
     """
     keys = set()
     for path in (root / ledger.LEDGER_DIR).glob("*.toml"):
@@ -247,7 +250,11 @@ def _independent_counts(root: Path) -> dict:
         for match in EQUIVALENCE_DECORATOR.finditer(path.read_text(encoding="utf-8")):
             values = {m["name"]: m["value"] for m in KEYWORD.finditer(match["args"])}
             tests.append((values.get("unit"), values.get("part")))
-    records = tomllib.loads((root / proofs.RECORDS).read_text(encoding="utf-8")).get("proof", [])
+    records = [
+        row
+        for path in sorted((root / proofs.RECORDS).glob("*.toml"))
+        for row in tomllib.loads(path.read_text(encoding="utf-8")).get("proof", [])
+    ]
     proven = {(row.get("unit"), row.get("part")) for row in records if row.get("family") == "equivalence"}
     return {
         "dispositioned": len(keys),
