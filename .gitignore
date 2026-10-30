@@ -227,6 +227,8 @@ __marimo__/
 # This block is rewritten automatically, so edits inside it are discarded.
 /.claude/settings.local.json
 /.clinerules
+/.codex/
+/.hermes.md
 /AGENTS.md
 /CLAUDE.md
 # <<< local agent entrypoints <<<
@@ -242,4 +244,3 @@ __marimo__/
 
 # A per-machine Codex harness config: a symlink into the local agentic-workspace
 # checkout, whose target path is machine-specific. Never commit it.
-/.codex/
