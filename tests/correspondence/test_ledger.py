@@ -192,12 +192,9 @@ def test_a_member_scope_out_without_acceptance_is_named(tmp_path):
     root = _ledger_fixture(tmp_path)
     text = (root / ledger.LEDGER_DIR / ledger.CEDED_FILE).read_text(encoding="utf-8")
     start = text.index('legacy_file = "_c_gen_ncei_hrly_and_daily_data.py"')
-    _edit(
-        root,
-        ledger.CEDED_FILE,
-        text[start : text.index('acceptance = "OPEN"\n', start) + 20],
-        text[start : text.index('acceptance = "OPEN"\n', start)],
-    )
+    line_start = text.index("\nacceptance = ", start) + 1
+    line_end = text.index("\n", line_start) + 1
+    _edit(root, ledger.CEDED_FILE, text[start:line_end], text[start:line_start])
     assert any(f.startswith("_c_gen_ncei_hrly_and_daily_data.py:") and "acceptance" in f for f in ledger.check_2(root))
 
 
