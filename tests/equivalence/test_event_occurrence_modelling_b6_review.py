@@ -20,7 +20,7 @@ def test_the_declared_draws_of_each_b6_lift_equal_the_unit_table():
 
     Class: each declaration of the system's `_b6` units; the violating input is the value lift of `479-488`, whose
     seeded `sample(random_state=24)` the table calls `seeded`. Reachability: `lift.discover` lists every declaration.
-    Why: the stored-value check keys on `draws`, and the Definition of Done's TO-5 line compares these triples with
+    Why: the stored-value check keys on `draws`, and the acceptance check compares these triples with
     the table by set comparison, so a wrong cell moves a count instead of failing there. The assertion turns on the
     declared value, which the current and a correct declaration both carry. Killed by: leaving `draws` at its default
     on the seeded value lift. Second correct implementation: reading the cell from the text's `random_state` use.

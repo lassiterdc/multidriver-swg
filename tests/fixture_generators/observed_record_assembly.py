@@ -243,7 +243,7 @@ def oea_summary_ncei(rng):
     return _analysis_summary(rng, 11.0)
 
 
-# ---- the partial-overlap case of the data-source priority cell (developer ruling U-21, outcome 2) ----
+# ---- the partial-overlap case of the data-source priority cell (a developer ruling) ----
 
 PARTIAL_MRMS_STARTS = [
     "2015-01-01 00:00",

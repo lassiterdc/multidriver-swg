@@ -8,10 +8,10 @@ once, so the compute systems of this package implement one interface rather than
 own, and it captures the record at run time in one place.
 
 The self-declaration ruling:
-"every compute system declares its implementation identity into the run's record through a small self-declaration interface it implements; the record is captured at run time, and no central registry is built"
+Each compute system states its own implementation identity in the run's record, through a small interface that the system itself implements; the record is made while the run is happening, and nothing like a central registry is built.
 
 The capture-not-reconstruct convention:
-"the record is captured at run time, never rebuilt from inputs afterwards"
+The record is captured while the run happens and is never rebuilt from the inputs afterwards.
 
 Two instruments enforce the interface's two halves, and neither covers the other, so a reader should
 not read one as covering both. The SHAPE half — a declaration returns an `ImplementationIdentity`

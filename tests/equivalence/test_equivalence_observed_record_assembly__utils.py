@@ -23,7 +23,7 @@ one draw shared by both); the seed written here is the one `derived_seed` gives 
 row counts the legacy call drew from, read by the lift's reduction as the call passed them.
 
 The priority combination function (2075-2153) holds the register entry at line 2123 in its OWN ranges, and developer
-ruling U-21 (outcome 2) gives it the same treatment as row 108: the lift runs it on a full-window replacement and on a
+a developer ruling gives it the same treatment as row 108: the lift runs it on a full-window replacement and on a
 loses-last-steps partial overlap with an untouched later event, and splits each returned table into the overlapped radar
 event's rows, keyed by its data source and its original span (its first to last stamp, and in the summary table
 `event_start` equal to its first stamp), and the rest. In the rest, `event_id` is the event's rank by start time, the map

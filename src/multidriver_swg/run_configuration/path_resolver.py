@@ -7,14 +7,14 @@ machine's arrangement into every machine's copy of the toolkit. So the path stay
 code names a path by a logical key, `domain.project.kind`, and a resolver returns the path from a
 binding document the estate supplies.
 
-The ruling this module implements, in its own two sentences, quoted verbatim so a later reader can
-check the code against the ruling rather than against a paraphrase of it:
+The module implements two rules, stated here in its own words so a later reader can check the code
+against them:
 
-    "Code names a path by a logical key (domain, project, kind); a toolkit-side resolver returns the path from an estate-side binding, so no tracked toolkit file carries a machine-specific path."
+    Code refers to a path only through a logical key (domain, project, kind); the path itself comes from a binding the estate supplies, so no tracked toolkit file holds a machine-specific path.
 
-    "An unbound logical key is a loud, actionable error — the resolver never silently defaults to a path — so a missing binding fails the run rather than resolving to a machine-specific location."
+    A logical key with no binding is an error that stops the run and says what to do about it; the resolver never falls back to a default path, so a missing binding fails the run instead of resolving to a machine-specific location.
 
-The refusals are the mechanism, not an error-reporting detail. The ruling's second sentence requires
+The refusals are the mechanism, not an error-reporting detail. The second rule requires
 a loud failure exactly where a silent default is available, so a refusal here owes its reader the
 operational specifics needed to recover: which key, which document, and which keys the document does
 bind. A refusal that named only the key would hand back the one fact the reader already had.

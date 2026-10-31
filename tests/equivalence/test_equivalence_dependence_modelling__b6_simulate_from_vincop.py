@@ -14,7 +14,7 @@ The value test compares everything that does not depend on the pandas `sample` c
 state, which is not seeded, so the unit declares `unseeded` and its value is not stored): the two thresholds, the
 event counts, the fraction invalid and the whole over-simulation of each event type, the number, source and columns of
 the events returned for each type, and the four counts checks. The vine copula's `simulate` is seeded: the legacy
-call names its seeds (`seeds = random_seed`), so it keeps them (U-16), and the lift binds that name to the committed
+call names its seeds (`seeds = random_seed`), so it keeps them (the rule for named seeds), and the lift binds that name to the committed
 fixture `seed`, which the test hands to the registered callable as `inputs["seed"]`; the callable passes it to each
 of the three `simulate` calls. The licence is the default of one part in a billion for floating-point data and exact
 for the rest, less two components, by name: the checks `chk2` and `chk3`, which count the sampled surge-only and

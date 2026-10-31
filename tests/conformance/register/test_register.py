@@ -39,9 +39,9 @@ def test_register_carries_the_36_equation_ids() -> None:
     filtered § B2 scrape, which skips the CROSS-REPO rows or the three implicit rows and
     still validates as JSON; this test is red under it because the key tuple differs.
     Reachability: a register missing any § B2 row reaches this assertion, and the real file
-    is the input. Both-states anchor: the comparison is over the key SET and ORDER the shape
+    is the input. Both-states anchor: the comparison is over the key SET and ORDER the specification
     fixes, not over any wording this change introduces.
-    Invocation isolation (B4-4, arm 2): the register and the loader are opened from
+    Invocation isolation: the register and the loader are opened from
     `__file__`, so neither the working directory nor which checkout the run resolves from can
     green or red this test; discrimination shown instead — dropping a row reddens it.
     Kills: dropping a row, renaming a row's id, or reordering the file.
@@ -53,7 +53,7 @@ def test_register_carries_the_36_equation_ids() -> None:
 
 
 def test_every_entry_carries_exactly_the_four_declared_fields() -> None:
-    """Property: each entry's field set equals the four fields the shape declares.
+    """Property: each entry's field set equals the four fields the specification declares.
 
     Class: NEW CAPABILITY — the plausible wrong implementation is a loader that checks the
     types of whatever fields are present and silently tolerates a missing or renamed one;
@@ -61,7 +61,7 @@ def test_every_entry_carries_exactly_the_four_declared_fields() -> None:
     Reachability: any entry with a dropped, renamed or added field reaches this assertion.
     Both-states anchor: set equality against the declared names, not against the loader's
     error path.
-    Invocation isolation (B4-4, arm 2): the entries come from the in-repo register, so no
+    Invocation isolation: the entries come from the in-repo register, so no
     invocation change reaches the field sets; discrimination shown instead — adding a fifth
     field to any entry reddens it.
     Kills: dropping `defect_list`, renaming `verbatim_span`, adding an unreviewed field.
@@ -81,7 +81,7 @@ def test_entry_field_types_match_the_schema() -> None:
     `line_range` arrived as a string.
     Reachability: a single-entry type error reaches this loop, and the real register is the
     input. Both-states anchor: the assertions read the values, never the loader's messages.
-    Invocation isolation (B4-4, arm 2): the values are read from the in-repo register, so no
+    Invocation isolation: the values are read from the in-repo register, so no
     invocation change reaches them; discrimination shown instead — writing one entry's
     `line_range` as a string reddens it.
     Kills: `line_range` written as `"250-250"`, a `defect_list` that becomes a bare string,
@@ -112,7 +112,7 @@ def test_empty_span_entries_record_why_the_manuscript_states_no_equation() -> No
     under it on either half.
     Reachability: an empty-span entry with a line range, or with an empty defect list,
     reaches the assertions. Both-states anchor: the assertions read the entry's own fields.
-    Invocation isolation (B4-4, arm 2): the entries are read from the in-repo register, so no
+    Invocation isolation: the entries are read from the in-repo register, so no
     invocation change reaches them; discrimination shown instead — giving E-34 a line range
     reddens it.
     Kills: an implicit equation given a manufactured line range, or recorded with no note.
@@ -137,7 +137,7 @@ def test_entry_returns_one_entry_and_hands_back_a_copy() -> None:
     cached dict itself, so one test's edit leaks into the next; red under it.
     Reachability: any caller that mutates a returned entry reaches the aliasing assertion.
     Both-states anchor: the second read is compared with the first, never with a literal.
-    Invocation isolation (B4-4, arm 2): the aliasing under test is between two in-process
+    Invocation isolation: the aliasing under test is between two in-process
     reads, so no invocation change reaches it; discrimination shown instead — returning the
     cached dict rather than a copy reddens it.
     Kills: returning the cache, or returning a shallow copy whose `defect_list` is shared.
@@ -159,7 +159,7 @@ def test_entry_rejects_an_unknown_id() -> None:
     Reachability: any misspelled or out-of-range id reaches the refusal.
     Both-states anchor: the assertion names the exception type and the id, not the wording
     of a message this change wrote.
-    Invocation isolation (B4-4, arm 2): the refusal is raised in-process from the in-repo
+    Invocation isolation: the refusal is raised in-process from the in-repo
     register, so no invocation change reaches it; discrimination shown instead — looking the
     id up in a bare dict raises the uncaught `KeyError` and reddens it.
     Kills: `entry` falling back to `None` for an unknown id.
@@ -177,7 +177,7 @@ def test_refuses_a_missing_entry(broken_register: dict) -> None:
     that every PRESENT entry is well formed; red under it because nothing is present to check.
     Reachability: deleting any row reaches the count/set check.
     Both-states anchor: the assertion is on the raised type and the named id.
-    Invocation isolation (B4-4, arm 2): the broken copy is built in memory from the in-repo
+    Invocation isolation: the broken copy is built in memory from the in-repo
     register, so no invocation change reaches it; discrimination shown instead — a validator
     that never checks the key count reddens it by accepting the truncated copy.
     Kills: validation over present entries only.
@@ -196,7 +196,7 @@ def test_refuses_an_extra_entry(broken_register: dict) -> None:
     subset of keys and ignores the rest; red under it.
     Reachability: an added key reaches the set check.
     Both-states anchor: the assertion names the exception and the offending id.
-    Invocation isolation (B4-4, arm 2): the extra key is added in memory, so no invocation
+    Invocation isolation: the extra key is added in memory, so no invocation
     change reaches it; discrimination shown instead — a validator that ignores keys outside
     the ones it found reddens it.
     Kills: accepting an unreviewed row, which is how a register grows without § B2 agreeing.
@@ -216,7 +216,7 @@ def test_refuses_a_wrong_field_type(broken_register: dict) -> None:
     types; red under it.
     Reachability: a string line range reaches the type branch.
     Both-states anchor: the assertion names the exception and E-04's id.
-    Invocation isolation (B4-4, arm 2): the bad value is written into an in-memory copy, so
+    Invocation isolation: the bad value is written into an in-memory copy, so
     no invocation change reaches it; discrimination shown instead — a validator that trusts
     leaf types reddens it.
     Kills: a hand-edited register whose line range became a string or a one-element list.
@@ -236,7 +236,7 @@ def test_refuses_an_empty_span_that_carries_a_line_range(broken_register: dict) 
     empty-span rule by asserting the span is empty and never the line range; red under it.
     Reachability: manufacturing a line range for E-34 reaches the cross-field rule.
     Both-states anchor: the assertion names the exception and E-34's id.
-    Invocation isolation (B4-4, arm 2): the manufactured line range is written in memory, so
+    Invocation isolation: the manufactured line range is written in memory, so
     no invocation change reaches it; discrimination shown instead — a validator that checks
     only that the span is empty reddens it.
     Kills: an implicit equation given a line range that no span occupies, which would make
@@ -257,7 +257,7 @@ def test_refuses_an_entry_missing_a_declared_field(broken_register: dict) -> Non
     whatever fields an entry happens to carry and never compares the field SET. Under it a
     dropped field escapes as a bare `KeyError` from the first read that needs it, or reads as
     absent data at the call site; the test is red under that implementation with
-    `KeyError: 'defect_list'` (two-arm differential, reproduced by the reviewing seat).
+    `KeyError: 'defect_list'` (two-arm differential, reproduced by the reviewer).
     Reachability: dropping any one of the four fields from any of the 36 entries reaches this
     branch; the fixture builds it from the real register.
     Why required: the module docstring states this is the direction that matters most — "an
@@ -266,7 +266,7 @@ def test_refuses_an_entry_missing_a_declared_field(broken_register: dict) -> Non
     test reads the checked-in file, which is well formed.
     Both-states anchor: the assertion is the exception type plus the two names the message
     must carry, neither of which this test introduces.
-    Invocation isolation (B4-4, arm 2): the broken entry is built in memory from the in-repo
+    Invocation isolation: the broken entry is built in memory from the in-repo
     register, so no change to the working directory or to which checkout the run resolves from
     can green or red it; discrimination shown instead — a field-set-blind validator lets the
     `KeyError` escape, which reddens the `pytest.raises`.
@@ -287,17 +287,17 @@ def test_refuses_an_entry_carrying_an_undeclared_field(broken_register: dict) ->
     Class: NEW CAPABILITY — the plausible wrong implementation is a validator that ignores
     fields outside the four it knows, which accepts the broken register outright; the test is
     red under it with "validation accepted the broken register" (two-arm differential,
-    reproduced by the reviewing seat).
+    reproduced by the reviewer).
     Reachability: adding any key to any entry reaches this branch.
     Why required: the module docstring's first strictness claim is that "an entry that gained a
     field would be an entry whose author believed something the schema does not carry", and
-    § 3.2 fixes the value as carrying "exactly" the four fields. A new field therefore means the
+    the register's specification fixes the value as carrying "exactly" the four fields. A new field therefore means the
     register and the schema have diverged, which is the drift no other test detects.
     Both-states anchor: the assertion is the exception type plus the entry id and the field name.
-    Invocation isolation (B4-4, arm 2): the added key is written into an in-memory copy, so no
+    Invocation isolation: the added key is written into an in-memory copy, so no
     invocation change reaches it; discrimination shown instead — an ignore-extras validator
     accepts the copy and the `pytest.raises` fails.
-    Kills: a schema widened in code but not in the shape, or an entry grown by hand.
+    Kills: a schema widened in code but not in the specification, or an entry grown by hand.
     A second correct implementation: a validator that compares sorted field names and reports
     the difference still passes, because it names the same entry and field.
     """
@@ -313,14 +313,14 @@ def test_refuses_an_empty_span_with_no_defect_note(broken_register: dict) -> Non
     Class: NEW CAPABILITY — the plausible wrong implementation enforces the empty-span rule's
     line-range half and not its note half, which accepts this input; the test is red under it
     with "validation accepted the broken register" (two-arm differential, reproduced by the
-    reviewing seat).
+    reviewer).
     Reachability: emptying the note of any one of the three implicit equations reaches it.
-    Why required: § 4 item 2 requires that "for an empty span, `line_range` is `null` and
+    Why required: the specification requires that "for an empty span, `line_range` is `null` and
     `defect_list` is non-empty"; the existing empty-span refusal test covers only the line-range
     half, so this half of a shape-specified rule had no test at all.
     Both-states anchor: the assertion is the exception type plus the entry id and the field name,
     so it does not depend on the wording of the message this rule wrote.
-    Invocation isolation (B4-4, arm 2): the emptied note is written into an in-memory copy, so
+    Invocation isolation: the emptied note is written into an in-memory copy, so
     no invocation change reaches it; discrimination shown instead — a validator missing this
     rule accepts the copy and the `pytest.raises` fails.
     Kills: an implicit equation recorded with no reason, which would make the three implicit

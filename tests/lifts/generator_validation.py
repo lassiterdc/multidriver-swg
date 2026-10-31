@@ -481,7 +481,7 @@ def declare_pairwise_realspace_comparison(fixtures):
     return bindings, reduce
 
 
-# ---- the validation helpers of `_utils.py` (4c.2) ----
+# ---- the validation helpers of `_utils.py` ----
 
 
 @declares_lift(unit="_utils.py:597-604", fixtures=["gv_samples"])

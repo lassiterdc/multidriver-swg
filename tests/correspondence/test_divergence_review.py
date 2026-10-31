@@ -1,4 +1,4 @@
-"""Reviewer tests for package 3a: properties of the pair scanner, the closure and the detector that the reviewing seat found unenforced.
+"""Reviewer tests for the divergence detector: properties of the pair scanner, the closure and the detector that a review found unenforced.
 
 Each test builds a synthetic package under the test's temporary directory and reads it as source,
 never importing it, so nothing here depends on what the real package registers.
@@ -135,7 +135,7 @@ def test_a_relative_pair_side_alias_from_a_subpackage_is_read_or_named(tmp_path)
     assert {"k2", "k4"} <= set(scan.pairs) and "k3" not in scan.pairs and named_s3, (sorted(scan.pairs), scan.findings)
 
 
-# Chunk 3a.2: the triage log's departure-pointer resolution against the divergence ledger.
+# The triage log's departure-pointer resolution against the divergence ledger.
 
 _POINTER_LOG = (
     'rule = "triage-log:1"\n'
@@ -186,7 +186,7 @@ def test_a_malformed_ledger_entry_does_not_stop_the_triage_log_from_reporting(tm
     assert any("row 1" in f and "_d.py:1-9" in f for f in findings), findings
 
 
-# Chunk 3a.3: the detector's view of the registration modules.
+# The detector's view of the registration modules.
 
 _UNREAD_REGISTRATIONS = {
     "under-if": (

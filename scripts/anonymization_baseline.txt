@@ -12,7 +12,7 @@
 #   - A row whose line no longer matches is reported as STALE and fails the guard,
 #     so the ledger cannot accumulate entries that protect nothing.
 #
-# R32: non-sensitive personal detail is TOLERATED. Credentials, tokens, keys and
+# Policy: non-sensitive personal detail is TOLERATED. Credentials, tokens, keys and
 # environment-file contents are NEVER tolerated and are never accepted.
 #
 # Two acceptances are live at the time of writing and both lapse on their own

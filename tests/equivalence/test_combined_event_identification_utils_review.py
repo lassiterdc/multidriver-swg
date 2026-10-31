@@ -1,6 +1,6 @@
 """Reviewer test for the `sys` recorders of the three `_utils.py` lifts of combined-event-identification that carry one.
 
-The chunk's equivalence tests reach a recorder only on the stop lines their fixtures run, so a recorder that returned
+The existing equivalence tests reach a recorder only on the stop lines their fixtures run, so a recorder that returned
 at every line gives the same lift values; this test calls each recorder directly, in both ways its lift's texts reach
 it: from a text compiled under a legacy `.py` path (the unit's own text) and from one compiled under a stored `.txt`
 path (a callee). It builds nothing in the tracked tree.

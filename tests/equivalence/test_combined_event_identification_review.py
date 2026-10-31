@@ -1,6 +1,6 @@
 """Reviewer test for the `sys` recorder that the combined-event-identification lifts bind into legacy callee texts.
 
-The chunk's equivalence tests exercise a recorder only on the stop lines its fixtures reach, so a recorder that
+The existing equivalence tests exercise a recorder only on the stop lines its fixtures reach, so a recorder that
 returned at every line would give the same lift values; this test calls each declaration's recorder directly. It
 builds nothing in the tracked tree.
 """

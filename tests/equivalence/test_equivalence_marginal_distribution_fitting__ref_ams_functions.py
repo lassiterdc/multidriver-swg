@@ -6,7 +6,7 @@ each test fails at its comparison against a placeholder lying outside its licenc
 as `callable(part, inputs)`; the lifts read the fixtures `series_positive` and `series_mixed`, so `inputs` holds them.
 
 Eleven units ran, so eleven tests; the two rescaling helpers (lines 39-43 and 44-47) never ran and keep their
-reminders, as the shape rules. Every unit is a function of its arguments and draws nothing (`draws="none"`), so each
+reminders, as the design rules. Every unit is a function of its arguments and draws nothing (`draws="none"`), so each
 value is stored. Floating-point data compares at a relative tolerance of one part in a billion, with text, flags and
 names exact. A unit that calls another legacy function by name runs that function's own stored text, so the helpers
 are compared as the fitting function uses them.

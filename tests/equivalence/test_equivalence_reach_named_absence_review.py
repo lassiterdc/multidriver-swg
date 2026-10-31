@@ -1,9 +1,9 @@
-"""Reviewer tests for the reach check's named-absence record, specified by U-26's outcome 3.
+"""Reviewer tests for the reach check's named-absence record, specified by the developer's ruling that the named set is a record, not an exemption.
 
-`7a.1` landed the named-absence mechanism in `tests/correspondence/reach.py`, and no committed test
+An earlier change landed the named-absence mechanism in `tests/correspondence/reach.py`, and no committed test
 exercises it: `tests/correspondence/test_reach.py` holds no test of `read_named`, of
 `ReachReport.named`, or of the two findings `reach_findings` must report for a named table, and
-U-26's own text records that file as outside `7a`'s edit surface. The coder measured the mechanism
+the ruling records that file as outside that change's edit surface. The author measured the mechanism
 with three ad-hoc probes pasted into one round; nothing re-runs them, so the property that a named
 absence stays a RECORD rather than becoming an EXEMPTION would survive a later edit that deleted the
 arm silently.
@@ -106,8 +106,8 @@ def test_naming_an_absent_declaration_moves_it_from_the_unentered_count_into_the
 
     Class: a root with two declared lifts and no entries, one of which then gains a `[[named]]` table
     with a non-empty reason — the input class a system's unmeasurable declaration takes.
-    Why required: this is the arithmetic U-26's outcome 3 rests on. The printed pair is what the
-    Definition of Done's reach line reads, and a count that folded the named set into `without_entry`
+    Why required: this is the arithmetic the ruling rests on. The printed pair is what the
+    acceptance check's reach line reads, and a count that folded the named set into `without_entry`
     would let `0 declared lift(s) with no entry` pass over a declaration nothing measured — the exact
     silent pass the mechanism exists to prevent.
     Killed by: dropping `- absent` from the `without_entry` expression, or leaving `ReachReport.named`
@@ -134,7 +134,7 @@ def test_a_named_table_that_contradicts_an_entry_or_matches_no_lift_is_a_finding
 
     Class: three reach files over the same two-declaration root — a name colliding with an entry's
     unit, a name for a unit no lift declares, and a name for the other, unentered declaration.
-    Why required: U-26's outcome 3 states the named set is "a record, not an exemption". An exemption
+    Why required: The ruling states the named set is "a record, not an exemption". An exemption
     reading would subtract every name from `without_entry` whether or not it resolves, which turns a
     typo in a unit key into a silent pass; this test makes both refusals re-run on every run of the
     check rather than on the one round that pasted them.

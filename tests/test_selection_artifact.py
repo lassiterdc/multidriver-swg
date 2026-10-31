@@ -49,16 +49,16 @@ from multidriver_swg.run_configuration.selection_artifact import (
     load_selection,
 )
 
-# The two statements the module is the deliverable for, quoted from the ruling rather than paraphrased:
+# The two statements the module is the deliverable for:
 # the checks below assert these exact sentences appear in the module's docstring.
 SELECTION_IS_ONE_DOCUMENT = (
-    "The per-run human selection is held as a single versioned, provenance-stamped document whose "
-    "identifiers follow parent `ADR-n`'s grammar, and systems 4, 5, 6, 8 and 10 consume it from that "
-    "one document."
+    "A run's human selection lives in one document. The document is versioned and provenance-stamped, its "
+    "identifiers follow the run-configuration identifier grammar, and every system that consumes the selection "
+    "reads it from that one document."
 )
 NO_GOODNESS_OF_FIT = (
-    "a fit identifier is a function of (event class, statistic, distribution family, transformation "
-    "chain) and MUST NOT embed a goodness-of-fit value"
+    "A fit identifier is a function of the event class, the statistic, the distribution family and the "
+    "transformation chain, and it must not embed a goodness-of-fit value."
 )
 
 
@@ -343,8 +343,8 @@ def test_each_leaf_derives_from_the_refusal_root_and_the_root_is_not_a_key_error
     assert not issubclass(SelectionArtifactError, KeyError)
 
 
-def test_the_module_docstring_states_the_two_rulings_verbatim():
-    """Property: the module docstring CONTAINS the selection ruling and the no-goodness-of-fit constraint, transcribed character-for-character by this test module, and names the identifier type and the refusal root.
+def test_the_module_docstring_states_the_two_rulings():
+    """Property: the module docstring CONTAINS the selection ruling and the no-goodness-of-fit constraint, spelled exactly as this test module spells them, and names the identifier type and the refusal root.
 
     Class: NEW CAPABILITY. The plausible wrong implementation is a docstring that describes the four
     components and stops there, dropping the two sentences the module is the deliverable for — so the
@@ -354,19 +354,17 @@ def test_the_module_docstring_states_the_two_rulings_verbatim():
     every version is reached.
     Both-states anchor: NONE independent of the wording, and the field says so rather than claiming one.
     The property here IS the text: these two sentences are deliverable text the module must carry, and
-    the constants above are transcriptions of sentences this test does not author, so a paraphrase
-    applied to BOTH the constant and the docstring would pass. What carries verbatim-ness is a byte
-    comparison of each constant against its sentence at the source, and no test inside this repository
-    can reach that source; the check here establishes CONTAINMENT and nothing stronger, and the two are
-    read together.
+    the constants above spell the sentences as the docstring does, so a rewording
+    applied to BOTH the constant and the docstring would pass. The check here establishes CONTAINMENT
+    and nothing stronger.
     Killed by: deleting or rephrasing either sentence in the docstring, or ceasing to name
     `FitIdentifier` or `SelectionArtifactError` in it.
     Second correct implementation: the sentences at any position, in either order, inside any
     surrounding prose — the test asserts containment, so it constrains neither order nor the wording
     around them.
-    Not established: that the constants equal their sources. That comparison reaches text outside this
-    repository, so the strongest claim this test supports is that the docstring carries the constants'
-    bytes.
+    Not established: that the sentences say what the design intends. The check compares the docstring with
+    the constants and nothing else, so the strongest claim it supports is that the docstring carries the
+    constants' bytes.
     """
 
     docstring = selection_artifact.__doc__ or ""
@@ -902,7 +900,7 @@ def test_the_dependence_block_is_required_and_non_empty():
     """Property: an absent `dependence`, one that is not an array, an EMPTY array, and an entry that is not a table each raise `UndescribedDependenceError`, while the conforming block is admitted.
 
     Class: NEW CAPABILITY. The plausible wrong implementation defaults an absent `dependence` to an
-    empty tuple, which makes the multivariate half of the selection optional — and `ADR-l` routes the
+    empty tuple, which makes the multivariate half of the selection optional — and the run configuration routes the
     whole selection through this artifact, so a document without it holds half of what the run chose and
     says nothing about the other half. The mirror is a check that looks only for the key, so an empty
     block passes: present and holding nothing, which is a shape-valid container with no content. The
@@ -1247,9 +1245,9 @@ def test_a_non_text_dependence_marginal_refuses_inside_the_modules_hierarchy(tmp
     Reachability: the input class is any document whose dependence `marginals` array holds a non-text
     value. Three members are exercised — an inline table, an integer and a boolean — and each is written
     through TOML and read back by `tomllib`, so the value arrives in the document rather than being built
-    in Python. Artifact: the reviewer's probe at run `multidriver-swg_10-29_1638_selection-artifact`
+    in Python. Artifact: a reviewer's probe
     printed `AttributeError ESCAPED the hierarchy — 'dict' object has no attribute 'split'` for all three
-    on the coder's tree.
+    on the implementation under review.
     Both-states anchor: the assertion turns on WHICH EXCEPTION TYPE leaves `load_selection` for the same
     document bytes — a property of the shipped code and of any fix, not on message wording. The control
     arm below asserts that a STRING marginal naming no held identifier still refuses with
@@ -1264,9 +1262,9 @@ def test_a_non_text_dependence_marginal_refuses_inside_the_modules_hierarchy(tmp
     parse; a `try/except (SelectionArtifactError, AttributeError)` re-raised as the module's root; or
     `FitIdentifier.parse` refusing a non-string with `SelectionArtifactError` — the test asserts the
     escaping class and never where the guard lives.
-    Not established: that the refusal NAMES the offending position. Row 19's recovery is a corrected
+    Not established: that the refusal NAMES the offending position. Its recovery is a corrected
     reference, and this test constrains only that the refusal stays inside the hierarchy; the message's
-    content is the coder's to choose.
+    content is the implementation's to choose.
     """
 
     document = tmp_path / "non_text_marginal.toml"

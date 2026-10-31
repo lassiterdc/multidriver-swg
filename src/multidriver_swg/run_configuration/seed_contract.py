@@ -7,10 +7,10 @@ implement one interface rather than each inventing its own: a function that draw
 takes a `numpy.random.Generator` as a required argument named `rng`.
 
 The optionality ruling:
-"no default, no fallback to an unseeded draw — seeding is always a conscious, user-supplied decision"
+A stochastic function takes its generator from the caller. It has no default, and it never falls back on an unseeded draw; seeding is always a deliberate choice that the user makes.
 
 The propagation convention:
-"the generator is threaded through call signatures, never process-global state"
+The generator is passed through call signatures and is never held in process-global state.
 
 Two instruments enforce the ruling's two halves and neither covers the other, so a reader should
 not read one as covering both. The NO-DEFAULT half is enforced here, at run time, by

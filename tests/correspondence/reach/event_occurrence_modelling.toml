@@ -1,10 +1,10 @@
-# The five entries chunk 6a.4 withdrew under U-24 outcome 1 are MEASURED and committed here as of 2026-10-30.
+# The five entries withdrawn earlier, because no input may be constructed solely to make a cell run, are MEASURED and committed here as of 2026-10-30.
 # They were measured in process on the estate's real intersection of the rainfall and water-level records: the
 # day table carries a `valid` flag, the two event tables are the per-source rain and surge summaries (the legacy
 # function is called once per table, so the declaration binds them separately), the observed events are the kept
 # compound-event summaries, and the occurrence counts are those events grouped by year and type. No input was
-# invented. The declarations changed in this chunk: `_b2_event_selection.py:95-108` now takes the two event tables
-# its two calls need instead of one table carrying both columns. The other four already ran unchanged; 6a.4's
+# invented. The declarations changed here: `_b2_event_selection.py:95-108` now takes the two event tables
+# its two calls need instead of one table carrying both columns. The other four already ran unchanged; the earlier withdrawal's
 # "cannot run" for them was a wrong-input symptom.
 
 [[entry]]

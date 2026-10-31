@@ -1182,7 +1182,7 @@ def declare_final_selection_plot_and_write_function(fixtures):
     The function reads the type's table of fit performance, refits the named fits through `plot_subset_of_fits`
     (bound, with `fit_dist` and the transformation helpers, to their stored texts) and writes two tables. The
     fixtures name only fits that exist and that `fit_dist` accepts: no fixed-location gamma or lognormal fit is
-    asked for, so no fit raises (the Fixtures bullet, ruling U-20).
+    asked for, so no fit raises (a developer ruling).
     """
     import hashlib
     import pathlib

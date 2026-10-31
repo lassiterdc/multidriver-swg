@@ -170,7 +170,7 @@ def test_a_normal_run_writes_the_whole_record_and_one_row_per_call(pytester):
 
     Class (input): every completed run -- here a tree of four tests where one is deselected, one
     fails at call and one fails in a fixture's teardown; artifact: `record.pytest_collection_finish`
-    and `record.pytest_runtest_makereport`. Build class: NEW CAPABILITY -- the plausible wrong
+    and `record.pytest_runtest_makereport`. The plausible wrong
     implementation records a row per PHASE, which puts a second row under the teardown test's node
     id; a second wrong implementation derives the exclusion from the session's items instead of from
     the inventory's pre-deselection capture, which reports an empty exclusion for a run that
@@ -246,7 +246,7 @@ def test_a_run_killed_during_collection_reads_collected_and_never_complete(pytes
     Class (input): any collection that ends after the population write and before the run -- the
     `pytest.exit` in a `trylast` modifyitems hook driven here, and by the same call path an interrupt
     or a `--maxfail` stop in a later hook; artifact: `record.pytest_collection_finish`, which pytest
-    calls from the `finally` around collection. Build class: NEW CAPABILITY -- the plausible wrong
+    calls from the `finally` around collection. The plausible wrong
     implementation advances the marker to `complete` unconditionally in that hook, and then this run
     reads `complete` over a healthy-looking survivor list, because `session.items` already holds the
     survivors when the hook runs (measured). A second wrong implementation writes the record only at
@@ -283,7 +283,7 @@ def test_a_run_truncated_after_collection_reads_collected_and_void(pytester, mon
     Class (input): every run that completes collection and then stops early -- the `pytest.exit` from
     a call-phase hook driven here, an interrupt during the run, a `--maxfail` stop; artifact:
     `record.pytest_sessionfinish`, which compares the count of tests that produced ANY report against
-    `surviving`. Build class: NEW CAPABILITY -- the plausible wrong implementation writes the verdict
+    `surviving`. The plausible wrong implementation writes the verdict
     whenever the marker reads `complete`, and then this run reads `complete` over a survivor list it
     never reached; a second wrong implementation consults pytest's exit status instead of the reached
     count, which for this run is the same code an ordinary failing run produces. This test is red
@@ -318,7 +318,7 @@ def test_a_completed_run_with_a_skipped_test_keeps_its_verdict(pytester):
     Class (input): every completed run containing a test that never reaches its call phase -- a
     marker skip, driven here, and by the same path an `xfail(run=False)`; artifact:
     `record.pytest_sessionfinish`, whose comparison must count tests the run REACHED rather than
-    call-phase rows. Build class: NEW CAPABILITY -- the plausible wrong implementation compares the
+    call-phase rows. The plausible wrong implementation compares the
     call-phase rows against `surviving`, and then this run reads `collected` + `VOID` (measured on
     that mechanism: rows 1, surviving 2, on a run pytest reports as `1 passed, 1 skipped`, exit 0).
     This test is red under it. Why: a mislabelled run is worse than an unlabelled one, because a
@@ -346,8 +346,8 @@ def test_a_completed_run_with_a_setup_error_keeps_its_verdict(pytester):
     """Property: a completed run whose fixture raises at setup is not downgraded; it reads `complete` with the failing verdict.
 
     Class (input): every completed run containing a test that errors before its call phase -- a
-    fixture raising at setup, driven here; artifact: `record.pytest_sessionfinish`. Build class:
-    NEW CAPABILITY -- the plausible wrong implementation counts call rows, finds one for two
+    fixture raising at setup, driven here; artifact: `record.pytest_sessionfinish`.
+    The plausible wrong implementation counts call rows, finds one for two
     survivors, and writes the completed run back to `collected` + `VOID`, erasing an error the
     consumer needs to see. This test is red under it. Why: the record's job is to say what a run
     measured and what it did not; a setup error is a measurement of failure, not an absent
@@ -412,7 +412,7 @@ def test_an_unwritable_record_path_is_a_usage_error_and_never_an_internal_one(py
 
     Class (input): every record path the invoker cannot write -- here a parent directory that does
     not exist, the case a mistyped path produces; artifact: `record._write`, whose first call is from
-    a session hook. Build class: NEW CAPABILITY -- the plausible wrong implementation lets the
+    a session hook. The plausible wrong implementation lets the
     `FileNotFoundError` escape, and pytest then reports an INTERNALERROR whose traceback points at
     this plugin and aborts the run before a single test is collected (measured: exit 3, 30
     `INTERNALERROR` lines, traceback through `record.py`). This test is red under it. Why: an
@@ -441,8 +441,8 @@ def test_no_option_writes_no_record(pytester):
     """Property: with no `--result-record` the run writes no file anywhere in its tree.
 
     Class (input): every run that does not ask for a record, which is every ordinary run of this
-    suite; artifact: `record._path`, which the option's absence turns into None. Build class: NEW
-    CAPABILITY -- the plausible wrong implementation defaults the option to a path in the checkout,
+    suite; artifact: `record._path`, which the option's absence turns into None.
+    The plausible wrong implementation defaults the option to a path in the checkout,
     which makes every run write into the tree it is testing. This test is red under it. Why: the
     record is opt-in, and a default path would put a per-run artifact into a tracked tree that no
     gate declared. Both-states anchor: the assertion turns on the absence of any file the plugin

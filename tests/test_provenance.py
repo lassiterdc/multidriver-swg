@@ -35,13 +35,16 @@ from multidriver_swg.run_configuration import (
     require_complete,
 )
 
-# The two statements the ruling is made of, quoted from the record rather than paraphrased: the
+# The two statements the ruling is made of, as the module docstring states them: the
 # checks below assert these exact sentences appear in the module's docstring.
 SELF_DECLARATION_RULING = (
-    "every compute system declares its implementation identity into the run's record through a small "
-    "self-declaration interface it implements; the record is captured at run time, and no central registry is built"
+    "Each compute system states its own implementation identity in the run's record, through a small "
+    "interface that the system itself implements; the record is made while the run is happening, and nothing like a "
+    "central registry is built."
 )
-CAPTURE_NOT_RECONSTRUCT = "the record is captured at run time, never rebuilt from inputs afterwards"
+CAPTURE_NOT_RECONSTRUCT = (
+    "The record is captured while the run happens and is never rebuilt from the inputs afterwards."
+)
 
 # The two halves of the draw scan's own reading, kept beside the checks that use them.
 RECORD_NAME = "ProvenanceRecord"
@@ -406,8 +409,8 @@ def test_the_reconstruction_scan_names_a_rebuild_whose_inputs_is_not_a_plain_arg
     rebuild whose every non-`self` parameter resolves to `inputs` — both pass this assertion.
     Not established, both measured against the delivered scan: no member isolates the call-name arm,
     because the only function it names and the parameter union does not is one building a record from
-    a parameter list that is NOT exactly `inputs` — outside D-6's predicate, so asserting it here
-    would assert past the shape; and a rebuild that is BOTH aliased and parameterised with more than
+    a parameter list that is NOT exactly `inputs` — outside the scan's stated predicate, so asserting it here
+    would assert past that predicate; and a rebuild that is BOTH aliased and parameterised with more than
     `inputs` is named by neither arm (`arm1=[] arm2=[]`, against `arm1=['rebuild']` for the same
     parameter list constructing the class literally), which is the two residuals F1 named in
     conjunction. That case is not a member here and adding it would assert past the predicate.
@@ -422,7 +425,7 @@ def test_the_reconstruction_scan_names_a_rebuild_whose_inputs_is_not_a_plain_arg
 
 
 def test_the_module_docstring_states_the_ruling_the_convention_and_the_two_enforcers():
-    """Property: the module docstring carries the self-declaration ruling and the capture-not-reconstruct convention verbatim, and names both enforcing instruments.
+    """Property: the module docstring carries the self-declaration ruling and the capture-not-reconstruct convention, and names both enforcing instruments.
 
     Class: NEW CAPABILITY. The plausible wrong implementation is a docstring that describes the
     three types and stops there, dropping the two statements the declaration is the deliverable for,

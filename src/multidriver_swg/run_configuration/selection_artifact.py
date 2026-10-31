@@ -8,12 +8,12 @@ chosen. This module owns the form of the document that holds the selection, and 
 one: the document is written by a recorded interactive session, and a consumer's only route to a
 selection is through the form this module accepts.
 
-The rulings this module implements, in their own words, quoted verbatim so a later reader can check the
-code against the ruling rather than against a paraphrase of it:
+The two statements this module implements follow, so a later reader can check the code against them
+rather than against a paraphrase of them. Each is stated in plain words:
 
-    "The per-run human selection is held as a single versioned, provenance-stamped document whose identifiers follow parent `ADR-n`'s grammar, and systems 4, 5, 6, 8 and 10 consume it from that one document."
+    A run's human selection lives in one document. The document is versioned and provenance-stamped, its identifiers follow the run-configuration identifier grammar, and every system that consumes the selection reads it from that one document.
 
-    "a fit identifier is a function of (event class, statistic, distribution family, transformation chain) and MUST NOT embed a goodness-of-fit value"
+    A fit identifier is a function of the event class, the statistic, the distribution family and the transformation chain, and it must not embed a goodness-of-fit value.
 
 The second sentence is a hard constraint rather than a preference, and the failure it names is silent in
 the direction that matters: an identifier carrying its own metric changes whenever the record is
@@ -85,7 +85,7 @@ carries a non-text entry, and the entries are then parsed in the document's orde
 a repeated identifier refused rather than merged.
 
 The MULTIVARIATE half is HELD here rather than named by an identifier, and that is the closure clause's
-other bound. `ADR-n`'s identifier has one `statistic` slot, so a joint fit — a vine's structure, the
+other bound. The identifier grammar has one `statistic` slot, so a joint fit — a vine's structure, the
 ordered marginals it is joint over, and one pair-copula family per edge position — is not a function of
 one statistic and is therefore not an identifier at all. It is a `dependence` entry instead: one per
 event class, whose marginals are REFERENCES to the identifiers the `selection` array already holds, so a

@@ -548,7 +548,7 @@ def declare_data_source_priority_cell(fixtures):
     The cell calls `combine_dataset_according_to_priority` (bound to its stored text), whose register entry at
     `_utils.py:2123` is `LICENSED`: a preferred event that an added lower-priority event only partly overlaps keeps
     its remaining steps, and its summary row still describes its original span, where the new code removes the whole
-    preferred event. Developer ruling U-21 (outcome 2) therefore has this lift run the function on two inputs:
+    preferred event. A developer ruling therefore has this lift run the function on two inputs:
 
     - `full`, the cell's first case: a radar event with no valid rate is replaced by a reanalysis event over its whole
       window, and the departure and the legacy code agree;
@@ -1969,8 +1969,8 @@ def declare_combine_dataset_according_to_priority(fixtures):
 
     The function's own ranges hold the register entry at line 2123 (`LICENSED`): a preferred event that an added
     lower-priority event only partly overlaps keeps its remaining steps and its summary row still describes its
-    original span, where the new code removes the whole preferred event. Developer ruling U-21 (outcome 2) has this
-    lift run the function on two inputs, as the cell that calls it does (row 108, chunk `4f.2`):
+    original span, where the new code removes the whole preferred event. A developer ruling has this
+    lift run the function on two inputs, as the cell that calls it does (row 108):
 
     - `full`: a radar event with no valid rate is replaced by a reanalysis event over its whole window, and the
       departure and the legacy code agree;

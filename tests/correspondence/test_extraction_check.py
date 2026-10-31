@@ -344,7 +344,7 @@ def test_a_duplicated_faithful_record_row_is_a_finding_naming_the_range(tmp_path
 
     Class: a duplicate that is faithful in every digest, which a row-by-row comparison would
     pass. Why it is required: the generator writes one row per range, so a second row is an
-    edit even when it agrees; and an edited duplicate is covered by the reviewer's held test.
+    edit even when it agrees; and an edited duplicate is covered by a separate test.
     Killed by: comparing every row as read without counting rows. Second correct
     implementation: comparing every row as read and also counting rows passes. Not
     established: that a record may never hold several rows per range for another purpose.

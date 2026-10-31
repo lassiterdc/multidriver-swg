@@ -100,7 +100,7 @@ def _b6_cdf_table(rng: np.random.Generator, strength: float) -> pd.DataFrame:
 # type it pairs THAT type's fitted copula with THAT type's table of fitted probabilities, so the six fixtures below
 # exist one per type rather than as one shared pair. The run's own six values are the estate's
 # `b5_vinecop_modeling/vinecop_params_{surge,rain,compound}_events.json` and
-# `b4_fitting_marginals/{surge,rain,compound}_events_empirical_vs_fitted.csv`, which this chunk reads at build time to
+# `b4_fitting_marginals/{surge,rain,compound}_events_empirical_vs_fitted.csv`, which the fixture author reads at build time to
 # assemble a `reach measure --inputs` directory; none of them is committed, and the fixtures below are synthetic like
 # every other fixture in this module.
 

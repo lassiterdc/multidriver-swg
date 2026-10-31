@@ -1,20 +1,20 @@
 # THREE declarations of this system are named below as absences rather than entered: `_b7_generate_time_series_from_event_stats.py:88-380`
 # (row 119's adapted cell), `_b7_generate_time_series_from_event_stats.py:381-890` (row 120) and `_utils.py:271-334`.
 # Each `[[named]]` table states the measurement that shows why no real input has been shown to run its lift. The
-# guards and reads that fail, and every real input set tried, are recorded in chunk 6a.9's second round in the
-# scratch. Under U-24 outcome 1 no input was constructed to make them run.
+# guards and reads that fail, and every real input set tried, were measured in a second round of runs and are not kept in this
+# repository. No input was constructed solely to make them run.
 
 [[named]]
 unit = "_b7_generate_time_series_from_event_stats.py:88-380"
-reason = "This cell compares event dates with a series indexed by date. Every real observed event series the estate kept carries dimensions year, event_type, event_id and timestep and no time axis, and the paired 6m_wlevel_mrms summary inputs instead trip the cell's own guard THE EVENT SUMMARY AND EVENT TIME SERIES STATS DON'T LINE UP. Measured by chunk 6a.9's second round, and no declaration change has been shown to supply the axis the cell reads."
+reason = "This cell compares event dates with a series indexed by date. Every real observed event series the estate kept carries dimensions year, event_type, event_id and timestep and no time axis, and the paired 6m_wlevel_mrms summary inputs instead trip the cell's own guard THE EVENT SUMMARY AND EVENT TIME SERIES STATS DON'T LINE UP. Measured in a second round of runs, and no declaration change has been shown to supply the axis the cell reads."
 
 [[named]]
 unit = "_b7_generate_time_series_from_event_stats.py:381-890"
-reason = "This cell addresses each simulated event by a sim_event_id column, and the estate's kept rescaled product keys its events by year and event_id and carries no such column, so one event's slice raises KeyError sim_event_id. Measured by chunk 6a.9's second round. A declaration-level rename has not been measured against the real product, so the declaration is named rather than changed in this chunk."
+reason = "This cell addresses each simulated event by a sim_event_id column, and the estate's kept rescaled product keys its events by year and event_id and carries no such column, so one event's slice raises KeyError sim_event_id. Measured in a second round of runs. A declaration-level rename has not been measured against the real product, so the declaration is named rather than changed here."
 
 [[named]]
 unit = "_utils.py:271-334"
-reason = "The guard at _utils.py:320-324 requires the observed surge window, after being shifted onto the simulated series' time base, to equal the series used to fill its missing values to a zero absolute difference. The declaration constructs that five-step simulated series, so only an observed window built to match it passes, and U-24 outcome 1 forbids constructing one. Measured by chunk 6a.9's second round."
+reason = "The guard at _utils.py:320-324 requires the observed surge window, after being shifted onto the simulated series' time base, to equal the series used to fill its missing values to a zero absolute difference. The declaration constructs that five-step simulated series, so only an observed window built to match it passes, and no input may be constructed solely to make a cell run. Measured in a second round of runs."
 
 
 [[entry]]

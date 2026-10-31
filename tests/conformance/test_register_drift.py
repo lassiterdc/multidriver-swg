@@ -14,8 +14,8 @@ ONCE per session, and the two independent properties are two test functions over
 masking the other.
 
 What this check does NOT establish: that a span is the RIGHT equation. A span occurring exactly
-once certifies that item 1 disambiguated it, never that it mirrors the equation its entry claims —
-completeness and correct transcription are carried by item 1's review against § B2. That limit is
+once certifies that the register's author disambiguated it, never that it mirrors the equation its entry claims —
+completeness and correct transcription are carried by the register's review against § B2. That limit is
 stated because this module's green is easy to read as "the register is correct", which it is not.
 
 When the manuscript cannot be resolved the whole module SKIPS, naming every path it tried. A skip
@@ -122,15 +122,15 @@ def test_every_non_empty_span_occurs_exactly_once(manuscript_text: str, equation
     """Property: each spanned entry's `verbatim_span` occurs exactly once in the manuscript.
 
     Class: NEW CAPABILITY — the plausible wrong implementation is a register whose duplicate
-    spans were never disambiguated, which is the state item 1 had before the shape's round-1
-    RAISE: the Kendall-tau test statistic, null distribution and rejection region each occur
+    spans were never disambiguated, which is the state the register had before a review
+    raised that the Kendall-tau test statistic, null distribution and rejection region each occur
     twice (406/564, 411/569, 413/571). Under that register this test is red with `occurs 2
-    times`, measured below in the build return.
+    times`, measured when the test was written.
     Reachability: any manuscript edit that repeats a span, and any register entry left
     un-disambiguated, reaches this assertion; the real register and the real manuscript are the
     input. Both-states anchor: the assertion counts occurrences in the manuscript, a property
     that exists whether or not this module changes.
-    Invocation isolation (B4-4, arm 1): with `MULTIDRIVER_SWG_PAPER` set, the same invocation
+    Invocation isolation: with `MULTIDRIVER_SWG_PAPER` set, the same invocation
     reproduces the verdict from any checkout, because neither `__file__` nor the working
     directory enters the resolution; the fallback arm is tree-relative by decision 3.3 and is
     exercised by `test_register_drift.py`'s skip path rather than by this assertion.
@@ -153,14 +153,14 @@ def test_every_non_empty_span_lies_in_its_recorded_line_range(manuscript_text: s
     """Property: each spanned entry's `verbatim_span` is a substring of its recorded range's slice.
 
     Class: NEW CAPABILITY — the plausible wrong implementation is a register carrying § B2's
-    pointers unchanged, which the shape documents as running one line early from line 86 onward;
+    pointers unchanged, which the design documents as running one line early from line 86 onward;
     under it this test is red for most entries with `not inside its recorded range`, measured in
-    the build return against E-01's stale pointer.
+    a run against E-01's stale pointer.
     Reachability: any line inserted or removed above an equation shifts its range and reaches
     this assertion, and that is the only failure mode it is for. Both-states anchor: the
     assertion compares the span with the manuscript's own slice of lines, not with any range this
     module computes.
-    Invocation isolation (B4-4, arm 1): as above — with the environment variable set the verdict
+    Invocation isolation: as above — with the environment variable set the verdict
     is independent of which checkout the run resolves from.
     Kills: a stale or hand-edited `line_range`, which is exactly the off-by-one pointer class the
     user acts on when transcribing a fix.
@@ -195,7 +195,7 @@ def test_every_implicit_equation_records_why_the_manuscript_states_none(manuscri
     Both-states anchor: the assertion reads the entry's own recorded fields, and it does not
     depend on the manuscript's text — `manuscript_text` is here so this arm skips with the rest
     of the module when the manuscript is absent.
-    Invocation isolation (B4-4, arm 1): the fields come from the in-repo register, so no
+    Invocation isolation: the fields come from the in-repo register, so no
     invocation change reaches them; the skip coupling is what makes an absent manuscript report
     SKIPPED rather than a partial pass.
     Kills: an implicit equation recorded as if the manuscript stated it.
@@ -231,12 +231,12 @@ def test_the_environment_variable_wins_over_the_sibling_default(monkeypatch: pyt
     resolution order, not whether the file is a manuscript.
     Both-states anchor: the assertion compares the returned `Path` with the configured one, never
     with a message or helper this change introduces.
-    Invocation isolation (B4-4, arm 2): the input is an environment variable plus an in-repo file,
+    Invocation isolation: the input is an environment variable plus an in-repo file,
     so the verdict reproduces from any checkout; discrimination shown instead — a resolver that
     consults only the sibling default returns a different path, which reddens the first assertion.
     A skip is converted to an explicit failure rather than left to skip, because in a worktree the
     sibling fallback does not resolve and the wrong implementation would otherwise report SKIPPED
-    — which D-3 says is not a pass, but which also stops discriminating.
+    — which this module's skip rule says is not a pass, but which also stops discriminating.
     Kills: a resolver that ignores the environment variable.
     A second correct implementation: a resolver that collects candidates and returns the first
     whose `.exists()` is true still passes, because the configured file exists.
@@ -265,15 +265,15 @@ def test_an_unresolvable_manuscript_skips_naming_both_attempts(monkeypatch: pyte
     message naming only the sibling default leaves the reader of a CI skip unable to tell an
     unset variable from one pointing at nothing.
     Reachability: an unset variable plus a repository root whose sibling default is absent is
-    exactly the configuration D-3 describes, and both inputs are real conditions rather than
+    exactly the configuration the skip rule describes, and both inputs are real conditions rather than
     manufactured ones — the monkeypatched root is a path that exists in this repository, and the
     default under it is a path that does not.
-    Why required: §4 item 3 requires that an unresolvable manuscript SKIP rather than pass, and
-    D-3 requires that this be shown rather than asserted; no other test in this module reaches
+    Why required: the specification requires that an unresolvable manuscript SKIP rather than pass, and
+    the skip rule requires that this be shown rather than asserted; no other test in this module reaches
     the skip arm, because the module's own fixtures skip before any of them can run.
     Both-states anchor: the assertions are the raised exception type and two substrings of the
     message, all of which exist independently of this test.
-    Invocation isolation (B4-4, arm 2): the inputs are an environment variable and a module
+    Invocation isolation: the inputs are an environment variable and a module
     constant, so no change to the tree the run resolves from reaches them; discrimination shown
     instead — returning the absent path instead of skipping fails the `else` arm.
     Kills: a resolver that returns an unchecked path, or a skip that names one arm only.

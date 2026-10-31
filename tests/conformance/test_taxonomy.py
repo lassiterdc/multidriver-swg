@@ -92,14 +92,14 @@ def test_the_class_vocabulary_is_exactly_nine() -> None:
     """Property: `DivergenceClass` carries exactly the nine members `D1` through `D9`, in order.
 
     Class: NEW CAPABILITY — the plausible wrong implementation is a vocabulary that gained a tenth
-    member (a "default" or "undetermined" class, the shape's own named hazard) or lost one, either of
+    member (a "default" or "undetermined" class, the design's own named hazard) or lost one, either of
     which reads downstream as a closed taxonomy while admitting a value the design does not define.
     Red under both, because both the count and the name sequence are asserted.
     Reachability: any edit to the enum reaches this assertion; the input is the real module member
     set, not a copy of it.
     Both-states anchor: the assertion reads `len()` and the member names of the enumeration itself, a
     property that exists whatever this module's own text says.
-    Invocation isolation (B4-4, arm 1): the enumeration is defined in the package source with no
+    Invocation isolation: the enumeration is defined in the package source with no
     file, path or environment input, so the same invocation returns the same verdict from any
     checkout the run resolves from.
     Kills: a class added, renamed or removed without the closed-domain declaration moving with it.
@@ -116,7 +116,7 @@ def test_the_status_field_vocabularies_are_exactly_three_each() -> None:
     """Property: `Verdict` and `Binding` each carry exactly three members, with the declared wire values.
 
     Class: NEW CAPABILITY — the plausible wrong implementation is a field vocabulary that grew a
-    fourth value to cover a case the design has not settled (the over-constraint the shape's own
+    fourth value to cover a case the design has not settled (the over-constraint the design's own
     ruling forbids in the opposite direction), or that spells its wire token differently from the
     manuscript's own prose. Red under either, because both the count and the ordered value list are
     asserted.
@@ -124,7 +124,7 @@ def test_the_status_field_vocabularies_are_exactly_three_each() -> None:
     module member set.
     Both-states anchor: the assertion reads the enumerations' own members and values, not any
     message or helper this module introduces.
-    Invocation isolation (B4-4, arm 1): as the previous test — no tree input reaches this assertion.
+    Invocation isolation: as the previous test — no tree input reaches this assertion.
     Kills: a status vocabulary silently widened, or a wire spelling changed on one side only.
     A second correct implementation: declaring the members without explicit values, letting `StrEnum`
     take the name as the value, still passes for `Verdict` (whose spellings equal its names) and is
@@ -152,7 +152,7 @@ def test_the_enumerations_render_their_wire_values() -> None:
     form is the realistic regression because it is the older, more familiar spelling.
     Both-states anchor: the assertion compares the RENDERED string with `member.value`, a pairing
     that exists in the module regardless of this test.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: substituting the `(str, Enum)` mixin form for `StrEnum`, which would make every prose
     rendering of a published value disagree with the value itself.
     A second correct implementation: a module that spells each member's value out explicitly instead
@@ -174,13 +174,13 @@ def test_a_well_formed_diagnosis_is_returned_unchanged() -> None:
     from the reported values instead of returning the recorded one, which is the whole failure the
     record exists to prevent. The fixture records `D6`, and a value-comparing classifier can only
     ever reach `D1`, `D2` or `D3` from two numbers, so it reds here. Red under it, measured in the
-    build return — and the first draft of this test used `D3` and did NOT discriminate, because an
+    run of this test — and the first draft of this test used `D3` and did NOT discriminate, because an
     inference-based classifier lands on `D3` for these values as well.
     Reachability: every classify call reaches this assertion; the input is a well-formed `D6` record
     against a bound, reachable, diverged failure.
     Both-states anchor: the assertion is member identity between the record's field and the return
     value, a relation that exists whether or not this test does.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: a classifier that infers, or that returns a copy or a plain string rather than the member.
     A second correct implementation: a classifier that validates and then returns
     `DivergenceClass(diagnosis.divergence)` still passes, because construction from the wire value
@@ -205,7 +205,7 @@ def test_a_diagnosis_keyed_to_another_equation_is_refused() -> None:
     shape that makes the mistake possible.
     Both-states anchor: the assertion is the raised exception type on one arm and the returned member
     on the other, both of which exist independently of this test.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: a recorded ruling applied to the wrong equation, which is silent mis-attribution rather
     than a wrong answer.
     A second correct implementation: a classifier that keys the check on the record's own identifier
@@ -225,12 +225,12 @@ def test_the_cross_repo_class_and_binding_must_agree_in_both_directions() -> Non
     Class: NEW CAPABILITY — the plausible wrong implementation enforces only one direction: `D8`
     requires `CROSS_REPO`, but nothing requires `CROSS_REPO` to be classified `D8`. That one-way rule
     passes the first assertion and fails the second, which is why both directions are driven.
-    Red under it, measured in the build return.
+    Red under it, measured when the test was written.
     Reachability: every cross-repo equation reaches the second arm and every non-cross-repo equation
     reaches the first, so the two arms together cover the whole population rather than a corner.
     Both-states anchor: the assertions are the raised type and the returned member, both present in
     the module whatever this test says.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: a one-way rule, which is the form a half-implemented consistency check actually takes.
     A second correct implementation: a classifier that reads the pair as a lookup table keyed on
     (divergence, binding) rather than as two `if` statements still passes, because it refuses the
@@ -256,7 +256,7 @@ def test_the_unreachable_class_and_reachability_must_agree_in_both_directions() 
     cross-repo AND unreachable record) is refused as a consequence of the two rules meeting, not by a
     rule of its own, and is deliberately not driven here.
     Both-states anchor: the raised type and the returned member, both present in the module.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: a one-way reachability rule, and a classifier that reads `reachable` as truthy text.
     A second correct implementation: a classifier comparing `failure.reachable is False` rather than
     testing truthiness still passes, because the field is a real `bool` in every fixture here.
@@ -282,7 +282,7 @@ def test_a_paper_side_class_needs_a_named_author(paper_side: DivergenceClass) ->
     this test rather than leaving it behind.
     Both-states anchor: the assertion reads the set the module declares and the exception/return
     types, all present without this test.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: an attestation rule that exists only in prose, and a `ruled_by` check that fires on the
     wrong population.
     A second correct implementation: a classifier testing `diagnosis.ruled_by in (None, "")` instead
@@ -312,7 +312,7 @@ def test_a_green_is_not_classifiable() -> None:
     that is the ordinary case the comparison surface produces.
     Both-states anchor: the two arms are the SAME record differing only in `diverged`, asserted below
     field by field, so the refusal can only be reading that flag.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: a classifier that compares values, or one that classifies a green as a vacuous pass.
     A second correct implementation: a classifier testing `failure.diverged is False` rather than
     truthiness still passes, because the fixture's flag is a real `bool`.
@@ -338,7 +338,7 @@ def test_an_unevidenced_diagnosis_is_refused() -> None:
     Reachability: every record reaches this branch, and a whitespace-only note is the realistic
     accidental case rather than a manufactured one.
     Both-states anchor: the raised type and the returned member, both present in the module.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: an empty evidence string accepted as if it were a citation.
     A second correct implementation: a classifier testing `not diagnosis.evidence.strip()` directly
     still passes, because the fixtures hold real strings and the assertion is the raised type.
@@ -359,15 +359,15 @@ def test_the_refusals_fire_in_the_order_the_decision_lists_them() -> None:
     the binding conflict before the identifier comparison because it is the loudest. Every such
     ordering passes every single-defect test in this module, because a record with ONE defect is
     reached by every ordering; only a record carrying TWO tells them apart. Red under each ordering
-    driven below, measured in the reviewer return.
+    driven below, measured when the test was written.
     Reachability: the four arms are four two-defect records, one per adjacent pair of refusals, so
     each of the four boundaries of the declared order is reached. All four are realistic rather than
     manufactured: a mis-keyed record that also carries no evidence is what a copy-pasted ruling looks
-    like, and a green handed to a classifier is the vacuous-pass case the shape names.
+    like, and a green handed to a classifier is the vacuous-pass case the design names.
     Both-states anchor: each assertion reads the raised exception type, which exists in the module
     whatever this test says, and each arm differs from a fixture already in this module by exactly one
     additional defect — so the assertion can only be reading the ORDER and not the defect itself.
-    Invocation isolation (B4-4, arm 1): every failure and record is constructed in-process with no
+    Invocation isolation: every failure and record is constructed in-process with no
     file, path or environment input, so the same invocation returns the same verdict from any
     checkout the run resolves from.
     Kills: a reordered classifier, which is the exact shape a later "cheap checks first" refactor
@@ -410,16 +410,16 @@ def test_the_derived_in_status_population_is_the_declared_pair() -> None:
 
     Class: NEW CAPABILITY — the plausible wrong implementation declares the pair with one member
     dropped, which is what happens when the set is written from memory of the facet split rather
-    than from the shape's own enumeration. Red under it, because the assertion is over the set's
-    full membership rather than over the member the neighbouring chunk happens to drive.
+    than from the design's own enumeration. Red under it, because the assertion is over the set's
+    full membership rather than over the member a neighbouring test happens to drive.
     Reachability: the set is a module constant with no input, so every run reads the same value; the
-    defect this test reaches is a declaration that differs from the shape, which no call site can
-    observe because nothing in this work chunk reads `DERIVED_IN_STATUS` — its only consumer is the
-    defect-list refusal the NEXT chunk lands, and that refusal's own test drives one derived member
+    defect this test reaches is a declaration that differs from the design, which no call site can
+    observe because nothing in this change reads `DERIVED_IN_STATUS` — its only consumer is the
+    defect-list refusal a later change lands, and that refusal's own test drives one derived member
     and admits one ordinary member, so an omission of the other derived member is invisible to it.
-    Both-states anchor: the assertion compares the module's own frozen set against the pair the shape
+    Both-states anchor: the assertion compares the module's own frozen set against the pair the design
     declares, a relation that holds whether or not this test exists.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: a set declared from memory, and a set edited to serve a test that only ever asks about
     one of its members.
     A second correct implementation: a set declared as a `frozenset` over the members, over their
@@ -441,13 +441,13 @@ def test_a_caller_catching_the_family_hears_every_refusal_and_which_one() -> Non
     `Exception`, so nothing at the raise site changes. Every other test in this module passes under
     it, because each of them catches the NAMED subclass; only a catch on the family sees the loss,
     and a consumer written against the family is the operation the family exists for. Red under it,
-    measured in the reviewer return.
+    measured when the test was written.
     Reachability: all five refusal conditions are driven, so every member of the family is reached
     at least once, and the population is the module's declared family rather than a sample of it.
     Both-states anchor: the assertions read the exception type actually raised and compare it with
     the family and with the named class, both of which exist in the module independently of this
     test; the fixtures are the same one-defect records the tests above use.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion.
+    Invocation isolation: no tree input reaches this assertion.
     Kills: a refusal that loses its place in the family, and a refusal whose raised member is not the
     one the condition names — the two ways a caller's `except` clause silently misses a case.
     A second correct implementation: a classifier that raises from a table of (condition, exception)
@@ -475,25 +475,25 @@ def test_a_caller_catching_the_family_hears_every_refusal_and_which_one() -> Non
 
 
 def test_the_package_re_exports_every_name_this_chunk_publishes() -> None:
-    """Property: each of the fourteen names the shape assigns to this work chunk is listed in
+    """Property: each of the fourteen names assigned to this module is listed in
     `multidriver_swg.conformance.__all__` and resolves as an attribute of the package.
 
     Class: NEW CAPABILITY — the plausible wrong implementation imports a name into the package module
     without listing it in `__all__`, which is the thing a hand-typed list loses first. The name then
     works under an explicit `from ... import name` and vanishes from `import *` and from every
     consumer that enumerates the surface, so the interface is narrower than it reads.
-    Reachability: the enumeration is the shape's own list of fourteen names, all of which the chunk
-    is required to publish; the assertion is reached by any edit to `__all__`, which this chunk and
-    the next both make.
+    Reachability: the enumeration is the design's own list of fourteen names, all of which the package
+    is required to publish; the assertion is reached by any edit to `__all__`, which this change and
+    a later one both make.
     Both-states anchor: the assertion reads the package's own `__all__` and `getattr` results, which
     exist whatever this test says, and never a list this test carries.
-    Invocation isolation (B4-4, arm 1): no tree input reaches this assertion beyond the import itself.
+    Invocation isolation: no tree input reaches this assertion beyond the import itself.
     Kills: a name bound at module level and omitted from `__all__`, and a name listed in `__all__`
     that no longer resolves.
     A second correct implementation: a package declaring `__all__` as a tuple, in a different order,
-    or already carrying the NEXT chunk's names all still pass, because the assertion is a SUBSET one
-    and deliberately not equality — an equality pin here would red on the next chunk's correct
-    landing rather than on a defect, which is the allowlist rule this shape states.
+    or already carrying a later change's names all still pass, because the assertion is a SUBSET one
+    and deliberately not equality — an equality pin here would red on a later change's correct
+    landing rather than on a defect, which is the allowlist rule this design states.
     """
     published = (
         "DivergenceClass",
@@ -525,21 +525,21 @@ def test_the_package_re_exports_every_name_item_two_publishes() -> None:
     Class: NEW CAPABILITY — the plausible wrong implementation binds a name at module level and omits
     it from `__all__`, which is what a hand-typed list loses first when it is rewritten end to end;
     the name then works under an explicit `from ... import name` and vanishes from `import *` and from
-    any consumer that enumerates the surface. Red under it, measured in the reviewer return.
-    Reachability: the population is the shape's own list for this item, all ten of which the chunk is
-    required to publish, and the second chunk rewrote that list wholesale — which is exactly the edit
+    any consumer that enumerates the surface. Red under it, measured when the test was written.
+    Reachability: the population is the design's own list for this addition, all ten of which the package is
+    required to publish, and a later change rewrote that list wholesale — which is exactly the edit
     in which a member drops.
     Both-states anchor: the assertion reads the package's own `__all__` and its `getattr` results,
     both of which exist whatever this test says, and never a list this test carries as its authority.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion
+    Invocation isolation: no file, path or environment input reaches this assertion
     beyond the import itself.
     Kills: a name bound at module level and omitted from `__all__`, and a name listed there that no
     longer resolves.
     A second correct implementation: a package declaring `__all__` as a tuple, in a different order, or
-    already carrying a later chunk's names still passes, because the assertion is a SUBSET one and
-    deliberately not equality — an equality pin would red on a later chunk's correct landing rather
+    already carrying a later change's names still passes, because the assertion is a SUBSET one and
+    deliberately not equality — an equality pin would red on a later change's correct landing rather
     than on a defect.
-    One class, two tests rather than a restatement: this population is the ten names item 2 adds and
+    One class, two tests rather than a restatement: this population is the ten names the later change adds and
     is disjoint from the fourteen the sibling test above ranges over, so the two together enumerate
     the twenty-four-name surface without either repeating the other.
     """
@@ -568,7 +568,7 @@ def test_a_divergent_status_always_names_a_defect_whatever_the_iterable() -> Non
     Class: NEW CAPABILITY — the plausible wrong implementation runs the membership test over the
     caller's iterable and coerces it afterwards, which CONSUMES a one-shot iterable; the truthiness
     check that follows then reads a still-truthy exhausted generator and admits it, so the status
-    exists with an empty tuple. Red under it, measured in the reviewer return.
+    exists with an empty tuple. Red under it, measured when the test was written.
     Reachability: a caller assembling the list by comprehension or by `map` hands the field exactly
     this kind of value, and `Status`'s own note on coercion (`tuple("D3")` is `("D", "3")`)
     establishes that a non-tuple arriving at this field is contemplated rather than treated as a type
@@ -576,7 +576,7 @@ def test_a_divergent_status_always_names_a_defect_whatever_the_iterable() -> Non
     Both-states anchor: the assertion reads `Status`'s published invariant — a `DIVERGENT` verdict
     names at least one defect — which the module states independently of this test, and it admits a
     refusal as an equally correct outcome, so it pins no implementation and no refusal type.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: any construction path on which the undifferentiated red the interface forbids becomes
     constructible, which is the one state the whole refusal set exists to make unreachable.
     A second correct implementation: an implementation that materializes the iterable before its

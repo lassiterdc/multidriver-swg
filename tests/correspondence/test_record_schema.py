@@ -26,7 +26,7 @@ def test_the_verdict_vocabulary_admits_three_values_and_no_other():
 
     Class (input): the verdict vocabulary as its consumers read it -- the emitter that writes a
     verdict and any reader that branches on one; artifact: `record_schema.VERDICTS`, whose members
-    are the only three values a record may carry. Build class: NEW CAPABILITY -- the plausible wrong
+    are the only three values a record may carry. The plausible wrong
     implementation spells the third value lower case (`("pass", "fail", "void")`), which a
     case-sensitive reader would see as an unknown state; a second wrong implementation admits a
     fourth state such as `"skipped"`, which is what a skipped test run would write. This test is red

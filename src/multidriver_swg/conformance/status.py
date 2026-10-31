@@ -2,7 +2,7 @@
 
 A reader of one conformance result needs three separate things about one equation: whether the
 implementation conforms, where the implementation is stated to live, and which named divergences are
-recorded against it. Crushing those into one field is the failure this shape exists to prevent — a
+recorded against it. Crushing those into one field is the failure this design exists to prevent — a
 single "diverges" value cannot also say whether the divergence sits in another repository, so a
 reader who needs the second goes elsewhere for it and may not come back. `Status` gives each facet
 its own home, and refuses the states in which the homes disagree.
@@ -73,7 +73,7 @@ class Status:
 
     `defect_list` is a tuple because one equation can carry more than one recorded defect while its
     CLASSIFICATION is single — the classifier returns exactly one class, and this list is the separate,
-    finer granularity the shape keeps beside it. The list may be empty for a conforming or an
+    finer granularity the design keeps beside it. The list may be empty for a conforming or an
     unreachable verdict; it may not be empty for a divergent one, and it may not contain `D8` or `D9`,
     whose facts the other two fields already hold.
     """

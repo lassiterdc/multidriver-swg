@@ -13,7 +13,7 @@ the lift passes it, as the run behind the kept outputs did, and the registered c
 method there. It calls `fit_dist`, whose registered departures change the AIC and the Kolmogorov-Smirnov p-value of a
 fit; the test drops those two columns of each type's table of fits by name (`__ref_ams_functions.py:111-214`, lines 158,
 164 and 199). The same cell records, in a table of failed fits, each fit that returned nothing or raised; its fixtures
-take the fixed-location gamma and lognormal fits, whose data sit on the open bound and raise, as developer ruling U-20
+take the fixed-location gamma and lognormal fits, whose data sit on the open bound and raise, as a developer ruling
 requires, and no register entry is made for them. The test compares which fits failed and the kind of each failure
 (returned nothing, or raised); the library's error wording is dropped by name (`failed_*__problem_text`), because the
 new code is asked to classify distributions instead of reading the error (below) and need not reproduce a message. The

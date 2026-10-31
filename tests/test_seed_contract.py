@@ -21,12 +21,13 @@ import pytest
 import multidriver_swg.run_configuration.seed_contract as seed_contract
 from multidriver_swg.run_configuration import SeededCallable, SeedGenerator, require_seed
 
-# The two statements the ruling is made of, quoted from the contract rather than paraphrased: the
+# The two statements the ruling is made of, as the module docstring states them: the
 # checks below assert these exact sentences appear in the module's docstring.
 OPTIONALITY_RULING = (
-    "no default, no fallback to an unseeded draw — seeding is always a conscious, user-supplied decision"
+    "A stochastic function takes its generator from the caller. It has no default, and it never falls back on an unseeded "
+    "draw; seeding is always a deliberate choice that the user makes."
 )
-PROPAGATION_CONVENTION = "the generator is threaded through call signatures, never process-global state"
+PROPAGATION_CONVENTION = "The generator is passed through call signatures and is never held in process-global state."
 
 
 def _dotted(node: ast.expr) -> str:
@@ -154,13 +155,13 @@ def test_require_seed_refuses_an_absent_or_defaulted_generator_and_admits_a_requ
 
 
 def test_the_module_docstring_states_the_ruling_and_the_propagation_convention():
-    """Property: the module docstring carries the optionality ruling and the propagation convention verbatim.
+    """Property: the module docstring carries the optionality ruling and the propagation convention.
 
     Class: NEW CAPABILITY — plausible wrong implementation is a docstring that describes the
     interface and stops there, dropping the two statements the declaration is the deliverable for.
     Reachability: any version of the docstring is reached, because the whole of it is searched.
     Both-states anchor: the assertion turns on the presence of the contract's own fixed sentences,
-    which the shape fixes as deliverable text, not on wording this test introduces. Killed by:
+    which the design fixes as deliverable text, not on wording this test introduces. Killed by:
     deleting or rephrasing either sentence. Second correct implementation: the sentences at any
     position in any surrounding prose — the test asserts containment, so it constrains neither
     order nor wording around them.

@@ -1,6 +1,6 @@
 """Reviewer's tests of the cutting function: where in a file the two line counts disagree, and which directory's tracked file is cut.
 
-The coder's tests of `extraction.cut` place every line-count disagreement INSIDE the range they
+The existing tests of `extraction.cut` place every line-count disagreement INSIDE the range they
 cut, and every untracked file under a name git tracks nowhere. Both positions leave a wrong
 implementation passing: a count comparison made over the cut's own bytes rather than over the
 whole file, and a tracked-file check that matches a file's name anywhere in the repository rather

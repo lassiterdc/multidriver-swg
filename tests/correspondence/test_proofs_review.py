@@ -1,6 +1,6 @@
 """Reviewer test for the per-system proof record: the file name of each owning system.
 
-It closes a gap the chunk's own tests leave: they spell a proof file's name by the module's own
+It closes a gap the existing tests leave: they spell a proof file's name by the module's own
 `file_name` or from a one-hyphen slug, so a name check that mishandles a slug of two or more hyphens
 passes them. It builds a synthetic root in `tmp_path`, so nothing is written to the tracked tree.
 """
@@ -58,7 +58,7 @@ def test_the_proof_file_of_each_owning_system_is_read_under_its_underscored_slug
     write `tests/correspondence/proofs/{slug with underscores}.toml`, so a reader that refuses one of
     those names refuses the file its own system package must write. Why: a name check that turns
     only the first hyphen into an underscore passes a one-hyphen slug and refuses a slug of two or more,
-    and the chunk's own tests spell the file by the module's function or use a one-hyphen slug.
+    and the existing tests spell the file by the module's function or use a one-hyphen slug.
     The assertion turns on the file name against the slug, which the current code and the changed
     code both hold. Killed by: replacing only the first hyphen of the slug in `file_name`. Second
     correct implementation: comparing each file's stem with the slug after `slug.replace('-', '_')`

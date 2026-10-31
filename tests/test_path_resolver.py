@@ -487,7 +487,7 @@ def test_the_package_reexports_the_resolution_surface_and_keeps_the_two_earlier_
 
     Class: every public name in the package's re-export set — the eight path-resolution names, the
     provenance refusal, and the eight names the package re-exported before the resolution surface
-    existed. It is one-way: a later chunk that ADDS a name is outside it, so only a removal or a
+    existed. It is one-way: a later change that ADDS a name is outside it, so only a removal or a
     shadowing reddens it.
     Why it is required: the package docstring tells a sibling to import these from the package, so an
     absent name fails at that sibling's import time and nowhere in the module-level checks above,

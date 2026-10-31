@@ -273,7 +273,7 @@ def test_the_exclusion_is_stashed_before_a_plain_finish_hook_runs(pytester, monk
 
     Class (input): any run that deselects, which the State check job's run always does -- here a small
     tree whose `-k` drops one of its two tests; artifact: `inventory.pytest_collection_finish`'s
-    `tryfirst=True`. Build class: NEW CAPABILITY -- the plausible wrong implementation drops
+    `tryfirst=True`. The plausible wrong implementation drops
     `tryfirst` from the new finish hook; pluggy dispatches equal-priority hooks
     latest-registered-first, and the probe is registered after inventory, so the plain probe then
     dispatches first and reads an empty exclusion (measured: `population=2 excluded=0 surviving=1`).
@@ -285,8 +285,8 @@ def test_the_exclusion_is_stashed_before_a_plain_finish_hook_runs(pytester, monk
     EARLIER can still be made to dispatch first, a property of `tryfirst` rather than of registration
     order or of the stash-key names this change introduces. Invocation isolation: not isolatable from
     this tree -- discrimination shown instead: deleting `tryfirst=True` from the new finish hook reds
-    this test on the exclusion count while the population count stays right, pasted in the returning
-    seat's report. Killed by: dropping `tryfirst`; taking the population at finish; or stashing an
+    this test on the exclusion count while the population count stays right, measured when the test
+    was written. Killed by: dropping `tryfirst`; taking the population at finish; or stashing an
     exclusion that does not name the deselected node id. Second correct implementation: the same
     exclusion stashed from a separate plugin module registered with `tryfirst=True` rather than from
     `inventory.py`'s hook -- this test reads what the plain consumer could see and is indifferent to
@@ -326,7 +326,7 @@ def test_the_capture_stashes_the_whole_population_and_the_exclusion_is_its_diffe
 
     Class (input): any run of this suite, deselected or not and narrowed or not, because both sets come
     from one collection; artifact: `inventory.pytest_collection_modifyitems` and
-    `inventory.pytest_collection_finish`. Build class: NEW CAPABILITY -- the plausible wrong
+    `inventory.pytest_collection_finish`. The plausible wrong
     implementation takes the population at `pytest_collection_finish`, where it equals the survivors
     and the exclusion is always empty; a second wrong implementation derives the exclusion from the
     static `listing()` instead of from this run's collected ids, which reports every listed but
@@ -336,7 +336,7 @@ def test_the_capture_stashes_the_whole_population_and_the_exclusion_is_its_diffe
     among three values captured from one collection, a property of the relation rather than of the
     names this change introduces. Invocation isolation: not isolatable from this tree --
     discrimination shown instead: taking the population inside the finish hook reds the first
-    assertion below (measured `assert 2 == 11`, pasted in the returning seat's report). Killed by:
+    assertion below (measured `assert 2 == 11` when the test was written). Killed by:
     capturing after deselection; deriving the exclusion from the static listing; or an exclusion that
     overlaps the survivors. Second correct implementation: a single finish hook that stashes both
     sets, provided it reads the population from a value captured earlier, or a population stored as a
@@ -360,9 +360,9 @@ def test_a_collection_that_fails_before_the_capture_reports_a_usage_error():
     `tests/` that does not exist, which is the case driven here, and, by the same call path, a
     `pytest.exit` raised by an earlier collection hook or an interrupt. Artifact:
     `inventory.pytest_collection_finish`, which reads `stash[record_schema.POPULATION]` and is
-    therefore reached by a collection that never captured. Build class: REGRESSION -- red on the
-    current tree with exit 3 and an `INTERNALERROR ... KeyError` traceback into this plugin, pasted in
-    the reviewing seat's report; the behaviour asserted here is what a run of this tree did before the
+    therefore reached by a collection that never captured. Red on the
+    current tree with exit 3 and an `INTERNALERROR ... KeyError` traceback into this plugin, measured when
+    the test was written; the behaviour asserted here is what a run of this tree did before the
     hook was added. Why: pytest calls `pytest_collection_finish` from the `finally` around collection
     (`Session.perform_collect`), so a collection that raised still runs this hook, and an unguarded
     stash read then replaces the usage error with an internal error plus a traceback into this plugin,

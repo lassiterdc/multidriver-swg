@@ -99,7 +99,7 @@ def test_a_scope_in_range_is_written_and_nothing_else(tmp_path, monkeypatch):
     second section whose file is never read. Why it is required: the stored texts are the
     population the fidelity check ranges over. Killed by: writing a text for every row, or
     slicing the file instead of calling `cut` (the CRLF-free sources here would hide the
-    second, which the reviewer's cut tests cover). Second correct implementation: collecting
+    second, which the tests of `cut` cover). Second correct implementation: collecting
     ranges into a set before writing passes.
     """
     root = _tree(tmp_path, monkeypatch, (("f", "scope-in"), ("g", "discard")))
@@ -238,7 +238,7 @@ def test_main_prints_the_one_summary_line(tmp_path, monkeypatch, capsys):
     """Property: the run prints exactly one line, naming keys, ranges, lines written and texts removed, and returns 0.
 
     Class: a successful run on the two-key ledger. Why it is required: the line is what the
-    coordinator reports. Killed by: printing per-file lines. Second correct implementation:
+    run reports. Killed by: printing per-file lines. Second correct implementation:
     formatting the line from the returned figures passes.
     """
     root = _tree(tmp_path, monkeypatch)
@@ -255,7 +255,7 @@ def test_a_second_sections_stored_copy_is_swept_as_stale_and_named(tmp_path, mon
 
     Class: a stored copy under the second section, which the population never cites. Why it is
     required: the module docstring states that the sweep covers every `.txt` there and not the
-    first section alone, and the shape row says a text whose range is no longer in the
+    first section alone, and the design says a text whose range is no longer in the
     population is deleted and said. Killed by: limiting the sweep to the first section's
     directory. Second correct implementation: deleting every `.txt` under the
     directory that is not in the freshly computed population passes. Not established: a deletion

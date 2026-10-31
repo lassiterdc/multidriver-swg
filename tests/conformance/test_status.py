@@ -63,7 +63,7 @@ def test_a_well_formed_status_constructs_and_is_frozen() -> None:
     a report reaches the frozen claim; the input is the ordinary well-formed shape.
     Both-states anchor: the assertion is the raised `FrozenInstanceError` and the constructed field
     values, both of which exist without this module.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: dropping `frozen=True` from the dataclass.
     A second correct implementation: a status built with `dataclasses.replace` from a default instance
     still passes, because the assertions read construction success and the refusal on mutation rather
@@ -92,7 +92,7 @@ def test_the_derived_classes_are_refused_in_the_defect_list(derived: DivergenceC
     Reachability: every status recording a cross-repo or unreachable equation reaches this branch, and
     those are exactly the rows a downstream attribution reader blocks on.
     Both-states anchor: the raised type and the admitted construction, both present in the module.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: an admission rule for `D8`/`D9`, which is the redundancy the facet split exists to remove.
     A second correct implementation: a refusal keyed on a literal pair rather than on the imported set
     still passes, because the parametrization drives exactly the set's two members.
@@ -114,7 +114,7 @@ def test_a_plain_string_in_the_defect_list_is_refused(not_a_class: str) -> None:
     Reachability: a consumer rebuilding a status from serialized data reaches this branch with a bare
     string, which is the ordinary way a non-member arrives.
     Both-states anchor: the raised type and the admitted member construction, both present in the module.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: a string-type test standing in for an enumeration-membership test.
     A second correct implementation: a refusal written as `if entry not in DivergenceClass` still
     passes, because neither arm is a member and the admitted arm is.
@@ -135,7 +135,7 @@ def test_a_conforming_verdict_carrying_a_defect_is_refused() -> None:
     Reachability: every conforming row reaches this branch, and a report that lists conforming
     equations is the ordinary case rather than a corner.
     Both-states anchor: the raised type and the admitted construction, both present in the module.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: a shape that lets the verdict and the list describe different equations.
     A second correct implementation: a refusal testing `bool(self.defect_list)` rather than truthiness
     of the tuple still passes, because the fixture is a one-element tuple either way.
@@ -155,7 +155,7 @@ def test_a_divergent_verdict_without_a_defect_is_refused() -> None:
     Reachability: every divergent row reaches this branch, and a divergence with no recorded class is
     the state a partially populated report produces.
     Both-states anchor: the raised type and the admitted construction, both present in the module.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: an undiagnosed divergence, which reads as diagnosed to a consumer that only checks the verdict.
     A second correct implementation: a refusal testing `len(self.defect_list) == 0` still passes,
     because the fixture's list is empty either way.
@@ -179,7 +179,7 @@ def test_an_empty_iterable_never_yields_a_divergent_status() -> None:
     this value, and it is the zero-yield member of the input class the non-empty arm beside it drives.
     Both-states anchor: the raised type and the admitted empty-list construction, both fixed by the
     module's own refusals.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: any construction path on which the undifferentiated red becomes reachable through a one-shot
     iterable — the same invariant the non-empty arm pins, at the input that arm cannot reach.
     A second correct implementation: a producer that materializes with `list()` and tests that list
@@ -203,7 +203,7 @@ def test_a_conforming_status_accepts_an_empty_iterable() -> None:
     inherently about emptiness — so the two arms together show the check reads the MATERIALIZED list
     rather than the caller's truthiness.
     Both-states anchor: the constructed status and its empty tuple, both fixed by the module.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: a conforming check that reads a truthy-but-exhausted iterable as "carries defects".
     A second correct implementation: a producer that materializes with `list()` still passes, because
     the assertion reads the constructed field.
@@ -228,7 +228,7 @@ def test_the_blocking_set_is_the_declared_predicate(verdict: Verdict, binding: B
     cross product, so both arms of the `or` are exercised and the single `False` row is present.
     Both-states anchor: the expectation is recomputed here from the frozensets themselves, so a
     transcription error in this table cannot certify a wrong predicate.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: a one-armed predicate, and an always-true one.
     A second correct implementation: a predicate combining two set lookups as a union rather than an
     `or` still passes, because the expectation is computed from the same two sets.
@@ -259,7 +259,7 @@ def test_manuscript_binding_answers_only_the_derivable_case() -> None:
     where a wrong answer propagates rather than merely being untidy.
     Both-states anchor: the first assertion compares the function against the register's own
     `verbatim_span` field, which exists independently of this module and of this test.
-    Invocation isolation (B4-4, arm 1): the input is the in-repo register; no environment variable or
+    Invocation isolation: the input is the in-repo register; no environment variable or
     checkout location reaches the assertion.
     Kills: a `Binding`-typed return that defaults a non-empty span to `BOUND`.
     A second correct implementation: returning `NO_MANUSCRIPT_TEXT` on a falsy span and `None`
@@ -302,7 +302,7 @@ def test_every_status_refusal_is_a_member_of_the_family() -> None:
     from the inside.
     Both-states anchor: each arm asserts family membership and subclass identity, both fixed by the
     module's own class declarations.
-    Invocation isolation (B4-4, arm 1): no file, path or environment input reaches this assertion.
+    Invocation isolation: no file, path or environment input reaches this assertion.
     Kills: a subclass detached from its family, and the two families accidentally unified.
     A second correct implementation: a base declared as a `ValueError` subclass with the same four
     children still passes, because the assertions name `StatusVocabularyError` rather than `Exception`.

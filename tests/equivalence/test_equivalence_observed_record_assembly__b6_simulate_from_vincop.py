@@ -7,8 +7,8 @@ test: floating-point data compares at a relative tolerance of one part in a bill
 counts, labels, texts) exact. The registered callable is called as `callable(part, inputs)`; the fixtures the lifts read
 (`orb_*`, `ora_*`) are in `inputs`.
 
-Three units ran, so three tests, one per unit, all `draws="none"` and stored. The preamble (lines 1-99) takes ADR-6's
-adapted form, because its two star-imports of the legacy inputs and utilities modules cannot run in the runner; the
+Three units ran, so three tests, one per unit, all `draws="none"` and stored. The preamble (lines 1-99) takes the hand-adapted
+form, because its two star-imports of the legacy inputs and utilities modules cannot run in the runner; the
 eleven names they supplied are bound by the declaration, and the cell's file reads are fed from a scratch directory the
 declaration writes the fixture tables and the stored copula text into. It builds the legacy generator
 (`np.random.RandomState(234)`) and draws nothing from it. The two rejected-period cells (356-376 and 377-383) chart the

@@ -2,7 +2,7 @@
 
 The unit draws twice per resample, once from each of two series (lines 1015 and 1016, `sample(..., replace=True,
 random_state=None)`), so the law it specifies is two **independent** streams of uniform picks with replacement. The
-statistic set the shape carries for this unit (open item O-2, closed; the four tests per draw-holding unit) is that
+statistic set chosen for this unit (four tests per draw-holding unit) is that
 law's four tests, the fourth of which is the independence of the two streams, whose defect class is one draw shared by
 both. A licence that certifies only one stream's picks admits a new side that draws one array and uses it for both,
 because the one array is itself a correct stream.
@@ -70,7 +70,7 @@ def test_the_draw_law_licence_admits_two_independent_streams_and_refuses_one_dra
     specifies two independent streams, and only a licence carrying the cross-stream independence test refuses a new
     side that draws once and uses the result twice. Killed by: a single-stream licence, whose precondition refuses a
     pair of arrays entirely, so it fails the admitting arm whatever the new side does. Second correct implementation:
-    any licence built from the four tests O-2 names for this unit passes both arms, and naming
+    any licence built from the four tests chosen for this unit passes both arms, and naming
     `_support.two_stream_law()` directly is the shortest form.
     """
     reference = lift.run_lift(_declaration())
