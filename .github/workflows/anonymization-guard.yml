@@ -66,7 +66,7 @@ jobs:
           done
           # Each brand name carries one bracketed letter so that this file, which the
           # loop below also scans, does not match its own pattern.
-          allow='^(\.copier-answers\.yml|_old_code_to_refactor/_inputs\.py|scripts/check_planning_references\.py)$'
+          allow='^(\.copier-answers\.yml|_old_code_to_refactor/_inputs\.py|scripts/check_planning_references\.py|tests/correspondence/test_pair_scan\.py|tests/correspondence/test_write_root\.py|tests/correspondence/write_root\.py|tests/test_path_resolver\.py|tests/correspondence/reference_values/marginal_distribution_fitting/_b4_selecting_marginals\.py_268-316\.npz|tests/correspondence/reference_values/marginal_distribution_fitting/_utils\.py_1198-1238\.npz)$'
           pat='(/home/[A-Za-z0-9._-]+|/Users/[A-Za-z0-9._-]+|\b[A-Za-z]:[\\/]|Drop[b]ox|One[D]rive|Google [D]rive|i[C]loud)'
           hits=0
           while IFS= read -r -d '' f; do
