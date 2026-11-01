@@ -496,6 +496,269 @@ def test_the_command_prints_the_entry_and_refuses_with_status_one(tmp_path):
     assert bad.returncode == 1 and bad.stderr.startswith("refused:") and "Traceback" not in bad.stderr
 
 
+# ---- the per-entry cache of reached lines ----
+
+
+@pytest.fixture
+def lift_runs(monkeypatch):
+    """A counter of `lift.run_lift` calls, with the cache variable cleared so the developer's environment cannot move a test."""
+    monkeypatch.delenv(reach.NO_CACHE_VARIABLE, raising=False)
+    calls: list[str] = []
+    real = lift.run_lift
+
+    def counting(declaration):
+        """Count the call, then run the lift as it is."""
+        calls.append(declaration.unit)
+        return real(declaration)
+
+    monkeypatch.setattr(lift, "run_lift", counting)
+    return calls
+
+
+def cached_root(tmp_path: Path, measured_value: float = 1.0, **make_arguments) -> Path:
+    """A root with the two-branch unit and an entry measured on `measured_value`, whose cache directory does not exist yet."""
+    root = make_root(tmp_path, **make_arguments)
+    commit_entry(
+        root,
+        reach.measure("sys-a", "mod.py:1-5", None, real_inputs(tmp_path, measured_value), root=root, **ENTRY_FIELDS),
+    )
+    return root
+
+
+def test_a_second_call_over_one_root_runs_no_lift_and_reports_the_same_findings(tmp_path, lift_runs):
+    """Property: a cold call runs the entry's lift once and a warm call over the same root runs none, with equal reports.
+
+    Class: one root holding one entry that the committed fixture reaches, called twice.
+    Why required: running the entry's lift under the tracer is the cost this cache removes; a warm call that still runs it saves nothing.
+    Killed by: a cache that is written and never read, or read and never written; the cold count of 1 is the control that the spy sees the lift run at all.
+    A second correct implementation: a cache kept in a dict for the life of the process, which this test would also pass but the restart test below would not.
+    """
+    root = cached_root(tmp_path)
+    lift_runs.clear()
+    cold = reach.reach_findings(root)
+    assert lift_runs == ["mod.py:1-5"]
+    warm = reach.reach_findings(root)
+    assert lift_runs == ["mod.py:1-5"]
+    assert (warm.findings, warm.declared, warm.entries) == (cold.findings, cold.declared, cold.entries) == ([], 1, 1)
+    assert len(list((root / reach.CACHE).glob("*.json"))) == 1
+
+
+def test_a_warm_cache_still_reports_an_entry_the_fixtures_under_reach(tmp_path, lift_runs):
+    """Property: an entry measured on the `else` branch is reported as not reached by the `if`-branch fixture on the second call too, and the second call runs no lift.
+
+    Class: the file's two-branch case, an entry measured on a negative input and a committed fixture that is positive.
+    Why required: the cache holds what a run reached, not what the entry says, so a stale or under-reaching entry must still fail from a hit.
+    Killed by: a cache that stores the finding list's absence, or that stores the entry's own lines in place of the reached lines.
+    A second correct implementation: storing the finding text itself under the key, which would also report on a hit.
+    """
+    root = cached_root(tmp_path, measured_value=-1.0)
+    lift_runs.clear()
+    first = reach.reach_findings(root)
+    second = reach.reach_findings(root)
+    assert len(lift_runs) == 1
+    for report in (first, second):
+        assert [f for f in report.findings if "[4]" in f and "do not reach" in f], report.findings
+    assert first.findings == second.findings
+
+
+@pytest.mark.parametrize("edit", ["lift", "text", "fixture"])
+def test_an_edit_of_what_a_run_depends_on_makes_the_next_call_run_the_lift_again(tmp_path, lift_runs, edit):
+    """Property: after the lift source, the stored text or a fixture's value changes, the next call runs the lift and does not read the old reached lines.
+
+    Class: three edits, each followed by a re-measured entry so that no STALE finding short-circuits the run.
+    Why required: a key that missed one of these inputs would report a reach the fixtures no longer have.
+    Killed by: a key without the lift digest, without the cut digests, or without the fixture's digest.
+    A second correct implementation: keying on the entry's digests plus an mtime scan, which would also re-run on each edit.
+    """
+    root = cached_root(tmp_path)
+    reach.reach_findings(root)
+    if edit == "lift":
+        (root / lift.LIFTS / "sys_a.py").write_text(
+            BRANCH_LIFT.replace('ns["total"]', 'ns["total"] + 0'), encoding="utf-8"
+        )
+    elif edit == "text":
+        (root / extraction.stored_path("stormy", "mod.py", 1, 5)).write_text(BRANCH_TEXT + "# edit\n", encoding="utf-8")
+    else:
+        (root / fixtures.GENERATORS / "sys_a.py").write_text(
+            POSITIVE_GENERATOR.replace("np.array([1.0])", "np.array([-1.0])"), encoding="utf-8"
+        )
+        fixtures.generate("sys-a", "x", root=root, replace=True)
+    commit_entry(
+        root, reach.measure("sys-a", "mod.py:1-5", None, real_inputs(tmp_path, 1.0), root=root, **ENTRY_FIELDS)
+    )
+    lift_runs.clear()
+    report = reach.reach_findings(root)
+    assert len(lift_runs) == 1, f"the {edit} edit did not change the cache key"
+    if edit == "fixture":
+        assert [f for f in report.findings if "[2]" in f and "do not reach" in f], report.findings
+    else:
+        assert report.findings == []
+    reach.reach_findings(root)
+    assert len(lift_runs) == 1  # control: the new key is itself cached
+
+
+@pytest.mark.parametrize("change", ["interpreter", "installed library", "correspondence source"])
+def test_a_change_of_the_environment_a_run_depends_on_makes_the_next_call_run_the_lift_again(
+    tmp_path, lift_runs, monkeypatch, change
+):
+    """Property: a new interpreter version string, a new installed `name==version` pair or an edited `tests/correspondence/*.py` file each make the next call run the lift.
+
+    Class: three stand-ins for a Python upgrade, a library upgrade and an edit of the check's own code, made after a warm call.
+    Why required: a line event is the interpreter's and a library can change which lines run, so a hit across such a change would report a reach nobody measured.
+    Killed by: a key without `sys.version`, without the installed pairs, or without the digest of the package's source; the unchanged third call is the control that the key is stable.
+    A second correct implementation: keying on `sys.version_info` and a hash of `pip freeze` output, which changes under the same three stand-ins.
+    """
+    root = cached_root(tmp_path)
+    package = tmp_path / "package"
+    package.mkdir()
+    (package / "a.py").write_text("x = 1\n", encoding="utf-8")
+    monkeypatch.setattr(reach, "__file__", str(package / "reach.py"))
+    reach.reach_findings(root)
+    lift_runs.clear()
+    reach.reach_findings(root)
+    assert lift_runs == []  # control: unchanged, the call is a hit
+    if change == "interpreter":
+        monkeypatch.setattr(sys, "version", sys.version + " other")
+    elif change == "installed library":
+        real = reach.importlib.metadata.distributions
+        fake = types.SimpleNamespace(metadata={"Name": "a-library-nobody-installed"}, version="9.9")
+        monkeypatch.setattr(reach.importlib.metadata, "distributions", lambda: [*real(), fake])
+    else:
+        (package / "a.py").write_text("x = 2\n", encoding="utf-8")
+    reach.reach_findings(root)
+    assert len(lift_runs) == 1, f"a change of the {change} did not change the cache key"
+
+
+REGISTER = "tests/correspondence/known_defects.toml"
+REGISTER_LIFT = BRANCH_LIFT.replace(
+    "    return",
+    "    import pathlib\n\n"
+    '    register = (pathlib.Path(__file__).resolve().parents[2] / "tests/correspondence/known_defects.toml").read_text()\n'
+    '    if "line = 79" in register:\n'
+    '        raise ValueError("the register moved a stop marker")\n'
+    "    return",
+    1,
+)
+
+
+@pytest.mark.parametrize("edit", ["register", "stored text of another unit", "file under tests/lifts"])
+def test_an_edit_of_a_file_a_lift_reads_at_run_time_makes_a_warm_call_run_the_lift_again(tmp_path, lift_runs, edit):
+    """Property: after the defect register, a stored text no entry cites or a file under `tests/lifts/` changes, a warm call runs the lift, and for the register edit it reports the finding a fresh run reports.
+
+    Class: a lift that reads the register by path and raises when it holds `line = 79`; the register edited from `line = 78` to `line = 79` after a warm call; plus an unrelated stored text and a data file under `tests/lifts/`.
+    Why required: a lift reads these files and not only its own text, so a key that ignored them would let a warm run report clean where a fresh run raises (measured on the real tree: a one-line register edit changed 0 of 120 keys).
+    Killed by: a key without the register digest, without the stored-extraction directory or without the `tests/lifts/` files; the must-fire control is that the fresh run on the edited register reports the finding (`use_cache=False`), so a clean warm report cannot be an absent behaviour.
+    A second correct implementation: a key holding the modification times of those files, which also changes on each edit.
+    """
+    root = make_root(tmp_path, source=REGISTER_LIFT)
+    (root / REGISTER).write_text("[[defect]]\nline = 78\n", encoding="utf-8")
+    commit_entry(
+        root, reach.measure("sys-a", "mod.py:1-5", None, real_inputs(tmp_path, 1.0), root=root, **ENTRY_FIELDS)
+    )
+    assert reach.reach_findings(root).findings == []
+    lift_runs.clear()
+    assert reach.reach_findings(root).findings == []
+    assert lift_runs == []  # control: unedited, the call is a hit
+    if edit == "register":
+        (root / REGISTER).write_text("[[defect]]\nline = 79\n", encoding="utf-8")
+    elif edit == "stored text of another unit":
+        other = root / extraction.stored_path("stormy", "other.py", 1, 2)
+        other.parent.mkdir(parents=True, exist_ok=True)
+        other.write_text("y = 1\n", encoding="utf-8")
+    else:
+        (root / lift.LIFTS / "notes.txt").write_text("data a lift module reads\n", encoding="utf-8")
+    warm = reach.reach_findings(root)
+    assert len(lift_runs) == 1, f"the {edit} edit did not change the cache key"
+    if edit == "register":
+        fresh = reach.reach_findings(root, use_cache=False)
+        assert [f for f in fresh.findings if "did not run" in f and "ValueError" in f], fresh.findings
+        assert warm.findings == fresh.findings
+    else:
+        assert warm.findings == []
+
+
+def test_an_unusable_cache_file_or_directory_gives_a_correct_report_and_no_error(tmp_path, lift_runs):
+    """Property: a corrupt cache file, a cache file whose lines are not integers and a `.cache` that is a regular file each give the report an uncached run gives, with no exception.
+
+    Class: three states of the cache location after a first call has written one file.
+    Why required: the cache is an optimisation inside a test, so a bad file may cost time and may never cost a verdict or an error.
+    Killed by: reading the file without handling a parse error, trusting stored lines that are not integers, or creating the directory without handling a refusal.
+    A second correct implementation: deleting an unusable file and writing a new one, which this test would also accept.
+    """
+    root = cached_root(tmp_path, measured_value=-1.0)
+    expected = reach.reach_findings(root).findings
+    assert expected  # control: the under-reaching entry is a finding, so a wrong report would differ
+    (file,) = (root / reach.CACHE).glob("*.json")
+    for text in ("{ not json", '{"key": "' + file.stem + '", "lines": ["4"]}', '{"key": "other", "lines": [1]}'):
+        file.write_text(text, encoding="utf-8")
+        lift_runs.clear()
+        assert reach.reach_findings(root).findings == expected
+        assert len(lift_runs) == 1
+    (root / ".cache").rename(tmp_path / "moved_cache")
+    (root / ".cache").write_text("a regular file", encoding="utf-8")
+    lift_runs.clear()
+    assert reach.reach_findings(root).findings == expected
+    assert len(lift_runs) == 1
+
+
+def test_a_run_that_raises_is_not_stored(tmp_path, lift_runs):
+    """Property: an entry whose lift cannot run on its fixtures is reported each call and leaves no cache file.
+
+    Class: a lift whose reduction raises.
+    Why required: storing a failed run would turn a transient failure into a permanent miss or a false reach.
+    Killed by: writing the cache before the run, or in a `finally`.
+    A second correct implementation: storing the failure and replaying it, which would leave a file this test refuses.
+    """
+    root = cached_root(tmp_path)
+    (root / lift.LIFTS / "sys_a.py").write_text(
+        BRANCH_LIFT.replace('lambda ns: ns["total"]', "lambda ns: 1 / 0"), encoding="utf-8"
+    )
+    entry = reach.build_entry(declaration_of(root), {1, 2, 5}, **ENTRY_FIELDS)
+    commit_entry(root, reach.render_entry(entry))
+    for _ in range(2):
+        findings = reach.reach_findings(root).findings
+        assert len(findings) == 1 and "did not run" in findings[0] and "ZeroDivisionError" in findings[0], findings
+    assert list((root / reach.CACHE).glob("*.json")) == []
+
+
+def test_use_cache_false_and_the_environment_variable_each_run_the_lift_every_call(tmp_path, lift_runs, monkeypatch):
+    """Property: `use_cache=False` and `REACH_NO_CACHE=1` each run the lift on every call and neither reads nor writes a cache file.
+
+    Class: a root whose cache is already warm, called under each way of turning the cache off, and with the variable set to something other than `1`.
+    Why required: the full-fidelity run is how a developer re-measures what the cache has trusted.
+    Killed by: reading the cache before looking at either switch; the value `0` still using the cache is the control that only `1` switches it off.
+    A second correct implementation: deleting the cache directory before a full run, which would also re-run but would not leave the warm files this test checks.
+    """
+    root = cached_root(tmp_path)
+    reach.reach_findings(root)
+    (warm_file,) = (root / reach.CACHE).glob("*.json")
+    before = warm_file.read_bytes()
+    lift_runs.clear()
+    reach.reach_findings(root, use_cache=False)
+    assert len(lift_runs) == 1
+    monkeypatch.setenv(reach.NO_CACHE_VARIABLE, "1")
+    reach.reach_findings(root)
+    assert len(lift_runs) == 2
+    assert list((root / reach.CACHE).glob("*.json")) == [warm_file] and warm_file.read_bytes() == before
+    monkeypatch.setenv(reach.NO_CACHE_VARIABLE, "0")
+    reach.reach_findings(root)
+    assert len(lift_runs) == 2  # control: a value other than 1 leaves the cache in use
+
+
+def test_the_cache_directory_is_ignored_by_git():
+    """Property: `.cache/reach/` of a checkout is ignored by the repository's own ignore rules.
+
+    Class: the one path the cache writes under in a checkout.
+    Why required: a cache file that git sees would be committed or would dirty every tree that ran the check.
+    Killed by: moving the cache to a path no ignore rule names.
+    A second correct implementation: an ignore file inside the cache directory itself.
+    """
+    done = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "check-ignore", "-q", f"{reach.CACHE.as_posix()}/probe.json"], check=False
+    )
+    assert done.returncode == 0
+
+
 def test_the_entries_committed_in_this_checkout_are_reached_by_their_committed_fixtures(capsys):
     """Property: every reach entry committed in this checkout is current and reached by its lift on its committed fixtures; the counts are printed.
 

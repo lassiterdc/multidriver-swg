@@ -24,6 +24,25 @@ This module holds the three parts of that remedy.
 - The check: `reach_findings` runs every entry's lift on its committed fixtures and names the lines
   of the entry that the run did not reach, and names an entry whose digests no longer match its unit's
   stored texts or its lift as stale instead of trusting it.
+- The cache: a traced run of one entry's lift costs seconds to minutes, so `reach_findings` keeps the
+  legacy lines each run reached in `{root}/.cache/reach/{key}.json` (the `.cache` directory is ignored by
+  git) and reuses them while the key is unchanged. The key is a sha256 of the entry's cut digests, the
+  lift digest, the recorded digest and the file digest of each fixture the declaration names, the digest of
+  the bytes of the lift module, `sys.version`, the installed `name==version` pairs, the digest of the
+  bytes of every `tests/correspondence/*.py`, and the digest of the files a lift reads at run time: the
+  defect register `tests/correspondence/known_defects.toml`, every file under the stored-extraction
+  directory and every file under `tests/lifts/`. The stored value is the set of legacy lines reached, never
+  the entry's own lines, so the comparison with the entry's lines is made on every call and an entry the
+  fixtures under-reach is reported from a cache hit exactly as from a run. A cache file that cannot be
+  read, parsed or written is a miss and never an error, and a run that raises is never stored. A cold
+  run (no cache) costs what it always cost; only a repeat run is fast. `REACH_NO_CACHE=1` in the
+  environment, or `use_cache=False`, neither reads nor writes the cache, and is the full-fidelity run.
+  Not seen by the key: an edit of an installed library that changes which legacy lines run without
+  changing an installed version (an editable install, for example); an edit of library code the lift
+  imports from this checkout's `src/`; and a change in any file a lift reads other than the lift module,
+  `tests/correspondence/*.py`, the defect register, the stored-extraction directory, `tests/lifts/` and
+  the named fixtures. A cache hit proves an entry against the last run on its key, not against a fresh
+  run.
 - The named absence: a `[[named]]` table in the same file records a declaration that has no entry and
   that no real input has been shown to measure, with the reason stating the measurement that shows the
   absence. It is a record, not an exemption: a named declaration that also has an entry, or that matches
@@ -47,6 +66,10 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import datetime
+import hashlib
+import importlib.metadata
+import json
+import os
 import subprocess
 import sys
 import threading
@@ -56,12 +79,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from tests.correspondence import extraction, lift, value_codec
+from tests.correspondence import extraction, fixtures, lift, value_codec
 
 REPO_ROOT = extraction.REPO_ROOT
 REACH = Path("tests/correspondence/reach")
 _FIELDS = ("unit", "cuts", "lift", "measured", "commit", "lines")
 _NAMED_FIELDS = ("unit", "reason")
+CACHE = Path(".cache/reach")
+NO_CACHE_VARIABLE = "REACH_NO_CACHE"
 
 
 class ReachError(Exception):
@@ -248,6 +273,104 @@ def read_entries(root: Path = REPO_ROOT) -> list[tuple[str, dict]]:
     return entries
 
 
+# ---- the cache ----
+
+
+def _environment_digest() -> str:
+    """A digest of what a run of any lift depends on besides the entry: interpreter, installed libraries and this package's code."""
+    installed = sorted(
+        f"{(dist.metadata['Name'] or '').lower()}=={dist.version}" for dist in importlib.metadata.distributions()
+    )
+    sources = sorted(Path(__file__).parent.glob("*.py"))
+    record = {
+        "python": sys.version,
+        "installed": installed,
+        "correspondence": [[path.name, hashlib.sha256(path.read_bytes()).hexdigest()] for path in sources],
+    }
+    return hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def _read_inputs_digest(root: Path) -> str:
+    """A digest of the committed files the lifts read at run time, under `root`.
+
+    These are the defect register, every file of the stored-extraction directory (the lifts read the texts of
+    callees there) and every file under `tests/lifts/` (modules, adapted copies and anything else a lift module
+    reads beside itself). `__pycache__` is skipped. The digest is shared by every entry, so an edit of any of
+    these files makes every entry run again: the safe direction, chosen over a per-system narrowing.
+    """
+    digest = hashlib.sha256()
+    files = [Path(root) / "tests/correspondence/known_defects.toml"]
+    for tree in (Path(root) / extraction.STORED_DIR, Path(root) / lift.LIFTS):
+        files += sorted(path for path in tree.rglob("*") if path.is_file() and "__pycache__" not in path.parts)
+    for path in files:
+        digest.update(path.relative_to(root).as_posix().encode("utf-8") + b"\0")
+        try:
+            digest.update(hashlib.sha256(path.read_bytes()).digest())
+        except OSError:
+            digest.update(b"absent")
+    return digest.hexdigest()
+
+
+def _cache_key(declaration: lift.LiftDeclaration, environment: str, inputs: str = "") -> str | None:
+    """The cache key of one entry's run on its committed fixtures, or None when a fixture cannot be read.
+
+    The lift digest already covers the unit, its stored texts, the fixture names, the runner's version and the
+    declaration's source, and the cut digests are added beside it; it holds fixture names and not their content,
+    so each fixture's recorded digest and the digest of its file are added, and so are the bytes of the lift
+    module and `inputs`, the digest of the files the lifts read at run time (`_read_inputs_digest`). A fixture that is not recorded or whose file is missing gives None: the run is then made, so that the
+    loader's own refusal is what the report names.
+    """
+    directory = Path(declaration.root) / fixtures.FIXTURES / fixtures.system_directory_name(declaration.system)
+    try:
+        rows = fixtures._read_record(directory)
+        used = []
+        for name in declaration.fixtures:
+            row = rows.get(name)
+            if row is None:
+                return None
+            used.append([name, row["digest"], value_codec.label((directory / f"{name}.npz").read_bytes())])
+        record = {
+            "cuts": _cut_labels(declaration),
+            "lift": lift.lift_digest(declaration),
+            "fixtures": used,
+            "lift_module": hashlib.sha256(Path(declaration.path).read_bytes()).hexdigest(),
+            "environment": environment,
+            "inputs": inputs,
+        }
+    except (OSError, fixtures.FixtureError, lift.LiftError, ValueError):
+        return None
+    return hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def _cache_read(root: Path, key: str) -> set[int] | None:
+    """The legacy lines stored under `key`, or None when there is no usable file; nothing here raises."""
+    try:
+        document = json.loads((root / CACHE / f"{key}.json").read_text(encoding="utf-8"))
+        lines = document["lines"]
+        if document["key"] != key or not isinstance(lines, list) or any(type(n) is not int or n < 1 for n in lines):
+            return None
+        return set(lines)
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
+def _cache_write(root: Path, key: str, lines: set[int]) -> None:
+    """Store `lines` under `key`; a directory or file that cannot be written is ignored."""
+    directory = root / CACHE
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+        temporary = directory / f"{key}.{os.getpid()}.tmp"
+        temporary.write_text(json.dumps({"key": key, "lines": sorted(lines)}), encoding="utf-8")
+        os.replace(temporary, directory / f"{key}.json")
+    except OSError:
+        return
+
+
+def _cache_enabled(use_cache: bool) -> bool:
+    """True when the cache is to be read and written: the caller allows it and `REACH_NO_CACHE` is not `1`."""
+    return use_cache and os.environ.get(NO_CACHE_VARIABLE) != "1"
+
+
 # ---- the check ----
 
 
@@ -295,7 +418,7 @@ def read_named(root: Path = REPO_ROOT) -> list[tuple[str, dict]]:
     return named
 
 
-def reach_findings(root: Path = REPO_ROOT) -> ReachReport:
+def reach_findings(root: Path = REPO_ROOT, *, use_cache: bool = True) -> ReachReport:
     """Run every entry's lift on its committed fixtures and report the entry lines it did not reach.
 
     An entry is stale, and is reported as such without running anything, when its cut digests or its
@@ -303,8 +426,14 @@ def reach_findings(root: Path = REPO_ROOT) -> ReachReport:
     absence that matches no declared lift, or that also has an entry, is reported. The report also counts
     the declared lifts that are neither entered nor named, so that a pass over no entries reads as what
     it is.
+
+    The legacy lines a run reached are cached per entry (see the module docstring); the entry's lines are
+    compared with them on every call, so an under-reaching entry is reported from a hit as from a run.
     """
     root = Path(root)
+    caching = _cache_enabled(use_cache)
+    environment = _environment_digest() if caching else ""
+    inputs = _read_inputs_digest(root) if caching else ""
     declarations = lift.discover(root)
     by_key = {(d.system, d.unit, d.part): d for d in declarations}
     entries = read_entries(root)
@@ -324,12 +453,19 @@ def reach_findings(root: Path = REPO_ROOT) -> ReachReport:
         if entry["lift"] != lift.lift_digest(declaration):
             findings.append(f"{label} is STALE: its lift digest is not the lift's now")
             continue
-        try:
-            reached = reached_lines(declaration)
-        except Exception as exc:  # a lift that cannot run on its fixtures reaches nothing, whatever the reason
-            findings.append(f"{label}: the lift did not run on its committed fixtures ({type(exc).__name__}: {exc})")
-            continue
-        missed = sorted(set(entry["lines"]) - reached.lines)
+        key = _cache_key(declaration, environment, inputs) if caching else None
+        reached_set = _cache_read(root, key) if key is not None else None
+        if reached_set is None:
+            try:
+                reached_set = reached_lines(declaration).lines
+            except Exception as exc:  # a lift that cannot run on its fixtures reaches nothing, whatever the reason
+                findings.append(
+                    f"{label}: the lift did not run on its committed fixtures ({type(exc).__name__}: {exc})"
+                )
+                continue
+            if key is not None:
+                _cache_write(root, key, reached_set)
+        missed = sorted(set(entry["lines"]) - reached_set)
         if missed:
             findings.append(f"{label}: the committed fixtures do not reach legacy lines {missed}")
     absent: set[tuple[str, str, str | None]] = set()
