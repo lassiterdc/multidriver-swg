@@ -149,7 +149,7 @@ def test_a_draw_law_licence_needs_a_seed_gets_it_with_the_draw_count_and_part_re
     assert seen == {"part": part, "draws": _support.DRAWS, "seed": seed}
     with pytest.raises(ValueError, match="not derived_seed"):
         _support.check(request, _bound(callable_), _law(), seed=5, root=root)
-    _support.check(request, _bound(callable_), _law(), seed=5, ruling="a developer ruling", root=root)
+    _support.check(request, _bound(callable_), _law(), seed=5, ruling="a recorded decision", root=root)
 
 
 def test_a_value_licence_refuses_a_seed_and_a_draw_law_part_under_it_is_refused_before_the_lift_runs(

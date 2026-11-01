@@ -12,7 +12,7 @@ the chosen fits of an event type and writes their tables (lines 1198-1238) refit
 registered departures (`__ref_ams_functions.py:111-214`, lines 158, 164 and 199) change the AIC and the Kolmogorov-Smirnov
 p-value of a fit; the test drops those two columns of each type's table of fits by name, and each figure's super title,
 which states both. Its fixtures name only fits that exist and that `fit_dist` accepts, so none of the fixed-location gamma
-or lognormal fits that raise is asked for (a developer ruling: those are constrained through the test of
+or lognormal fits that raise is asked for (those are constrained through the test of
 `_b4_selecting_marginals.py:66-181`, which catches and records them, and this function does not).
 
 `RULINGS` records the three register entries the second unit reaches through `fit_dist`, under the register's key.

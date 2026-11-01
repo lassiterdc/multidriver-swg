@@ -412,7 +412,7 @@ def test_the_reconstruction_scan_names_a_rebuild_whose_inputs_is_not_a_plain_arg
     a parameter list that is NOT exactly `inputs` — outside the scan's stated predicate, so asserting it here
     would assert past that predicate; and a rebuild that is BOTH aliased and parameterised with more than
     `inputs` is named by neither arm (`arm1=[] arm2=[]`, against `arm1=['rebuild']` for the same
-    parameter list constructing the class literally), which is the two residuals F1 named in
+    parameter list constructing the class literally), which is the two residuals of that predicate in
     conjunction. That case is not a member here and adding it would assert past the predicate.
     """
 

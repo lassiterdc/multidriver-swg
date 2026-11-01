@@ -49,7 +49,7 @@ from tests.correspondence.fixtures import generates_fixture
 def x(rng):
     return np.array([1.0])
 """
-ENTRY_FIELDS = {"commit": "fedcba9876543210", "measured": "2026-10-25"}
+ENTRY_FIELDS = {"measured": "2026-10-25"}
 
 
 def make_root(
@@ -130,7 +130,7 @@ def test_an_entry_measured_on_the_committed_fixture_passes(tmp_path):
 
 @state_check
 def test_a_measured_entry_holds_no_input_value_and_no_inputs_path(tmp_path):
-    """Property: the printed entry carries the unit, both digests, the date, the commit and the line numbers, and neither the inputs directory's path nor any input value.
+    """Property: the printed entry carries the unit, both digests, the date and the line numbers, and neither the inputs directory's path nor any input value.
 
     Class: an inputs directory under a recognisable path holding a recognisable value (-7391.25).
     Why required: the entry is committed to a public repository, and where real data lives is not for it to say.
@@ -148,7 +148,7 @@ def test_a_measured_entry_holds_no_input_value_and_no_inputs_path(tmp_path):
     assert entry["unit"] == "mod.py:1-5" and "part" not in entry
     assert entry["lift"] == lift.lift_digest(declaration)
     assert entry["cuts"] == [extraction.label(extraction.CUT_RULE, BRANCH_TEXT.encode())]
-    assert (entry["measured"], entry["commit"], entry["lines"]) == ("2026-10-25", "fedcba9876543210", [1, 4, 5])
+    assert (entry["measured"], entry["lines"]) == ("2026-10-25", [1, 4, 5])
 
 
 @state_check
@@ -224,7 +224,7 @@ def test_a_declared_lift_with_no_entry_is_counted_and_printed(tmp_path):
 @pytest.mark.parametrize(
     ("edit", "fragment"),
     [
-        (lambda t: t.replace('commit = "fedcba9876543210"\n', ""), "lacks the fields"),
+        (lambda t: t.replace('measured = "2026-10-25"\n', ""), "lacks the fields"),
         (lambda t: t.replace("lines = [1, 4, 5]", "lines = [5, 4, 1]"), "distinct positive integers in order"),
         (lambda t: t.replace("lines = [1, 4, 5]", "lines = [1, 1, 5]"), "distinct positive integers in order"),
         (lambda t: t.replace("lines = [1, 4, 5]", "lines = [0, 4]"), "distinct positive integers in order"),

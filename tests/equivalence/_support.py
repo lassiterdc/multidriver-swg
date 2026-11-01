@@ -100,7 +100,7 @@ def check(
     registered callable unchanged, so a draw-law test that is its unit's only test carries none. A test whose `part`
     is `"draw-law"` under any other licence is refused before the lift runs: it would run as a value test with no
     seed and be counted as a draw-law test that tests no law. The seed must equal `derived_seed(unit)`; any other seed is refused
-    unless `ruling` names the developer's ruling that allowed it, because a seed changed after a red voids the test.
+    unless `ruling` names the recorded decision that allowed it, because a seed changed after a red voids the test.
     Any other test must not pass a seed.
 
     Raises `LookupError` when the marker is missing, no lift declares the unit and part, or the lift is filed

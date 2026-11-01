@@ -31,6 +31,51 @@ MUST_FIRE = [
     "ruling U-21 applies",
     "open item O-2",
     "the TO-5 line",
+    "the coder's tests of the cutting function",
+    "ask the coordinator about it",
+    "reported in the returning seat's note",
+    "measured in the build return",
+    "Build class: NEW CAPABILITY",
+    "done on developer directive",
+    "Ruled by the developer on 2026-08-17",
+    "a developer ruling gives it",
+    "not found by the absorbing agent",
+    "participant C as Claude Code",
+    "generated from copier-python-" + "template",
+    "stored privately in claude-" + "workspace",
+    "the sub" + "agent transcripts",
+    "added by refactor-" + "plan audit",
+    "follows a plan-then-" + "implement workflow",
+    "participant P as Planning Doc",
+    "D->>C: /proceed-with-" + "implementation",
+    "by decision 3.3 and is",
+    "as the cell that calls it does (row 108)",
+    "Invocation isolation (B4-4, arm 2)",
+    "the Definition of Done line",
+    "Coordinator reads the returns",
+    "Developer directive: keep it",
+    "Build return shows it",
+    "as the approved shape's unit table states",
+    "measured in the review return",
+    "per the reviewer return",
+    "set out in the builder return",
+    "done on the developer's instruction",
+    "a developer directive applies",
+    "the developer's rule for unseeded calls",
+    "the developer ruled that site unregistered",
+    "not found by the implementing agent",
+    "as the reviewing agent reports",
+    "asked of the building agent",
+    "run /qaqc-and-" + "commit",
+    "run /plan-" + "implementation",
+    "run /plan-and-" + "implement",
+    "this shape stage ends",
+    "each shape iteration adds one",
+    "an open item remains",
+    "Reviewing agent reports it first",
+    "at the developer's request",
+    "The developer decided that it moves",
+    "the developer's preference for the code",
 ]
 MUST_NOT_FIRE = [
     "chi-square with P-1 degrees of freedom",
@@ -42,6 +87,24 @@ MUST_NOT_FIRE = [
     "Python 3.12 and numpy 2.4",
     "the shape of the array",
     "the plan for the season",
+    "/.claude/",
+    "/CLAUDE.md",
+    "/.codex/",
+    "/AGENTS.md",
+    "which a reviewer will ask about",
+    "reproduced by the reviewer",
+    'chunks = dict(year = "auto")',
+    "the first chunk of the array",
+    "the coordinates of the gauge",
+    "an encoder and a decoder",
+    "On a developer machine, link the folder",
+    "the developer's environment cannot move a test",
+    "Developers that use our General Public Licenses",
+    "scoped-in rows 0, family tests 0",
+    "rows 1, surviving 2",
+    "a peak discharge Q100 and an F1 score of 0.9",
+    "the ledger records a verdict per session",
+    "Reviewer tests for the divergence detector",
 ]
 
 
@@ -89,6 +152,25 @@ def test_exit_codes(tmp_path):
     dirty = _repo(tmp_path / "d", {"a.py": "# ADR-1\n"})
     empty = _repo(tmp_path / "e", {})
     assert (cpr.main(clean), cpr.main(dirty), cpr.main(empty)) == (0, 1, 2)
+
+
+def test_the_check_files_spell_no_private_name():
+    """Property: neither check file spells the name of a private repository or tool, so the check does not carry what it forbids.
+
+    The names are assembled from pieces here for the same reason the patterns are written in pieces.
+    """
+    names = [
+        "copier-python-" + "template",
+        "claude-" + "workspace",
+        "agentic" + "-workspace",
+        "proceed-with-" + "implementation",
+        "qaqc-and-" + "commit",
+        "refactor-" + "plan",
+        "plan-then-" + "implement",
+    ]
+    for rel in cpr.SELF:
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        assert [name for name in names if name in text] == [], rel
 
 
 def test_this_repository_carries_no_reference():

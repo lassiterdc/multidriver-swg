@@ -7,7 +7,7 @@ each test fails at its comparison against a placeholder lying outside its licenc
 
 The function samples a fitted vine copula and returns the draws as a table with the observations' columns. The value
 test calls it four ways, in this order: twice with no seeds, with a list of seeds, and with one seed. The legacy
-unseeded call draws afresh; under the developer's rule for unseeded calls the lift draws each unseeded call's seed from one generator built from the
+unseeded call draws afresh; under the rule for unseeded calls the lift draws each unseeded call's seed from one generator built from the
 committed fixture `seed` (`numpy.random.default_rng(seed)`, one `integers(1, 2**31 - 1)` per call, in call order),
 and a call that names seeds keeps them. The registered callable receives the same fixture as `inputs["seed"]`, builds
 the same generator and does the same, so every table is compared exactly, under the default licence of one part in a

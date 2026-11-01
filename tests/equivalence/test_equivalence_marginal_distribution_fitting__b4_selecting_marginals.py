@@ -13,8 +13,8 @@ the lift passes it, as the run behind the kept outputs did, and the registered c
 method there. It calls `fit_dist`, whose registered departures change the AIC and the Kolmogorov-Smirnov p-value of a
 fit; the test drops those two columns of each type's table of fits by name (`__ref_ams_functions.py:111-214`, lines 158,
 164 and 199). The same cell records, in a table of failed fits, each fit that returned nothing or raised; its fixtures
-take the fixed-location gamma and lognormal fits, whose data sit on the open bound and raise, as a developer ruling
-requires, and no register entry is made for them. The test compares which fits failed and the kind of each failure
+take the fixed-location gamma and lognormal fits, whose data sit on the open bound and raise, by design,
+and no register entry is made for them. The test compares which fits failed and the kind of each failure
 (returned nothing, or raised); the library's error wording is dropped by name (`failed_*__problem_text`), because the
 new code is asked to classify distributions instead of reading the error (below) and need not reproduce a message. The
 final-selection cell (lines 268-316) refits the twelve named fits with a plot and writes two tables per event type: the
@@ -53,7 +53,7 @@ def test_the_loading_cell_leaves_the_same_event_tables_and_statistics(new_side, 
 @pytest.mark.equivalence(unit="_b4_selecting_marginals.py:66-181", system="marginal-distribution-fitting")
 def test_the_all_fits_cell_writes_the_same_tables_of_fits_and_failed_fits(new_side, request):
     """Equivalence of each type's table of fits and table of failed fits; the AIC, the Kolmogorov-Smirnov p-value and the error wording are dropped by name."""
-    # The developer's preference for the code that owns this test, quoted verbatim, on 2026-10-28. It changes no comparison,
+    # A note on the code that owns this test, from 2026-10-28. It changes no comparison,
     # fixture or licence of this test; the new code of marginal-distribution-fitting is where families are to be pre-classified.
     #
     # my thinking when i wrote the code was that if fixing a low bound failed on a distribution, the distribution

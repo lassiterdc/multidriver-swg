@@ -86,8 +86,8 @@ def test_no_fixture_of_the_classification_unit_holds_an_event_with_no_flag_set()
 
     Class: each row of each summary table named by the classification lift's declaration. Why it is required: the
     legacy function assigns a type only under three flag arms, so a row with none set takes the previous row's type
-    (and a first such row raises); the developer ruled that site unregistered and that the fixtures hold no such row
-    (a developer ruling), and the line-based reach record cannot see the difference, so this reads the data. Killed by:
+    (and a first such row raises); that site is unregistered, the fixtures hold no such row,
+    and the line-based reach record cannot see the difference, so this reads the data. Killed by:
     a fixture that adds a row on which `compound`, `surge_event` and `rain_event` are all false. Second correct
     implementation: counting the rows whose flags sum to zero with `numpy` instead of `any`. Not established: that no
     other fixture feeds the function, which the declaration's fixture list states.

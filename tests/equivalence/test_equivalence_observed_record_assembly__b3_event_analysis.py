@@ -16,8 +16,8 @@ the three statistics tables, the 14 saved figures and the lines printed.
 
 The cell that combines two sources' event series by priority (135-220) calls `combine_dataset_according_to_priority`,
 whose one registered entry (`_utils.py:2123`, `LICENSED`) lets the new code remove a preferred event that an added
-lower-priority event only partly overlaps, where the legacy code keeps its remaining steps and its summary row. Under
-a developer ruling the lift runs the function on two inputs, a full-window replacement and a
+lower-priority event only partly overlaps, where the legacy code keeps its remaining steps and its summary row. The lift
+runs the function on two inputs, a full-window replacement and a
 loses-last-steps partial overlap with an untouched later event, and splits each returned table into two named
 components: the overlapped radar event's rows, keyed by its data source and its original span (its first to last stamp,
 and in the summary table `event_start` equal to its first stamp), and the rest. In the rest, `event_id` is the event's

@@ -33,25 +33,26 @@ repos:
         pass_filenames: false
         always_run: true
 
-  - repo: local
-    hooks:
-      - id: divergence-detector
-        name: divergence record detector
-        entry: python3 -m tests.correspondence.divergence
-        language: system
-        pass_filenames: false
-        always_run: true
-
   # Planning-reference guard (scripts/check_planning_references.py). Fails if any
-  # file outside the legacy code names something in the private planning record:
-  # a decision number, a task or package identifier, a constraint label,
-  # or a path into that record. It scans the whole tree on every run, so a
-  # reference fails the next commit whoever wrote it. Stdlib only.
+  # file outside the legacy code names something in the private planning record
+  # or the process behind it: a decision number, a task or package identifier,
+  # a constraint label, a path into that record, or a word only that process
+  # uses. It scans the whole tree on every run, so a reference fails the next
+  # commit whoever wrote it. Stdlib only.
   - repo: local
     hooks:
       - id: planning-reference-guard
         name: planning-reference guard
         entry: python3 scripts/check_planning_references.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  - repo: local
+    hooks:
+      - id: divergence-detector
+        name: divergence record detector
+        entry: python3 -m tests.correspondence.divergence
         language: system
         pass_filenames: false
         always_run: true

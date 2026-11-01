@@ -2,7 +2,7 @@
 
 from tests.correspondence import lift
 
-# (unit, part) -> `draws`, as the approved shape's unit table states for rows 30 to 37 (row 36 has a value and a draw-law test)
+# (unit, part) -> `draws`, for the `_b6_simulate_from_vincop.py` units (`479-488` has a value test and a draw-law test)
 TABLE = {
     ("_b6_simulate_from_vincop.py:100-216", None): "none",
     ("_b6_simulate_from_vincop.py:217-233", None): "none",
@@ -16,7 +16,7 @@ TABLE = {
 
 
 def test_the_declared_draws_of_each_b6_lift_equal_the_unit_table():
-    """Property: for every (unit, part) of rows 30 to 37 the lift's declared `draws` equals the table's cell.
+    """Property: for every (unit, part) of the table above the lift's declared `draws` equals the table's cell.
 
     Class: each declaration of the system's `_b6` units; the violating input is the value lift of `479-488`, whose
     seeded `sample(random_state=24)` the table calls `seeded`. Reachability: `lift.discover` lists every declaration.

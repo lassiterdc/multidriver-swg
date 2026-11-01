@@ -210,10 +210,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Scratch directory (subagent transcripts, temporary working files)
+# Scratch directory (temporary working files)
 .scratch/
 
-# Claude AI config (stored privately in claude-workspace, symlinked here)
+# Local tool configuration (kept out of version control)
 /.claude/
 
 # Scientific data

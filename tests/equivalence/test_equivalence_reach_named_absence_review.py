@@ -1,10 +1,10 @@
-"""Reviewer tests for the reach check's named-absence record, specified by the developer's ruling that the named set is a record, not an exemption.
+"""Reviewer tests for the reach check's named-absence record: the named set is a record, not an exemption.
 
 An earlier change landed the named-absence mechanism in `tests/correspondence/reach.py`, and no committed test
 exercises it: `tests/correspondence/test_reach.py` holds no test of `read_named`, of
 `ReachReport.named`, or of the two findings `reach_findings` must report for a named table, and
-the ruling records that file as outside that change's edit surface. The author measured the mechanism
-with three ad-hoc probes pasted into one round; nothing re-runs them, so the property that a named
+that file was outside that change's edit surface. The mechanism was measured
+with three ad-hoc probes; nothing re-runs them, so the property that a named
 absence stays a RECORD rather than becoming an EXEMPTION would survive a later edit that deleted the
 arm silently.
 
@@ -55,7 +55,7 @@ from tests.correspondence.fixtures import generates_fixture
 def x(rng):
     return np.array([1.0])
 """
-ENTRY_FIELDS = {"commit": "fedcba9876543210", "measured": "2026-10-25"}
+ENTRY_FIELDS = {"measured": "2026-10-25"}
 
 
 def make_root(root: Path) -> Path:

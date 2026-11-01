@@ -15,7 +15,7 @@ The vine library's `cdf` and `simulate` are seeded by the lift from one committe
 declaration lists and reads, so the test's `inputs` carry the same value as `inputs["seed"]` (no literal in a test or a
 declaration, and no `seed=` to `check`, which refuses one for a licence that is not a draw law). A `cdf` call takes the
 seed itself. A `simulate` call whose legacy call names no seeds takes a seed drawn from one generator built from it,
-`numpy.random.default_rng(seed)`, one `integers(1, 2**31 - 1)` per call, in the order the legacy text calls (the developer's rule for unseeded calls), so
+`numpy.random.default_rng(seed)`, one `integers(1, 2**31 - 1)` per call, in the order the legacy text calls (the rule for unseeded calls), so
 the repeated simulations of a Monte Carlo test are independent and repeat exactly; the registered callable builds the
 same generator from `inputs["seed"]` and passes a seed from it to each `simulate` call in the same order. Every test
 therefore compares the outputs that depend on those calls exactly, under the default licence of one part in a billion,

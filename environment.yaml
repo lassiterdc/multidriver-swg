@@ -16,7 +16,7 @@ dependencies:
   - pytest
   - coverage
   - ipdb
-  # old codebase dependencies (added by refactor-plan audit 2026-03-01)
+  # old codebase dependencies
   - numpy
   - pandas
   - xarray
@@ -33,7 +33,7 @@ dependencies:
   - s3fs
   - pyvinecopulib
   - netcdf4
-  # refactored architecture dependencies (added by refactor-plan audit 2026-03-01)
+  # refactored architecture dependencies
   - pydantic>=2
   - pyyaml
   - pre-commit
@@ -42,6 +42,6 @@ dependencies:
   - snakemake-storage-plugin-fs
   - pip:
       - -e .
-      # pip-only old codebase dependencies (added by refactor-plan audit 2026-03-01)
+      # pip-only old codebase dependencies
       - noaa-coops
       - copulas

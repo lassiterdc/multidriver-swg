@@ -197,7 +197,7 @@ def reached_definitions(unit: str, root: Path) -> list[tuple[str, int, int]]:
 def expected_records(unit: str, entries: list[dict], root: Path) -> tuple[dict[str, dict[int, str]], list[str]]:
     """What a test of `unit` must record: unit key to line to ruling, for its own ranges and each reached callee.
 
-    A site inside a reached callee is recorded under the register's own key for the entry, as the form of Q9 says.
+    A site inside a reached callee is recorded under the register's own key for the entry.
     Also returns a finding for each entry that cannot be recorded (no ruling).
     """
     own, problems = _expected(unit, entries)

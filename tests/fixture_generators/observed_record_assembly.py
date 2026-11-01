@@ -243,7 +243,7 @@ def oea_summary_ncei(rng):
     return _analysis_summary(rng, 11.0)
 
 
-# ---- the partial-overlap case of the data-source priority cell (a developer ruling) ----
+# ---- the partial-overlap case of the data-source priority cell ----
 
 PARTIAL_MRMS_STARTS = [
     "2015-01-01 00:00",
@@ -423,7 +423,7 @@ def orb_rejected_valid_dates(rng):
     return pd.concat(frames, ignore_index=True)
 
 
-# ---- the inputs of the helper units of `_utils.py` (rows 113-118) ----
+# ---- the inputs of the helper units of `_utils.py` ----
 
 
 @generates_fixture(name="ou_monte_carlo_results", seed=20262961)

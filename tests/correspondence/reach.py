@@ -11,7 +11,7 @@ This module holds the three parts of that remedy.
 - The record: `tests/correspondence/reach/{system}.toml`, one file per owning system (the spelling of
   its lift module, `tests/lifts/{system}.py`), holding `[[entry]]` tables. An entry names a unit
   (and part), the cut digests of the unit's stored texts and the digest of its lift as they were when
-  the lines were measured, the date and toolkit commit of the measurement, and the sorted legacy line
+  the lines were measured, the date of the measurement, and the sorted legacy line
   numbers reached. It holds no input value and no path of where the inputs were.
 - The instrument: `reached_lines` runs a lift under a line tracer and reports the legacy line numbers
   of the unit's own code that executed. It uses `sys.settrace` and `threading.settrace` only, so the
@@ -70,7 +70,6 @@ import hashlib
 import importlib.metadata
 import json
 import os
-import subprocess
 import sys
 import threading
 import tomllib
@@ -83,7 +82,7 @@ from tests.correspondence import extraction, fixtures, lift, value_codec
 
 REPO_ROOT = extraction.REPO_ROOT
 REACH = Path("tests/correspondence/reach")
-_FIELDS = ("unit", "cuts", "lift", "measured", "commit", "lines")
+_FIELDS = ("unit", "cuts", "lift", "measured", "lines")
 _NAMED_FIELDS = ("unit", "reason")
 CACHE = Path(".cache/reach")
 NO_CACHE_VARIABLE = "REACH_NO_CACHE"
@@ -199,7 +198,7 @@ def _cut_labels(declaration: lift.LiftDeclaration) -> list[str]:
     ]
 
 
-def build_entry(declaration: lift.LiftDeclaration, lines: set[int], *, commit: str, measured: str) -> dict:
+def build_entry(declaration: lift.LiftDeclaration, lines: set[int], *, measured: str) -> dict:
     """The entry holding `lines`, keyed by the digests of the unit's stored texts and of its lift as they are now."""
     entry: dict[str, Any] = {"unit": declaration.unit}
     if declaration.part is not None:
@@ -209,7 +208,6 @@ def build_entry(declaration: lift.LiftDeclaration, lines: set[int], *, commit: s
             "cuts": _cut_labels(declaration),
             "lift": lift.lift_digest(declaration),
             "measured": measured,
-            "commit": commit,
             "lines": sorted(lines),
         }
     )
@@ -231,7 +229,6 @@ def render_entry(entry: dict) -> str:
     out.append("cuts = [" + ", ".join(quote(c) for c in entry["cuts"]) + "]")
     out.append(f"lift = {quote(entry['lift'])}")
     out.append(f"measured = {quote(entry['measured'])}")
-    out.append(f"commit = {quote(entry['commit'])}")
     out.append("lines = [" + ", ".join(str(n) for n in entry["lines"]) + "]")
     return "\n".join(out) + "\n"
 
@@ -496,12 +493,6 @@ def summary_line(report: ReachReport) -> str:
 # ---- the command ----
 
 
-def _head_commit(root: Path) -> str:
-    """The checkout's current commit id, or `unknown` when git cannot say."""
-    done = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=False)
-    return done.stdout.strip() if done.returncode == 0 and done.stdout.strip() else "unknown"
-
-
 def measure(
     system: str,
     unit: str,
@@ -509,7 +500,6 @@ def measure(
     inputs: Path,
     *,
     root: Path = REPO_ROOT,
-    commit: str | None = None,
     measured: str | None = None,
 ) -> str:
     """Run the declared lift on real inputs and return the entry text to commit, naming a missing or doubled declaration."""
@@ -527,7 +517,6 @@ def measure(
     entry = build_entry(
         declaration,
         reached.lines,
-        commit=commit or _head_commit(Path(root)),
         measured=measured or datetime.date.today().isoformat(),
     )
     return render_entry(entry)

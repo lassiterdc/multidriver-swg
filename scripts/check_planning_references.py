@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Fail if a file of this repository carries a reference into the private planning record.
 
-The design and planning record behind this repository is private. A decision number, a
-work-chunk or work-package identifier, a constraint label, or a path into that record
-resolves for its author and for no reader of this repository, so such a reference is a
-defect whoever wrote it. Every run scans the whole tree (tracked files plus untracked files
-git does not ignore), not only the lines a change adds, so an inherited reference fails the
-next run for anyone until it is fixed.
+The design and planning record behind this repository is private, and so is the process that
+produced it. A decision number, a work-chunk or work-package identifier, a constraint label, a path
+into that record, a word that only that process uses, or the name of a private tool resolves for
+its author and for no reader of this repository, so such a reference is a defect whoever wrote it.
+Every run scans the whole tree (tracked files plus untracked files git does not ignore), not only
+the lines a change adds, so an inherited reference fails the next run for anyone until it is fixed.
 
-Only forms with an identifier's shape are matched. Plain words are left to a reader: a
-pattern that fires on ordinary prose gets bypassed. A clean run does not establish that no
-reference remains: names and copied text have no shape to match.
+Two kinds of pattern are matched. Identifier shapes (a number, a letter and a number, a path) are
+matched wherever they occur. Process words and tool names are matched from a short curated list of
+words that have no ordinary use in this repository's text; a word that does (shape, chunk, ruling,
+ledger, session, reviewer) is not on it, because a pattern that fires on ordinary prose gets
+bypassed. A clean run does not establish that no reference remains: a phrase made of other words,
+a sentence copied out of a planning document, and a machine path have no pattern here.
 
 To keep a match on purpose, put `planning-ref-ok: {reason}` on the same line; the skip is
 printed. Legacy code under `_old_code_to_refactor/` is out of scope.
@@ -45,6 +48,32 @@ PATTERNS = {
     ),
     "agent role name": re.compile(r"\b[a-z]+(?:-[a-z]+)*-specialist\b"),
     "plan-prompt acronym": re.compile(r"\bPIP\b"),
+    "role word": re.compile(r"(?i:\b(?:seats?|coders?|coordinators?)\b)"),
+    "build-record word": re.compile(r"(?i:\b(?:build|review|reviewer|builder) return\b|\bBuild class\b)"),
+    "authority phrase": re.compile(
+        r"(?i:\bdevelopers?(?:'s)? (?:directive|instruction|rulings?|rule for|requests?|preferences?)\b"
+        r"|\bruled by the developer\b|\bthe developer (?:ruled|decided)\b)"
+    ),
+    "agent-process word": re.compile(r"(?i:\b(?:absorbing|implementing|reviewing|building) agent\b)"),
+    "tool name": re.compile(
+        r"\bClaude(?: Code)?\b|\bclaude-"
+        r"workspace\b|\bcopier-python-"
+        r"template\b|\bsub"
+        r"agents?\b"
+        r"|\brefactor-"
+        r"plan\b|\bplan-then-"
+        r"implement\b|\bPlanning Doc(?:ument)?s?\b"
+        r"|(?<![\w.])/(?:proceed-with-"
+        r"implementation|qaqc-and-"
+        r"commit|plan-"
+        r"implementation|plan-and-"
+        r"implement)\b"
+    ),
+    "record number in prose": re.compile(r"(?i:\bdecision\s+[0-9]+\.[0-9]+\b|\brows?\s+[0-9]{2,3}\b)"),
+    "section-style label": re.compile(r"\b[A-Z][0-9]-[0-9]+\b"),
+    "process phrase": re.compile(
+        r"(?i:\bdefinition of done\b|\bopen item\b|\bapproved shape\b|\bshape (?:stage|iteration)\b)"
+    ),
 }
 PATH_ONLY = {"work-chunk identifier in a file name": re.compile(r"(?:^|[/_])\d+[a-z]_\d+(?:[_.]|$)")}
 
@@ -106,8 +135,8 @@ def main(root: Path = REPO_ROOT) -> int:
         print(f"  {hit}", file=sys.stderr)
     if hits:
         print(
-            "  Each line names something in the private planning record. Fix every line listed,\n"
-            "  whoever wrote it: write what was decided in plain words, or remove the reference.\n"
+            "  Each line names something in the private planning record or the process behind it.\n"
+            "  Fix every line listed, whoever wrote it: write what was decided in plain words, or remove it.\n"
             f"  To keep one on purpose, put on that line: {MARKER} {{reason}}",
             file=sys.stderr,
         )

@@ -49,7 +49,7 @@ IMPLICIT_EQUATION_IDS = tuple(
 
 
 def candidate_manuscript_paths() -> tuple[Path, ...]:
-    """Every place decision 3.3 looks for the manuscript, in resolution order.
+    """Every place this module looks for the manuscript, in resolution order.
 
     The environment variable names the CLONE (`multidriver-swg-paper`), so `swg_supplement.tex` is
     appended to it; a value that names the file itself is accepted too, because a caller holding
@@ -132,7 +132,7 @@ def test_every_non_empty_span_occurs_exactly_once(manuscript_text: str, equation
     that exists whether or not this module changes.
     Invocation isolation: with `MULTIDRIVER_SWG_PAPER` set, the same invocation
     reproduces the verdict from any checkout, because neither `__file__` nor the working
-    directory enters the resolution; the fallback arm is tree-relative by decision 3.3 and is
+    directory enters the resolution; the fallback arm is tree-relative by this module's resolution order and is
     exercised by `test_register_drift.py`'s skip path rather than by this assertion.
     Kills: a register span that was copied from § B2's prose cell instead of re-extracted, or a
     manuscript edit that duplicates an equation.
@@ -222,7 +222,7 @@ def test_the_environment_variable_wins_over_the_sibling_default(monkeypatch: pyt
     caller who has configured a manuscript gets the default instead, or a skip. Red under it
     because the returned path is not the configured one.
     Reachability: every caller that sets `MULTIDRIVER_SWG_PAPER` reaches this branch, which is the
-    first arm of decision 3.3 and the arm the run on this machine actually uses; the input is a
+    first arm of the resolution order and the arm the run on this machine actually uses; the input is a
     readable file inside this repository, so the test writes nothing outside it.
     Why required: nothing else in this module exercises the environment arm — a suite run where
     the variable is exported passes whether or not the resolver consults it, so without this test
@@ -261,7 +261,7 @@ def test_an_unresolvable_manuscript_skips_naming_both_attempts(monkeypatch: pyte
 
     Class: NEW CAPABILITY — two plausible wrong implementations, each red here. A resolver that
     returns a path it has not checked makes the caller raise `FileNotFoundError` dressed as a test
-    failure, which is the outcome decision 3.3 names as forbidden; a resolver that skips with a
+    failure, which is the outcome this module's skip rule forbids; a resolver that skips with a
     message naming only the sibling default leaves the reader of a CI skip unable to tell an
     unset variable from one pointing at nothing.
     Reachability: an unset variable plus a repository root whose sibling default is absent is
