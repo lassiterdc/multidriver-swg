@@ -42,5 +42,6 @@ testpaths = ["tests"]
 norecursedirs = [".git", "build", "dist", "*.egg-info"]
 markers = [
     "state_check: a check of the pre-refactor correspondence that the State check CI job runs; carrying this marker is all a check needs to join that job",
+    "conformance(unit, system, part): a publication-math conformance test, owned by the publication-math-conformance system; its unit names the equation or component and its part the test function",
 ]
 strict_markers = true

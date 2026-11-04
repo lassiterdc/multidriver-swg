@@ -21,7 +21,7 @@ pytestmark = pytest.mark.state_check
 SLUG = system_scope.slugs()[0]
 CROSS_CHECK = "test_the_inventory_equals_collection"
 JOB_EXPRESSION = "state_check and not equivalence and not refactor_reminder"  # the State check job's `-m`
-LANDING = "test inventory: 0 tests in 0 files over families equivalence, refactor_reminder; reminders per system: none"
+LANDING = "test inventory: 0 tests in 0 files over families equivalence, refactor_reminder, conformance; reminders per system: none"
 
 
 def test_the_inventory_equals_collection(request):
@@ -434,7 +434,7 @@ def test_the_inventory_prints_its_zero_state_line_on_a_synthetic_tree(tmp_path, 
 # A family decorator at the start of a line; a decorator quoted inside a string, as the synthetic
 # test files above are written, does not begin its line and is not counted.
 FAMILY_DECORATOR = re.compile(
-    r"^\s*@pytest\.mark\.(?P<family>equivalence|refactor_reminder)\((?P<args>[^)]*)\)", re.MULTILINE
+    r"^\s*@pytest\.mark\.(?P<family>equivalence|refactor_reminder|conformance)\((?P<args>[^)]*)\)", re.MULTILINE
 )
 SYSTEM_KEYWORD = re.compile(r'system\s*=\s*["\'](?P<value>[^"\']*)["\']')
 
@@ -471,7 +471,7 @@ def _independent_summary(root):
                 reminders[system] = reminders.get(system, 0) + 1
     per = ", ".join(f"{s}={n}" for s, n in sorted(reminders.items())) or "none"
     summary = (
-        f"test inventory: {tests} tests in {len(files)} files over families equivalence, refactor_reminder; "
+        f"test inventory: {tests} tests in {len(files)} files over families equivalence, refactor_reminder, conformance; "
         f"reminders per system: {per}"
     )
     return summary, tests

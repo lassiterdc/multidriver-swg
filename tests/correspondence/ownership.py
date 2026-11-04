@@ -29,6 +29,7 @@ from pathlib import Path
 from tests.correspondence import inventory, ledger, system_scope
 
 REPO_ROOT = ledger.REPO_ROOT
+LEDGER_FAMILIES = ("equivalence", "refactor_reminder")
 
 
 def _scoped_in(root: Path) -> list[dict]:
@@ -37,8 +38,14 @@ def _scoped_in(root: Path) -> list[dict]:
 
 
 def _family_tests(root: Path) -> list[dict]:
-    """Every equivalence and refactor-reminder test under `root`, as the static inventory lists it."""
-    return inventory.listing(root)[0]
+    """Every legacy-graded family test under `root`, as the static inventory lists it.
+
+    Deliberately NOT the whole listing: the inventory lists every family, while these four
+    checks grade only the two legacy families — a conformance test is neither scoped in by the
+    ledger nor owned through a ledger row, so grading it here would refuse it for a key no
+    ledger row carries.
+    """
+    return [entry for entry in inventory.listing(root)[0] if entry["family"] in LEDGER_FAMILIES]
 
 
 def _test_name(entry: dict) -> str:

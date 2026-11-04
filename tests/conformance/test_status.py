@@ -53,6 +53,11 @@ NO_MANUSCRIPT_TEXT = frozenset({"E-34", "E-35", "E-36"})
 CROSS_REPO = ("E-01", "E-02", "E-03", "E-07", "E-32", "E-33")
 
 
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_a_well_formed_status_constructs_and_is_frozen",
+    system="publication-math-conformance",
+)
 def test_a_well_formed_status_constructs_and_is_frozen() -> None:
     """Property: a `DIVERGENT`/`BOUND` status carrying one real defect constructs, and cannot be mutated.
 
@@ -81,6 +86,11 @@ def test_a_well_formed_status_constructs_and_is_frozen() -> None:
 
 
 @pytest.mark.parametrize("derived", sorted(DERIVED_IN_STATUS))
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_the_derived_classes_are_refused_in_the_defect_list",
+    system="publication-math-conformance",
+)
 def test_the_derived_classes_are_refused_in_the_defect_list(derived: DivergenceClass) -> None:
     """Property: every class the binding or the verdict already carries is refused inside `defect_list`,
     while a class outside that set is admitted.
@@ -104,6 +114,11 @@ def test_the_derived_classes_are_refused_in_the_defect_list(derived: DivergenceC
 
 
 @pytest.mark.parametrize("not_a_class", ["D3", "the code returns the sample estimator"])
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_a_plain_string_in_the_defect_list_is_refused",
+    system="publication-math-conformance",
+)
 def test_a_plain_string_in_the_defect_list_is_refused(not_a_class: str) -> None:
     """Property: a string that is not a vocabulary member is refused, and a real member is admitted.
 
@@ -125,6 +140,11 @@ def test_a_plain_string_in_the_defect_list_is_refused(not_a_class: str) -> None:
     assert admitted.defect_list == (DivergenceClass.D3,)
 
 
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_a_conforming_verdict_carrying_a_defect_is_refused",
+    system="publication-math-conformance",
+)
 def test_a_conforming_verdict_carrying_a_defect_is_refused() -> None:
     """Property: `CONFORMING` with a non-empty defect list is refused, and `CONFORMING` with an empty
     list constructs.
@@ -146,6 +166,11 @@ def test_a_conforming_verdict_carrying_a_defect_is_refused() -> None:
     assert admitted.defect_list == ()
 
 
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_a_divergent_verdict_without_a_defect_is_refused",
+    system="publication-math-conformance",
+)
 def test_a_divergent_verdict_without_a_defect_is_refused() -> None:
     """Property: `DIVERGENT` with an empty defect list is refused, and `DIVERGENT` naming a defect constructs.
 
@@ -166,6 +191,11 @@ def test_a_divergent_verdict_without_a_defect_is_refused() -> None:
     assert admitted.defect_list == (DivergenceClass.D3,)
 
 
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_an_empty_iterable_never_yields_a_divergent_status",
+    system="publication-math-conformance",
+)
 def test_an_empty_iterable_never_yields_a_divergent_status() -> None:
     """Property: `DIVERGENT` built from an iterable that yields NOTHING refuses, rather than coming into
     existence naming no defect.
@@ -191,6 +221,11 @@ def test_an_empty_iterable_never_yields_a_divergent_status() -> None:
         Status("E-03", Verdict.DIVERGENT, Binding.BOUND, iter([]))
 
 
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_a_conforming_status_accepts_an_empty_iterable",
+    system="publication-math-conformance",
+)
 def test_a_conforming_status_accepts_an_empty_iterable() -> None:
     """Property: `CONFORMING` built from an iterable that yields nothing CONSTRUCTS with an empty list,
     rather than being refused for carrying defects it does not have.
@@ -215,6 +250,11 @@ def test_a_conforming_status_accepts_an_empty_iterable() -> None:
 
 
 @pytest.mark.parametrize(("verdict", "binding"), [(v, b) for v in Verdict for b in Binding])
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_the_blocking_set_is_the_declared_predicate",
+    system="publication-math-conformance",
+)
 def test_the_blocking_set_is_the_declared_predicate(verdict: Verdict, binding: Binding) -> None:
     """Property: over every verdict-by-binding pair, `is_blocking` answers the value computed from the
     two declared frozensets, and the `CONFORMING`/`BOUND` row answers `False`.
@@ -246,6 +286,11 @@ def test_the_blocking_set_is_the_declared_predicate(verdict: Verdict, binding: B
         )
 
 
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_manuscript_binding_answers_only_the_derivable_case",
+    system="publication-math-conformance",
+)
 def test_manuscript_binding_answers_only_the_derivable_case() -> None:
     """Property: `manuscript_binding` returns `NO_MANUSCRIPT_TEXT` exactly when the span is empty over
     all 36 real register entries, the resulting set is exactly `{E-34, E-35, E-36}`, and all six
@@ -290,6 +335,11 @@ def test_manuscript_binding_answers_only_the_derivable_case() -> None:
     assert manuscript_binding("x = 1") is None, "the must-fire control: a synthetic non-empty span decides nothing"
 
 
+@pytest.mark.conformance(
+    unit="status-vocabulary",
+    part="test_every_status_refusal_is_a_member_of_the_family",
+    system="publication-math-conformance",
+)
 def test_every_status_refusal_is_a_member_of_the_family() -> None:
     """Property: each of the four construction refusals escapes as a member of `StatusVocabularyError`
     AND of its own named subclass, and the two exception families are unrelated to each other.

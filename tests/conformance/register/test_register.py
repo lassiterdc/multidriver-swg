@@ -32,6 +32,9 @@ def broken_register() -> dict:
     return entries()
 
 
+@pytest.mark.conformance(
+    unit="equation-register", part="test_register_carries_the_36_equation_ids", system="publication-math-conformance"
+)
 def test_register_carries_the_36_equation_ids() -> None:
     """Property: the register's keys are exactly `E-01`..`E-36`, in order.
 
@@ -52,6 +55,11 @@ def test_register_carries_the_36_equation_ids() -> None:
     assert tuple(register) == EXPECTED_IDS
 
 
+@pytest.mark.conformance(
+    unit="equation-register",
+    part="test_every_entry_carries_exactly_the_four_declared_fields",
+    system="publication-math-conformance",
+)
 def test_every_entry_carries_exactly_the_four_declared_fields() -> None:
     """Property: each entry's field set equals the four fields the specification declares.
 
@@ -72,6 +80,9 @@ def test_every_entry_carries_exactly_the_four_declared_fields() -> None:
         assert set(register_entry) == set(EXPECTED_FIELDS), equation_id
 
 
+@pytest.mark.conformance(
+    unit="equation-register", part="test_entry_field_types_match_the_schema", system="publication-math-conformance"
+)
 def test_entry_field_types_match_the_schema() -> None:
     """Property: `section_name` and `verbatim_span` are strings, `line_range` is two ints or
     null, and `defect_list` is a list of strings.
@@ -103,6 +114,11 @@ def test_entry_field_types_match_the_schema() -> None:
         assert all(isinstance(note, str) for note in register_entry["defect_list"]), equation_id
 
 
+@pytest.mark.conformance(
+    unit="equation-register",
+    part="test_empty_span_entries_record_why_the_manuscript_states_no_equation",
+    system="publication-math-conformance",
+)
 def test_empty_span_entries_record_why_the_manuscript_states_no_equation() -> None:
     """Property: the only entries with an empty `verbatim_span` are E-34, E-35 and E-36, and
     each carries `line_range` null and a non-empty `defect_list`.
@@ -129,6 +145,11 @@ def test_empty_span_entries_record_why_the_manuscript_states_no_equation() -> No
         assert register[equation_id]["defect_list"], equation_id
 
 
+@pytest.mark.conformance(
+    unit="equation-register",
+    part="test_entry_returns_one_entry_and_hands_back_a_copy",
+    system="publication-math-conformance",
+)
 def test_entry_returns_one_entry_and_hands_back_a_copy() -> None:
     """Property: `entry(id)` returns that entry, and mutating the result does not reach the
     next caller.
@@ -151,6 +172,9 @@ def test_entry_returns_one_entry_and_hands_back_a_copy() -> None:
     assert entry("E-04")["defect_list"] != first["defect_list"]
 
 
+@pytest.mark.conformance(
+    unit="equation-register", part="test_entry_rejects_an_unknown_id", system="publication-math-conformance"
+)
 def test_entry_rejects_an_unknown_id() -> None:
     """Property: `entry` raises `UnknownEquationError` naming an id outside `E-01`..`E-36`.
 
@@ -170,6 +194,9 @@ def test_entry_rejects_an_unknown_id() -> None:
         entry("E-99")
 
 
+@pytest.mark.conformance(
+    unit="equation-register", part="test_refuses_a_missing_entry", system="publication-math-conformance"
+)
 def test_refuses_a_missing_entry(broken_register: dict) -> None:
     """Property: a register missing one of the 36 rows is refused, naming the missing id.
 
@@ -189,6 +216,9 @@ def test_refuses_a_missing_entry(broken_register: dict) -> None:
         validate_register(broken_register)
 
 
+@pytest.mark.conformance(
+    unit="equation-register", part="test_refuses_an_extra_entry", system="publication-math-conformance"
+)
 def test_refuses_an_extra_entry(broken_register: dict) -> None:
     """Property: a register carrying a 37th equation ID is refused, naming the extra id.
 
@@ -208,6 +238,9 @@ def test_refuses_an_extra_entry(broken_register: dict) -> None:
         validate_register(broken_register)
 
 
+@pytest.mark.conformance(
+    unit="equation-register", part="test_refuses_a_wrong_field_type", system="publication-math-conformance"
+)
 def test_refuses_a_wrong_field_type(broken_register: dict) -> None:
     """Property: an entry whose `line_range` is not two integers or null is refused, naming
     the entry.
@@ -228,6 +261,11 @@ def test_refuses_a_wrong_field_type(broken_register: dict) -> None:
         validate_register(broken_register)
 
 
+@pytest.mark.conformance(
+    unit="equation-register",
+    part="test_refuses_an_empty_span_that_carries_a_line_range",
+    system="publication-math-conformance",
+)
 def test_refuses_an_empty_span_that_carries_a_line_range(broken_register: dict) -> None:
     """Property: an entry with an empty `verbatim_span` and a non-null `line_range` is
     refused, naming the entry.
@@ -249,6 +287,11 @@ def test_refuses_an_empty_span_that_carries_a_line_range(broken_register: dict) 
         validate_register(broken_register)
 
 
+@pytest.mark.conformance(
+    unit="equation-register",
+    part="test_refuses_an_entry_missing_a_declared_field",
+    system="publication-math-conformance",
+)
 def test_refuses_an_entry_missing_a_declared_field(broken_register: dict) -> None:
     """Property: an entry that dropped one of the four declared fields is refused, naming the
     entry and the dropped field.
@@ -280,6 +323,11 @@ def test_refuses_an_entry_missing_a_declared_field(broken_register: dict) -> Non
         validate_register(broken_register)
 
 
+@pytest.mark.conformance(
+    unit="equation-register",
+    part="test_refuses_an_entry_carrying_an_undeclared_field",
+    system="publication-math-conformance",
+)
 def test_refuses_an_entry_carrying_an_undeclared_field(broken_register: dict) -> None:
     """Property: an entry that gained a field the schema does not carry is refused, naming the
     entry and the undeclared field.
@@ -306,6 +354,11 @@ def test_refuses_an_entry_carrying_an_undeclared_field(broken_register: dict) ->
         validate_register(broken_register)
 
 
+@pytest.mark.conformance(
+    unit="equation-register",
+    part="test_refuses_an_empty_span_with_no_defect_note",
+    system="publication-math-conformance",
+)
 def test_refuses_an_empty_span_with_no_defect_note(broken_register: dict) -> None:
     """Property: an entry with an empty `verbatim_span` and an empty `defect_list` is refused,
     naming the entry and the field.

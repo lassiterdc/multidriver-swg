@@ -88,6 +88,9 @@ def _a_diagnosis(
     )
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy", part="test_the_class_vocabulary_is_exactly_nine", system="publication-math-conformance"
+)
 def test_the_class_vocabulary_is_exactly_nine() -> None:
     """Property: `DivergenceClass` carries exactly the nine members `D1` through `D9`, in order.
 
@@ -112,6 +115,11 @@ def test_the_class_vocabulary_is_exactly_nine() -> None:
     assert [member.value for member in DivergenceClass] == [f"D{number}" for number in range(1, 10)]
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_status_field_vocabularies_are_exactly_three_each",
+    system="publication-math-conformance",
+)
 def test_the_status_field_vocabularies_are_exactly_three_each() -> None:
     """Property: `Verdict` and `Binding` each carry exactly three members, with the declared wire values.
 
@@ -140,6 +148,11 @@ def test_the_status_field_vocabularies_are_exactly_three_each() -> None:
     assert len(Binding) == 3, f"the binding vocabulary has {len(Binding)} members, not 3"
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_enumerations_render_their_wire_values",
+    system="publication-math-conformance",
+)
 def test_the_enumerations_render_their_wire_values() -> None:
     """Property: every member of the three enumerations renders as its wire token, under `str()` and an f-string.
 
@@ -167,6 +180,11 @@ def test_the_enumerations_render_their_wire_values() -> None:
             assert isinstance(member, str)
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_a_well_formed_diagnosis_is_returned_unchanged",
+    system="publication-math-conformance",
+)
 def test_a_well_formed_diagnosis_is_returned_unchanged() -> None:
     """Property: `classify` returns the class the diagnosis records, as the same enumeration member.
 
@@ -194,6 +212,11 @@ def test_a_well_formed_diagnosis_is_returned_unchanged() -> None:
     )
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_a_diagnosis_keyed_to_another_equation_is_refused",
+    system="publication-math-conformance",
+)
 def test_a_diagnosis_keyed_to_another_equation_is_refused() -> None:
     """Property: a record authored for `E-02` handed a failure for `E-04` raises `DiagnosisMismatch`,
     while the same record against an `E-02` failure is admitted.
@@ -218,6 +241,11 @@ def test_a_diagnosis_keyed_to_another_equation_is_refused() -> None:
     assert classify(_a_failure(equation_id="E-02"), mismatched) is DivergenceClass.D4
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_cross_repo_class_and_binding_must_agree_in_both_directions",
+    system="publication-math-conformance",
+)
 def test_the_cross_repo_class_and_binding_must_agree_in_both_directions() -> None:
     """Property: `D8` on a bound failure raises `ClassConflict`, `D3` on a cross-repo failure raises
     `ClassConflict`, and `D8` on a cross-repo failure is admitted.
@@ -244,6 +272,11 @@ def test_the_cross_repo_class_and_binding_must_agree_in_both_directions() -> Non
     assert admitted is DivergenceClass.D8
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_unreachable_class_and_reachability_must_agree_in_both_directions",
+    system="publication-math-conformance",
+)
 def test_the_unreachable_class_and_reachability_must_agree_in_both_directions() -> None:
     """Property: `D9` on a reachable failure raises `ClassConflict`, `D3` on an unreachable failure
     raises `ClassConflict`, and `D9` on an unreachable failure is admitted.
@@ -270,6 +303,11 @@ def test_the_unreachable_class_and_reachability_must_agree_in_both_directions() 
 
 
 @pytest.mark.parametrize("paper_side", sorted(AUTHOR_JUDGED))
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_a_paper_side_class_needs_a_named_author",
+    system="publication-math-conformance",
+)
 def test_a_paper_side_class_needs_a_named_author(paper_side: DivergenceClass) -> None:
     """Property: every class in `AUTHOR_JUDGED` refuses with `AuthorJudgementMissing` when `ruled_by`
     is absent, and is admitted when it names a party.
@@ -300,6 +338,9 @@ def test_a_paper_side_class_needs_a_named_author(paper_side: DivergenceClass) ->
     assert admitted is paper_side
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy", part="test_a_green_is_not_classifiable", system="publication-math-conformance"
+)
 def test_a_green_is_not_classifiable() -> None:
     """Property: a failure carrying `diverged` `False` raises `NotAFailure`, while an otherwise
     identical failure carrying `diverged` `True` is classified.
@@ -328,6 +369,9 @@ def test_a_green_is_not_classifiable() -> None:
     assert classify(red, _a_diagnosis()) is DivergenceClass.D3
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy", part="test_an_unevidenced_diagnosis_is_refused", system="publication-math-conformance"
+)
 def test_an_unevidenced_diagnosis_is_refused() -> None:
     """Property: a record whose evidence is empty or whitespace-only raises `UnevidencedDiagnosis`,
     while the same record carrying a real note is admitted.
@@ -350,6 +394,11 @@ def test_an_unevidenced_diagnosis_is_refused() -> None:
     assert classify(_a_failure(), _a_diagnosis(evidence="the code returns the sample estimator")) is DivergenceClass.D3
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_refusals_fire_in_the_order_the_decision_lists_them",
+    system="publication-math-conformance",
+)
 def test_the_refusals_fire_in_the_order_the_decision_lists_them() -> None:
     """Property: where one record violates more than one refusal condition at once, the EARLIEST
     condition the decision lists is the one that fires, so a caller hears the first thing wrong.
@@ -404,6 +453,11 @@ def test_the_refusals_fire_in_the_order_the_decision_lists_them() -> None:
         )
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_derived_in_status_population_is_the_declared_pair",
+    system="publication-math-conformance",
+)
 def test_the_derived_in_status_population_is_the_declared_pair() -> None:
     """Property: `DERIVED_IN_STATUS` is exactly the classes `D8` and `D9`, the two the published
     `Status` carries by its binding and its verdict and therefore refuses inside a defect list.
@@ -431,6 +485,11 @@ def test_the_derived_in_status_population_is_the_declared_pair() -> None:
     )
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_a_caller_catching_the_family_hears_every_refusal_and_which_one",
+    system="publication-math-conformance",
+)
 def test_a_caller_catching_the_family_hears_every_refusal_and_which_one() -> None:
     """Property: each of the five declared refusals escapes as an instance of
     `ConformanceTaxonomyError` AND of its own named subclass, so a caller that catches the family
@@ -474,6 +533,11 @@ def test_a_caller_catching_the_family_hears_every_refusal_and_which_one() -> Non
         )
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_package_re_exports_every_name_this_chunk_publishes",
+    system="publication-math-conformance",
+)
 def test_the_package_re_exports_every_name_this_chunk_publishes() -> None:
     """Property: each of the fourteen names assigned to this module is listed in
     `multidriver_swg.conformance.__all__` and resolves as an attribute of the package.
@@ -517,6 +581,11 @@ def test_the_package_re_exports_every_name_this_chunk_publishes() -> None:
     assert not unresolved, f"__all__ promises {unresolved}, which do not resolve on the package"
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_the_package_re_exports_every_name_item_two_publishes",
+    system="publication-math-conformance",
+)
 def test_the_package_re_exports_every_name_item_two_publishes() -> None:
     """Property: each of the ten names the status-vocabulary item adds to the package surface —
     `Status`, its family base and four refusals, `manuscript_binding`, and the three BLOCKING SET
@@ -561,6 +630,11 @@ def test_the_package_re_exports_every_name_item_two_publishes() -> None:
     assert not unresolved, f"__all__ promises {unresolved}, which do not resolve on the package"
 
 
+@pytest.mark.conformance(
+    unit="divergence-taxonomy",
+    part="test_a_divergent_status_always_names_a_defect_whatever_the_iterable",
+    system="publication-math-conformance",
+)
 def test_a_divergent_status_always_names_a_defect_whatever_the_iterable() -> None:
     """Property: a `DIVERGENT` status built from an iterable that yields at least one class either
     refuses, or carries that class in its defect list — it never comes into existence naming nothing.

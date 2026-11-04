@@ -118,6 +118,11 @@ def _manuscript_must_resolve(manuscript_text: str) -> None:
 
 
 @pytest.mark.parametrize("equation_id", SPANNED_EQUATION_IDS)
+@pytest.mark.conformance(
+    unit="equation-register-drift",
+    part="test_every_non_empty_span_occurs_exactly_once",
+    system="publication-math-conformance",
+)
 def test_every_non_empty_span_occurs_exactly_once(manuscript_text: str, equation_id: str) -> None:
     """Property: each spanned entry's `verbatim_span` occurs exactly once in the manuscript.
 
@@ -149,6 +154,11 @@ def test_every_non_empty_span_occurs_exactly_once(manuscript_text: str, equation
 
 
 @pytest.mark.parametrize("equation_id", SPANNED_EQUATION_IDS)
+@pytest.mark.conformance(
+    unit="equation-register-drift",
+    part="test_every_non_empty_span_lies_in_its_recorded_line_range",
+    system="publication-math-conformance",
+)
 def test_every_non_empty_span_lies_in_its_recorded_line_range(manuscript_text: str, equation_id: str) -> None:
     """Property: each spanned entry's `verbatim_span` is a substring of its recorded range's slice.
 
@@ -184,6 +194,11 @@ def test_every_non_empty_span_lies_in_its_recorded_line_range(manuscript_text: s
 
 
 @pytest.mark.parametrize("equation_id", IMPLICIT_EQUATION_IDS)
+@pytest.mark.conformance(
+    unit="equation-register-drift",
+    part="test_every_implicit_equation_records_why_the_manuscript_states_none",
+    system="publication-math-conformance",
+)
 def test_every_implicit_equation_records_why_the_manuscript_states_none(manuscript_text: str, equation_id: str) -> None:
     """Property: an entry with no span records `line_range` null and a non-empty defect list.
 
@@ -213,6 +228,11 @@ def test_every_implicit_equation_records_why_the_manuscript_states_none(manuscri
     )
 
 
+@pytest.mark.conformance(
+    unit="equation-register-drift",
+    part="test_the_environment_variable_wins_over_the_sibling_default",
+    system="publication-math-conformance",
+)
 def test_the_environment_variable_wins_over_the_sibling_default(monkeypatch: pytest.MonkeyPatch) -> None:
     """Property: with `MULTIDRIVER_SWG_PAPER` naming a readable file, `resolve_manuscript` returns
     that file's path, ahead of the sibling-directory default.
@@ -255,6 +275,11 @@ def test_the_environment_variable_wins_over_the_sibling_default(monkeypatch: pyt
     assert resolved != sibling_default, "resolution fell through to the sibling default"
 
 
+@pytest.mark.conformance(
+    unit="equation-register-drift",
+    part="test_an_unresolvable_manuscript_skips_naming_both_attempts",
+    system="publication-math-conformance",
+)
 def test_an_unresolvable_manuscript_skips_naming_both_attempts(monkeypatch: pytest.MonkeyPatch) -> None:
     """Property: with the variable unset and the sibling default absent, `resolve_manuscript`
     raises `pytest.skip` whose message names BOTH resolution arms.

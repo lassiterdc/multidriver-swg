@@ -1,6 +1,6 @@
 """List every family test from its decorator, without importing it, and check the list against collection.
 
-Each equivalence and refactor-reminder test names its unit, part and owning system in a literal
+Each family test names its unit, part and owning system in a literal
 marker on the test function. Systems select their tests by those markers, and later checks read
 them to decide which unit has a test and who owns it, so the list must be computed from the test
 files on every run rather than stored. This module reads every test file with the standard
@@ -26,7 +26,7 @@ import pytest
 from tests.correspondence import corpus_record, record_schema
 
 REPO_ROOT = corpus_record.REPO_ROOT
-FAMILIES = ("equivalence", "refactor_reminder")
+FAMILIES = ("equivalence", "refactor_reminder", "conformance")
 NAMES = (*FAMILIES, "guard")
 KEYWORDS = ("unit", "part", "system")
 CAPTURE = pytest.StashKey[list]()
