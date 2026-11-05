@@ -117,6 +117,22 @@ def pytest_sessionstart(session):
     _write(config)
 
 
+def write_subject_resolution(config, resolution) -> None:
+    """Replace the subject placeholder with the completed resolution, keeping the provisional verdict.
+
+    Called by the subject hook between its resolution and its stop, so a denied run leaves the
+    completed reading in the record rather than only the placeholder: the evidence a reader
+    needs is the resolution, and a run that ends at session start still has it. Returns
+    immediately when no record was requested. The provisional `VOID` is left unchanged -- a
+    finding leaves it accurate, and a clean resolution still waits for the ordinary
+    session-finish verdict, so a successful resolution never produces `pass` here.
+    """
+    if _path(config) is None:
+        return
+    config.stash[STATE]["subject_resolution"] = resolution
+    _write(config)
+
+
 def pytest_collection_modifyitems(session, config, items):
     """Write the population the inventory captured, and advance the marker to `collected`.
 

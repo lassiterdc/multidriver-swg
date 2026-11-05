@@ -1,4 +1,4 @@
-"""Tests of the result record's field vocabulary: its two closed value sets and its subject placeholder.
+"""Tests of the result record's field vocabulary: its closed value sets and its subject placeholder.
 
 The vocabulary is a declaration, so these tests read the declaration and assert the properties a
 consumer relies on rather than the constants' storage form. A value set is closed when a value
@@ -90,3 +90,51 @@ def test_an_unresolved_subject_is_a_value_not_the_absence_of_one():
     assert placeholder is not None
     assert placeholder.get("state") == "unresolved"
     assert json.loads(json.dumps(placeholder)) == {"state": "unresolved"}
+
+
+def test_the_subject_resolution_state_vocabulary_admits_three_states_and_no_other():
+    """Property: the subject-resolution state vocabulary is exactly `unresolved`, `resolved` and `void`; a fourth state is not admitted.
+
+    Class (input): the state vocabulary as its consumers read it -- the instrument that writes a
+    completed subject resolution and a reader deciding whether the run's subject could be
+    established; artifact: `record_schema.SUBJECT_RESOLUTION_STATES`, whose members are the only
+    three states a subject resolution may carry. Build
+    class: NEW CAPABILITY -- the plausible wrong
+    implementation carries only two states (dropping `void`, which erases the distinction between a
+    resolved subject and one the record must refuse to read a pass or fail from); a second wrong
+    implementation spells the void state upper case (`VOID`), conflating the record's verdict
+    vocabulary with the resolution's state vocabulary. Red under both. Why: the state drives the
+    same three-valued decision as the verdict -- a consumer branches on exactly these three, so a
+    value outside them reads as neither resolved nor void. Both-states anchor: the assertion turns
+    on set membership, a property present whichever way the set is declared, not on the tuple's
+    order or its repr. Invocation isolation: not isolatable from this tree -- discrimination shown
+    instead: rebinding the module's `SUBJECT_RESOLUTION_STATES` to the two-state pair reds this
+    test, done off-tree because the working tree is shared. Killed by: dropping a state, re-casing
+    one, or adding a fourth. Second correct implementation: the same three members declared as a
+    `frozenset` or a list.
+    """
+    assert set(record_schema.SUBJECT_RESOLUTION_STATES) == {"unresolved", "resolved", "void"}
+
+
+def test_the_subject_finding_identifier_vocabulary_admits_three_ids_and_no_other():
+    """Property: the subject finding-identifier vocabulary is exactly `cannot-import`, `resolved-outside` and `readings-disagree`; a fourth identifier is not admitted.
+
+    Class (input): the finding identifiers as their consumers read them -- the instrument that
+    writes the `findings` list and a reader deciding which comparison failed; artifact:
+    `record_schema.SUBJECT_FINDING_IDS`, whose members are the only three identifiers a finding may
+    carry. Build
+    class: NEW CAPABILITY -- the plausible wrong implementation collapses
+    `resolved-outside` and `readings-disagree` into one identifier, which erases the distinction
+    between a subject outside the declared context and two readings that disagree; a second wrong
+    implementation spells one identifier with an underscore (`cannot_import`), which a consumer
+    matching the hyphenated form reads as unknown. Red under both. Why: each identifier names a
+    distinct comparison -- a crash is not a disagreement -- so a reader mapping findings to
+    remedies branches on exactly these three, and a value outside them falls through every branch.
+    Both-states anchor: the assertion turns on set membership, not on the tuple's order or its
+    repr. Invocation isolation: not isolatable from this tree -- discrimination shown instead:
+    rebinding the module's `SUBJECT_FINDING_IDS` to the collapsed pair reds this test, done
+    off-tree because the working tree is shared. Killed by: dropping an identifier, re-spelling
+    one, or adding a fourth. Second correct implementation: the same three members declared as a
+    `frozenset` or a list.
+    """
+    assert set(record_schema.SUBJECT_FINDING_IDS) == {"cannot-import", "resolved-outside", "readings-disagree"}

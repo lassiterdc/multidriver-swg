@@ -9,7 +9,7 @@ resolved to, the population collection saw before `-m`/`-k` deselection, the tes
 it, what deselection removed, where the subject resolved, the checkout it had to resolve inside,
 and a verdict.
 
-This module declares that record's names and its two closed value sets, and holds no code that
+This module declares that record's names and its closed value sets, and holds no code that
 writes or reads a record. The capture belongs to the collection hook that `inventory.py` already
 registers; the emission belongs to a pytest plugin this package will add. Keeping those two out of
 the schema is deliberate: a schema that also serialized the record would let its writer and its
@@ -62,6 +62,15 @@ COMPLETENESS = ("pre-collection", "collected", "complete")
 # from a record with no subject-resolution field at all -- the first a reading that found nothing,
 # the second a schema that never asked.
 SUBJECT_UNRESOLVED = {"state": "unresolved"}
+
+# Closed value sets for the subject-resolution field: its `state`, and the identifiers its
+# `findings` list may carry. Each finding id names the comparison that failed (`cannot-import` --
+# a reading that produced no file; `resolved-outside` -- a file unequal to the expected source;
+# `readings-disagree` -- two successful files that differ), and the state is `void` exactly when
+# any finding exists. A fourth member of either set would fall through every branch a reader of
+# the record has, which is the same failure a fourth verdict produces.
+SUBJECT_RESOLUTION_STATES = ("unresolved", "resolved", "void")
+SUBJECT_FINDING_IDS = ("cannot-import", "resolved-outside", "readings-disagree")
 
 # The two fields that travel between hooks: the collection hook captures them and the emitter reads
 # them afterwards through the config's stash. Bare `list` in both: every element is a node-id
