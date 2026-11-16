@@ -215,6 +215,7 @@ __marimo__/
 
 # Local tool configuration (kept out of version control)
 /.claude/
+/.omp/
 
 # Scientific data
 *.nc
