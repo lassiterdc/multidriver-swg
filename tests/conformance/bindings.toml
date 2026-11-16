@@ -1,0 +1,178 @@
+# The § B2 binding ledger: one table per register equation, stating what this repository owes it.
+#
+# A row's `binding` is one of four wire values — TEST, CROSS-REPO, UNREACHABLE, NO-MANUSCRIPT-TEXT —
+# and its `ground` quotes the § B2 Status fragment that decides which. `test` is present exactly on a
+# TEST row and names the conformance function; the function's own marker must name the same equation
+# id and the function must live under tests/conformance/, which `bindings.coverage_findings` checks.
+#
+# The landed `Binding` and the reachability flag are DERIVED by `bindings.py` and never written here:
+# one fact with two homes is a fact that can be stated two ways. A row that writes either one is
+# refused by name, so the ledger cannot acquire a second answer to a question it already answers.
+#
+# Grounds are TOML literal strings ('''...''') because § B2's Status column carries LaTeX, and a
+# basic string would read `\t` in `$D_{\text{thresh}}$` as a tab and corrupt the quote it carries.
+
+[E-01]
+binding = "CROSS-REPO"
+ground = '''**CROSS-REPO** — implemented in `hydro-fetch`; unbindable here'''
+
+[E-02]
+binding = "CROSS-REPO"
+ground = '''**CROSS-REPO**'''
+
+[E-03]
+binding = "CROSS-REPO"
+ground = '''**CROSS-REPO**'''
+
+[E-04]
+binding = "TEST"
+test = "test_eq04_watershed_mean_intensity"
+ground = '''Implemented `_utils:125,138`; `$n_g$` identified by column NEGATION (`_utils:117`), so any extra column silently enters the mean'''
+
+[E-05]
+binding = "TEST"
+test = "test_eq05_moving_depth_sum"
+ground = '''**DIVERGENT** — `_utils:1332` sets the window from `min_interevent_time`, not `$D_{\text{thresh}}$`; author-acknowledged at `_utils:1274`'''
+
+[E-06]
+binding = "UNREACHABLE"
+ground = '''Implemented `_utils:1343-1398`; UNREACHABLE past `_utils:1274`'''
+
+[E-07]
+binding = "CROSS-REPO"
+ground = '''**CROSS-REPO** — `surge_ft` is produced upstream'''
+
+[E-08]
+binding = "TEST"
+test = "test_eq08_surge_window_expansion"
+ground = '''**DIVERGENT** — `_utils:1477-1481` compares **one-hour means**, not the pointwise values the equation writes'''
+
+[E-09]
+binding = "TEST"
+test = "test_eq09_combined_pairing"
+ground = '''**DIVERGENT** — `_utils:1633-1640` triggers on ANY span overlap; the paper's rule survives only in the docstring at `_utils:1617`. A third, superseded 12-hour-moving-window rule sits commented at `_b2:589-590`'''
+
+[E-10]
+binding = "UNREACHABLE"
+ground = '''Implemented `_utils:1565-1573`; UNREACHABLE past `_utils:1563`, whose message states the timestamp convention is wrong (right-edge, should be window-centre) — which shifts every lag statistic'''
+
+[E-11]
+binding = "TEST"
+test = "test_eq11_quantile_correlation"
+ground = '''**DIVERGENT** — `_utils:2200-2202` computes **Pearson** on Cunnane plotting positions, and the per-column `dropna` at `_utils:2185` is applied before a frame-level `dropna` at `_utils:2202`, so columns are ranked over different sample sizes and then correlated on the intersection. Pair filtering is by substring match on variable names (`_utils:2211-2242`)'''
+
+[E-12]
+binding = "TEST"
+test = "test_eq12_marginal_fit_and_metrics"
+ground = '''Implemented `__ref_ams:113-215`, `comp_msdi:106`, `comp_madi:109`; family list matches (`sep` at `__ref_ams:379-380` **is** `exponpow`, so the paper's 13 and the code's 13 agree)'''
+
+[E-13]
+binding = "TEST"
+test = "test_eq13_cvm_statistic"
+ground = '''Implemented exactly — `compute_cvm_criterion` `_b5:75-77` over `empirical_multivariate_cdf` `_b5:61-72`. Manuscript does not state the ECDF's `$n+1$` denominator (`_b5:69`)'''
+
+[E-14]
+binding = "UNREACHABLE"
+ground = '''**DIVERGENT and UNREACHABLE** — `_b5:90-95` implements a TWO-sided rejection at `$\alpha/2$`; the paper specifies one-sided. Author-acknowledged verbatim at `_b5:78`: `sys.exit("i need to update this function so that it is a one-sided test")`, which is the first statement of the function'''
+
+[E-15]
+binding = "TEST"
+test = "test_eq15_kendall_tau_statistic"
+ground = '''**DIVERGENT** — `_utils:723,734` call `scipy.stats.kendalltau`, which is tau-**b** (tie-corrected denominator, 0 for ties). The paper writes tau-**a** with `-1 otherwise`, so ties score `-1`. The two differ whenever ties exist'''
+
+[E-16]
+binding = "TEST"
+test = "test_eq16_tau_null_and_rejection"
+ground = '''Rejection logic matches (`_utils:740-745`). p-value **DIVERGENT in estimator**: `get_quantile_from_value:598-604` returns the `rank(pct=True)` of the *nearest* simulated value, not `$\hat F$` evaluated at `$t_{obs}$`'''
+
+[E-17]
+binding = "UNREACHABLE"
+ground = '''**DIVERGENT and UNREACHABLE** — the paper names **six** tests; `_utils.perform_two_sample_tests:858-921` runs **seven** (Welch's t at `:902` is unlisted). Unreachable past `_b5:48`, whose message is the paper's own stated future work at L452'''
+
+[E-18]
+binding = "TEST"
+test = "test_eq18_occurrence_bootstrap"
+ground = '''Implemented `_b6:101-232` and `_b6:480`; the bootstrap resamples the **joint** vector, preserving inter-type correlation — a substantive choice the paper's notation implies but does not state. Code draws `$1.5y_g$` years (`_b6:17`), not `$y_g$`'''
+
+[E-19]
+binding = "TEST"
+test = "test_eq19_inverse_transform"
+ground = '''Implemented `_b6:529-547`. The `$1-u$` reflection at `_b6:535-538` for upper-bounded marginals is required by the fit and is **absent from the paper**'''
+
+[E-20]
+binding = "TEST"
+test = "test_eq20_additive_surge_rescaling"
+ground = '''**DIVERGENT — SIGN ERROR IN THE PAPER.** `_b7:224-225` computes `diff = PS_g - PS_h` then `sim = obs + diff`, i.e. `$\vec s_h+(PS_g-PS_h)$`. The code is correct (it makes the simulated peak equal `$PS_g$`, verified at `_b7:226-227`); the manuscript's sign is reversed'''
+
+[E-21]
+binding = "TEST"
+test = "test_eq21_intensity_multiplier"
+ground = '''Implemented `_utils:122-123`, applied to all grid-cell columns'''
+
+[E-22]
+binding = "TEST"
+test = "test_eq22_timestep_dilation"
+ground = '''Implemented `_utils:44`'''
+
+[E-23]
+binding = "TEST"
+test = "test_eq23_overlap_weighted_resample"
+ground = '''Implemented `_utils:64-89` as an **overlap-duration-weighted** sum, which is not a plain average when a dilated step straddles a boundary. The paper says "the average"'''
+
+[E-24]
+binding = "TEST"
+test = "test_eq24_isclose_tolerance"
+ground = '''Implemented `_utils:154,160` and re-checked `_b7:307-318`'''
+
+[E-25]
+binding = "TEST"
+test = "test_eq25_rescaling_fixed_point"
+ground = '''**DIVERGENT** — the paper states no termination other than success. `_utils:143-148` caps at `n_cutoff = 50` and `_utils:149-153` breaks when duration reaches `$2\times$` the max observed. Both exits keep the event, flagged'''
+
+[E-26]
+binding = "TEST"
+test = "test_eq26_lag_shift"
+ground = '''Implemented in two branches, `_b7:515-529` (instantaneous peak) and `_b7:530-558` (max-mean window). Window durations are recovered by **parsing the column name** (`_b7:532-533,805-806,852-853`)'''
+
+[E-27]
+binding = "UNREACHABLE"
+ground = '''Implemented `_b7:615-693`; the rain-event branch is UNREACHABLE past `_b7:628`, whose message questions the very parameter the paper specifies'''
+
+[E-28]
+binding = "TEST"
+test = "test_eq28_series_buffering"
+ground = '''Implemented `_utils:343-385`; the "significant plug" windows are non-overlapping and anchored at the series END (`_utils:368`, `origin="end"`), which the paper does not state'''
+
+[E-29]
+binding = "UNREACHABLE"
+ground = '''Implemented `_b7:767-866` and `_b7.1:71-80`; UNREACHABLE past `_b7.1:72`, whose message says the simulated-side rain criterion is missing the duration constraint the observed side uses. Also `_b7:771-795` assigns before comparing, so the three drift guards can never fire'''
+
+[E-30]
+binding = "TEST"
+test = "test_eq30_generated_tau_test"
+ground = '''Implemented `_utils:733` reached with `cop_fitted=None` from `_b6:768` and `_b7.1:307`'''
+
+[E-31]
+binding = "TEST"
+test = "test_eq31_tide_randomization"
+ground = '''**DIVERGENT** — `_utils:238` slices `[-(n+1):-1]`, which EXCLUDES the most recent year `$y_r$`; the paper's set includes it. Both draws are UNSEEDED (`_utils:243,247`)'''
+
+[E-32]
+binding = "CROSS-REPO"
+ground = '''**CROSS-REPO** — runs on flood-model output in `ss-fha`'''
+
+[E-33]
+binding = "CROSS-REPO"
+ground = '''**CROSS-REPO**'''
+
+[E-34]
+binding = "NO-MANUSCRIPT-TEXT"
+ground = '''Implemented `_utils:267`. **PAPER OMITS** — this is a modelling assumption a reviewer will ask about'''
+
+[E-35]
+binding = "NO-MANUSCRIPT-TEXT"
+ground = '''Implemented `_utils:195-197,210`; the neighbour search is `_utils:183-193`. **PAPER OMITS** — L526 says only "nearest neighbor resampling". The method is the Lall-Sharma kernel and is a citable methodological choice'''
+
+[E-36]
+binding = "NO-MANUSCRIPT-TEXT"
+ground = '''Implemented `_b7:277-295`. **PAPER OMITS**, and it interacts with a defect: such events are scored problem-free (`_b7:288-290` commented out) and therefore preferentially selected at `_b7:446`'''
