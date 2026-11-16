@@ -1,0 +1,46 @@
+# Whole suite. On every push to every branch, on every tag push that is not a
+# release tag, and when the release workflow calls it, this job runs every
+# collected test with no deselection and keeps the run's result record as an
+# artifact. A release tag is excluded here because the release workflow runs this
+# file itself at the tagged commit, so each push gets exactly one run.
+#
+# Nothing requires this job. No repository ruleset names it, so on any branch and
+# on any other tag its result is a report and stops nothing; the release workflow
+# is what reads the record, and it reads it at the tagged commit.
+#
+# The result record is written by the `--result-record` option of the test
+# tree's own recorder (`tests/correspondence/record.py`), which the root
+# conftest registers. The command passes no marker, no path argument, no
+# `--ignore` and no `-k`: each of those narrows the run while the record still
+# reports a pass, because a run of a subset is a pass over that subset.
+name: Whole suite
+
+on:
+  push:
+    branches: [ "**" ]
+    tags: [ "**", "!v*" ]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  whole-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the toolkit and the test runner
+        run: python -m pip install --disable-pip-version-check -e . "pytest==9.1.1" matplotlib seaborn scipy "python-dateutil<3" pyvinecopulib scikit-learn tqdm
+      - name: Run the whole suite
+        run: python -m pytest -p no:cacheprovider -ra --result-record "$RUNNER_TEMP/result-record.json"
+      - name: Keep the result record
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: whole-suite-result-record
+          path: ${{ runner.temp }}/result-record.json
+          if-no-files-found: warn

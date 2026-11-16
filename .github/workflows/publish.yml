@@ -1,3 +1,19 @@
+# Release. A `v*` tag starts this workflow, and nothing else does.
+#
+# A tag reaches a build only through two jobs. `whole-suite` calls the reusable whole-suite
+# workflow at the tagged commit, so the release run itself runs every collected test with no
+# deselection and keeps that run's result record as an artifact. `release-gate` then reads the
+# record and refuses the tag on five grounds: the tag is not `v` plus `pyproject.toml`'s version,
+# `CITATION.cff` records another version, the commit is not on `main`, the commit's tree still
+# lists the unported legacy code, or the run at the commit was not whole, complete and passing.
+# Every refusal prints its reason and fails the job, so the build, the distribution listing and
+# both uploads never start on a refused tag.
+#
+# The gate runs on `!cancelled()` and not on success, so a suite job that failed reaches the gate
+# and is refused with its reason printed, instead of the gate being skipped and the run reading as
+# a quiet non-release. The record is downloaded with `continue-on-error`, because a missing
+# artifact has to become a refusal rather than an error in the download step. Every job after the
+# gate keeps GitHub's default condition, which is that each job it needs succeeded.
 name: Publish to PyPI
 
 on:
@@ -6,8 +22,41 @@ on:
       - "v*"
 
 jobs:
+  whole-suite:
+    name: Whole suite
+    uses: ./.github/workflows/whole-suite.yml
+
+  release-gate:
+    name: Refuse a tag that is not a whole passing release
+    needs: [whole-suite]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    outputs:
+      whole_suite_run_id: ${{ github.run_id }}
+      whole_suite_run_attempt: ${{ github.run_attempt }}
+      whole_suite_commit: ${{ github.sha }}
+    steps:
+      - name: Check out the tagged commit with the whole history the ancestry check reads
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download the whole-suite result record
+        uses: actions/download-artifact@v6
+        continue-on-error: true
+        with:
+          name: whole-suite-result-record
+          path: ${{ runner.temp }}/whole-suite
+      - name: Refuse the tag unless it is a whole passing release of the tagged commit
+        run: python scripts/check_release_tag.py --tag "$GITHUB_REF_NAME" --commit "$GITHUB_SHA" --main-ref origin/main --record "$RUNNER_TEMP/whole-suite/result-record.json"
+
   build:
     name: Build distribution
+    needs: [release-gate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -27,9 +76,22 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+  post-build-check:
+    name: Check the built distributions
+    needs: [release-gate, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: List the distributions
+        run: sha256sum dist/*
+
   publish-to-testpypi:
     name: Publish to TestPyPI
-    needs: [build]
+    needs: [post-build-check]
     runs-on: ubuntu-latest
     environment:
       name: testpypi
@@ -49,7 +111,7 @@ jobs:
 
   publish-to-pypi:
     name: Publish to PyPI
-    needs: [build, publish-to-testpypi]
+    needs: [post-build-check, publish-to-testpypi]
     runs-on: ubuntu-latest
     environment:
       name: pypi
