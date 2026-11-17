@@ -31,6 +31,16 @@ Deliberately NOT a plain `dict`-shaped record: a `dict` enforces nothing at cons
 record missing its identities would build silently and `require_complete` would be the only thing
 between a run and an unnamed producer — with nothing saying the record was meant to carry them.
 
+The PERSISTED FORM. A record held in memory dies with the process, so a producer also writes its own
+identity beside the outputs it produced: one file per producer, holding one JSON object and nothing
+else, keyed by the literal `implementation-identity:1` and carrying `system`, `implementation` and
+`code_version`. `persist_identity` writes that file and `read_identity` is its only reader, so a
+consumer never parses the file itself and the form is enforced in one place. Emptiness is refused at
+READ rather than in `ImplementationIdentity`: the dataclass deliberately checks no field value, so a
+record missing a producer's name would otherwise be written by a producer and read by everyone. The
+refusal names the file, the field and the repair, because the reader is looking at a generated file it
+did not write.
+
 Not established: that every sibling has adopted this interface. `require_complete` refuses an
 incomplete record against the exercised set it is GIVEN; deriving that set is the workflow graph's
 work and is not here, so a record is enforceably complete only where the caller supplies the set.
@@ -38,8 +48,10 @@ work and is not here, so a record is enforceably complete only where the caller 
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Protocol
 
 from multidriver_swg.run_configuration.seed_contract import SeedGenerator
@@ -51,6 +63,13 @@ from multidriver_swg.run_configuration.seed_contract import SeedGenerator
 # dependency behind it. Deliberately NOT an instance: a `Generator` advances on every draw, so a
 # stored one names a stream already moved, and this module still makes no draw and seeds nothing.
 _SEED_GENERATOR = SeedGenerator
+
+# The persisted form's version literal and its closed key set. The literal is compared as an exact
+# string rather than parsed, so a later change to the file's fields is loud instead of silently
+# misread by an older reader — the same rule the selection artifact's header follows.
+IDENTITY_RULE = "implementation-identity:1"
+
+_IDENTITY_FIELDS = ("format", "system", "implementation", "code_version")
 
 
 class ProvenanceError(Exception):
@@ -69,8 +88,9 @@ class ImplementationIdentity:
     - `code_version` — the version of the code that produced it.
 
     Not established: that the three values are non-empty. A frozen dataclass does not check its
-    field values, so an identity with an empty `implementation` constructs here; refusing one would
-    be a validation rule this module does not state.
+    field values, so an identity with an empty `implementation` constructs here; the emptiness rule is
+    stated at the persisted form's read, in `read_identity`, rather than at construction, so a value
+    held in memory and a value read from a file answer to different rules.
     """
 
     system: str
@@ -192,3 +212,119 @@ def require_complete(record: ProvenanceRecord, exercised_systems: Iterable[str])
             + ", ".join(repr(system) for system in missing)
             + ": every system the run exercised must declare the implementation that produced its output"
         )
+
+
+def persist_identity(path: str | Path, identity: ImplementationIdentity) -> None:
+    """Write `identity` to `path` as the persisted form: one JSON object, the form's four fields, nothing else.
+
+    The file is written WHOLE and is never appended to, so a repeated write replaces the answer rather
+    than accumulating answers to one question. The JSON is indented so a reader of the generated file
+    can diff two runs' identities line by line, and a trailing newline is written so the file is a
+    well-formed text file on every tool that reads one.
+
+    A `TypeError` for an identity that is not one, because that is a caller's mistake rather than a
+    defect of the code that produced it; the split is the one `require_complete` draws. NO FIELD VALUE
+    IS CHECKED HERE: emptiness is refused by `read_identity`, so the writer stays the plain serializer
+    and the rule is stated once, at the boundary every consumer crosses.
+
+    The parent directory is not created. A producer writes this file beside outputs it has already
+    written, so the directory exists; creating one here would let a mistyped path silently acquire a
+    directory tree that nothing else knows about.
+
+    Deliberately NOT wrapped: an unwritable path. `Path.write_text` raises the operating system's error,
+    which names the file, and there is no second fact a wrapper could add.
+    """
+    if not isinstance(identity, ImplementationIdentity):
+        raise TypeError(
+            f"persist_identity was given {type(identity).__name__} rather than an ImplementationIdentity: "
+            "the persisted form carries the three fields a declaration returns, so an object of another "
+            "kind has none of them to write"
+        )
+
+    document = {
+        "format": IDENTITY_RULE,
+        "system": identity.system,
+        "implementation": identity.implementation,
+        "code_version": identity.code_version,
+    }
+    Path(path).write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+
+
+def read_identity(path: str | Path) -> ImplementationIdentity:
+    """Read the persisted form at `path` and return the identity it carries, refusing one that is not it.
+
+    Every refusal below names the file, because the reader is looking at a GENERATED file and its
+    recovery is to find the producer that wrote it:
+
+    - the file is not valid JSON, or its document is not one JSON object — there is no object to read;
+    - the document carries a key the form does not name — the writer believed that field was read while
+      nothing reads it, and the record's own form is four fields;
+    - `format` is absent or is not the literal `IDENTITY_RULE` — the file was written against another
+      form, and reading it optimistically is the silent misread the header exists to prevent;
+    - `system`, `implementation` or `code_version` is absent, is not text, or is EMPTY — the whole reason
+      the persisted form exists is that a run can name its producer later, and an empty field names
+      nothing while still looking like a record.
+
+    A field of whitespace-only text is ADMITTED, because the form's rule is emptiness and inventing a
+    trimming rule here would refuse a value the writer never agreed was invalid. That is a stated bound
+    rather than an oversight.
+
+    Deliberately NOT wrapped: an unreadable path. `Path.read_text` raises the operating system's error,
+    which already names the file, and a missing identity file is a missing file at a path the caller
+    chose. A file that is not UTF-8 text IS refused here, under this module's class and with the path,
+    because the interpreter's `UnicodeDecodeError` names a byte offset and a codec and no file.
+    """
+    target = Path(path)
+
+    try:
+        text = target.read_text(encoding="utf-8")
+    except UnicodeDecodeError as error:
+        raise ProvenanceError(
+            f"identity record {target} is not UTF-8 text, so there is nothing to read: {error}"
+        ) from error
+
+    try:
+        document = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise ProvenanceError(
+            f"identity record {target} is not valid JSON, so there is nothing to read: {error}"
+        ) from error
+
+    if not isinstance(document, dict):
+        raise ProvenanceError(
+            f"identity record {target} is {document!r}: the persisted form is ONE JSON object carrying "
+            f"{', '.join(repr(name) for name in _IDENTITY_FIELDS)}, and an array or a scalar names no "
+            "producer"
+        )
+
+    for key in document:
+        if key not in _IDENTITY_FIELDS:
+            raise ProvenanceError(
+                f"identity record {target} carries the key {key!r}: the form is exactly "
+                f"{', '.join(repr(name) for name in _IDENTITY_FIELDS)}, so a key it does not name is a "
+                "field the producer believed was read while nothing reads it"
+            )
+
+    if document.get("format") != IDENTITY_RULE:
+        raise ProvenanceError(
+            f"identity record {target} declares format = {document.get('format')!r}: the persisted form "
+            f"must declare format = {IDENTITY_RULE!r}, the version header that makes a later change to the "
+            "record's fields loud rather than silently misread"
+        )
+
+    values: dict[str, str] = {}
+    for name in ("system", "implementation", "code_version"):
+        value = document.get(name)
+        if not isinstance(value, str) or not value:
+            raise ProvenanceError(
+                f"identity record {target} field {name!r} is {value!r}: the field is the non-empty text its "
+                "producer declared, and an absent or empty one names no producer, which is the one fact "
+                "the record exists to carry; write the record with persist_identity"
+            )
+        values[name] = value
+
+    return ImplementationIdentity(
+        system=values["system"],
+        implementation=values["implementation"],
+        code_version=values["code_version"],
+    )

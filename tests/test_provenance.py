@@ -13,7 +13,7 @@ discrimination arm applies: each test's `Killed by:` names a change to what the 
 test's input, and that is the discrimination this suite is run forward on.
 
 The names are imported from `multidriver_swg.run_configuration` rather than from `provenance`
-directly, so collection itself exercises the package's re-export of the five provenance names.
+directly, so collection itself exercises the package's re-export of the provenance names.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ from __future__ import annotations
 import ast
 import dataclasses
 import inspect
+import json
 import typing
 from pathlib import Path
 
@@ -30,8 +31,11 @@ import multidriver_swg.run_configuration.provenance as provenance
 from multidriver_swg.run_configuration import (
     IdentityDeclaration,
     ImplementationIdentity,
+    ProvenanceError,
     ProvenanceRecord,
     capture,
+    persist_identity,
+    read_identity,
     require_complete,
 )
 
@@ -447,3 +451,201 @@ def test_the_module_docstring_states_the_ruling_the_convention_and_the_two_enfor
     assert CAPTURE_NOT_RECONSTRUCT in docstring
     assert "IdentityDeclaration" in docstring
     assert "require_complete" in docstring
+
+
+# The persisted form's tests start here, after the in-memory surface's, because the form is a second
+# boundary over the same three fields: the record in memory is checked for completeness, and the one on
+# disk is checked for the emptiness a frozen dataclass does not refuse.
+_ABSENT = object()
+
+
+def _identity_record(tmp_path: Path, **fields: object) -> Path:
+    """Write a persisted-form document with `fields` applied, `_ABSENT` removing a key, and return the path."""
+    document: dict[str, object] = {
+        "format": provenance.IDENTITY_RULE,
+        "system": "swg",
+        "implementation": "stub",
+        "code_version": "0" * 40,
+    }
+    for key, value in fields.items():
+        if value is _ABSENT:
+            document.pop(key, None)
+        else:
+            document[key] = value
+    path = tmp_path / "implementation_identity.json"
+    path.write_text(json.dumps(document), encoding="utf-8")
+    return path
+
+
+def test_the_persisted_form_round_trips_and_carries_exactly_its_four_fields(tmp_path: Path):
+    """Property: `persist_identity` writes one JSON object whose keys are exactly the form's four, `read_identity` returns an equal identity, and the format is the literal `implementation-identity:1`.
+
+    Class: any identity with three non-empty fields, written once and read back.
+    Why it is required: the persisted form exists so a consumer can name the producer of an output
+    later, which requires a round trip through the file and a format a later reader can recognise
+    without a second parser. A file carrying a fifth key, or a format this code does not name, would be
+    a record its own reader refused.
+    Reachability: the write and the read are both exercised on the same temporary path, so the
+    assertion is shown against a file that exists rather than against an absent one.
+    Both-states anchor: the equality and the key set are properties of what the writer wrote; the
+    format literal is the module's own constant, not a value this test introduces.
+    Killed by: writing the record without the `format` key, writing it with a different format, adding
+    a field, or rendering it without an indent-independent JSON parse.
+    Second correct implementation: one that serialises with `sort_keys=True` and no indent, or writes
+    the keys in another order — the test parses the file, so neither ordering nor spacing decides it.
+    """
+    identity = ImplementationIdentity(system="swg", implementation="stub", code_version="0" * 40)
+    path = tmp_path / "implementation_identity.json"
+
+    persist_identity(path, identity)
+
+    assert provenance.IDENTITY_RULE == "implementation-identity:1"
+    assert read_identity(path) == identity
+    document = json.loads(path.read_text(encoding="utf-8"))
+    assert set(document) == {"format", "system", "implementation", "code_version"}
+    assert document["format"] == provenance.IDENTITY_RULE
+    assert path.read_text(encoding="utf-8").endswith("\n")
+
+
+def test_a_document_that_is_not_one_json_object_is_refused(tmp_path: Path):
+    """Property: `read_identity` refuses a file that is not valid JSON, and one whose document is an array or a scalar.
+
+    Class: malformed JSON text, a JSON array, and a JSON string.
+    Why it is required: the form is ONE object carrying four fields, so a document of another shape has
+    no producer field to read; letting a `TypeError` or an `AttributeError` escape would report the
+    module's internal access rather than the file's defect.
+    Reachability: all three files exist and are read, so the refusal is shown against present content
+    rather than against a missing path.
+    Both-states anchor: the three inputs are the whole class the form names, and each is written by the
+    test directly so the shape is not derived from the writer's opinion.
+    Killed by: passing the parsed value straight to the field lookups, which raises on an array.
+    Second correct implementation: checking `isinstance(document, dict)` at any point before reading a
+    field; the same three files are refused.
+    """
+    for content in ("not json at all", "[]", '"a string"'):
+        path = tmp_path / "identity.json"
+        path.write_text(content, encoding="utf-8")
+        with pytest.raises(ProvenanceError) as caught:
+            read_identity(path)
+        assert str(path) in str(caught.value)
+
+
+@pytest.mark.parametrize("field_name", ["system", "implementation", "code_version"])
+@pytest.mark.parametrize("value", [_ABSENT, "", 7])
+def test_the_persisted_form_refuses_a_producer_field_that_is_absent_empty_or_not_text(
+    tmp_path: Path, field_name: str, value: object
+):
+    """Property: each of the three producer fields is refused when absent, when empty and when not text, naming the file and the field.
+
+    Class: the three fields crossed with absence, an empty string and a non-text value.
+    Why it is required: the record exists to name its producer, and an empty field names nothing while
+    still being a file a consumer would read as one; the frozen dataclass deliberately checks no field
+    value, so this is the only layer that refuses it.
+    Reachability: every input is a file the test writes, so each refusal is exercised rather than
+    inferred from the dataclass's docstring.
+    Both-states anchor: the admitted control in the round-trip test carries all three fields non-empty,
+    so the refusals are shown to be reading the fields rather than refusing every document.
+    Killed by: reading the fields with `document.get(name)` and no emptiness test, which admits `""`,
+    or testing emptiness only on one field.
+    Second correct implementation: validating the fields into a mapping first and constructing the
+    identity after; the same nine documents are refused.
+    """
+    path = _identity_record(tmp_path, **{field_name: value})
+
+    with pytest.raises(ProvenanceError) as caught:
+        read_identity(path)
+
+    assert repr(field_name) in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        pytest.param({"format": "implementation-identity:2"}, id="another-version"),
+        pytest.param({"format": _ABSENT}, id="absent-format"),
+        pytest.param({"producer": "swg"}, id="unnamed-key"),
+    ],
+)
+def test_the_persisted_form_refuses_a_wrong_format_and_an_unnamed_key(tmp_path: Path, overrides: dict[str, object]):
+    """Property: the format is compared as the literal, and a document carrying a key the form does not name is refused.
+
+    Class: another version, an absent format, and one extra key.
+    Why it is required: the header makes a later change to the form loud, and an unnamed key is a field
+    the producer believed was read while no reader reads it — the defect a mistyped `Implementation` key
+    produces.
+    Reachability: three written files, each read through the public reader.
+    Both-states anchor: the round-trip test's document carries the literal and exactly four keys, so the
+    refusals are shown against an admitted document.
+    Killed by: accepting any `implementation-identity:N`, or checking only the three producer fields.
+    Second correct implementation: a closed-key-set check and a literal comparison in either order; the
+    same three files are refused.
+    """
+    path = _identity_record(tmp_path, **overrides)
+
+    with pytest.raises(ProvenanceError):
+        read_identity(path)
+
+
+def test_persist_identity_refuses_something_that_is_not_an_identity(tmp_path: Path):
+    """Property: `persist_identity` raises `TypeError` for an object that is not an `ImplementationIdentity`, and writes no file.
+
+    Class: a record, a mapping and a bare string, each passed where an identity belongs.
+    Why it is required: the split between a caller's mistake and a defective record is the one
+    `require_complete` draws, and a wrong argument would otherwise raise an `AttributeError` naming
+    neither the function nor the argument.
+    Reachability: three calls, each checked for the absence of the file the writer would have created.
+    Both-states anchor: the round-trip test shows the same function writes a file for a real identity,
+    so the absence here is the refusal rather than a writer that never writes.
+    Killed by: writing `identity.system` without an `isinstance` check, which accepts a duck-typed
+    object and raises on a mapping.
+    Second correct implementation: constructing the document from `dataclasses.asdict(identity)`, which
+    raises its own `TypeError` for a mapping; the same three calls are refused.
+    """
+    path = tmp_path / "identity.json"
+
+    record = ProvenanceRecord(inputs={}, seeds={}, identities={})
+    for value in (record, {}, "swg"):
+        with pytest.raises(TypeError):
+            persist_identity(path, value)  # type: ignore[arg-type]
+        assert not path.exists()
+
+
+def test_the_persisted_form_admits_a_whitespace_only_field(tmp_path: Path):
+    """Property: a producer field of whitespace-only text is admitted, which is the form's stated bound.
+
+    Class: one space in `implementation`, on an otherwise conforming record.
+    Why it is required: the form's rule is emptiness, and the reader's docstring states that trimming is
+    not invented here. Asserting the admitted value keeps the stated bound from drifting into an
+    unstated rule, and keeps a later editor from adding a trim without changing the contract.
+    Reachability: the record is written and read through the public functions.
+    Both-states anchor: the empty string is refused in the field test beside this one, so the boundary
+    is the emptiness test rather than a length or a character class.
+    Killed by: a `strip()`-based emptiness check, which would refuse this record.
+    Second correct implementation: none beyond testing the field for truthiness; the same record is
+    admitted.
+    """
+    identity = ImplementationIdentity(system="swg", implementation=" ", code_version="0" * 40)
+    path = tmp_path / "identity.json"
+
+    persist_identity(path, identity)
+
+    assert read_identity(path) == identity
+
+
+def test_the_module_docstring_states_the_persisted_form():
+    """Property: the module docstring names the persisted form's literal and both of its functions.
+
+    Class: any version of the docstring, searched whole.
+    Why it is required: the form is the module's answer to a record that dies with the process, and a
+    docstring that stopped at the in-memory record would leave the on-disk contract unstated.
+    Both-states anchor: the assertions read the module's own sentences and names, not wording this test
+    introduces.
+    Killed by: deleting the persisted-form paragraph, or renaming a function without updating it.
+    Second correct implementation: the names at any position in any surrounding prose — the check asserts
+    containment only.
+    """
+    docstring = provenance.__doc__ or ""
+
+    assert "implementation-identity:1" in docstring
+    assert "persist_identity" in docstring
+    assert "read_identity" in docstring

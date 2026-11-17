@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# A stand-in for `srun`: runs the first non-option argument and the rest, or reports the version.
+set -u
+command=()
+for arg in "$@"; do
+    case "$arg" in
+        -*) : ;;
+        *) command+=("$arg") ;;
+    esac
+done
+if [ "${#command[@]}" -eq 0 ]; then
+    echo "slurm 25.05.6"
+    exit 0
+fi
+exec "${command[@]}"

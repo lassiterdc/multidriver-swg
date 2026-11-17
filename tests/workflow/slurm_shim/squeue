@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# A stand-in for `squeue`: a header and no rows, which is what a finished job leaves.
+set -u
+echo "JOBID PARTITION NAME USER ST TIME NODES NODELIST(REASON)"

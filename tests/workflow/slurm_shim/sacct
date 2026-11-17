@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# A stand-in for the executor's `sacct` status query. The plugin asks for
+#   sacct -X --parsable2 --noheader --format=JobIdRaw,State --starttime ...
+# and reads the pipe-separated columns positionally, so this shim HONOURS the requested format list
+# instead of always printing one diagnostic row: a fixed six-column row puts the job name where the
+# consumer reads the state, and a real driver then never recognizes completion.
+#
+# Knobs:
+#   SHIM_SACCT_STATE=FAILED SHIM_SACCT_EXIT=2:0   the spike's exit-2 row
+#   SHIM_SACCT_EMPTY=1                            no row at all
+#   SHIM_JOB_ID                                   the id reported when the query names none
+set -u
+if [ "${SHIM_SACCT_EMPTY:-0}" = "1" ]; then
+    exit 0
+fi
+
+job_id=""
+format=""
+previous=""
+for arg in "$@"; do
+    # `-j ID` shares its value as the next argument.
+    if [ "$previous" = "-j" ]; then
+        job_id="$arg"
+    fi
+    case "$arg" in
+        -j*) job_id="${arg#-j}" ;;
+        --format=*) format="${arg#--format=}" ;;
+        --format) : ;;
+        -o=*) format="${arg#-o=}" ;;
+        -o*) format="${arg#-o}" ;;
+    esac
+    # A format may be given as its OWN argument: `--format VALUE` or `-o VALUE`. The equals forms are read
+    # above; these two read the value that follows the bare option.
+    if [ "$previous" = "--format" ] || [ "$previous" = "-o" ]; then
+        format="$arg"
+    fi
+    previous="$arg"
+done
+
+if [ -z "$format" ]; then
+    # The diagnostic row: six columns, used when a caller asks for no particular format.
+    printf '%s|h1-job|%s|%s|shim-node|00:00:00\n' \
+        "${job_id:-${SHIM_JOB_ID:-23045000}}" "${SHIM_SACCT_STATE:-COMPLETED}" "${SHIM_SACCT_EXIT:-0:0}"
+    exit 0
+fi
+
+state="${SHIM_SACCT_STATE:-COMPLETED}"
+exit_code="${SHIM_SACCT_EXIT:-0:0}"
+row=""
+IFS=',' read -r -a columns <<<"$format"
+for column in "${columns[@]}"; do
+    value=""
+    case "$column" in
+        JobIdRaw|JobID|JobId) value="${job_id:-${SHIM_JOB_ID:-23045000}}" ;;
+        State|JobState) value="$state" ;;
+        JobName) value="h1-job" ;;
+        ExitCode) value="$exit_code" ;;
+        NodeList) value="shim-node" ;;
+        Elapsed) value="00:00:00" ;;
+        *) value="" ;;
+    esac
+    if [ -z "$row" ]; then
+        row="$value"
+    else
+        row="$row|$value"
+    fi
+done
+printf '%s\n' "$row"

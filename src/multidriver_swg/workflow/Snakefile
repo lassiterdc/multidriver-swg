@@ -1,0 +1,72 @@
+"""The run's workflow file: the target rule, then one rendered rule per row of the graph.
+
+The engine reads this file at every invocation. Its first act is to put this checkout's `src` at the head
+of the import path, so the package the file belongs to is the package the parse and every job import —
+never whatever copy the environment happens to resolve. Its second act is the graph-start gate, which
+refuses a parse that has no valid run-start record or whose executing checkout is not the declared one.
+
+`all` is written here by hand and comes FIRST, because the engine's default target is the first rule it
+reads: with `all` defined after the rendering loop the engine builds the first rendered rule and exits 0
+having built one step of the run. Its input is the run-start record's target list, read once at parse, so
+a shortened run needs no edit to this file.
+
+Every other rule is rendered by ONE loop over `GRAPH`. The row supplies the rule's name, its inputs, its
+declared outputs and the owning system, which is bound into `params` so the body reads it at job time
+rather than reading the loop's variable after the loop has ended.
+
+Inputs are the producing row's PATH for each name the row reads: the table names an artifact by its file
+name, and every artifact lives under its producing rule's directory, so the mapping from name to path is
+derived from the table rather than restated. `method_attribution` is the one row whose inputs are the
+run's target list instead, minus its own output: it attributes every artifact the run built, and a
+shortened run must not make it wait for one that was never built.
+"""
+
+import sys
+from pathlib import Path
+
+_SOURCE_ROOT = str(Path(workflow.basedir).parents[1])
+# The root is moved to the head UNCONDITIONALLY. A membership test would leave it where it is whenever
+# another copy of the toolkit put the same root on the path behind it, and the first `multidriver_swg`
+# the interpreter found would then be that other copy: the gate would check it and the jobs would run its
+# code under this file. Removing an earlier entry first keeps the path from growing one copy per parse.
+while _SOURCE_ROOT in sys.path:
+    sys.path.remove(_SOURCE_ROOT)
+sys.path.insert(0, _SOURCE_ROOT)
+
+from multidriver_swg.workflow.graph import GRAPH  # noqa: E402
+from multidriver_swg.workflow.graph_start import require_graph_start  # noqa: E402
+from multidriver_swg.workflow.stubs import write_stub_outputs  # noqa: E402
+
+RUN_START = require_graph_start()
+
+# Every artifact name the table declares, mapped to the path its producing rule writes it to.
+PRODUCERS = {output: f"{spec.name}/{output}" for spec in GRAPH for output in spec.outputs}
+
+
+def rendered_inputs(spec):
+    """Return the paths `spec` reads: the producing rule's path per declared read, or the run's targets for the attribution row."""
+    if spec.name == "method_attribution":
+        own_directory = f"{spec.name}/"
+        return [target for target in RUN_START.targets if not target.startswith(own_directory)]
+    return [PRODUCERS[read] for read in spec.reads]
+
+
+rule all:
+    input:
+        list(RUN_START.targets)
+    localrule: True
+
+
+for spec in GRAPH:
+    rule:
+        name:
+            spec.name
+        input:
+            rendered_inputs(spec)
+        output:
+            [f"{spec.name}/{output}" for output in spec.outputs]
+        params:
+            system=spec.system,
+            rule_name=spec.name,
+        run:
+            write_stub_outputs(params.rule_name, params.system, list(output))

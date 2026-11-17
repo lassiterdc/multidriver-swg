@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# A stand-in for the account query the SLURM executor plugin runs before its first submission. The plugin
+# requests ONE column (`format=account%256`) and compares whole stripped lines with the configured account,
+# so the shim prints the account as a scalar column and never a pipe-separated pair.
+#   SHIM_ACCOUNT_REFUSE=1   report no association and exit 1
+set -u
+account=""
+previous=""
+format=""
+for arg in "$@"; do
+    case "$arg" in
+        account=*) account="${arg#account=}" ;;
+        --format=*) format="${arg#--format=}" ;;
+        format=*) format="${arg#format=}" ;;
+        --format) : ;;
+    esac
+    # A format may be given as its OWN argument: `--format VALUE`. The account column is the only one this
+    # shim can answer, and the configured account is that column's value.
+    if [ "$previous" = "--format" ]; then
+        format="$arg"
+    fi
+    if [ "$previous" = "-a" ]; then
+        account="$arg"
+    fi
+    previous="$arg"
+done
+: "${format:=}" 
+if [ "${SHIM_ACCOUNT_REFUSE:-0}" = "1" ]; then
+    echo "sacctmgr: error: no association for account ${account:-unknown}" >&2
+    exit 1
+fi
+printf '%s\n' "${account:-${SHIM_ACCOUNT:-shim}}"

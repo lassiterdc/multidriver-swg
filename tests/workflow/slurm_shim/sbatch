@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# A stand-in for `sbatch --wait --parsable`, reproducing the two arms the Rivanna spike measured.
+#
+# Knobs, all optional:
+#   SHIM_SBATCH_REFUSE=1   refuse the submission: no job id on stdout, exit 1 (the spike's refused arm)
+#   SHIM_JOB_ID            the id printed when the submission is accepted (default 23045000)
+#   SHIM_JOB_OUTPUT        where the script's own output goes (default /dev/null)
+#   SHIM_CALL_RECORD       file the argv is appended to, so a test can prove no submission happened
+#
+# With --wait the script (or the --wrap text) runs synchronously and its exit code is returned, which is
+# what the spike measured: an accepted script exiting 2 gives a job id on stdout and exit 2.
+set -u
+
+record="${SHIM_CALL_RECORD:-}"
+if [ -n "$record" ]; then
+    printf '%s\n' "$*" >> "$record"
+fi
+
+if [ "${SHIM_SBATCH_REFUSE:-0}" = "1" ]; then
+    echo "sbatch: error: invalid partition specified: ${SHIM_REFUSED_PARTITION:-no_such_partition}" >&2
+    echo "sbatch: error: Batch job submission failed: Invalid partition name specified" >&2
+    exit 1
+fi
+
+wait_flag=0
+script=""
+wrap=""
+expect_wrap=0
+for arg in "$@"; do
+    if [ "$expect_wrap" = "1" ]; then
+        wrap="$arg"
+        expect_wrap=0
+        continue
+    fi
+    case "$arg" in
+        --wait) wait_flag=1 ;;
+        --wrap) expect_wrap=1 ;;
+        --wrap=*) wrap="${arg#--wrap=}" ;;
+        -*) : ;;
+        *) script="$arg" ;;
+    esac
+done
+
+printf '%s\n' "${SHIM_JOB_ID:-23045000}"
+
+output="${SHIM_JOB_OUTPUT:-/dev/null}"
+
+if [ "$wait_flag" = "1" ]; then
+    # A waiting submission: run the payload here and report ITS exit as the submission's, which is what the
+    # spike measured (an accepted script exiting 2 gives an id and exit 2).
+    if [ -n "$wrap" ]; then
+        bash -c "$wrap" >>"$output" 2>&1
+        exit $?
+    fi
+    if [ -n "$script" ]; then
+        bash "$script" >>"$output" 2>&1
+        exit $?
+    fi
+    exit 0
+fi
+
+# A NON-waiting submission: the scheduler accepts the job and returns, and the job runs on its own. The
+# payload is started in the background with its output sent to the job's file, so it does not hold the
+# caller's pipes open; the caller sees the accepted id and exit 0, exactly as a real submission does.
+if [ -n "$wrap" ]; then
+    ( bash -c "$wrap" >>"$output" 2>&1 ) &
+    exit 0
+fi
+if [ -n "$script" ]; then
+    ( bash "$script" >>"$output" 2>&1 ) &
+    exit 0
+fi
+exit 0

@@ -10,7 +10,7 @@ authors = [
     {name = "Daniel Lassiter", email = "daniel.lassiter@outlook.com"},
 ]
 requires-python = ">= 3.11"
-dependencies = ["numpy", "pandas", "xarray"]
+dependencies = ["numpy", "pandas", "xarray", "snakemake==9.15.0"]
 readme = "README.md"
 # NOTE: do NOT add a `License :: ...` trove classifier. With PEP 639
 # `license = "AGPL-3.0-or-later"` + setuptools>=77, a legacy License
@@ -18,17 +18,24 @@ readme = "README.md"
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 
+[project.scripts]
+multidriver-swg = "multidriver_swg.workflow.cli:main"
+
 [project.optional-dependencies]
 docs = [
     "mkdocs",
     "mkdocs-material",
     "mkdocstrings[python]",
 ]
+hpc = [
+    "snakemake-executor-plugin-slurm==2.8.0",
+]
 
-# The divergence ledger is data the package reads at run time, so it ships in the wheel; setuptools
-# ships only Python modules by default.
+# The divergence ledger and the workflow file are data the package reads at run time, so they ship in the
+# wheel; setuptools ships only Python modules by default. The Snakefile is copied with the package's own
+# data because the command starts the engine with the installed file's path.
 [tool.setuptools.package-data]
-multidriver_swg = ["divergence_ledger.toml"]
+multidriver_swg = ["divergence_ledger.toml", "workflow/Snakefile"]
 
 [tool.ruff]
 line-length = 120
