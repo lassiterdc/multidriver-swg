@@ -403,6 +403,9 @@ def _synthetic_run_directory(root: Path) -> Path:
                 "Job 2 has been submitted with SLURM jobid 4242 (log: x)",
                 "localrule end_of_run:",
                 "    jobid: 1",
+                "checkpoint licence:",
+                "    jobid: 5",
+                "Job 5 has been submitted with SLURM jobid 4244 (log: z)",
                 "rule combined_event_identification:",
                 "    jobid: 3",
                 "Job 3 has been submitted with SLURM jobid 4243 (log: y)",
@@ -481,6 +484,7 @@ def test_the_collector_prints_the_job_map_the_accounting_rows_the_hosts_and_the_
     assert re.search(r"\| observed_record_assembly \| 2 \| 4242 \|", reading)
     assert re.search(r"\| combined_event_identification \| 3 \| 4243 \|", reading)
     assert re.search(r"\| end_of_run \| 1 \|", reading)
+    assert re.search(r"\| licence \| 5 \| 4244 \|", reading)
     assert "sacct -X -P -j 4242 " in reading
     assert "sacct -X -P -j 4243 " in reading
     assert "4242|h1-job|COMPLETED|0:0|shim-node" in reading

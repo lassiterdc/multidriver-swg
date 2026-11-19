@@ -3,7 +3,7 @@
 A measurement is a run on a machine and then a reading of what the run left. This script is the reading, and
 it only reads: it changes nothing in the run directory. It prints five sections.
 
-1. **The engine log's map of rule to job.** Every rule block's `jobid` line, and the scheduler plugin's
+1. **The engine log's map of rule to job.** Every rule or checkpoint block's `jobid` line, and the scheduler plugin's
    `Job N has been submitted with SLURM jobid M` lines, per log file under `.snakemake/log`.
 2. **The scheduler's accounting** for each scheduler job id the log names, from `sacct -X -P`, quoted as the
    command printed it. A machine with no `sacct`, or a log with no scheduler job, is said so.
@@ -48,7 +48,8 @@ MEASUREMENT_FILES = (
 # The accounting columns, the ones a measurement quotes.
 SACCT_FORMAT = "JobID,JobName,State,ExitCode,NodeList,Start,End"
 
-_RULE_BLOCK = re.compile(r"^(?:local)?rule (\w+):\s*$")
+# The engine prints a job's header as an optional `local` prefix and then `rule` or `checkpoint`.
+_RULE_BLOCK = re.compile(r"^(?:local)?(?:rule|checkpoint) (\w+):\s*$")
 _JOB_ID = re.compile(r"^\s+jobid:\s*(\d+)\s*$")
 _SUBMITTED = re.compile(r"Job (\d+) has been submitted with SLURM jobid (\d+)")
 
