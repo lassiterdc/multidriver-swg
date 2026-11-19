@@ -21,6 +21,7 @@ import pytest
 
 import multidriver_swg.workflow.pre_run as pre_run
 from multidriver_swg.run_configuration.main_configuration import MainConfiguration
+from multidriver_swg.workflow.end_of_run import END_OF_RUN_RECORD
 from multidriver_swg.workflow.graph import IDENTITY_FILE
 from multidriver_swg.workflow.pre_run import PreRunError, prepare_run
 from tests.workflow.conftest import Estate, ToolkitCopy, run_engine
@@ -222,7 +223,7 @@ def test_a_selection_path_the_filesystem_cannot_inspect_never_leaves_the_step_as
 def test_the_record_the_step_writes_for_an_absent_selection_is_accepted_at_parse_and_builds_exactly_its_targets(
     tmp_path: Path, toolkit_copy: ToolkitCopy, estate: Estate, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Property: the engine started over the record `prepare_run` wrote for an absent selection exits zero and builds the seven rules that record targets, no more and no fewer.
+    """Property: the engine started over an absent-selection record builds exactly its compute targets and its closing record directory.
 
     Shape row: DR-4 — the record's form is `run_start.py`'s and the graph-start gate reads it at every parse;
     DR-7 — absent selection, judgement kept, builds "rows 1 to 6" plus `method_attribution` and ends.
@@ -245,5 +246,6 @@ def test_the_record_the_step_writes_for_an_absent_selection_is_accepted_at_parse
 
     assert completed.returncode == 0, completed.stderr
     built = {path.name for path in estate.run_output.iterdir() if path.is_dir() and (path / IDENTITY_FILE).is_file()}
-    assert built == {target.split("/", 1)[0] for target in record.targets}
+    assert built == {target.split("/", 1)[0] for target in record.targets if target != END_OF_RUN_RECORD}
+    assert (estate.run_output / END_OF_RUN_RECORD).is_dir()
     assert len(built) == 7
