@@ -105,7 +105,13 @@ rule end_of_run:
         report(directory(END_OF_RUN_RECORD), patterns=["{name}.html"], category=DIVERGENCE)
     localrule: True
     run:
-        write_end_of_run_record(Path(output[0]), side_record=run_side_record())
+        write_end_of_run_record(
+            Path(output[0]),
+            side_record=run_side_record(),
+            working_directory=Path.cwd(),
+            targets=list(input),
+            run_start=RUN_START,
+        )
 
 
 for spec in GRAPH:
