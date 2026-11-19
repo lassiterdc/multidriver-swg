@@ -1,0 +1,42 @@
+# Source-archive exclusions, read by `git archive` from the commit being archived and
+# not from the working tree. Each line keeps one class that a declaring system marks
+# excluded from the release out of the source tarball, and so out of the copy of a
+# source archive held by an external archive service.
+#
+# A directory is named without a trailing glob on purpose: with the glob form
+# (`dir/**`) the archive keeps an empty `dir/` entry, and with the directory form it
+# keeps none. A directory that holds no tracked file needs no line at all.
+
+# private-estate, class AC-2 (the tests)
+/tests export-ignore
+
+# private-estate, class AC-5 (the CI workflows and the hook configuration)
+/.github export-ignore
+/.pre-commit-config.yaml export-ignore
+
+# private-estate, class AC-6 (the anonymization guard's two public token lists): the guard's own
+# code is the content scanner's now and is no longer a file this class names, so its two public
+# token lists are the class's whole holding in this tree
+/scripts/anonymization_blocklist.txt export-ignore
+/scripts/anonymization_baseline.txt export-ignore
+
+# private-estate, class AC-7 (the legacy corpus)
+/_old_code_to_refactor export-ignore
+
+# private-estate, class AC-8 (inherited planning records): no tracked instance in this tree, so
+# this class needs no line yet; the change that first adds a record adds its line,
+# under the comment naming this class.
+
+# test-result-legibility, classes C1 to C5 (its five test-infrastructure classes): all under
+# `tests/`, which the first line above already excludes
+
+# pre-refactor-correspondence, the corpus record of the legacy sources
+/legacy_corpus_record.toml export-ignore
+
+# pre-refactor-correspondence, the plan-coverage checks
+/_refactor_tools export-ignore
+
+# pre-refactor-correspondence, its other classes: the disposition ledger, the known-defect register, the
+# equivalence and reminder tests, the extractions, lifts and stored reference values,
+# the harness and its checks, the fixtures and reach record, the triage log and the
+# system-scope file -- every one of them under `tests/`, already excluded above

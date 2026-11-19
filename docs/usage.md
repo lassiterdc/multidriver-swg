@@ -14,6 +14,18 @@ The main configuration's fields, its mode and the estate it names are documented
 [Main Configuration](main-configuration.md), and the binding document it points at in
 [Estate Bindings](estate-bindings.md).
 
+## The public surface
+
+Import the package and print the public surface it declares:
+
+```python
+import multidriver_swg
+
+# the eight modules and subpackages the package publishes
+print(multidriver_swg.__all__)
+# ['conformance', 'dispatch', 'divergence_ledger', 'divergence_report', 'pairs', 'run_configuration', 'side_record', 'workflow']
+```
+
 ## Exit status
 
 Every ending of the command is one of three bands:

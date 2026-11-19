@@ -16,7 +16,7 @@ pip install multidriver-swg
 import multidriver_swg
 ```
 
-The package does not yet contain the weather generator described above. The top-level `multidriver_swg` module defines one function, `hello`, a placeholder from the project template. Its two submodules record how new code relates to the pre-refactor scripts in `_old_code_to_refactor/`: `multidriver_swg.pairs` pairs each new function with the legacy function it replaces (`pair_side`, `registered_pairs`), and `multidriver_swg.divergence_ledger` reads and checks the record of deliberate departures from legacy behaviour (`load`, `validate`).
+The package does not yet contain the weather generator described above. Its public surface is the eight modules and subpackages the root `multidriver_swg.__all__` declares: `conformance`, `dispatch`, `divergence_ledger`, `divergence_report`, `pairs`, `run_configuration`, `side_record` and `workflow`. Its two submodules record how new code relates to the pre-refactor scripts in `_old_code_to_refactor/`: `multidriver_swg.pairs` pairs each new function with the legacy function it replaces (`pair_side`, `registered_pairs`), and `multidriver_swg.divergence_ledger` reads and checks the record of deliberate departures from legacy behaviour (`load`, `validate`).
 
 ## Documentation
 

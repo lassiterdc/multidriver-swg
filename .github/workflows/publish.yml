@@ -14,6 +14,37 @@
 # a quiet non-release. The record is downloaded with `continue-on-error`, because a missing
 # artifact has to become a refusal rather than an error in the download step. Every job after the
 # gate keeps GitHub's default condition, which is that each job it needs succeeded.
+#
+# `post-build-check` is a second gate, on the bytes rather than on the tag. It checks out the
+# tagged commit before it downloads the artifacts, enumerates the sdist, the wheel and the
+# commit's source archive into one record, scans the members of those three sets for a secret and
+# refuses the release when it finds one, compares that record against `release_state.toml`, and
+# refuses the release when a shipped file is of a class the table declares excluded or
+# estate-resident, or is in two classes at once. The enumeration of a release that reached this
+# job is kept as an artifact, and it is the byte record every later step and the Release job read.
+#
+# The same job holds the release to its lock. It installs `uv` at the pinned version, installs and
+# imports each built distribution into a fresh environment, compares the committed `pylock.toml`
+# and `requirements.txt` against a fresh rendering of `pyproject.toml` at the recorded cutoff,
+# reads the sdist back to confirm it lists both lock files, and reads the enumeration's
+# `whole_suite_run` against the identity the gate published, so a release ships the resolution it
+# reviewed and evidence of the run it was gated on rather than one that merely looked complete.
+#
+# The last check of that job reads the same enumeration for the licence statements. Each artifact's
+# `License-Expression`, the covering `LICENSE` of each byte set, the README that becomes the long
+# description and `CITATION.cff`'s `license` are held against the licence `release_state.toml`
+# records, and the release is refused when they disagree. A release can ship the right files under
+# the wrong terms and pass every other check in this run, so the statements are read rather than
+# trusted.
+#
+# `create-release` runs last, after both uploads, and edits no `needs:` line above it. It creates
+# the GitHub Release for the tagged version, attaches the enumeration `post-build-check` kept, and
+# states the asset's `sha256` and the release's three licence statements in the notes, so the byte
+# record outlives the artifact's retention and the Release page says what the release ships and
+# under which terms. The version DOI and the archive locators exist only after the deposit and the
+# archive have seen the tag, which no job of this run can wait for, so a separate workflow is
+# dispatched afterwards: `.github/workflows/record-identifiers.yml` writes them into `CITATION.cff`
+# and keeps the enumeration beside the release it describes.
 name: Publish to PyPI
 
 on:
@@ -81,6 +112,19 @@ jobs:
     needs: [release-gate, build]
     runs-on: ubuntu-latest
     steps:
+      # The checkout and the interpreter come FIRST, before the download. `actions/checkout` empties
+      # a workspace that holds no `.git`, so a checkout placed after `Download distribution
+      # artifacts` deletes the `dist/` the enumeration below reads, and the archive it enumerates is
+      # the tagged commit's, which only a checkout of this job supplies.
+      - name: Check out the tagged commit
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: Download distribution artifacts
         uses: actions/download-artifact@v6
         with:
@@ -88,6 +132,111 @@ jobs:
           path: dist/
       - name: List the distributions
         run: sha256sum dist/*
+      # The two checks below both run `uv`, so it is installed once, here, at the version the lock
+      # was measured under. The pin is not decoration: `uv pip compile` decides the rendered bytes,
+      # so a runner whose newest uv resolves differently would refuse a committed lock that is
+      # correct, and the tag nobody can iterate on is where that would surface.
+      - name: Install uv
+        run: python -m pip install "uv==0.11.31"
+      # The artifacts are installed the way a user installs them, and not only built, because a
+      # wheel that builds and does not install is a release nobody can use and nothing above this
+      # step looks at an install. It comes before the lock comparison rather than after it, so a
+      # declaration that will not resolve is refused for that rather than for the lock that mirrors
+      # it.
+      - name: Install and import the built distributions
+        run: python scripts/check_install.py --dist dist
+      # The committed lock and a fresh rendering of the same declaration are compared byte for
+      # byte at the cutoff `pyproject.toml` records. A committed lock that no longer matches what
+      # the declaration resolves to installs versions this run never tested, and the pair is the
+      # whole of what a caller reading them installs; `--check` exits 1 naming each file that
+      # differs. Deliberately not `--write`: a release regenerates nothing, so the lock a reader
+      # fetches at the tag is the one the run compared.
+      - name: Regenerate the lock and compare
+        run: python scripts/render_lock.py --check
+      # `MANIFEST.in` is what puts the pair in the sdist, and a manifest line and a build omission
+      # are one silent gap between them: the archive ships, resolves without the lock, and installs
+      # versions nobody pinned. So the archive the build wrote is read rather than the tree. Each
+      # pattern is anchored to exactly one path component, because `grep -x` on the bare name would
+      # also accept a nested copy such as a documentation list under `docs/`, and the lock this
+      # check is about is the root one.
+      - name: Check the sdist lists the lock files
+        run: |
+          SDIST="$(ls dist/*.tar.gz)"
+          tar -tzf "$SDIST" | grep -qx "[^/]*/pylock.toml"
+          tar -tzf "$SDIST" | grep -qx "[^/]*/requirements.txt"
+      # One record of the bytes this release ships: the sdist, the wheel and the tagged commit's
+      # source archive, each member with its digest, and the identity of the whole-suite run the
+      # gate read. Every later step reads this record instead of enumerating the bytes again, so
+      # the comparison, the scan and the acceptance read all judge the same set.
+      - name: Enumerate the released bytes
+        run: python scripts/enumerate_release.py --dist dist --repo . --commit "$GITHUB_SHA" --tag "$GITHUB_REF_NAME" --run-id "${{ needs.release-gate.outputs.whole_suite_run_id }}" --run-attempt "${{ needs.release-gate.outputs.whole_suite_run_attempt }}" --run-commit "${{ needs.release-gate.outputs.whole_suite_commit }}" --out "$RUNNER_TEMP/release-enumeration/release-enumeration.json"
+      # The record is evidence of THIS release only if the run it names is the run the gate read,
+      # so the enumeration's `whole_suite_run` is read back against the three identity values the
+      # gate published. A record whose run was written from a literal, from a stale value or from
+      # the wrong context would look complete, be kept as the release's byte record, and point the
+      # identifiers step at a run nobody gated on; this is the step that makes that visible while
+      # the release is still refusable.
+      - name: Check the enumeration names the run this release read
+        run: |
+          python - "$RUNNER_TEMP/release-enumeration/release-enumeration.json" \
+            "${{ needs.release-gate.outputs.whole_suite_run_id }}" \
+            "${{ needs.release-gate.outputs.whole_suite_run_attempt }}" \
+            "${{ needs.release-gate.outputs.whole_suite_commit }}" \
+            "$GITHUB_SHA" <<'PROGRAM'
+          import json
+          import sys
+
+          record = json.load(open(sys.argv[1], encoding="utf-8"))
+          gate = {"run_id": sys.argv[2], "run_attempt": sys.argv[3], "commit": sys.argv[4]}
+          run = record.get("whole_suite_run") or {}
+          refusals = []
+          for name, value in gate.items():
+              if str(run.get(name)) != value:
+                  refusals.append(
+                      f"refused: run-not-recorded: whole_suite_run.{name} is {run.get(name)!r} "
+                      f"and the gate published {value!r}"
+                  )
+          if record.get("commit") != sys.argv[5]:
+              refusals.append(
+                  f"refused: commit-not-at-sha: the record names {record.get('commit')!r} "
+                  f"and this release builds {sys.argv[5]!r}"
+              )
+          for line in refusals:
+              print(line)
+          print(f"{sys.argv[1]}: " + (f"{len(refusals)} refusal(s)" if refusals else "conforms"))
+          sys.exit(1 if refusals else 0)
+          PROGRAM
+      # The bytes are judged, and not the tree. The push guards read `git ls-files`; this reads the
+      # enumeration's three byte sets -- the sdist, the wheel and the tagged commit's source
+      # archive -- and refuses the release when the secret class finds anything in any of them, so
+      # nothing is uploaded that carries a credential, a key, a token or a private endpoint. A
+      # machine-specific path is a defect and not a release blocker, so its count is reported and
+      # refuses nothing. On a runner the scanner prints counts only: this run's log is public and a
+      # finding's path and line would point at the public line holding the private string.
+      - name: Scan the released bytes
+        run: python scripts/content_scan/release_corpus.py --enumeration "$RUNNER_TEMP/release-enumeration/release-enumeration.json" --dist dist --repo .
+      # Refuses the release when a shipped file is of a class `release_state.toml` declares
+      # excluded or estate-resident, or is in two classes at once. A file in no class is counted
+      # and passes, because the table's recall direction is declared unmeasured.
+      - name: Compare against the release-state table
+        run: python scripts/compare_release_state.py --enumeration "$RUNNER_TEMP/release-enumeration/release-enumeration.json" --table release_state.toml
+      # The statements a release makes about its own terms are compared, not read. The two artifacts'
+      # `License-Expression` must be the licence the table records for `release-metadata`, every
+      # entry of a `released` class must be covered by its set's `LICENSE`, the README may name no
+      # licence the metadata does not carry, and the citation's `license` must be the same one; a
+      # disagreement prints its line and fails the job, so nothing is uploaded under terms the bytes
+      # do not support. It runs on the enumeration the comparison above just read, and before the
+      # record is kept, so the enumeration a later reader finds is one of a release whose statements
+      # agree.
+      - name: Check the licence statements
+        run: python scripts/check_licences.py --enumeration "$RUNNER_TEMP/release-enumeration/release-enumeration.json" --table release_state.toml --dist dist --readme README.md --citation CITATION.cff
+      # No `if:`. A step that failed above stops the job, so the only enumeration this keeps is one
+      # of a release that was not refused, and an enumeration of a refused release is not evidence.
+      - name: Keep the enumeration
+        uses: actions/upload-artifact@v5
+        with:
+          name: release-enumeration
+          path: ${{ runner.temp }}/release-enumeration/release-enumeration.json
 
   publish-to-testpypi:
     name: Publish to TestPyPI
@@ -126,3 +275,44 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  create-release:
+    name: Create the Release
+    needs: [publish-to-pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # The enumeration is the release's byte record, and an artifact expires while a release does
+      # not, so the Release carries it. This job has no checkout: nothing here reads the tree, and
+      # `gh` is pointed at the repository by `GH_REPO` rather than by a git remote.
+      - name: Download the release enumeration
+        uses: actions/download-artifact@v6
+        with:
+          name: release-enumeration
+          path: ${{ runner.temp }}/release-enumeration
+      # The digest is computed from the bytes that are attached and stated in the notes, because
+      # the identifiers step downloads the asset and refuses one whose digest the notes do not
+      # state; stating it here is what makes the record the citation commit keeps the record this
+      # release published. The three licence statements ride with it: they are what the release
+      # ships and under which terms, one per artifact set, and the Release is the page a reader of
+      # the archive lands on.
+      - name: Write the release notes
+        run: |
+          DIGEST="$(sha256sum "$RUNNER_TEMP/release-enumeration/release-enumeration.json" | cut -d ' ' -f 1)"
+          {
+          printf 'The byte record this release ships, release-enumeration.json, has sha256 %s.\n\n' "$DIGEST"
+          cat <<'NOTES'
+          Licence statements:
+          - Source: AGPL-3.0-or-later. pyproject.toml states it and LICENSE at the root of the source carries it.
+          - Legacy corpus: MIT, stated by tests/correspondence/extractions/LICENSE in the repository at the tag. No artifact this release ships carries that corpus.
+          - Data: none. This release deposits no dataset.
+          NOTES
+          } > "$RUNNER_TEMP/release-notes.md"
+      # `--verify-tag` refuses to create the tag itself: this run happens because the release tag
+      # already exists, and a Release on a tag this job invented would publish nothing.
+      - name: Create the Release for the tagged version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-enumeration/release-enumeration.json" --verify-tag --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/release-notes.md"

@@ -4,9 +4,18 @@
 The release procedure this gate enforces is four steps, in this order:
 
 1. set `version` in `pyproject.toml` to the version being released;
-2. set `version` in `CITATION.cff` to that same value;
+2. set `version` in `CITATION.cff` to that same value, and set `date-released` to the release's date;
 3. land that commit on `main`;
 4. tag that commit on `main` with `v` followed by the version, and nothing else.
+
+`version` is the one key of `CITATION.cff` this gate reads. `date-released` is written with it in the
+same commit, because the tagged commit is what carries the release's date, and no refusal below reads
+that key: the citation's other keys are set by the identifiers step, which runs after the tag exists.
+
+Three facts only the first real release measures are owed after step 4, and none is a condition of any
+landing: whether a Release created with `GITHUB_TOKEN` fires Zenodo's webhook, whether Software Heritage
+archives a Zenodo record by itself, and whether the copy Zenodo archives omits the paths this repository
+marks `export-ignore`, as the archive GitHub serves for the tag does.
 
 The gate reads the TAGGED COMMIT and never the checkout, so every refusal is a fact about what a
 release would ship. All five checks run on every invocation, so one invocation reports every ground

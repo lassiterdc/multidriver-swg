@@ -1,0 +1,168 @@
+# Record release identifiers. Dispatched by hand once a release exists, this workflow records what
+# the release and the archives published: the version DOI, the concept DOI and the Software
+# Heritage revision and directory of the tagged commit, written into `CITATION.cff`, with the
+# release's own `release-enumeration.json` asset kept beside it under `releases/{tag}/`, and both
+# committed to `develop`.
+#
+# It is a separate workflow because those identifiers do not exist while the release runs: the
+# deposit is created by a webhook after the Release appears, and the archive's revision exists only
+# after it has seen the tag, so no job of the release run can wait for them. The work is one
+# script, `scripts/record_identifiers.py`, which refuses and writes nothing unless every identifier
+# is in hand; this file supplies the tagged commit, the repository's origin and the permission to
+# push, and nothing else.
+#
+# The commit goes to `develop` and never to the tag. A tag names one tree and the release has
+# already published it, so these identifiers are a later record OF that tree and not part of it.
+#
+# The last step reads the deposit's licence field, the one statement about this release that nothing
+# in this repository writes, and holds it against the licence `release_state.toml` records: a
+# deposit that states another licence is a claim about the published bytes those bytes do not
+# support. It runs after the commit because a mismatch is a fact about the record Zenodo holds and
+# not about the two files this run writes, so the identifiers are recorded and the run is the thing
+# that fails; a re-dispatch after the repair finds them already recorded and reads the corrected
+# field.
+name: Record release identifiers
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The released tag whose identifiers to record, for example v0.2.0
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  record-identifiers:
+    name: Record the identifiers
+    runs-on: ubuntu-latest
+    steps:
+      # `develop` is the branch the record belongs on, and the full history brings the tags with
+      # it, so the tag's own commit can be resolved below. The token stays in the checkout because
+      # the last step pushes with it.
+      - name: Check out develop with the tag
+        uses: actions/checkout@v6
+        with:
+          ref: develop
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      # The commit the TAG names, not the run's `github.sha`: a dispatched run starts from a branch
+      # head, so `github.sha` would name that branch's commit and the archive would be asked about
+      # a revision nobody released, which it answers with no locators at all.
+      - name: Resolve the tagged commit
+        id: tag
+        env:
+          TAG: ${{ inputs.tag }}
+        run: echo "commit=$(git rev-parse "${TAG}^{commit}")" >> "$GITHUB_OUTPUT"
+      - name: Record the identifiers
+        env:
+          TAG: ${{ inputs.tag }}
+          COMMIT: ${{ steps.tag.outputs.commit }}
+          ORIGIN: ${{ github.server_url }}/${{ github.repository }}
+        run: python scripts/record_identifiers.py --tag "$TAG" --commit "$COMMIT" --origin "$ORIGIN"
+      # The script wrote the two files and nothing else. A second dispatch for the same tag finds
+      # them already recorded, and a commit with nothing staged fails, so the push happens only
+      # when one of the two files actually changed.
+      - name: Commit the identifiers to develop
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CITATION.cff "releases/$TAG/release-enumeration.json"
+          if git diff --cached --quiet; then
+          echo "the identifiers of $TAG are already recorded"
+          else
+          git commit -m "chore(release): record the identifiers for $TAG"
+          git push origin HEAD:develop
+          fi
+      # The version DOI the step above wrote into `CITATION.cff` names the deposit record; the
+      # record answers with the licence it states in `metadata.license`, and that is compared,
+      # case-insensitively, with the licence `release_state.toml` records for `release-metadata`.
+      # The repair is the record's correction on Zenodo and a re-dispatch of this workflow; a field
+      # Zenodo does not let the depositor edit is repaired by a superseding record from the next
+      # release. Nothing is written here, so the step reads and reports.
+      - name: Check the deposit states the release's licence
+        env:
+          ZENODO_API: https://zenodo.org/api
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import tomllib
+          import urllib.parse
+          import urllib.request
+
+          TABLE = "release_state.toml"
+          CITATION = "CITATION.cff"
+          API = os.environ.get("ZENODO_API", "https://zenodo.org/api").rstrip("/")
+          TIMEOUT = 30
+
+
+          def source_licence():
+              with open(TABLE, "rb") as handle:
+                  table = tomllib.load(handle)
+              for row in table.get("class", []):
+                  if row.get("name") == "release-metadata" and row.get("licence"):
+                      return row["licence"]
+              return None
+
+
+          def version_doi():
+              kind = ""
+              with open(CITATION, encoding="utf-8") as handle:
+                  for line in handle:
+                      text = line.strip()
+                      if text.startswith("- type:"):
+                          kind = text.split(":", 1)[1].strip()
+                      elif text.startswith("value:") and kind == "doi":
+                          return text.split(":", 1)[1].strip().strip("\"'")
+              return None
+
+
+          def record_of(doi):
+              query = urllib.parse.urlencode({"q": f'doi:"{doi}"', "size": "10"})
+              request = urllib.request.Request(f"{API}/records?{query}")
+              request.add_header("Accept", "application/json")
+              with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+                  payload = json.loads(response.read().decode("utf-8"))
+              hits = (payload.get("hits") or {}).get("hits") or []
+              return hits[0] if hits else None
+
+
+          def stated(record):
+              licence = (record.get("metadata") or {}).get("license")
+              if isinstance(licence, dict):
+                  licence = licence.get("id")
+              return licence if isinstance(licence, str) else None
+
+
+          wanted = source_licence()
+          if wanted is None:
+              print(f"refused: unreadable-input: {TABLE} records no licence for release-metadata")
+              sys.exit(2)
+          doi = version_doi()
+          if doi is None:
+              print(f"refused: unreadable-input: {CITATION} records no version doi")
+              sys.exit(2)
+          record = record_of(doi)
+          if record is None:
+              print(f"refused: unreadable-input: the deposit holds no record for {doi}")
+              sys.exit(2)
+          carried = stated(record)
+          print(f"deposit: {doi} states license {carried if carried is not None else 'none'}, against the release's {wanted}")
+          if carried is None:
+              print(f"refused: deposit-licence: the deposit for {doi} states no licence")
+              sys.exit(1)
+          if carried.strip().lower() != wanted.strip().lower():
+              print(f"refused: deposit-licence: the deposit for {doi} states {carried}")
+              sys.exit(1)
+          PY

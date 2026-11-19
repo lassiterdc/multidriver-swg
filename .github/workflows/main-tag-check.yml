@@ -1,0 +1,59 @@
+# Main tag check. On every push to `main`, this job waits and then reports whether the
+# pushed commit carries a tag. A release tag is what publishes a commit, so a `main` head
+# that nobody tagged is the one failure that leaves no trace: no run starts, no check goes
+# red, and the commit simply stops being the head when the next push arrives.
+#
+# The check is therefore delayed rather than immediate, because a tag is pushed by hand
+# after the release is cut and a report read one second after the push would name every
+# commit. Sixty minutes is a proposed default. The concurrency group is what keeps the
+# report honest: a later push to `main` cancels this run, whose commit has stopped being
+# the head, so only a commit that is still the head when the tags are read can be reported.
+#
+# Nothing requires this job. No repository ruleset names it, and a head it finds untagged fails
+# nothing: the script exits 0 whether or not a tag carries the commit, so the run reports an
+# untagged head as a warning annotation and a passing job. The one failure this job does report is
+# a step that could not read the remote at all: the report step's shell setting turns that red,
+# where the default shell would hand the script an empty list and get an untagged-head warning
+# about a head that may be tagged. Its first live run is the push of a release that carries it,
+# because the file reaches `main` only with such a release.
+name: Main tag check
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-tag-check
+  cancel-in-progress: true
+
+jobs:
+  main-tag-check:
+    runs-on: ubuntu-latest
+    # Ninety minutes leaves the sixty-minute wait its full time and then some: a timeout equal
+    # to the interval would cancel the run at the moment it was due to report.
+    timeout-minutes: 90
+    env:
+      # The interval is 60 minutes: a proposed default and not a measurement of the
+      # developer's releases, so it is a policy choice a maintainer may replace with one they
+      # measure. The step below multiplies it out, so the interval is stated in one place.
+      WAIT_MINUTES: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # One commit, because the report reads the tags from the remote and never from this
+          # checkout: a full history would fetch what this job does not read.
+          fetch-depth: 1
+      - name: Wait for a tag to reach the pushed commit
+        run: sleep "$((WAIT_MINUTES * 60))"
+      - name: Report whether the pushed commit carries a tag
+        # `shell: bash` is not GitHub's default here: a `run` step with no shell runs as
+        # `bash -e {0}`, which pipes without `pipefail`, so a `git ls-remote` that fails leaves this
+        # script an empty stdin and it reports the head as untagged -- the same report a genuinely
+        # untagged head produces, on the run whose whole job is to say which of the two it is. An
+        # explicit `shell: bash` runs as `bash --noprofile --norc -eo pipefail {0}`, so the failed
+        # read fails the step instead.
+        shell: bash
+        run: git ls-remote --tags origin | python3 scripts/check_main_tag.py --commit "$GITHUB_SHA" --waited "$WAIT_MINUTES"
