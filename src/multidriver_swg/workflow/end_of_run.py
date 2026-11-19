@@ -11,8 +11,9 @@ an absolute place here would be a second statement of a resolution another syste
 
 The divergence report appears only when the run selected a pre-refactor side of some pair. A run whose
 every pair ran its current side used no legacy function, so a report of divergences would be a report
-about a comparison the run never made; the record directory is created empty in that case, which is still
-a statement — the run finished and it has a record.
+about a comparison the run never made. The record always holds the provenance file, which names every
+system whose output the run's own input list depends on (`exercised_set`): a run that finished has a
+record, and the record says who produced what.
 
 The HTML file is a rendering of the text, not a second report: the text is written first and the HTML is
 escaped from the text that was written, so the two cannot disagree about what the run diverged from. The
@@ -28,12 +29,22 @@ measurement is what shows whether that holds.
 from __future__ import annotations
 
 import html
+from collections.abc import Iterable
 from pathlib import Path
 
 from multidriver_swg import divergence_report
 from multidriver_swg.dispatch import SideSelection
 from multidriver_swg.side_record import SideRecord, side_record
+from multidriver_swg.workflow.exercised_set import (
+    PROVENANCE_FILE,
+    build_provenance,
+    exercised_systems,
+    invocation_rules,
+    producing_rules,
+    write_provenance,
+)
 from multidriver_swg.workflow.report_items import DIVERGENCE
+from multidriver_swg.workflow.run_start import RunStart
 
 # The rule's name. The workflow file writes this rule by hand rather than rendering it from the table,
 # because the table holds compute systems and this rule computes nothing: it is the run's closing step.
@@ -94,19 +105,57 @@ def run_side_record() -> SideRecord:
     return side_record(SideSelection())
 
 
-def write_end_of_run_record(record_directory: Path, *, side_record: SideRecord) -> None:
-    """Create `record_directory` and, when the run selected a pre-refactor side, write the divergence report into it.
+def write_end_of_run_record(
+    record_directory: Path,
+    *,
+    side_record: SideRecord,
+    working_directory: Path | None = None,
+    targets: Iterable[str] | None = None,
+    run_start: RunStart | None = None,
+) -> None:
+    """Create `record_directory`, write the provenance file into it, and, when the run selected a pre-refactor side, the divergence report.
 
     The directory is created unconditionally: a run that finished has a record, and a step that produced
-    nothing at all would be indistinguishable from a step that never ran. When
-    `side_record.ran_pre_refactor` is false, nothing else is written, and the empty directory is the true
-    statement that the run used no legacy function.
+    nothing at all would be indistinguishable from a step that never ran.
+
+    `working_directory`, `targets` and `run_start` are the three facts the provenance file is read from: the
+    engine's working directory, the final rule's own input list, and the run-start record. They are given
+    together or not at all, and a partial set is refused with `TypeError`, because a provenance file built
+    from two of the three would name producers the caller never meant. The workflow file always gives all
+    three, so every run the engine completes carries `provenance.json`; a caller that gives none (the checks
+    of the divergence branch alone) gets the directory and the divergence files only, and no provenance
+    claim is made on its behalf.
+
+    The provenance file is written BEFORE the divergence files, so a refusal of an incomplete record leaves
+    no report that describes a run the record cannot back. It is the exercised set read from the engine's
+    metadata (`exercised_set`), refused when a producer's identity is missing.
+
+    When `side_record.ran_pre_refactor` is false, no divergence file is written, and the true statement
+    that the run used no legacy function is the file's absence.
 
     The text report is written through `divergence_report.write_report`, which reads the ledger and the pair
     registry and refuses a ledger of the wrong form; the HTML file is then rendered from the text that was
     written, so the page and the text cannot say different things.
     """
+    given = (working_directory is not None, targets is not None, run_start is not None)
+    if any(given) and not all(given):
+        raise TypeError(
+            "write_end_of_run_record takes working_directory, targets and run_start together or not at all: "
+            "a provenance file read from some of the three would name producers the caller never meant"
+        )
     record_directory.mkdir(parents=True, exist_ok=True)
+
+    if working_directory is not None and targets is not None and run_start is not None:
+        target_list = list(targets)
+        producers = producing_rules(working_directory, target_list)
+        write_provenance(
+            record_directory / PROVENANCE_FILE,
+            build_provenance(working_directory, target_list, run_start, side_record),
+            exercised=exercised_systems(producers),
+            invocations=invocation_rules(working_directory, producers),
+            side_record=side_record,
+        )
+
     if not side_record.ran_pre_refactor:
         return
 
