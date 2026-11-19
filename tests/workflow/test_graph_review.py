@@ -86,36 +86,43 @@ def test_the_module_presents_exactly_the_public_names_the_table_is_made_of() -> 
 
 
 def test_the_module_is_data_only_importing_only_the_standard_library_and_calling_no_io() -> None:
-    """Property: the module's only imports are `__future__` and `dataclasses`, and no call in it is a file, stream or output call.
+    """Property: the graph imports only its report-item conventions and the two standard-library modules; the conventions import only those standard-library modules, and neither module calls I/O.
 
-    Class: every import node and every call node in the source.
-    Why it is required: the table is read by the workflow file at parse time and by a target-list
-    calculation before any step runs; a module that reached the package's I/O or the engine would make
-    reading the graph a side effect, and a module that printed would write into a command's output.
-    Killed by: importing a package module or a third-party library, or adding a file read or a print.
-    Second correct implementation: executing the module in a child process and inspecting `sys.modules`
-    and stdout; the same properties are observed rather than parsed.
+    Class: every import and call node in the graph and its report-item conventions.
+    Why it is required: the table is read at workflow parse time and before any step runs, so its
+    conventions must remain data-only too. Admitting the conventions by their full module name prevents
+    an unrelated package module from entering through the same package-root allowance.
+    Killed by: importing any other package module, adding a third-party import to either module, or
+    adding a forbidden file, stream or output call.
+    Second correct implementation: either module may use qualified imports or from-imports of its
+    admitted modules; the same module boundaries hold.
     """
-    tree = _module_tree()
+    trees = (
+        (
+            _module_tree(),
+            {"__future__", "dataclasses", "multidriver_swg.workflow.report_items"},
+        ),
+        (
+            ast.parse(SOURCE.with_name("report_items.py").read_text(encoding="utf-8")),
+            {"__future__", "dataclasses"},
+        ),
+    )
+    for tree, admitted in trees:
+        imported: set[str] = set()
+        calls: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imported.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imported.add(node.module)
+            elif isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Name):
+                    calls.add(node.func.id)
+                elif isinstance(node.func, ast.Attribute):
+                    calls.add(node.func.attr)
 
-    imported = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imported.update(alias.name.split(".")[0] for alias in node.names)
-        elif isinstance(node, ast.ImportFrom) and node.module:
-            imported.add(node.module.split(".")[0])
-
-    assert imported == {"__future__", "dataclasses"}
-
-    calls: set[str] = set()
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
-            continue
-        if isinstance(node.func, ast.Name):
-            calls.add(node.func.id)
-        elif isinstance(node.func, ast.Attribute):
-            calls.add(node.func.attr)
-    assert calls & FORBIDDEN_CALLS == set()
+        assert imported == admitted
+        assert calls & FORBIDDEN_CALLS == set()
 
 
 def test_the_module_holds_no_mutable_top_level_state() -> None:

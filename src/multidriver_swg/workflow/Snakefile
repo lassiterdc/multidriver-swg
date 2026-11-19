@@ -12,7 +12,9 @@ a shortened run needs no edit to this file.
 
 Every other rule is rendered by ONE loop over `GRAPH`. The row supplies the rule's name, its inputs, its
 declared outputs and the owning system, which is bound into `params` so the body reads it at job time
-rather than reading the loop's variable after the loop has ended.
+rather than reading the loop's variable after the loop has ended. A declared output the row also names as
+a report item is rendered through the engine's `report` flag with that item's heading, so what the run's
+report shows is read from the row and never from a list kept here.
 
 Inputs are the producing row's PATH for each name the row reads: the table names an artifact by its file
 name, and every artifact lives under its producing rule's directory, so the mapping from name to path is
@@ -51,6 +53,24 @@ def rendered_inputs(spec):
     return [PRODUCERS[read] for read in spec.reads]
 
 
+def _flagged(path, heading):
+    """Return `path` as the engine's report flag under `heading`, or bare when the row declares no item for it."""
+    if heading is None:
+        return path
+    return report(path, category=heading)
+
+
+def rendered_outputs(spec):
+    """Return `spec`'s declared output paths, each one flagged for the report when the row declares an item for it.
+
+    The row's `report_items` field is the whole of what the run publishes, so the flag is set by reading it:
+    an output the field does not name is a bare path, which the engine treats as an artifact it neither
+    shows nor lists in the report.
+    """
+    headings = {item.output: item.category for item in spec.report_items}
+    return [_flagged(f"{spec.name}/{output}", headings.get(output)) for output in spec.outputs]
+
+
 rule all:
     input:
         list(RUN_START.targets)
@@ -64,7 +84,7 @@ for spec in GRAPH:
         input:
             rendered_inputs(spec)
         output:
-            [f"{spec.name}/{output}" for output in spec.outputs]
+            rendered_outputs(spec)
         params:
             system=spec.system,
             rule_name=spec.name,

@@ -49,6 +49,21 @@ where they are unset: `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1` and `MKL_NUM
 imports `numpy`, which otherwise starts one thread per core, and a login node that limits the process count
 can refuse to start the engine at all.
 
+## The run's report
+
+A rule's declared output can also be a REPORT ITEM: an artifact the run's report shows, under a heading the
+rule names. The citation section of the method-attribution rule is the run's one report item today, under
+the heading `Citation`.
+
+An item is a file a browser displays — `.html` or an image (`.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`) — so a
+figure or a table meant to be read in the page is written in one of those forms. A file the page cannot
+display is refused where the item is declared rather than appearing as a download button, and an item that
+names a file its rule does not declare is refused for the same reason: the engine flags a rule's output,
+so an item is always one of that rule's own declared outputs.
+
+The report itself is the engine's, built after a successful run from the outputs the rules flag; the command
+does not build it and a failed run produces none.
+
 ## A run left locked by an interrupted engine
 
 A killed engine leaves lock files that hold only file names, so nothing can tell whether an engine is still
