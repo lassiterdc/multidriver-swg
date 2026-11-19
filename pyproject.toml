@@ -65,6 +65,7 @@ test = [
     "uv==0.11.31",
     "build==1.6.1",
     "setuptools==84.2.1",
+    "snakemake-executor-plugin-slurm==2.8.0",
 ]
 
 # The divergence ledger and the workflow file are data the package reads at run time, so they ship in the
