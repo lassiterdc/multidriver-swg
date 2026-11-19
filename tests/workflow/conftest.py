@@ -127,9 +127,15 @@ def run_engine(
     estate: Estate,
     *,
     cache_root: Path,
+    extra_arguments: tuple[str, ...] = (),
     extra_environment: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
-    """Run the engine over `toolkit`'s workflow file with the estate's output as its working directory."""
+    """Run the engine over `toolkit`'s workflow file with the estate's output as its working directory.
+
+    `extra_arguments` are appended after the fixed options, so a caller can ask for an engine behaviour the
+    command never passes — the report flags a report test needs — while every test keeps one invocation and
+    the engine's option order stays the engine's business rather than each test's.
+    """
     environment = dict(os.environ)
     environment.pop("PYTHONPATH", None)
     environment["XDG_CACHE_HOME"] = str(cache_root)
@@ -149,6 +155,7 @@ def run_engine(
             "none",
             "--workflow-profile",
             "none",
+            *extra_arguments,
         ],
         cwd=estate.run_output,
         env=environment,
@@ -211,12 +218,14 @@ def engine(tmp_path: Path):
         toolkit: ToolkitCopy,
         estate: Estate,
         *,
+        extra_arguments: tuple[str, ...] = (),
         extra_environment: dict[str, str] | None = None,
     ) -> subprocess.CompletedProcess[str]:
         return run_engine(
             toolkit,
             estate,
             cache_root=tmp_path / "cache",
+            extra_arguments=extra_arguments,
             extra_environment=extra_environment,
         )
 

@@ -1,4 +1,4 @@
-"""The run's workflow file: the target rule, then one rendered rule per row of the graph.
+"""The run's workflow file: the target rule, the end-of-run rule, then one rendered rule per row of the graph.
 
 The engine reads this file at every invocation. Its first act is to put this checkout's `src` at the head
 of the import path, so the package the file belongs to is the package the parse and every job import —
@@ -10,15 +10,23 @@ reads: with `all` defined after the rendering loop the engine builds the first r
 having built one step of the run. Its input is the run-start record's target list, read once at parse, so
 a shortened run needs no edit to this file.
 
+`end_of_run` is written by hand too, and comes after `all` and before the rendering loop. It is the run's
+one output-bearing final rule: its input is every target of the run-start record other than its own record,
+its output is the record DIRECTORY, and it is local so it runs where the engine's metadata store is. It
+computes nothing, so it is not a row of the table; the table holds the run's compute systems.
+
 Every other rule is rendered by ONE loop over `GRAPH`. The row supplies the rule's name, its inputs, its
 declared outputs and the owning system, which is bound into `params` so the body reads it at job time
-rather than reading the loop's variable after the loop has ended.
+rather than reading the loop's variable after the loop has ended. A declared output the row also names as
+a report item is rendered through the engine's `report` flag with that item's heading, so what the run's
+report shows is read from the row and never from a list kept here.
 
 Inputs are the producing row's PATH for each name the row reads: the table names an artifact by its file
 name, and every artifact lives under its producing rule's directory, so the mapping from name to path is
 derived from the table rather than restated. `method_attribution` is the one row whose inputs are the
-run's target list instead, minus its own output: it attributes every artifact the run built, and a
-shortened run must not make it wait for one that was never built.
+run's target list instead, minus its own output and minus the end-of-run record: it attributes every
+artifact the run built, a shortened run must not make it wait for one that was never built, and waiting on
+the record would wait on the rule that waits on it.
 """
 
 import sys
@@ -33,8 +41,14 @@ while _SOURCE_ROOT in sys.path:
     sys.path.remove(_SOURCE_ROOT)
 sys.path.insert(0, _SOURCE_ROOT)
 
+from multidriver_swg.workflow.end_of_run import (  # noqa: E402
+    END_OF_RUN_RECORD,
+    run_side_record,
+    write_end_of_run_record,
+)
 from multidriver_swg.workflow.graph import GRAPH  # noqa: E402
 from multidriver_swg.workflow.graph_start import require_graph_start  # noqa: E402
+from multidriver_swg.workflow.report_items import DIVERGENCE  # noqa: E402
 from multidriver_swg.workflow.stubs import write_stub_outputs  # noqa: E402
 
 RUN_START = require_graph_start()
@@ -44,17 +58,60 @@ PRODUCERS = {output: f"{spec.name}/{output}" for spec in GRAPH for output in spe
 
 
 def rendered_inputs(spec):
-    """Return the paths `spec` reads: the producing rule's path per declared read, or the run's targets for the attribution row."""
+    """Return the paths `spec` reads: the producing rule's path per declared read, or the run's targets for the attribution row.
+
+    The attribution row reads the run's target list, minus its own output and minus the end-of-run record:
+    the record is the final rule's output, that rule waits on the attribution row, and an attribution row
+    waiting on the record would be a cycle no execution order satisfies.
+    """
     if spec.name == "method_attribution":
         own_directory = f"{spec.name}/"
-        return [target for target in RUN_START.targets if not target.startswith(own_directory)]
+        return [
+            target
+            for target in RUN_START.targets
+            if not target.startswith(own_directory) and target != END_OF_RUN_RECORD
+        ]
     return [PRODUCERS[read] for read in spec.reads]
+
+
+def _flagged(path, heading):
+    """Return `path` as the engine's report flag under `heading`, or bare when the row declares no item for it."""
+    if heading is None:
+        return path
+    return report(path, category=heading)
+
+
+def rendered_outputs(spec):
+    """Return `spec`'s declared output paths, each one flagged for the report when the row declares an item for it.
+
+    The row's `report_items` field is the whole of what the run publishes, so the flag is set by reading it:
+    an output the field does not name is a bare path, which the engine treats as an artifact it neither
+    shows nor lists in the report.
+    """
+    headings = {item.output: item.category for item in spec.report_items}
+    return [_flagged(f"{spec.name}/{output}", headings.get(output)) for output in spec.outputs]
 
 
 rule all:
     input:
         list(RUN_START.targets)
     localrule: True
+
+
+rule end_of_run:
+    input:
+        [target for target in RUN_START.targets if target != END_OF_RUN_RECORD]
+    output:
+        report(directory(END_OF_RUN_RECORD), patterns=["{name}.html"], category=DIVERGENCE)
+    localrule: True
+    run:
+        write_end_of_run_record(
+            Path(output[0]),
+            side_record=run_side_record(),
+            working_directory=Path.cwd(),
+            targets=list(input),
+            run_start=RUN_START,
+        )
 
 
 for spec in GRAPH:
@@ -64,7 +121,7 @@ for spec in GRAPH:
         input:
             rendered_inputs(spec)
         output:
-            [f"{spec.name}/{output}" for output in spec.outputs]
+            rendered_outputs(spec)
         params:
             system=spec.system,
             rule_name=spec.name,

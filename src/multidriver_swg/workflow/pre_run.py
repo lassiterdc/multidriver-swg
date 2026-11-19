@@ -11,7 +11,9 @@ The command runs this before it starts an engine. Three jobs, in the order the r
 2. **The target list, computed ONCE** from the rule table and three facts: whether the selection file
    exists, whether the configuration names an automatic-selection procedure, and which rows read the
    selection. One list is computed and then written into the record, so the step that prepares a run and
-   the engine that runs it cannot disagree about what the run builds.
+   the engine that runs it cannot disagree about what the run builds. The run's end-of-run record is the
+   last target in every branch: the final rule depends on every other target of the list and nothing
+   depends on it, so a list that omitted it would build every step and never close the run.
 3. **The run-start record**, written into the run output the configuration resolves, in the form the
    graph-start gate reads at every parse.
 
@@ -52,6 +54,7 @@ from multidriver_swg.run_configuration.revision_gate import (
     running_package_directory,
 )
 from multidriver_swg.run_configuration.selection_artifact import SelectionArtifactError, load_selection
+from multidriver_swg.workflow.end_of_run import END_OF_RUN_RECORD
 from multidriver_swg.workflow.graph import GRAPH, downstream_of, judgement_rules
 from multidriver_swg.workflow.run_start import RUN_START_FILE, RunStart
 
@@ -83,15 +86,19 @@ def compute_targets(*, selection_present: bool, delegated: bool) -> tuple[str, .
 
     A present selection, or a delegated choice, targets every rule's declared outputs. An absent selection
     with the judgement kept targets every rule that neither reads the selection nor is downstream of a
-    reader, plus the attribution rule's output, whose inputs are that list. The list is in table order,
-    so two runs' lists are comparable and a shortened run's `all` rule is built from the shortened list.
+    reader, plus the attribution rule's output, whose inputs are that list. The end-of-run record is the
+    LAST target of both lists, because the final rule depends on every other target and nothing depends on
+    it: a list without it would build every step and never produce the run's record.
+
+    The list is in table order, so two runs' lists are comparable and a shortened run's `all` rule is built
+    from the shortened list.
 
     The pure function deliberately takes no configuration, no path and no filesystem: the caller answers
     the two booleans, and a test can drive both branches without an estate.
     """
     all_targets = tuple(f"{rule.name}/{output}" for rule in GRAPH for output in rule.outputs)
     if selection_present or delegated:
-        return all_targets
+        return (*all_targets, END_OF_RUN_RECORD)
 
     excluded = {rule.name for rule in judgement_rules()}
     for reader in tuple(excluded):
@@ -105,7 +112,7 @@ def compute_targets(*, selection_present: bool, delegated: bool) -> tuple[str, .
         for output in attribution.outputs
         if f"{attribution.name}/{output}" not in targets
     )
-    return tuple(targets)
+    return (*targets, END_OF_RUN_RECORD)
 
 
 def _rule_for_name(name: str):

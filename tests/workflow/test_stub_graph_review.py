@@ -33,24 +33,23 @@ PYPROJECT = REPO_ROOT / "pyproject.toml"
 
 
 def test_the_workflow_file_writes_one_rule_by_hand_and_reaches_it_first() -> None:
-    """Property: the file declares exactly one hand-written rule (`all`), renders every other rule with one loop, and puts `all` before the loop.
+    """Property: the file declares `all` then `end_of_run` by hand, both before the one graph-rendering loop.
 
-    Class: the file's own text, read as lines.
-    Why it is required: the table is the single statement of order and dependency, so a second hand-written
-    rule would restate part of it; and with `all` after the loop the engine's default target is the first
-    rendered rule, so a default invocation builds one step and exits 0.
-    Killed by: adding a hand-written rule, splitting the loop in two, or moving `all` below the loop.
-    Second correct implementation: a loop over a function that returns the rows; the counts and the order
-    still decide.
+    Class: the workflow's hand-written rule declarations and rendering loop.
+    Why it is required: `all` must remain the default target and the closing rule is not a compute
+    system. Every compute rule still comes from the graph, avoiding a second dependency table.
+    Killed by: moving either hand-written rule after the loop, reversing their order, or adding
+    another hand-written compute rule.
+    Second correct implementation: a loop over an equivalent graph-producing function retains the
+    same two hand-written declarations and ordering.
     """
     lines = SNAKEFILE.read_text(encoding="utf-8").splitlines()
 
     rule_lines = [line for line in lines if line.strip().startswith("rule ")]
-    assert rule_lines == ["rule all:"]
+    assert rule_lines == ["rule all:", "rule end_of_run:"]
     assert sum(1 for line in lines if line.strip() == "for spec in GRAPH:") == 1
-    assert lines.index("rule all:") < next(
-        index for index, line in enumerate(lines) if line.strip() == "for spec in GRAPH:"
-    )
+    loop = next(index for index, line in enumerate(lines) if line.strip() == "for spec in GRAPH:")
+    assert lines.index("rule all:") < lines.index("rule end_of_run:") < loop
 
 
 def test_the_workflow_file_puts_this_checkouts_source_root_on_the_path_before_it_imports() -> None:
@@ -73,22 +72,32 @@ def test_the_workflow_file_puts_this_checkouts_source_root_on_the_path_before_it
 
 
 def test_the_rendered_body_takes_the_system_from_params_and_never_from_the_loop_variable() -> None:
-    """Property: the rendered run block reads `params.system` and `params.rule_name`, and mentions no `spec.` attribute.
+    """Property: every job body avoids `spec.` and the rendered body reads its rule and system from `params`.
 
-    Class: the text after the file's single `run:` line.
-    Why it is required: a rendered body runs after the rendering loop has finished, so a body reading the
-    loop's row would read the LAST row for every job; the identity would then name one system twelve times
-    while every output existed.
-    Killed by: `write_stub_outputs(spec.name, spec.system, ...)` in the run block.
-    Second correct implementation: a body reading a params mapping built per rule; the text check passes
-    for any spelling that resolves through `params`.
+    Class: every `run:` block, bounded by the next nonblank line at its indentation or shallower.
+    Why it is required: a job runs after rendering, when the loop variable holds its last row.
+    Reading it would assign that row's identity to other jobs, even when their outputs exist.
+    Killed by: a `spec.name` or `spec.system` read in any body, including a later rendered block.
+    Second correct implementation: multiple rendered directive blocks may each bind their own params;
+    all bodies are checked independently and still pass.
     """
-    text = SNAKEFILE.read_text(encoding="utf-8")
-    body = text.split("run:", 1)[1]
+    lines = SNAKEFILE.read_text(encoding="utf-8").splitlines()
+    bodies: list[str] = []
+    for index, line in enumerate(lines):
+        if line.strip() != "run:":
+            continue
+        indentation = len(line) - len(line.lstrip())
+        end = index + 1
+        while end < len(lines):
+            candidate = lines[end]
+            if candidate.strip() and len(candidate) - len(candidate.lstrip()) <= indentation:
+                break
+            end += 1
+        bodies.append("\n".join(lines[index + 1 : end]))
 
-    assert "params.rule_name" in body
-    assert "params.system" in body
-    assert "spec." not in body
+    assert bodies, "no job bodies found"
+    assert all("spec." not in body for body in bodies)
+    assert any("params.rule_name" in body and "params.system" in body for body in bodies)
 
 
 def test_the_gate_reads_the_record_before_it_reaches_the_checkout_checks() -> None:

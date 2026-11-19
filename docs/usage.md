@@ -61,6 +61,44 @@ where they are unset: `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1` and `MKL_NUM
 imports `numpy`, which otherwise starts one thread per core, and a login node that limits the process count
 can refuse to start the engine at all.
 
+## The run's report
+
+A rule's declared output can also be a REPORT ITEM: an artifact the run's report shows, under a heading the
+rule names. The citation section of the method-attribution rule is the run's one report item today, under
+the heading `Citation`.
+
+An item is a file a browser displays — `.html` or an image (`.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`) — so a
+figure or a table meant to be read in the page is written in one of those forms. A file the page cannot
+display is refused where the item is declared rather than appearing as a download button, and an item that
+names a file its rule does not declare is refused for the same reason: the engine flags a rule's output,
+so an item is always one of that rule's own declared outputs.
+
+The report itself is the engine's, built after a successful run from the outputs the rules flag; the command
+does not build it and a failed run produces none.
+
+## The end-of-run record
+
+Every completed run ends with one directory in its run output, `end_of_run/record`. It is the run's closing
+artifact: the run's `all` target ends with it, the rule that writes it waits on every other target, and
+nothing waits on it, so a run that finishes has it and a run that fails does not.
+
+Inside it, `provenance.json` says what produced the run. It names every system whose output the run's closing
+rule waits on, the implementation and code version each of them wrote beside its outputs, the rules that ran
+in this invocation, and which side of each registered pair the run selected. A run that stopped early names
+only the systems of the targets it built. The list of systems is cumulative: an output left from an earlier
+invocation counts its producer, so a re-run that rebuilt one step still names every producer, and only the
+list of rules that ran in this invocation is smaller. The record is refused, and the run fails, when a
+producer left no identity or one that names another system. It carries no seeds yet, because no step draws one.
+
+When the run used the legacy side of a registered pair, the record carries the divergence report: a text
+file (`divergence_report.txt`) and an HTML rendering of the same text (`divergence_report.html`). The HTML
+file is the run's report item for the divergence, so a report built after such a run shows it under
+`Divergence report`. A run whose every pair ran its current side diverged from nothing, so its record holds
+neither file and the report shows no divergence item.
+
+The record directory is the rule's declared output, so a second invocation that finds every target up to
+date does not rewrite it.
+
 ## A run left locked by an interrupted engine
 
 A killed engine leaves lock files that hold only file names, so nothing can tell whether an engine is still
