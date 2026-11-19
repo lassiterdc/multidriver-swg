@@ -64,6 +64,21 @@ so an item is always one of that rule's own declared outputs.
 The report itself is the engine's, built after a successful run from the outputs the rules flag; the command
 does not build it and a failed run produces none.
 
+## The end-of-run record
+
+Every completed run ends with one directory in its run output, `end_of_run/record`. It is the run's closing
+artifact: the run's `all` target ends with it, the rule that writes it waits on every other target, and
+nothing waits on it, so a run that finishes has it and a run that fails does not.
+
+When the run used the legacy side of a registered pair, the record carries the divergence report: a text
+file (`divergence_report.txt`) and an HTML rendering of the same text (`divergence_report.html`). The HTML
+file is the run's report item for the divergence, so a report built after such a run shows it under
+`Divergence report`. A run whose every pair ran its current side diverged from nothing, so its record holds
+neither file and the report shows no divergence item.
+
+The record directory is the rule's declared output, so a second invocation that finds every target up to
+date does not rewrite it.
+
 ## A run left locked by an interrupted engine
 
 A killed engine leaves lock files that hold only file names, so nothing can tell whether an engine is still

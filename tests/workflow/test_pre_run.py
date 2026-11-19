@@ -21,6 +21,7 @@ import pytest
 
 import multidriver_swg.workflow.pre_run as pre_run
 from multidriver_swg.run_configuration.main_configuration import MainConfiguration
+from multidriver_swg.workflow.end_of_run import END_OF_RUN_RECORD
 from multidriver_swg.workflow.graph import GRAPH
 from multidriver_swg.workflow.pre_run import PreRunError, compute_targets, prepare_run
 from multidriver_swg.workflow.run_start import RUN_START_FILE, read_run_start
@@ -28,8 +29,9 @@ from tests.workflow.conftest import ToolkitCopy
 
 PROJECT = "smoke.run"
 
-# The paths an absent selection with the judgement kept builds: the six pre-choice rules and the
-# attribution rule, in table order. Hand-computed from the table, not from the implementation.
+# The paths an absent selection with the judgement kept builds: the six pre-choice rules, the attribution
+# rule, and the end-of-run record last, in table order. Hand-computed from the table, not from the
+# implementation.
 KEPT_TARGETS = (
     "observed_record_assembly/observed_record.json",
     "combined_event_identification/event_set.json",
@@ -38,9 +40,10 @@ KEPT_TARGETS = (
     "event_occurrence_modelling/occurrence_model.json",
     "interactive_decision_support/decision_views.html",
     "method_attribution/citation_section.html",
+    END_OF_RUN_RECORD,
 )
 
-ALL_TARGETS = tuple(f"{rule.name}/{output}" for rule in GRAPH for output in rule.outputs)
+ALL_TARGETS = tuple(f"{rule.name}/{output}" for rule in GRAPH for output in rule.outputs) + (END_OF_RUN_RECORD,)
 
 # A selection document the artifact's own reader admits: two marginals of one event class, one edge's
 # family, and a non-empty stamp. Its content is irrelevant to this step, which reads only its FORM.
