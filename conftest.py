@@ -20,6 +20,20 @@ def _resolves_to_this_tree() -> bool:
     return Path(spec.origin).resolve() == _PACKAGE_FILE.resolve()
 
 
-if _SOURCE_ROOT.is_dir() and not _resolves_to_this_tree():
+def _path_variable_names_another_copy() -> bool:
+    """Whether `PYTHONPATH` already puts a copy of the package, other than this checkout's, on the path.
+
+    A session started that way asked for that copy, and the subject check ends it; putting this
+    checkout's source first would undo the request. A runner that discards the variable leaves it
+    empty, so the repair below still applies.
+    """
+    for entry in filter(None, os.environ.get("PYTHONPATH", "").split(os.pathsep)):
+        candidate = Path(entry) / "multidriver_swg" / "__init__.py"
+        if candidate.is_file() and candidate.resolve() != _PACKAGE_FILE.resolve():
+            return True
+    return False
+
+
+if _SOURCE_ROOT.is_dir() and not _resolves_to_this_tree() and not _path_variable_names_another_copy():
     sys.path.insert(0, str(_SOURCE_ROOT))
     os.environ["PYTHONPATH"] = os.pathsep.join([str(_SOURCE_ROOT), *filter(None, [os.environ.get("PYTHONPATH")])])
