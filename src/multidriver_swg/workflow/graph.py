@@ -20,6 +20,12 @@ The functions over the table are `rule_for_system`, which answers by the row's o
 `downstream_of`, which answers a row's transitive consumers; `judgement_rules`, which answers which rows
 read the selection artifact; and `output_classes`, which lists every artifact with the register's class.
 
+What the run's report shows is a field of the row too: `RuleSpec.report_items` names the declared outputs
+the report presents and the heading each appears under, so the workflow file flags an artifact by reading
+the row and no second list of what a run publishes exists. The conventions an item must satisfy — a
+non-empty heading and a page-native file — live in `report_items`, which this module imports and which
+imports nothing back, so the row carries its items and the conventions stay one statement.
+
 The table holds the twelve rows the run's fixed graph states, and it deliberately does NOT hold the workflow
 file's target rule: `all` is the file's first rule and its input is the run's own target list, so its
 dependencies are the run's rather than the table's. Nor does the table hold the run-start record, the
@@ -48,6 +54,8 @@ the stub. The table states the graph's shape and nothing about what runs behind 
 from __future__ import annotations
 
 from dataclasses import dataclass
+
+from multidriver_swg.workflow.report_items import CITATION, ReportItem
 
 # The two artifact classes, copied verbatim from the estate register's `Name` column. A declared output
 # and an identity file are different KINDS of artifact, so the class is a property of the kind and is
@@ -84,6 +92,10 @@ class RuleSpec:
       which is `method_attribution`'s one case.
     - `outputs` — the files this rule declares besides its identity file, relative to the rule's own
       directory. Every one is also the name another row would use to read it.
+    - `report_items` — the declared outputs the run's report shows, by file name, each with the heading it
+      appears under. Empty means the rule publishes nothing in the page. A field for the same reason
+      `reads` is one: what a run publishes is a fact about its rules, and a list elsewhere would have to
+      be edited with them.
     - `reads_selection` — whether the rule consumes the run's recorded model selection. A property of
       the row rather than a list elsewhere, because the set of consumers moves whenever a compute
       system's plan gives it a reason to read the selection.
@@ -94,7 +106,9 @@ class RuleSpec:
     Frozen, so a table a consumer holds cannot be edited into a graph no reader checked. A row with no
     declared output is refused, because a rule that writes nothing cannot be a step another rule reads;
     a duplicate output or read is refused, because the graph's edges are stated by name and a repeated
-    name would make one name mean two edges.
+    name would make one name mean two edges; and a report item is refused unless it names one of the row's
+    own declared outputs exactly once, because an item for a file the rule never declares is an entry the
+    engine could only fail on when it builds the report.
 
     THE TWO NAME COLLECTIONS ARE STORED AS TUPLES WHATEVER THEY ARRIVED AS, and that is a repair rather
     than tidiness. A one-name edit by a compute system's plan is the input this exists for: `outputs =
@@ -103,20 +117,24 @@ class RuleSpec:
     iterable, so `downstream_of` would find no edge and a rule that consumes another's output would look
     like a leaf. A list is ordered, so it is normalised to a tuple and cannot be mutated inside a record
     this module calls frozen; a bare string becomes a ONE-NAME tuple. Any other kind — a set, a mapping, a
-    generator, a number — is refused, because its order is either absent or not the writer's intent.
+    generator, a number — is refused, because its order is either absent or not the writer's intent. The
+    report items are normalised the same way and for the same reason: one item written without its trailing
+    comma is a bare item, which becomes a one-item tuple rather than a value nothing can iterate.
     """
 
     name: str
     system: str
     reads: tuple[str, ...] = ()
     outputs: tuple[str, ...] = ()
+    report_items: tuple[ReportItem, ...] = ()
     reads_selection: bool = False
     local: bool = False
 
     def __post_init__(self) -> None:
-        """Store both name collections as tuples, then refuse a row whose names are empty, repeated, or whose inputs include its own output."""
+        """Store the name and item collections as tuples, then refuse a row whose names are empty, repeated, or whose inputs include its own output."""
         object.__setattr__(self, "reads", _name_tuple(self.reads, self.name, "read"))
         object.__setattr__(self, "outputs", _name_tuple(self.outputs, self.name, "output"))
+        object.__setattr__(self, "report_items", _report_item_tuple(self.report_items, self.name))
 
         for role, value in (("name", self.name), ("system", self.system)):
             if not isinstance(value, str) or not value.strip():
@@ -134,6 +152,48 @@ class RuleSpec:
                 f"rule {self.name!r} reads its own output: a row's `reads` names OTHER rows' outputs, so a "
                 "name in both lists is a cycle no execution order can satisfy"
             )
+        for item in self.report_items:
+            if item.output not in self.outputs:
+                raise GraphLookupError(
+                    f"rule {self.name!r} reports {item.output!r}, which is not an output it declares: an item "
+                    "names a declared output, because the engine flags one of the rule's outputs and a file the "
+                    "rule never declares cannot be flagged"
+                )
+        reported = [item.output for item in self.report_items]
+        if len(set(reported)) != len(reported):
+            raise GraphLookupError(
+                f"rule {self.name!r} reports one output under two headings: an artifact appears in the report "
+                "once, so a second item for it is a second statement of where it appears"
+            )
+
+
+def _report_item_tuple(value: object, rule: str) -> tuple[ReportItem, ...]:
+    """Return `value` as the tuple of report items a row stores, refusing a kind or a value it cannot mean.
+
+    A bare item is the one-item collection a missing trailing comma produces, so it becomes a one-item
+    tuple rather than a value no reader could iterate. A list is ordered and becomes a tuple, which is what
+    keeps a frozen record's field from being mutated after the table was checked. Any other kind is refused:
+    a set has no order the writer intended, a mapping's values are not items, and a generator would be
+    consumed here so a second reader would see a row that publishes nothing.
+    """
+    if isinstance(value, ReportItem):
+        items: tuple[object, ...] = (value,)
+    elif isinstance(value, list | tuple):
+        items = tuple(value)
+    else:
+        raise GraphLookupError(
+            f"rule {rule!r} carries report items of type {type(value).__name__}: a report-item collection is a "
+            "tuple, a list or a bare item, so a value of another kind is not a collection this row can read"
+        )
+    collected: list[ReportItem] = []
+    for item in items:
+        if not isinstance(item, ReportItem):
+            raise GraphLookupError(
+                f"rule {rule!r} carries the report item {item!r}, which is not one: every entry names a declared "
+                "output and the heading the report shows it under"
+            )
+        collected.append(item)
+    return tuple(collected)
 
 
 def _name_tuple(value: object, rule: str, role: str) -> tuple[str, ...]:
@@ -233,12 +293,15 @@ GRAPH: tuple[RuleSpec, ...] = (
         outputs=("design_storm_realizations.json",),
     ),
     # Empty `reads` by design: its inputs are every declared output of every rule in the run's target
-    # list, so the workflow file computes them from the run-start record and a shortened run attributes
-    # exactly what it built.
+    # list, so the workflow file renders them at render time and a shortened run attributes exactly what
+    # it built. Its citation section is the graph's one report item: the run's account of the methods it
+    # used is the artifact a reader opens first, and it is an HTML file so the page shows it rather than
+    # offering it as a download.
     RuleSpec(
         name="method_attribution",
         system="method-attribution",
         outputs=("citation_section.html",),
+        report_items=(ReportItem("citation_section.html", CITATION),),
     ),
 )
 
