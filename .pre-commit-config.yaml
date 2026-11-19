@@ -6,7 +6,8 @@ repos:
         args: [--fix]
       - id: ruff-format
 
-  # Anonymization guard (scripts/check_anonymization.py)
+  # Anonymization guard (the identity class of scripts/content_scan, the one
+  # content scanner; its other classes are run on push and before a release).
   # Fails if any tracked file contains an identifier listed in the private
   # carrier, which reaches this tree as scripts/anonymization_blocklist.local.txt
   # (scripts/anonymization_blocklist.txt states the policy and lists nothing).
@@ -22,28 +23,32 @@ repos:
   #     mode-only change cannot commit through git_stage's ephemeral-worktree
   #     path -- shutil.copyfile copies content, not permission bits).
   # `python3` is present on stock Ubuntu and in every conda env here, and the
-  # guard imports only the standard library, so no project env is required --
+  # scanner imports only the standard library, so no project env is required --
   # which matters, because repo scaffolding is exactly when private paths land.
+  # The target is a DIRECTORY holding __main__.py, which Python runs as a
+  # script. `--require-supplement` is deliberately absent: every clone shares
+  # this file, no third party can satisfy it, and a missing carrier already
+  # fails the scan closed on its own.
   - repo: local
     hooks:
       - id: anonymization-guard
         name: anonymization blocklist guard
-        entry: python3 scripts/check_anonymization.py
+        entry: python3 scripts/content_scan --class identity
         language: system
         pass_filenames: false
         always_run: true
 
-  # Planning-reference guard (scripts/check_planning_references.py). Fails if any
-  # file outside the legacy code names something in the private planning record
-  # or the process behind it: a decision number, a task or package identifier,
-  # a constraint label, a path into that record, or a word only that process
-  # uses. It scans the whole tree on every run, so a reference fails the next
-  # commit whoever wrote it. Stdlib only.
+  # Planning-reference guard (the planning_reference class of the same scanner).
+  # Fails if any file outside the legacy code names something in the private
+  # planning record or the process behind it: a decision number, a task or
+  # package identifier, a constraint label, a path into that record, or a word
+  # only that process uses. It scans the whole tree on every run, so a reference
+  # fails the next commit whoever wrote it. Stdlib only.
   - repo: local
     hooks:
       - id: planning-reference-guard
         name: planning-reference guard
-        entry: python3 scripts/check_planning_references.py
+        entry: python3 scripts/content_scan --class planning_reference
         language: system
         pass_filenames: false
         always_run: true

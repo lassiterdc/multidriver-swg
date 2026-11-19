@@ -1,0 +1,5 @@
+# Read the Docs' documentation environment. The root `requirements.txt` is the release lock
+# (`scripts/render_lock.py`'s rendering), so this list lives here and `.readthedocs.yaml` installs it.
+mkdocs
+mkdocs-material
+mkdocstrings[python]

@@ -1,21 +1,30 @@
-# Anonymization guard. On every push to every branch, and on pull requests to
-# main and develop, this job runs three checks in order:
+# Anonymization guard. On every push to every branch and every tag, and on pull
+# requests to main and develop, this job runs four checks in order:
 #   1. the public surface: the two tracked control files under scripts/ carry
-#      prose only, and no tracked file outside a two-file allowlist matches a
-#      local-path pattern;
-#   2. a self-test proving that the guard prints counts only on this runner,
-#      run against a synthetic token list before any real one is loaded;
-#   3. the content scan: every tracked file against the private token list (the
+#      prose only, and the content scanner's machine-path class reads every
+#      tracked file except the scanner's own eight — the paths in its
+#      `core.SELF_EXCLUDED` set, its modules and its test modules — for a home
+#      directory, a Windows drive or a sync-folder name, with the paths that
+#      carry one on purpose named in the scanner's own allowlist;
+#   2. a self-test proving that the scan prints counts only on this runner, run
+#      against a synthetic token list before any real one is loaded;
+#   3. the identity class: every tracked file against the private token list (the
 #      carrier) and the accepted-findings list (the ledger), which this
 #      repository does not track. Both reach this job as encrypted repository
-#      secrets that the repository's owner sets. The guard reports counts only,
-#      never a path, a line or a token, because this log is public.
-# Check 3 runs only when check 2 passed. A pull request from a fork receives no
-# secrets, so its run FAILS at check 3 rather than skipping green. Check 3's
-# count line also states how many carrier tokens and ledger rows it loaded, so
-# whoever sets the secrets can compare those numbers with the files they set
-# them from. Working-tree enforcement only; git HISTORY exposure is a separate
-# concern.
+#      secrets that the repository's owner sets. The scan reports counts only,
+#      never a path, a line or a token, because this log is public;
+#   4. the secret class's count, reported and refused on nothing: a secret in a
+#      pushed commit is disclosed already, so the count is the record of it.
+# Check 3 runs only when check 2 passed, and only after the carrier and the
+# ledger have been written. A pull request from a fork receives no secrets, so
+# its run FAILS at check 3 rather than skipping green. Check 3's count line also
+# states how many carrier tokens and ledger rows it loaded, so whoever sets the
+# secrets can compare those numbers with the files they set them from. Every
+# check below runs the one scanner under scripts/content_scan and not the shell
+# it replaced: what is read, how a run is reported and what each exit status
+# means live in that scanner, so this file and the hook configuration cannot
+# drift from it. Working-tree enforcement only; git HISTORY exposure is a
+# separate concern.
 name: Anonymization guard
 
 on:
@@ -27,6 +36,9 @@ on:
   # detection only on arrival at develop.
   push:
     branches: [ "**" ]
+    # A tag push publishes the tree as surely as a branch push does, and a release tag is the
+    # one push whose content a stranger downloads first, so this job watches tags too.
+    tags: [ "**" ]
   pull_request:
     branches: [ "main", "develop" ]
 
@@ -64,20 +76,14 @@ jobs:
               fail=1
             fi
           done
-          # Each brand name carries one bracketed letter so that this file, which the
-          # loop below also scans, does not match its own pattern.
-          allow='^(\.copier-answers\.yml|_old_code_to_refactor/_inputs\.py|scripts/check_planning_references\.py|tests/correspondence/test_pair_scan\.py|tests/correspondence/test_write_root\.py|tests/correspondence/write_root\.py|tests/test_path_resolver\.py|tests/correspondence/reference_values/marginal_distribution_fitting/_b4_selecting_marginals\.py_268-316\.npz|tests/correspondence/reference_values/marginal_distribution_fitting/_utils\.py_1198-1238\.npz)$'
-          pat='(/home/[A-Za-z0-9._-]+|/Users/[A-Za-z0-9._-]+|\b[A-Za-z]:[\\/]|Drop[b]ox|One[D]rive|Google [D]rive|i[C]loud)'
-          hits=0
-          while IFS= read -r -d '' f; do
-            printf '%s' "$f" | grep -qE "$allow" && continue
-            if grep -aqE "$pat" "$f" 2>/dev/null; then
-              echo "public-surface: $f matches a local-path pattern" >&2
-              hits=$((hits+1))
-            fi
-          done < <(git ls-files -z)
-          [ "$hits" -eq 0 ] || fail=1
-          echo "public-surface: control-file token lines checked; $hits pattern finding(s) outside the allowlist"
+          # The other half of this step's question is the scanner's machine-path class: a home
+          # directory, a Windows drive or a sync-folder name in any tracked file, read by the
+          # class that owns the pattern and the allowlist. It reads BYTES, so a binary file that
+          # spells a path is found too, which the grep this replaces only did behind -a. Running
+          # it here rather than as a commit hook keeps the whole tree covered on every push.
+          scan_rc=0
+          python3 -B scripts/content_scan --class machine_path --count-only || scan_rc=$?
+          [ "$scan_rc" -eq 0 ] || exit "$scan_rc"
           exit $fail
       - name: Self-test count-only output on this runner
         id: selftest
@@ -85,20 +91,22 @@ jobs:
         shell: bash
         run: |
           # The synthetic carrier lists a public word that occurs in this tree, so
-          # the scan has findings to report, and a guard that printed locations
-          # would print public lines only. Run WITHOUT --count-only on purpose: this
-          # measures that the runner's GITHUB_ACTIONS variable alone forces it.
+          # the scan has findings to report, and a count-only form that leaked a
+          # location would print public lines only. Run WITHOUT --count-only on
+          # purpose: this measures that the runner's GITHUB_ACTIONS variable alone
+          # forces the form. The ledger row matches nothing, so the line must also
+          # carry the count of stale rows the scan read.
           set +e
           d="$RUNNER_TEMP/count-only-self-test"
           mkdir -p "$d"
           printf '%s\n' 'multidriver_swg' > "$d/anonymization_blocklist.local.txt"
           printf '%s\n' '0000000000000000000000000000000000000000000000000000000000000000  no/such/file.py  1' > "$d/anonymization_ledger.local.txt"
-          out=$(python3 -B scripts/check_anonymization.py --blocklist "$d/anonymization_blocklist.txt" 2>&1)
+          out=$(python3 -B scripts/content_scan --class identity --blocklist "$d/anonymization_blocklist.txt" 2>&1)
           rc=$?
           set -e
           printf '%s\n' "$out"
           n=$(printf '%s\n' "$out" | wc -l)
-          if [ "$rc" -ne 1 ] || [ "$n" -ne 1 ] || ! printf '%s\n' "$out" | grep -qE '^anonymization-guard: [1-9][0-9]* finding\(s\), 1 stale ledger row\(s\); carrier 1 token\(s\), ledger 1 row\(s\)$'; then
+          if [ "$rc" -ne 1 ] || [ "$n" -ne 1 ] || ! printf '%s\n' "$out" | grep -qE '^content-scan: [1-9][0-9]* finding\(s\), 1 stale ledger row\(s\); carrier 1 token\(s\), ledger 1 row\(s\); identity [1-9][0-9]*$'; then
             echo "count-only self-test: FAILED (exit $rc, $n line(s))" >&2
             exit 1
           fi
@@ -125,4 +133,19 @@ jobs:
       - name: Scan tracked content against the carrier (counts only)
         if: ${{ !cancelled() && steps.writecarrier.outcome == 'success' }}
         shell: bash
-        run: python3 -B scripts/check_anonymization.py --count-only
+        run: python3 -B scripts/content_scan --class identity --count-only
+      - name: Report the secret class's count
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          # This class refuses nothing on a push. A secret in a pushed commit is disclosed
+          # already, and a job that reddened the run would neither un-disclose it nor say
+          # where it is; what a push buys is the count, printed in the scanner's one count
+          # line beside the classes that do refuse. Status 2 -- the class or the corpus
+          # could not be read -- is not a finding and is passed through as the step's own.
+          set +e
+          out=$(python3 -B scripts/content_scan --class secret --count-only 2>&1)
+          rc=$?
+          set -e
+          printf '%s\n' "$out"
+          [ "$rc" -le 1 ] || exit "$rc"

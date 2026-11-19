@@ -1,0 +1,44 @@
+# The release-state table: one [[class]] table per class of bytes a release carries, and the
+# state that class ships in.
+#
+# `state` is one of `released`, `excluded` and `estate-resident`. A `released` class states the
+# licence the release carries for it (`licence`); an `excluded` or `estate-resident` class ships
+# in no artifact, states no licence, and has an export-ignore line for each of its paths in
+# `.gitattributes` when the source archive would otherwise carry it.
+#
+# `paths` holds globs over the `path` values an enumeration of the release records, in which `*`
+# crosses directory separators. One path in two classes refuses the release, so each declaring
+# system writes only the classes it declares and only paths no other class names. A declaring
+# system writes its own rows here in the change that declares the class.
+
+[[class]]
+name = "release-metadata"
+system = "packaging-and-release"
+state = "released"
+licence = "AGPL-3.0-or-later"
+paths = [
+  "PKG-INFO",
+  "setup.cfg",
+  "MANIFEST.in",
+  "CITATION.cff",
+  "pylock.toml",
+  "release_state.toml",
+  ".gitattributes",
+]
+
+[[class]]
+name = "release-scripts"
+system = "packaging-and-release"
+state = "released"
+licence = "AGPL-3.0-or-later"
+paths = [
+  "scripts/check_release_tag.py",
+  "scripts/check_public_api.py",
+  "scripts/check_install.py",
+  "scripts/check_main_tag.py",
+  "scripts/enumerate_release.py",
+  "scripts/compare_release_state.py",
+  "scripts/render_lock.py",
+  "scripts/record_identifiers.py",
+  "scripts/check_licences.py",
+]

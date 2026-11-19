@@ -1,0 +1,65 @@
+# Install check. On every push to every branch and every tag, this workflow builds
+# the sdist and the wheel and installs each one into a fresh environment holding
+# nothing but that artifact, then imports every module it provides and reads every
+# import statement it carries. What that establishes is that the runtime
+# declaration in `pyproject.toml` and the imports under `src/` say the same thing:
+# a module importing a library the declaration never names, a declaration carrying a
+# library no module imports, and a declaration whose bound admits a version the code
+# was never run against are each refused here rather than by a caller.
+#
+# Nothing requires this job. No repository ruleset names it, so on any branch and
+# any tag its result is a report and stops nothing.
+#
+# Two jobs, one declaration read at both ends of its range. The first installs at
+# `highest`, the resolution a user's install gets today, and checks the wheel's
+# public surface once. The second passes `lowest-direct`, so the floor the
+# declaration promises -- `numpy>=2` -- is the version that is actually installed
+# and imported, rather than a bound text alone. The surface check is not repeated
+# there: both jobs build the same wheel, so a second reading of it says nothing the
+# first did not.
+name: Install check
+
+on:
+  push:
+    branches: [ "**" ]
+    tags: [ "**" ]
+
+permissions:
+  contents: read
+
+jobs:
+  install-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the build frontend
+        run: python -m pip install --disable-pip-version-check build
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check "uv==0.11.31"
+      - name: Build the sdist and the wheel
+        run: python -m build
+      - name: Install and import the built distributions
+        run: python scripts/check_install.py --dist dist
+      - name: Check the wheel's public surface
+        run: python scripts/check_public_api.py --wheel dist/*.whl
+
+  install-check-lowest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the build frontend
+        run: python -m pip install --disable-pip-version-check build
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check "uv==0.11.31"
+      - name: Build the sdist and the wheel
+        run: python -m build
+      - name: Install and import the built distributions at the declared floor
+        run: python scripts/check_install.py --dist dist --resolution lowest-direct

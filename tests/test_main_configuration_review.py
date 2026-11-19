@@ -346,15 +346,6 @@ CHUNK_WRITE_SET = (
     "mkdocs.yml",
 )
 
-ANONYMIZATION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "anonymization-guard.yml"
-
-
-def _workflow_shell_literal(workflow_text: str, variable: str) -> str:
-    """Return the single-quoted value the anonymization workflow assigns to the shell variable `variable`."""
-    match = re.search(rf"^\s*{variable}='(.+)'\s*$", workflow_text, flags=re.MULTILINE)
-    assert match is not None, f"the workflow no longer assigns {variable}"
-    return match.group(1)
-
 
 def test_no_file_the_chunk_writes_matches_the_anonymization_guards_local_path_pattern():
     """Property: the public-surface check of the anonymization guard, applied to every file this chunk writes, reports no finding.
@@ -371,12 +362,13 @@ def test_no_file_the_chunk_writes_matches_the_anonymization_guards_local_path_pa
     Killed by: any of the ten files carrying a home-directory-shaped, user-directory-shaped,
     drive-letter-shaped or synced-folder token, including one written as an ellipsis in a docstring.
     Second correct implementation: the same file with the offending example reworded so that no
-    alternative of the pattern matches; the pattern is read from the workflow, not restated here, so a
-    later change to the guard changes this check with it.
+    alternative of the pattern matches; the pattern and the allowlist are read from the scanner's machine-path class, which the
+    workflow runs, and not restated here, so a later change to the guard changes this check with it.
     """
-    workflow = ANONYMIZATION_WORKFLOW.read_text(encoding="utf-8")
-    pattern = re.compile(_workflow_shell_literal(workflow, "pat"))
-    allowlist = re.compile(_workflow_shell_literal(workflow, "allow"))
+    from scripts.content_scan import machine_path
+
+    pattern = machine_path.PATTERN
+    allowlist = machine_path.ALLOWLIST
 
     offenders = [
         relative

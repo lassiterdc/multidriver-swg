@@ -1,0 +1,13 @@
+# The sdist's manifest. `git archive`'s `export-ignore` lines in `.gitattributes` do not reach an
+# sdist, which the `build` job builds from a checkout, so the classes those lines keep out of the
+# source archive need their own statement here.
+#
+# The two lock renderings ship beside the package: the release procedure checks the sdist lists both
+# (`post-build-check`, DR-7 clause (iii)), and an sdist that carries `pylock.toml` and
+# `requirements.txt` installs the reviewed resolution rather than the one a user's moment resolves.
+include pylock.toml requirements.txt
+
+# The test tree is `private-estate`'s excluded class AC-2, and setuptools' sdist defaults put the
+# top-level `tests/test*.py` files in the archive. Pruning the directory makes "excluded" true of the
+# sdist as the release-state table states it, so no release ships a test file.
+prune tests

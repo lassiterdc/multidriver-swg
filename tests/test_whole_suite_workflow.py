@@ -7,12 +7,14 @@ narrowed by a marker, a path, an `--ignore` or a `-k` expression is a pass over 
 that reads exactly like a pass over everything, and the release gate reads this job's
 result record as the evidence that the tagged commit passes the whole suite.
 
-Six rules follow from that, and five of them are rules over the file rather than over one
+Seven rules follow from that, and five of them are rules over the file rather than over one
 line of it, because the file has more places to reach pytest from than the one `run:` value
 the command equality pins: a second step, a block scalar's body, an `env:` entry, an upload
 that keeps a different file, a condition that skips the suite, and a grant wider than a
-read. Each rule is a function of the parsed file, so one function judges the real file and
-a variant a later edit may introduce.
+read. The two line-level rules pin the two commands: the suite command itself, and the
+install command, which installs the environment declared once in `pyproject.toml`'s `test`
+dependency group rather than listing distributions of its own. Each rule is a function of the
+parsed file, so one function judges the real file and a variant a later edit may introduce.
 
 The file is read as text rather than parsed as YAML, for the reason
 `tests/correspondence/test_divergence_mounts.py` gives: the State check job installs the
@@ -33,6 +35,23 @@ WORKFLOW = REPO_ROOT / ".github" / "workflows" / "whole-suite.yml"
 # absence of `-m`, `-k` and a path, because `--ignore`, `--deselect`, `--lf` and `-x` each
 # narrow a run that a negative test would pass.
 SUITE_COMMAND = 'python -m pytest -p no:cacheprovider -ra --result-record "$RUNNER_TEMP/result-record.json"'
+# The one command the job installs with. The environment the stored reference values were computed in
+# is declared once, in `pyproject.toml`'s `test` dependency group, and this line installs that group
+# rather than listing distributions of its own: a second list is a second declaration, and it is what
+# put `pandas 3.1.1` under 103 stores that record `pandas 2.3.3`.
+#
+# The runtime stack comes from the committed lock ahead of both, under `--require-hashes` and with
+# `--no-deps` on the project: the versions this job tests are then the bytes the release compares
+# and ships, and a source distribution that no longer builds resolves here rather than at a user's
+# install. It is one line because a block scalar is a spelling the whole-suite test module cannot
+# read the command out of, and a second line would be a second declaration.
+INSTALL_COMMAND = (
+    'python -m pip install --disable-pip-version-check "pip>=25.1" '
+    "&& python -m pip install --disable-pip-version-check --require-hashes -r requirements.txt "
+    "&& python -m pip install --disable-pip-version-check --no-deps -e . "
+    "&& python -m pip install --disable-pip-version-check --group test"
+)
+INSTALL_STEP = "Install the toolkit and the test runner"
 ARTIFACT_NAME = "whole-suite-result-record"
 SUITE_STEP = "Run the whole suite"
 KEEPER_STEP = "Keep the result record"
@@ -307,6 +326,35 @@ def test_the_suite_is_one_step_running_the_named_command_with_no_narrowing():
     with_block = keeper["with"]
     assert isinstance(with_block, dict), with_block
     assert with_block["name"] == ARTIFACT_NAME, with_block
+
+
+def test_the_install_step_installs_the_one_declared_environment():
+    """Property: the install step's `run:` value is the one command that installs the `test` group, by equality.
+
+    Class: NEW CAPABILITY — the install step's `run:` value. Plausible wrong implementations are
+    the line as it stood at `20825f1`, which listed the distributions itself
+    (`"pytest==9.1.1" matplotlib seaborn scipy …`), and that line with `--group test` dropped,
+    which installs the project and no environment for its tests. The first is why the suite ran
+    `pandas 3.1.1` under 103 stored values recording `pandas 2.3.3` and reported eleven
+    environment failures as failures of the code under test; the second is the same defect one
+    edit later. Both are red here.
+
+    Why: the environment those values were computed in is declared once, in `pyproject.toml`'s
+    `test` dependency group, and a job that lists distributions of its own is a second declaration
+    that drifts from the first while every other test stays green. Equality on the whole command is
+    what holds the job to the one declaration; `tests/test_test_environment.py` holds the group's
+    pins to what the stores record, and holds the State check job's install line equal to this one.
+
+    Killed by: any edit to the install command — another distribution on it, a dropped upgrade of
+    pip, a dropped `--group test`, or the two pip calls split over two `run:` keys. Second correct
+    implementation: none. The equality is the rule, because a second spelling of the command is a
+    second environment, and the point of the pin is that there is one.
+
+    Not established: that `pip==25.1` is the first pip that reads `--group` was measured by the
+    testing work (`pip==25.0.1` refuses it), and nothing here runs pip; the live proof is the run
+    of this job (RC-3).
+    """
+    assert _step_named(INSTALL_STEP)["run"] == INSTALL_COMMAND
 
 
 def test_no_key_or_value_but_the_command_and_a_package_pin_mentions_pytest():

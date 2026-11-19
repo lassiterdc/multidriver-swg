@@ -1,0 +1,6 @@
+# Disconnected tests: nodes the default-tier time budget (0.15 s of process time per node) does not charge.
+# A line is {batch id} {node id or file path} {end state}. These three build the package's sdist with `python -m build`
+# (1 to 2 s each by nature), so they are named here instead of being made faster.
+REL1 tests/test_content_scan_release.py::test_this_checkouts_sdist_and_source_archive_carry_no_secret trigger@packaging-and-release
+REL1 tests/test_manifest.py::test_both_lock_renderings_are_members_of_the_sdist trigger@packaging-and-release
+REL1 tests/test_manifest.py::test_no_member_of_the_sdist_is_a_test_file trigger@packaging-and-release

@@ -26,6 +26,6 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install the toolkit and the test runner
-        run: python -m pip install --disable-pip-version-check -e . "pytest==9.1.1" matplotlib seaborn scipy "python-dateutil<3"
+        run: python -m pip install --disable-pip-version-check "pip>=25.1" && python -m pip install --disable-pip-version-check -e . --group test
       - name: Run the state checks
         run: python -m pytest -m "state_check and not equivalence and not refactor_reminder" -p no:cacheprovider -ra
