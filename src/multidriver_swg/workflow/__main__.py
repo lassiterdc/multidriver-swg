@@ -9,4 +9,5 @@ import sys
 
 from multidriver_swg.workflow.cli import main
 
-sys.exit(main())
+if __name__ == "__main__":
+    sys.exit(main())
