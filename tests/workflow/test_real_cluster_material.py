@@ -16,6 +16,7 @@ import json
 import os
 import re
 import shutil
+import time
 from pathlib import Path
 
 import pytest
@@ -36,6 +37,28 @@ PROJECT = "smoke.run"
 SHIM = Path(__file__).resolve().parent / "slurm_shim"
 
 MATERIAL = REPO_ROOT / "tests" / "workflow" / "real_cluster"
+
+# A selection document the artifact's own reader admits, holding the fit `compound.rainfall_depth`.
+SELECTION = """rule = "modelled-selection:1"
+selection = ["compound.rainfall_depth.gamma.identity", "compound.surge_height.lognormal.identity"]
+
+[[dependence]]
+event_class = "compound"
+marginals = ["compound.rainfall_depth.gamma.identity", "compound.surge_height.lognormal.identity"]
+structure = "d-vine"
+copula_families = ["gaussian"]
+
+[stamp.inputs]
+source = "test"
+
+[stamp.seeds]
+swg = 1
+
+[stamp.identities.swg]
+system = "swg"
+implementation = "vine"
+code_version = "0"
+"""
 
 
 class _Estate:
@@ -125,12 +148,14 @@ def _launch(
     arm: str,
     *,
     shim: bool = False,
+    selection_from: Path | None = None,
 ) -> int:
     """Launch `arm` over the copy's material with the revision gate pointed at the copy; return the exit status."""
     monkeypatch.setattr(pre_run, "running_package_directory", lambda: toolkit.package)
     return launch_probe.launch(
         estate.configuration,
         arm,
+        selection_from=selection_from,
         directory=toolkit.root / "tests" / "workflow" / "real_cluster",
         environ=_environment(tmp_path, shim=shim),
     )
@@ -341,6 +366,8 @@ def test_the_launcher_refuses_an_arm_it_does_not_have() -> None:
     assert launch_probe.snakefile_for("run").name == "probe.smk"
     assert launch_probe.snakefile_for("checkpoint-noruling").name == "checkpoint_probe.smk"
     assert launch_probe.snakefile_for("checkpoint-resume").name == "checkpoint_probe.smk"
+    assert launch_probe.snakefile_for("graph-checkpoint-noruling").name == "probe.smk"
+    assert launch_probe.snakefile_for("graph-checkpoint-resume").name == "probe.smk"
 
 
 def test_a_checkpoint_launch_without_a_ruling_stops_after_the_licence_and_the_resume_runs_the_rest(
@@ -388,6 +415,92 @@ def test_a_checkpoint_launch_without_a_ruling_stops_after_the_licence_and_the_re
     assert set(_report_categories(output / "report.html")) == {"Licence", "Merge"}
     assert True in {line["covered"] for line in _lines(output, "checkpoint_evaluations.jsonl")}
     assert len(_lines(output, "checkpoint_parses.jsonl")) > parses_after_first
+
+
+def _licence_end_time(run_output: Path) -> float:
+    """Return the `endtime` of the engine's metadata record for the licence's output."""
+    from base64 import urlsafe_b64encode
+
+    target = "observed_record_licence/licence.json"
+    record = run_output / ".snakemake" / "metadata" / urlsafe_b64encode(target.encode()).decode()
+    return float(json.loads(record.read_text(encoding="utf-8"))["endtime"])
+
+
+def test_the_graph_checkpoint_arms_stop_the_real_graph_after_the_licence_and_resume_at_the_merge(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, copy_and_estate: tuple[ToolkitCopy, _Estate]
+) -> None:
+    """Property: the no-ruling arm ends the toolkit's graph after its licence with exit 0, its report and its record; the resume arm over the same output builds the merge and the attribution row and leaves the licence as it was.
+
+    Class: the two graph arms under `local` over a committed copy, with the licence requirement carried by
+    the probe's file and the selection copied in by the resume arm.
+    Why it is required: this is the toolkit's half of the real-graph checkpoint arm, and it is the only
+    place the probe's setting of the stub licence, the pre-run step's choice of target list from the
+    selection file and the stop are exercised together before a cluster is used.
+    What kills it: a probe that does not set the constant (the licence would require nothing and the merge
+    would be built in the first launch), a resume arm that copies the selection after the pre-run step (the
+    run-start record would still name no selection and the second launch would stop again), or a launcher
+    that rewrote the requirement and so rebuilt the licence.
+    Second correct implementation: a requirement passed through an environment variable the licence reads;
+    the same directories exist and the same licence time is kept.
+    """
+    toolkit, estate = copy_and_estate
+    output = estate.run_output
+    selection_path = tmp_path / "estate" / "projects" / "smoke" / "selection.toml"
+    selection_source = tmp_path / "selection_present.toml"
+    selection_source.write_text(SELECTION, encoding="utf-8")
+
+    first = _launch(monkeypatch, tmp_path, toolkit, estate, "graph-checkpoint-noruling")
+
+    assert first == 0
+    assert json.loads((output / "measurement" / "licence_required.json").read_text(encoding="utf-8")) == [
+        "compound.rainfall_depth"
+    ]
+    licence = output / "observed_record_licence" / "licence.json"
+    assert json.loads(licence.read_text(encoding="utf-8")) == {"required_entries": ["compound.rainfall_depth"]}
+    assert not (output / "observed_record_assembly").exists()
+    assert (output / END_OF_RUN_RECORD).is_dir()
+    assert not selection_path.exists()
+    licence_end = _licence_end_time(output)
+    time.sleep(1.1)
+
+    second = _launch(monkeypatch, tmp_path, toolkit, estate, "graph-checkpoint-resume", selection_from=selection_source)
+
+    assert second == 0
+    assert selection_path.read_text(encoding="utf-8") == SELECTION
+    assert (output / "observed_record_assembly" / "observed_record.json").is_file()
+    assert (output / "method_attribution" / "citation_section.html").is_file()
+    assert _licence_end_time(output) == licence_end
+
+
+def test_the_graph_checkpoint_arms_refuse_a_selection_file_where_it_must_be_absent_or_missing_where_it_must_be_given(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, copy_and_estate: tuple[ToolkitCopy, _Estate]
+) -> None:
+    """Property: the no-ruling arm refuses an existing selection file and leaves it intact, the resume arm refuses a missing source, any other arm refuses a source, and the command line enforces the same pairing.
+
+    Class: the three argument shapes the two arms and the other arms can be given.
+    Why it is required: a no-ruling launch over an operator's selection would not stop, and would record a
+    measurement under the name of one that did; a resume without a selection would stop again.
+    What kills it: an arm that deletes or overwrites the selection file, or one that ignores `--selection-from`.
+    Second correct implementation: a refusal raised by the argument parser alone; the library call is the
+    one checked here, and the parser's pairing is checked beside it.
+    """
+    toolkit, estate = copy_and_estate
+    selection_path = tmp_path / "estate" / "projects" / "smoke" / "selection.toml"
+    selection_path.write_text(SELECTION, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="to be absent"):
+        _launch(monkeypatch, tmp_path, toolkit, estate, "graph-checkpoint-noruling")
+    assert selection_path.read_text(encoding="utf-8") == SELECTION
+    selection_path.unlink()
+    with pytest.raises(ValueError, match="requires a selection file"):
+        _launch(monkeypatch, tmp_path, toolkit, estate, "graph-checkpoint-resume")
+    with pytest.raises(ValueError, match="takes no selection file"):
+        _launch(monkeypatch, tmp_path, toolkit, estate, "run", selection_from=tmp_path / "anything.toml")
+    assert not selection_path.exists()
+    with pytest.raises(SystemExit):
+        launch_probe.main([str(estate.configuration), "--arm", "graph-checkpoint-resume"])
+    with pytest.raises(SystemExit):
+        launch_probe.main([str(estate.configuration), "--arm", "run", "--selection-from", "x.toml"])
 
 
 def _synthetic_run_directory(root: Path) -> Path:
