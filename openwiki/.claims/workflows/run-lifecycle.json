@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:594cd7086fcc23340052e7c903dfaba76654498d345df26f6b4679c669973134",
+  "claims": [
+    {
+      "id": "claim_8a9c68dba9474b0e9124db69a694d3ed",
+      "statement": "The CLI resolves launch binding before preparation, which resolves estate keys, refuses automatic selection, computes targets, checks revision and selection, then writes run_start.json.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L221-L255",
+          "version": "repo-lines-v1:sha256:14284bb21dd4d243042bc00c48b036a8fa39e628f39585820a4d1e6809660273:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NmQzZWNlN2MxNzMwNmE1M2QxMDUwMTVkNGZmNTdiNWM0MGJhNDlmOGVkMTM1NTIwOWJhNmU1NTBlNGYyMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlNGYyOGUyZGM5NmMyZGYzNDhmYzlkMGJmM2FmMzNjYTQyMmIwN2QyNjFlMjgyNTIxNjUxZjExMWZiYjg0MjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxNGU0NmEyZDQwZWRiYzA4MWZlZTZhYzQ5ZjRhOWFmNzA5MzI3YjBjZjg0NTA1Y2ZjZjI4ZmIzYjViMjQ3NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiZWU3MjExYmU3YTZiYzUxNjRkNDBiOGIwZDA3YzUxNDIzMDdkZDJiOWY4MDhjMzY2YjMyMDg2MWI4ZGY1OGEifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L131-L237",
+          "version": "repo-lines-v1:sha256:5a6db4b8715b865471b6019aab77ae0aef23f1f36af71005d9b70a9dbcda0ed8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjZDE3NzI0NTk4ZjA4YzNiNmE0NTQxNTUwMGM0NjU0YTQwZmI4ZWQyZjMxMDY1Zjg3ZTc4YjEzOGNjYTM2NzJhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmYzFlNzc5MGM3MmJiNzk1YmZiYWIwZGRkNTczMzdlMmFhYmQ5ODc1Mjk3ZTdlOTQ2ZWRlNTg3N2FkZWNlN2EwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwZjg3ZWI1OGZlZGIwYjUyODAzZDkwZjUzODAwMThiZmIzNGIyMTIyMjI4MjE2NjBiOTlhNTM4ODRlZWJjYjRlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_c12811fcd49e475e8533ceb52d9e8ce3",
+      "statement": "Present selection produces full graph targets; absent selection excludes judgement readers and their downstream closure while retaining attribution and appending the final record.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L79-L115",
+          "version": "repo-lines-v1:sha256:1c7b718d1512fe2a99d7ae66454165a426d8c494c44c3fb1c5d0b3ec7d44583c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5ZWQzYzQ3ZWI4OTEzNDYxYTI3Nzg1ZWM5NGQzNDVmYmY3NWFhMTlkZGNiZWFlYTUzYWVmMGU3ZmEwMGJlZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwZjJiNzM2Yzk3YTg2OGRlNmIxZTk3NTU1NjZiNzEzYWRjODZmN2ExODliYWRkMTUwZThhNmY2MTQ3OTE1OGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyYjI1NzhkODVmMDU0N2ZhOTE3ZGE3YjE4ZDIwNzg5OTE4MjlhNTM4MmM3OTEyOGJlMTZmNmYxMDg4ZjdhYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMTgyMjYzNjU4NDQwNjYxNmQ5NDViMmVjNjc3ZDEyMjUxOWRkNjBkYjlhY2RiMzk1ZDgwYjYyYzJmOTJkNzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f491e7fa26ec465dba9b583d4619ac78",
+      "statement": "The run-start handoff is a closed five-field versioned JSON object with absolute configuration/selection paths, nonempty relative targets and a three-state judgement vocabulary; writing replaces the file without creating its parent.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/run_start.py#L42-L53",
+          "version": "repo-lines-v1:sha256:109835c98def0c5839ea1634f0a16d992799973297994538a3145a6c9fa0e63b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NDY2NGNkNWFiNTQ0M2Q1ZDlmZjI5ZDFlOTAyNmZiZjFkMDZkZGE3OGY0YmI0OTFkZmE2YzlmMDg3Y2VjYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1NDBiZDlkN2M4NWZkZDI2NzY2Y2I2OTQzYmQxNWI3YzQwYzU5ZGQwYTgzZmQyMTlhNjAwODViMzAyYzYxYTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkYjIyNzdhMWUyYjA3YTA5OWQ2NWVkYjU4MTMyMTEwZTMzMGM0OTJlYzQwMDI5ODI3NDM5ZjQ5YzU4ODBiOWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmNDc0YzU0NjgxMTEwZWYwMDQ3ODI4M2JiZjFmODhiNmY1MDdjMDMyMGZiY2NhZjhkYjhkZjA1ODI0ZWI0NGEifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/run_start.py#L64-L227",
+          "version": "repo-lines-v1:sha256:f3e9c23b5eb342e97bd063bd7a40a8f4c3a0868c15663ea49120954a38139a2a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmNjlhMTM5NzVjMjU2ZWM4MzIwZTIwMTYwODNjOTZkZjYzN2NhM2QzNWJlYmRlMjMxNGJlZTNhNDcxMWI1NmNhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkOGVjZTU0NjRmMWQ3N2YyZGMxYjRmMTQ0NTQ2NGJhNjkyMThkMDY5MmY1NGY2OWYwOGVkNTE1NTU0OGQyN2Y4IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwMmIyNTc4ZDg1ZjA1NDdmYTkxN2RhN2IxOGQyMDc4OTkxODI5YTUzODJjNzkxMjhiZTE2ZjZmMTA4OGY3YWI1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyNTI2OGUwNjg0M2FhNDdkYmMwNGY0YWYwOWY1OWIwMzRhMWUwOWE0NmIwZTMwNmZmOTczMDI0ODAxM2FiZWJhIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_e0f24c96197f4302a55acea2b4e2d663",
+      "statement": "Every Snakefile parse prioritizes its own source root and reads run-start/configuration/estate revision before requiring the executing checkout revision gate.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L32-L54",
+          "version": "repo-lines-v1:sha256:0c406c4c0f9f8a64c2df71209de62b9f9cef1b6d221960b7fb6c1d666e8150d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1MTc1Nzc4NTFjNDg5ZTQ1YWJhZTI1OTEyNTZjNDA0MDRhMDVjNmQxOWNkNGQ1YWU3ZmQyMmIwMDg0Y2VjNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5ZTNhNzFhYzY1NzNkZjc4YzA3MTEwN2RkMTUxNWZkMWQxOTJiYjllNGYxZTZkNmIyNTAyYjdmNDViZjA0NzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzNDk4ZTljNWM1NDE3N2I4YTgxMGY0ZTIwMWQ0MDMzZWVhNmQzMGNmMTljNWI3MmMzZGY5ZGMwYzI1YTE3MDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0MDBkNzkxMzRkYWMxMmI3YjY4YzI0ZjM2MmMwMDc0NmU1OTI0NWFkNGU4NTI5MGVmZGRjNzc2ZjdiZjBkNDUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph_start.py#L60-L145",
+          "version": "repo-lines-v1:sha256:2114405755c9e938cd20e2c8843b2f98b2985d9c80322a02d2a208092311a045:eyJzZWxlY3RlZExpbmVDb3VudCI6ODYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MDIwMGE0ZTI3MjI5Y2Y5YjY3Y2FjNjBjZTAyOWFlMTM2YTU4ZDllMjkzZmQ3MGYyOWQ0MzcxNTAxMGMzZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4OTM5YzliYzgxMDZjMTYwOWJhOWM5M2M2MWQ1NDIzZjgyZjRkNzI5YzA1NjM5Zjg4NmUzYWRkZWUwYTFiYzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwMDY1ZDIyMWNiMTViZTYwNzM5OGNlODk1Y2Q4YzIwOWEwNDNjZTA1ZDgyMjE1YjdlZmYyN2NmNGYxYTVhNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_78b6d8a836704d0e92b14384e3d65170",
+      "statement": "The first rule all targets the persisted list, while method attribution excludes itself and the final record to avoid a cycle and end_of_run depends on all other targets.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L60-L114",
+          "version": "repo-lines-v1:sha256:3426c5b27741c655dbc72fe44091593a4d39d6a27730ce393806dbb40b6c98ef:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiZmE0OWMwOTVkNDA2OTZhMjYxYmFlNjIyY2EyZDRiOThmYWY4ZjdhODg5NzI5MjY4ODgzNTk4MDc3ZGQzOTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkYjRlMGNhZDZlYTUzNWVhMWNlZjA3ZmI1MGFmYjRkNjk3MWE3NDY0YmRmMzg0ODEwMGQ3YjAxMzYyODk0OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYTc1NjY3ODJmN2Y5NjkxMDBmY2UwOTUxZmZkYzY4MzY4NjY1YTdmYTJlYjFlMmVjZDUxNzQ5YmJkOGUyZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_836301a2204f46e7ac8a9b5cba06bfbc",
+      "statement": "Rendered compute jobs currently write empty stub outputs and persist stub identity, so successful graph execution is not evidence of weather computation.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L117-L129",
+          "version": "repo-lines-v1:sha256:345b61fc6871ad24916afbbbfe7564aaccebe6eda56872ce7bbc0912aa8ad051:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MTE1MDIwZGMxMjYzOTVjN2E0ZmVkNDJmOWNhZGFjMzdiZGQ4NzNkNmNmOWNmN2I3ZTM2MjczYjk2OGEzNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MjRhMTlkODNjMmMwMjVjNTQ5ODRiZGQ1MmZjM2RhMjMzMjNkMTIyY2FjNzQ0OWUzOGJlZTg0NjM0YzRjYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzZGYyYWNmMDZlOGMzZjAzYzcxMzVjNmU4YWM1YTljYTU0MzJhYmUwNmE3NGFjYTBmZGQ5YTUzYTAwOGY5ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/stubs.py#L37-L65",
+          "version": "repo-lines-v1:sha256:fc70d53beb3a2d32be05ba44743babfe667689b75ea1587afb7d91edde87daff:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyOTgzM2ZlZjU3NzBiMDdmZjA5YWUxZGI0ODAxZWU2ZjRhY2ZkNGZiMzBlZDVlOGU0YTU3ODYxODFiMTVmNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiMDZiYjg1ZjRkZDdhM2U4MjRkMjI3OTdlOWMxMjczOTc0ODI1YTE5MDc4ZTgxOGM5N2FmZjgyZDNiODVjN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_39fcab6f77b04895bd2b6acf4ba268fd",
+      "statement": "The closing writer requires provenance inputs together, writes provenance before optional divergence files, and standard side selection uses current implementations.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/end_of_run.py#L91-L167",
+          "version": "repo-lines-v1:sha256:f65de4521df76d586b9d670389ed35170865c03a4863ea69f525ef0881125f1f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1MTQzNzk5YzE0ZmJjNjA4MTFiYzRkNmY3ZmMyMDVhYmNkYmI5YjM1NTE5M2NmOWUyZWM5M2E1Y2E2MmNiOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b17b59c1af5648299c29d86f3497b4a8",
+      "statement": "The final declared directory may remain unchanged on an up-to-date rerun, and the CLI requests an engine report after successful execution rather than generating it itself.",
+      "evidence": [
+        {
+          "resource": "repo://docs/usage.md#L99-L100",
+          "version": "repo-lines-v1:sha256:1bc1aeca49bc0c8aec9ada3c4b9e17f2770fbc74845aa955e8170edb3c1c2cd3:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTJiZTM3M2JkZDYyMDRiMDM5MzcwOWMxNmE2NjZiMDlmZGIzYzA4MzY0NGVkYzNhNmI1NjMwMTc3ODk2M2ZkNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjhmNzk5ZDNlZWE2NzRkNzRmODc1OTI3ZTAzODJiMTE5Nzg0NjIyNWMyZjJmOTJkYmJkYTMxODRkMjJhMzA2OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDA5Njg1NTZmYTk0MmU5YjFjZTkxZTBjNjM4Y2FkNzllZjE1YzdlMzdkMzVkNzRmMTYwMjhlNWNjZTI3MWQ0OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGFkMzQ2NDA3NTk5NTM0YTkwYmM1YzcxMzRmMTBlODYzY2RjNThiNWRkYTNjYzQzMzM1NmUyNWRlZTk5ZTdkYyJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L95-L114",
+          "version": "repo-lines-v1:sha256:283d613e41076388cc17ccb261f2b41fbed058eee2a25fce6d6cd6b9437f6709:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiNGVkMzUxMTdkYzBlZjZkMmYxY2YwZjI5ZGJjMTA4MDk3YzM0MWFlYWNlOWEwNTQ5MjRjZTExYmEyODBlMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzYWIxMTlhYjgzZTA0NTBjYjhhYTBiNTJhYjg3ODA5NzMwMDYyMmYwNmFjZTQ3ODFmYTAzZWFlMDQyYTIyM2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYTc1NjY3ODJmN2Y5NjkxMDBmY2UwOTUxZmZkYzY4MzY4NjY1YTdmYTJlYjFlMmVjZDUxNzQ5YmJkOGUyZTMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L142-L170",
+          "version": "repo-lines-v1:sha256:07004fdc8d3bdd6e7957464d83566feefc2ff27353f2da7a101ceff5ee4e8047:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlOTkxYzYyOThiNGY2ZGJiNWI2OTA3NTlhMzIwMmE1YzdjZTY1ZGE3MmMwM2M3YmQyNDZmZGEwMGI0MDVjNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMTgyZDNkMzQzODFlZmE2ZTM3MTc0ZWQzMWJhMWRhZTJjMjRiNDRkOWE4NTY0M2RiOWM2NzYzYWZiNjNkYWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyYjczMWIxNDViOTA0NWFjOTc0YWFiYWI0YWMxZWE2NThkYjhiM2UwMzQwZmExZjc1YjFmNzdmYWM3MDM3YzkifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

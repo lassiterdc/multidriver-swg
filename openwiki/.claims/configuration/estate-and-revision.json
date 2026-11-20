@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:751fe98a09c19248a84acf68d5f9a4c37f865e33941b03dbe6c42981fed23f81",
+  "claims": [
+    {
+      "id": "claim_ca8237ffbe614ea3bb503921a9429388",
+      "statement": "Run configuration and binding values belong to the external estate; per-machine/project placement is documented convention rather than loader hostname discovery or a default configuration location.",
+      "evidence": [
+        {
+          "resource": "repo://docs/estate-bindings.md#L14-L25",
+          "version": "repo-lines-v1:sha256:59c1fb3071d6fea0eb226a9ff6cad5be10d3ce7ad62b0adb5561a6fda19a5256:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliZmQxYTRlODEwZWQ4ODBiNDAyZjZjY2Q1ODQ3OTMzZDEzZDEzODNiMDA0MGM1MjNiMWM3YjM0NGU4ODk5MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4MWQ1NzdkMTdkNThiMTg4NDk2OGZhYjJkOTkxZmZiYjY1MmUyOThlMDI1NTgxMTZlY2M4OWUyNzQ2Y2MyMjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzYzdmYTYxNDZkZjI3ZTI4N2RhYTY3MmEwNTEwMDcwMTlmY2M2NWE0ZGFkOTIwZTNlNTNhNDQyODM5NGExNzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxNzAwYTE5NWU1ZjU2Mjc0ZmNmMWRkMjg0ZjcxMjAxYTU4NjU5OGY2NzdlMWUxMzY4Mzk1YjcwYTRmZDY3OTgifQ"
+        },
+        {
+          "resource": "repo://docs/main-configuration.md#L3-L29",
+          "version": "repo-lines-v1:sha256:eb10633f6e1cb013600c156b7ac57e36990d99b69d9cb856a8f65e50bd64f5c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2NDFjMjVkOTU3MDgzN2VlZjlkZDIzNzc5YTc2ZWE3OGExYTIzYTJjMzIyZDA3MzY3MjZjYjUxMTFkMmU5YWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmNzI1YTMzZGY4ZWJhYzA4ZmNkMzViZWEyMGQ4ZjE3YjY5MTkyYWYzMDc5NzU5ZjcwZjVjMjRiY2JhMGE0YzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZGE3OGY2YzFlNmQxMmRjOTNlYWJhNmI1OWNiODI3MTJlMWJiNjc3OGZjMmVlODljOWE3MzM0NTFlMjgxZTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2NTRhN2RjM2ZhOGIzZjgxNmRiOTlkNTY3MDNmNDQwMDQ5OGRjYjU0ZDMzZGI5N2RmNDkxZThkNTJhNzI2NjAifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/path_resolver.py#L323-L345",
+          "version": "repo-lines-v1:sha256:e9f235c4bd754049f50e25ebc19fb24a68c59fda3caefc6f4c60b26da388e0c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZmU0YzNiYTQ4ZGUxNjYwMmM4Mzc2MTczNzlkNTBkMjcyOTJhMGY2M2ZlZTM1MTZiZGQzMTZjY2I0MWM0YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2MTk2OWMxYzU5MGUxYTFlNmEwOTdlZWJmYjkwNDdhOGMzMjA3YWY4YWRhMGE3YWNmMGI5NGE5OTFkOGQ2NWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwYWRiNTQ1NDNhNjQxM2Q2N2EwYjI3NGYxNDAyYjMwMzFlYjM5OThmNjVlYjJlOTA3NDRkNDgzOWU4YTJjZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlNGM0NjI1MTMxODk5YmE2ZmQxMDFkYzk5MTRiNzk3MGMyNDFjYmZjNDc3Y2Q0YTdmOGJiYTM1NjhhY2YyZjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fa6f9b65d2a04909a611bc67d2dbde59",
+      "statement": "Main configuration composes estate_root with bindings and constructs three project keys resolved by preparation for run output, project directory and selection; the project directory owns toolkit_revision.toml.",
+      "evidence": [
+        {
+          "resource": "repo://docs/main-configuration.md#L86-L110",
+          "version": "repo-lines-v1:sha256:d7eb67402d6b87f0c9570dd79319c29be7850d8ed4cd47ecc6a5333559c82afd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2YWE4ODZlZDE2YjdjMGFkMDZiMjc4NDMyMDIyNzk2NDBlODVlNjU5MDQ3M2VmYTkxMzA1YzMxOWNmZTgzMjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmOTRkYTlmM2UwYjM4YmIxMWZlMjJjZTM4ZDM0MTNiMzdhMmI4YmMwYjBhOGJjODE2OWE1MTZiZTQ1ZjQxNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjZjA2ZTNiOGI2NGI2NzE0NjQ5NWExZjJiZDVmNDgxOTc1NjlmYWI3M2I5MGI3Y2VhNjc1MzljOThlMjVmMjMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L332-L343",
+          "version": "repo-lines-v1:sha256:9264a8d83d8d3fb8070cd8797b1d1e91bbe670995c57e127ffafcb7076c47b7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjOWQ5NTFmMWRjZDljZDdmYTNiYTNlZjFhZjVmM2E3YTU2N2Y1Y2Q4ZDYzOGFhMzU2MjQzNWI3ZTMwZDExZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwYzU0MGMxNDRmNmIwNjQ0YzNiZWM5ZDRhZjBlNTQyZDBjMjYwMjA1ZTA4ZDgwZmUzYzAxNWRhYzdjM2Q4Y2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNWVkMDNlNmE4MzUzY2JhMWFmYjE5MWYyZjZjNDVmOThiN2E2NTg5YzNjZmRjZTBkZTE2NGI3ZmYwNTc2OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiNjQ2N2Y0YTMyNzBhZTQxNzZjYzczYWU4M2ZmM2I0NDhhMmVhN2ZhM2YyMTVmYjdlMzU0ZWM4NGRhMjVhZjIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L69-L82",
+          "version": "repo-lines-v1:sha256:4279d8556777a6d74c89455158ab4871883db15db429903b507e1f1f97043014:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4YWQxNGY3M2Q5MmRmMTc5YjAxYmEzYTM4MGZkMGM5YjhjNDMzYjBkODUxZmYwNTlkNzRiNzk1NmVlMGU4YzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4ZWI5ZDkzYmIwZTY0ZjJmNWY3OTM1NTFhNzY0NTU0OTNiNzI5OThmYjBjNjI3ODhmZGUxODJiNzkwNDg0ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0M2Q3ZWIxMmJjZWZiMDY3NzllYjgyMmJiM2FhMWYwMGJmNjMxZmJiNjkxYWFjODVmZTNjNGViM2FmNTA0NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkYjgzY2IxZWQ2ZDdkOTNiNTllYTIzN2JmZWJmM2I4MmJhM2QzMTliZWRmMzljYzRlMWUxNjAwNTI2NjUyNzYifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L179-L225",
+          "version": "repo-lines-v1:sha256:137abe558797b17483e8960f1b7d6270a5eb9d8e93e2b9719609cd3d146f37d6:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiMWM3MDJhMjYxZjk3YWU5M2MyYmQ4NDI2NGM1NTJlNDJiMDM5ZGM3OGM3NTYxNzc4ZThmNzY1ODc4M2YzMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMDNhMjc4ZDMzZjdkOTU0ODIzNDJlMzg3NTkyZjg2NjZkNTA1OTI4NzdmMGNhNDIyNmMwMTYzMDEzYTQ2YmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiNzczOGI0NDI3ZGEyM2E5NzQ2MDIxOWFjOTE0ZTNmMTM5NWUzMjRlMDQ1NTAxMDUwYzI4MGJhMGI3MWE0ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjZDI4MzU5ZDEwNTA1ZjNkODk0NWMxZjEyODFhZTdlMTU1MDRjYTMyNWJmMGUzNGY3MTMzZjE4M2UzYjRiZWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e33b9480eb6843669b139ef364424670",
+      "statement": "Main configuration uses exact main-configuration:1 and closed keys, validates absolute root, relative nonempty bindings and two-segment project, but does not prove estate existence or canonical containment of relative bindings.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L204-L278",
+          "version": "repo-lines-v1:sha256:e26f0c42fb89d79ff9d9bbae5befe1ed3fa0628b48d9ed7556642af95c195e12:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwZGUyNWQ5MTcyOWEyNjRiMjBhMTA4Y2M5MTVkZTBiMmZkMTNlZjVmZWI3ODE2NjI5NWIwZTkxZmQ5NDFiMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNzcxOGNjZWE0Y2E1NzM4ZTJkYjNhYzJjYzc3M2JiODRiYzNmZWFmNWMxMjVmN2RlOGFhY2I2ZTZhNzYwNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3NmM4NTNkODE3NDZiZDQ3YzBkMTc0OTE3ZjU4MTY0YWEzNjYyYWY0YzQ3YmVhMGRlOTk3ODY2ZmNjZjVlY2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiN2IyZGMzNzJiN2EwYmQyNzg2MjU2NTY1OGIwZjc2YzBiYjBkYzViMmQ1ZTE0MDAxMjFlNDMzNGM4OGJmOTMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L388-L400",
+          "version": "repo-lines-v1:sha256:5326ab5f7e9d57bac5ee6b9d63b3c53ad7015a5eece6a88e32da177b78b4b1b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1ZGRiOWQ5NGQzYzdjZDIzNzhjMzY2YjNkMDE5ZDg1MmY3NzViNWY2OTIzZDdmNDdjZjNjM2Y1ODAzZTFiNzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViZWYwYjhlNGQ1ZDljODMzYzkzMGJjMDQ1YzFjYmVkNmFhNGFkYzM2ZjYzMzY1YWVmNTRhY2JmMTlhNzdjOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzYWE2MjNhNWZhOGY3ZjQ5MmExMDdmNjlkNTRjNTNjMDkzYjg0MjlkMTJiZWZiZWMyMDBjZjNmN2E2MjRjZTEifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L62-L90",
+          "version": "repo-lines-v1:sha256:4022726f9f37bd7bbc09de2daf124bfb39c7fead45f1c4e2629cfb30e9594a26:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmYTUwN2MyMzM2OTRiNmRjNTljYWYzNTdmMGJmNzk4ZDcyYmE4ZGI4YzM3MjZlYmVlMTIxMTM2N2QyMzVlZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4NDViMzc3ODliNDI3ZGEzYmE4YWIzMDM2NDBlYTA5NTNlMDJlOTYxMzQzYjlhZWQ5ZWYyZjFmMmM2NzczYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1NmM5OTYxZWJlNTA1MGJmYzJiN2M3Y2RjZjVkYTI4NjIwNjk2Njk2MTk1ZjdmNTA0MjYwYTZiMjczZmNlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczODNjMTIxNjc4YjcwNzgzNjQzMmNkMmQxYzQxOTQ3MmY1ZGIzYjhjYzFjNjY0NzNkZWVhMjhjZWFhN2YyNDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_94fada66a94c44a2b3b6cc8601d6794a",
+      "statement": "Mode requirements distinguish local cores, batch jobs, and single-allocation cpus_per_task; present Slurm tables require connection fields and limits are positive, while scheduler validity is not established by the parser.",
+      "evidence": [
+        {
+          "resource": "repo://docs/main-configuration.md#L43-L84",
+          "version": "repo-lines-v1:sha256:04261e822a00dba88557fc2f1363eecf41715d1287c040def89859639c16dac5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxYTRhNDdhY2JjMTYwNjhhMDBmNTc3M2EzZTkyYjk2YzViMmI3Yzc3ZGNkMTE5N2I0ZjYwZTNhYjE4Mzg0M2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NjE5NmJiN2I2NjVjNTI3MDc5MGViYWFiYWQ3Njk0ZmJiMzhlZDY5YzQyNDQ2ZTNkYTJkOTE1OGQ3MzMyYzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhOGVlNzZhNzc2YmFjNzYwYjYxNjY0MmM3ZjYxZmZhMWZmM2FhNmVmZGI5ODJiODcyYmRiYTA3ZDA5YjI2MjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyMTZkYzE5NDkzMjMxZjFmNTM2ZjAxOTQ1MjNjNzhjODRmZDMyOWFkNjYzYjNiY2M2YjM5ZDY1Y2FkMWM4ZmYifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L149-L179",
+          "version": "repo-lines-v1:sha256:a0756af1e547b1688aceffe5eb1cb156f0b390cefb4a23effe47232c0cc9587e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MjY2YjdiNmZmZDdjYTc0MWE5MTYzN2QzYWE3YzZkYTBjMmU0ZjM5ZWZjZjJjZWMyZGVkZDMyYTJiOTE3ZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3NTJjMDNhN2ViZjhiYTJkODhjM2RlMGUwNjliZDdkYjAxZjUxNDMzNWJkOGU1NTliNWY2Nzg3MmEyNDhjNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwY2UzZjI0YWI0N2MyZjVhOWQzMzdmMzc3ZWQ4NTczZmE1NjU4NDA3NjQwMmYxYWYwNTRhM2RlZDYxOTQ2MmYifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L298-L330",
+          "version": "repo-lines-v1:sha256:3db6632bc4306d42a7b6831a92a1520cc0f194bd5de3fe0ff364d475ef2efb24:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3NWZhZTI5MjZiZjNiNWRiZmEzMDc5YThmY2JiODM3ZGJmZmZiM2ZhOTgyMWQ0ZGY5NmUwMjkyNGRhNjk5NzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1NTAwOWVlNjdmZDhkNGQxMjE4OTJmZmI3ZDMxNGYyNDY2Nzc5MzBlMDU5ZTQ3M2FkYTE5OTdhMjc5YmMzYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiNGRhYTg3OGJmYjVjNWFmZWQzYmJlNmI5YmQxZTRhYTljMDE2ZDYzNTg2NmVmZGYwN2ZiYmZkZGZkZWVkOGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cd4d953f55a340868492332f4e491537",
+      "statement": "An automatic-selection name can parse but preparation refuses delegation because no automatic-selection procedure is provided.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/main_configuration.py#L76-L78",
+          "version": "repo-lines-v1:sha256:83fc6e3fee3e131690b9cff6cdeab10be1e6a5ed1353eb9ee8a3b02754e8f3c4:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODkwZDFkNjhkNmIxM2M4MjI5N2NhZjU4YTFhMmZkNjdhYzY5NWNkNTViNDVlMTliZGQxODM4OTZlZTg3NzFjNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzZkMjcwNDNhYzJmNjlhNmVkNTA5NDY2OWFhYTA2YmIzMDU2ODk3YTc1Zjc1N2FkYzJhNGViYzhhNmVhMTkyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDBmYmI0NzMxZDFhMmU5ZWIwYjQxMmRkYzM0NDBjOTk2OGEyYmEwOWM2OTdiMzllMGUwNzI4MDNlZTU5ZjMxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTVkYmVmMmMyN2IxOWIxMzEzYWYwNTZiNjdlZTAwMzc2ODJhOGFhYTk0NmY5YzE1NzYwZTBkNTkzMGIzNGM4YyJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L149-L157",
+          "version": "repo-lines-v1:sha256:2e1e25e7514b3819c6d512be9abd0c8f9fa690335f1dc4e31adec6dfe3c4f901:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjkzNDI2ZGI2YWIxYmQ0MzdkOWNkMmU5MzkwNDliOTYzZTRiOGYwZjM0YTM4M2QxZTczODhiMmQ5OWVhYWNkYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkwOWE1M2E2MThkMDI4ZTFkMzAwMGMwYTdhYmNlZWNiZTVmYjM3ZjRlNTExZWZlNDY2NDNmYWQ2ZTY2ODcyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGUwYzk5Mjg1OGIwYWJiMjBlNTIzZTY3OWQ3YTY1NDkyN2YwZDA3OTExODUwNzY4ZjU2YWYwZTkwNDYzMDMwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDc5ZTAxNDkzYjUyMzVlZDA2MDYyOGFhNzMzNDk3ZDEwZWUyMmRlMDEzMzMyODRjMjg2NTQ1NDllMDc1OWJiZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_35d7d4b73fdd49a28a98c01e79b9e9e0",
+      "statement": "Binding documents require exact path-bindings:1, closed top-level rule/paths fields, fully quoted flat three-segment keys with reserved shared project refused, and absolute string values without dollar or opening-brace tokens.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/path_resolver.py#L115-L157",
+          "version": "repo-lines-v1:sha256:ef45905dc76af5ae51b034dd65d649659953d81e14e1004738f2b89b8874ff99:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZTQ3NzMwMTdjZTIzMzI5YmVmZmFjY2NmMGY5ZGFjZWE1NmE2YmYwNmYxNmIyNzdmNGJkZjE1NzNiOGMxYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiYTVmYjVjNzliZGYyYzFhMGZiYjhiOWUxMTg0NzJkMDY0NTI1NzEyNDA4ZWRhNDkyZDRiOTAxYjRhNzA3MzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlNjg2MTQ3ZGYzOGZhYTlhNmU4YjkwZDdmZjJjODVjZDIyOTAyNGYyNzk5YjQxYWViYjBhNTBmYWQ2YTBiNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwOThmYmE5NGVlMTNiNjBhMzFiNmY2ZTY3MWUzOWUzMzU0Njc3NjFmNDMwZTZjNjIyYzcwYTg5YzY0OGQ1YjgifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/path_resolver.py#L225-L307",
+          "version": "repo-lines-v1:sha256:45208de5a41835312634259b4aea6816ec12f19facd09b844e0bc6b629a25d58:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZTQ3NzMwMTdjZTIzMzI5YmVmZmFjY2NmMGY5ZGFjZWE1NmE2YmYwNmYxNmIyNzdmNGJkZjE1NzNiOGMxYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxZTFlMWVmZmE4MjYzMDhiZWY0MzRkNGYxZWYyMTRhZWQ0ZDBlYjBiOWNhNThkMjU0YTcyNzkzYTg2MjE3MGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4NGI2MDM0MWUzNTVlMmQ0MTFlMzc5ZDYxOTZkOTllMjM3ZjMwZGM5OGI4NmE0NjYyOWEwNmViZTA2ZDE2ZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmMTJlZDhjODE3OWZiMDBjYmYxNjA4YjBiZGMxZDIzMWI5ZTU1YzE1YmM3OWYyZTc4ZjM1YWM1NzZlZmIwYzgifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/path_resolver.py#L76-L80",
+          "version": "repo-lines-v1:sha256:d416d8ae63cf436dd08263837b1e82734d86813d00f0a30788f327ac2711e26c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc5NWU5MmRjODIwZTk2MTRkNGUzNTA0YjY4MmYwYzkwODU1OTNlYjI4NTY3MmE4YWQyZmZlOWJkZDY0MzM5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODY4MzM2YmI3NDVkOGU4MTZhOTNmMDg3MDIwNTgwYzk2OGEzMzMwZTBhYTc2OWFhM2UyMjkzNGE2ZTkzMTljOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDJiMjU3OGQ4NWYwNTQ3ZmE5MTdkYTdiMThkMjA3ODk5MTgyOWE1MzgyYzc5MTI4YmUxNmY2ZjEwODhmN2FiNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzBjZTNmMjRhYjQ3YzJmNWE5ZDMzN2YzNzdlZDg1NzNmYTU2NTg0MDc2NDAyZjFhZjA1NGEzZGVkNjE5NDYyZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_99b173a0ad4d4f05a97fc5da81585d4a",
+      "statement": "Validated bindings are immutable lookup values; unbound keys raise an error naming document and available keys, no path existence is established, and estate_root accepts no ambient fallback.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/path_resolver.py#L252-L257",
+          "version": "repo-lines-v1:sha256:9b3035fb9c1430831b6bc3f5688581f0660907b24674810c37f298d7d40f27cc:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTc4YzA0NjZjZGYwM2NjZWY2YzZkOTQxZTYxZGFmZjg2YWJkNzdmMjA0NjFhZTUyMDkxZmMzNDJiNzY5ZjFjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmFlYTRiZTIyNGVlZjZmM2M2OTNmOGExMmIwMjRkYzY5MzI5ZDM0ODVhMjVkMGNhZWY2YWI4ZGNlMWY2NTQxMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTY5NmQ0OTVkNDQ5NzdiZTM4NTEwZjZiM2Q4N2I5OTA4Yjg0MzcwMTkxNTBmN2FiMzc2ZjI2ZDQyYWFkOTgwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMwYWYxYjZjZmI5NjlkZTA0OTI0NzA5NjUwMjQxZmFjZGMzMWQwOGM5NzBjOGY0MjIxYmUwMTU2NjRkZTBjNyJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/path_resolver.py#L368-L416",
+          "version": "repo-lines-v1:sha256:52f76ae4c020ee81c30f07b73b24c29d160f44539e3981cabc26c2b8c36162dc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YWI1ZDU4ZjQwNmIyNTllMDRmZjllYzg0MTAwYzE4ZWFmOTliNWYzZGFjMzVhNzgyNTllM2M0ZmY1NTM0YmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxMmExNzlhOTk1ODZjMzM1YjQwYjg1OTY0NTNkYTUyOWE3ZjFkZGJlMWY2YzQ5MmUzM2I5ZDc4NWU3ZWFmNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjYzE2NTdhYWM2YTgxYzFjN2UxNDM3ZDYzM2M4MGVjYTI1Y2MwZTJhNDI1NTZlY2ZmYzdjN2YxMzM0YTliOTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhNjdlZDQ3NWExZWY4ZGUyZWNmMGI1OTNhYjk2MWIyZGE1YmY4MGU5NmNmMTUyOGY2ZWI3ZGMyNGYxMjQ2ZjMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/path_resolver.py#L445-L485",
+          "version": "repo-lines-v1:sha256:d859b585666db5ed1c6268b7bb2bea4883562832e668b5b141e69579bb0079e8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0M2ZhYWRhZmNhMzY0NmU1NDYyMDQ4OTA3M2FkNWU2MTU3MjdhNDEwYzk2NjNkODg4NDg1YTBjOWMyZWMzMGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0MjgzMDNkMGIxZGQ1OTFmMjQ3NTBjNGNhZDVmNGY2YzI3ZTQxNDYxZmQyODRkYjc5MmYzNWZiNmMzYTkxZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_093bafd5c2664a7daf01347e74b5d39e",
+      "statement": "Revision declarations use exact toolkit-revision:1 with only rule/commit/tag; commit is forty lowercase hexadecimal characters and optional nonempty tag is descriptive, never authority.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/revision_gate.py#L111-L139",
+          "version": "repo-lines-v1:sha256:a726b7162e51a64a7e5569d778faffd647c86a00664125e8cda8d9f5949cb0a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyYjI1NzhkODVmMDU0N2ZhOTE3ZGE3YjE4ZDIwNzg5OTE4MjlhNTM4MmM3OTEyOGJlMTZmNmYxMDg4ZjdhYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwMzBmYTRhZDFmNTRhNDU0YWI2YzE3ZDEwNmI1Y2JjMzNhOGNlNzg1MjFiNzU2ZTUwMDk2NGM1NTRlYTRiZjcifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/revision_gate.py#L281-L301",
+          "version": "repo-lines-v1:sha256:44f50f12b4670067b6338c29d3ff8aa021c659eda9e777d4f04f831261c3c883:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiYTVhYmQ2ZmJhZjBiNTViNzI0Mzc1NGE5M2I1ODFmNDUyN2RlMTkwMmIwOWZhNDVkOGY3MTI0YzczZGQyYjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMDNhMjc4ZDMzZjdkOTU0ODIzNDJlMzg3NTkyZjg2NjZkNTA1OTI4NzdmMGNhNDIyNmMwMTYzMDEzYTQ2YmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkZDQxMmM5ZDhiNjk0OTBmYTY3MzhiOWQ4OWQzOWM0YjUyZDNiYTY1ZDA1YTY3MmFlNzhlZDQ1MzY5ZTFlNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI3YWY1YmFhODdkMzQzYzFmMmNiNTNjMzMxZDY0NWJmMzM3MjE0YjVjODg3Zjc2NjRjNzljZmVmZTZkMzVjZTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/revision_gate.py#L69-L78",
+          "version": "repo-lines-v1:sha256:68705028b04e6f41dc8faf45cff97b4dfa62c88d744f668eb25aee4954ed7fa7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1YmM4YjkwMThmN2RiZThkYzRiMGI4YzBmNTU4ZDRiNGExMGU3ZTcxZDBiODljMjcwNDE0YmU5MjM4MGMyMTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmZWFlOGMyY2EwMmJjYTMzZmMzYTc3ZDhhNzhjZWNjZWY4NDE1NmExMWMzYTkzNWZiNzQ2ZDA3NmNjYzUzYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiYzM0MWYxNzFmZjJmZTZmMjY2YzNlMzI1OTA4ODhlNjU4ZGJkMjFlYTVlYmYxZmUzM2ZkOGY4MzdjNTAwNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1OGNjNzc3NmIwZmZkODYwMjdmZTU0ZWFhNGVjYjc3NWVkZmMzNDczNWNhNWJkMGJkM2E0ZmYyYzRhMzY0MTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_722d89f0f5b24fa480a892999a477b36",
+      "statement": "Revision enforcement checks imported checkout ownership, declared commit equality, then clean tracked/nonignored-untracked state; Git subprocesses strip repository-location variables while retaining configuration.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/revision_gate.py#L195-L240",
+          "version": "repo-lines-v1:sha256:1433da5901445e5b59105a9d546b0dad338be573100e847e3177b5eb6a447ad0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyODk2NmFjMGFhZmYwN2UzOTgzMjRiYjJlNzdiZWVjYzUyMmNlNzY0ZTI0YjUxYWI5ZGQyYTg5OTEwZGQwOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2Yzk5MTgwNGNhYWZmMTZmZjk0ZjM5MWY4NGQ4NjhjNGMwZWZiMDVkZjRmODUxZmMwZjc3YjMxYWE1YjBlNWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0OGM4ZmYyNjU5NDVkMGFiOTU1OWU5ZGNkYzQwZTVlNmIzMjg1NGZhZWQ4ZjVkYjE3ZDI4NWVjZTNkODI4NDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwMzQ0MGQ3MmU5ODE5NDQ0MjVjNWFiMzMyYzY4MTM3YzlmNDBjOWQ5MTdjODAyMDg3MDRiNjgwMzZiNWExZmMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/revision_gate.py#L337-L404",
+          "version": "repo-lines-v1:sha256:96c87a556a5e3b494f5624e7a0cdb8d0b6457f3d7ffe8723d896896f4b2863c7:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMTlkMWM3YTZkMmFjYzhjYzBlYzQzOTk5NmQxNDljNWI3NzliMTE4MTBjOWYyODQzZDc5MDkxODVhNDg3YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzMzMzNzFiZGEzMjQ3NDQ4NDgyNmRhYjFkYTgyM2M1NGZhMDVhMTZiMDk0ZmM0ODBkZDQwNjQyNzVhYWQ1YjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiODJmYjUxOTUwYWQ3NzFiMzQzYjg2M2IyOTQ5MDZkZTFhYmVlMTNkNDhmMjcwZmZjNzBjNGExYWQxZDVmNWQifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/revision_gate.py#L423-L451",
+          "version": "repo-lines-v1:sha256:5a6debaa36bc5b892e9bb27800a4380d798d155dacec30d6a2587804eb40be89:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNTI3OWUyNzg5NTIzNjY5ODBiNmMxMmQ4Zjk4OThlNTUxYWY3ZDc4YTcwZmZlNWEwZmZkMWM4MGNjMDM4NmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMWU3NzkwYzcyYmI3OTViZmJhYjBkZGQ1NzMzN2UyYWFiZDk4NzUyOTdlN2U5NDZlZGU1ODc3YWRlY2U3YTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmMTkwMWFlODk3ODM1YTY2MjA2ZTBkNzBkZTE2ODJkOWU1M2EwNjIxNDE2NWI4NzAyMzMyY2Y4ZmUwMGRhZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczNDM4NDZlMzEyNmIwZTQ3ZDE1YWQyY2M1ZjZiNjdiNTU5MGU1M2YxODVjNWRkN2JkOTA5NjhhMTViMzA5N2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_505d00ffce8e439da6f8a466948f31f1",
+      "statement": "Revision checks run in preparation and again at every Snakefile parse through the run-start/configuration/bindings/declaration chain; graph-start wraps refusals as WorkflowError without a bypass but does not validate selection contents or outputs.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L49-L54",
+          "version": "repo-lines-v1:sha256:8c9e9c7597b5c3657cb8f1c7f1b852c782e50d33cf66e8c5b3391c801bed434c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzY2MDM1ODYwZDlhZDFkYzY1MzE4NWE3NTQ3ZGYyYWRhNzI1OTgwYmYwMzlhZGI0MmFlZGRhMjY5OTdlYjY4MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjllM2E3MWFjNjU3M2RmNzhjMDcxMTA3ZGQxNTE1ZmQxZDE5MmJiOWU0ZjFlNmQ2YjI1MDJiN2Y0NWJmMDQ3MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGQ4MGQ0ZTZlMDAwZGI3NmIzZmNiOGJkM2RkM2UxNDRhMDA3ZDNkMTE5YWRkYzg4OWE0NGFkNGJlZGJmYTY3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQwMGQ3OTEzNGRhYzEyYjdiNjhjMjRmMzYyYzAwNzQ2ZTU5MjQ1YWQ0ZTg1MjkwZWZkZGM3NzZmN2JmMGQ0NSJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph_start.py#L1-L30",
+          "version": "repo-lines-v1:sha256:67353962d34120d3d638dbcb27f12b9757cac9d6bb00478948982111051d36aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NDEyZWIwNDhjMjc0YjdkZmM5ODAxZjhlOWE1MzEyMjhjZGE5ZmYxNmY3ZWQzZmNlNzEwNWZmNjczYzEyYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZDg5N2IwOWVjNDYzM2I2Y2QxZDhkNDFkZTI3ZGIzN2NhZWE3ODdkZDI3ZWU4NGU3NzBhYjQ5MjZlNjI4YWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph_start.py#L109-L145",
+          "version": "repo-lines-v1:sha256:051d4f9eeb3082bddbd9419af605ca3461497623e4f498f8abbbdbcee6f52ebc:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlNjQwMGVkNTgxZGVhZmFiOGUyZGFjMGJhZmFhODZkZWIwNGRjOTQyYzE1OTNhNDVjYjE4YjBiNDYyN2E3Y2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4OTM5YzliYzgxMDZjMTYwOWJhOWM5M2M2MWQ1NDIzZjgyZjRkNzI5YzA1NjM5Zjg4NmUzYWRkZWUwYTFiYzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkZTg4NTYxNzUwNzQxYzk2MWFiMzU2OTVhNzY0ZDFjZWEyMThmNDU3MDE2OWE5MjlmNDBmMDUxMDkwZGMxZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph_start.py#L60-L80",
+          "version": "repo-lines-v1:sha256:a65cf061ebbe8891dfbf403ce6cb28bba0af56d6c8c50dff15d19719406ab26a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MDIwMGE0ZTI3MjI5Y2Y5YjY3Y2FjNjBjZTAyOWFlMTM2YTU4ZDllMjkzZmQ3MGYyOWQ0MzcxNTAxMGMzZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4ZWNlNTQ2NGYxZDc3ZjJkYzFiNGYxNDQ1NDY0YmE2OTIxOGQwNjkyZjU0ZjY5ZjA4ZWQ1MTU1NTQ4ZDI3ZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwMDY1ZDIyMWNiMTViZTYwNzM5OGNlODk1Y2Q4YzIwOWEwNDNjZTA1ZDgyMjE1YjdlZmYyN2NmNGYxYTVhNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZDVkYWJjMTQwYzA0YWE5NmIwZjc2MTg5ZjBlNmUyNzhlNjBlYjFlOWFhYzBmMDA3ZjcxMDliNDNjY2U4ZjgifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L159-L168",
+          "version": "repo-lines-v1:sha256:cb2737776f6d38d463d62f377604179f990a7e5b581fb8bc00616f7c0c2d6ed7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxNTZkYjFiOTRjZDZiM2IxNTA1NWQxYTQ4MDg5MjI4YzIwYjY2MjIzNmQxOWE3ZDA4MTcyYzNmMTA5YjdhZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViZWRiYTRlM2M3Mjc2MmEyZmRkYTdmN2EzMDE0MGUyMDYzN2E5MmRlZThkZDU0YjgwYTcxZGYxYjM5YThkOTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyM2NiODAwNTczNWJhZTNiOWMwZDFiNzJhZGQwOTFmMjFjOTdjMzVkYjExYmVlZTJlYzZlZDRhMjRkMmI0ZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzY2JiZjFkMjJkNDJiNjcxZWQxYWI0YTZhOWRhNTZmM2RiYTE2MWIwZWFjNWU3ZGY5MDE3ZGEwZDc2YjAyZTEifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L213-L225",
+          "version": "repo-lines-v1:sha256:02386ef70dcf2963686ff4ba04b7b6373d097f18826aefad880340559ba4d0d7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1MjlhNDU5ZGM4NDBlODQ0ODc4ZDUwZmIzZjNhYzI0MGMxYzhjMDE1MGJlOTk4OWJhNmNkODJhNWQyNDhmZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMDNhMjc4ZDMzZjdkOTU0ODIzNDJlMzg3NTkyZjg2NjZkNTA1OTI4NzdmMGNhNDIyNmMwMTYzMDEzYTQ2YmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3NGIzNTY3NjUzZGE1ZTdkZjU0YjkzZGNjYmJlMjFkODZjMTNhZmYyMmUzMDM3NzUwZDEzNDFkZWI3ZWUyN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjZDI4MzU5ZDEwNTA1ZjNkODk0NWMxZjEyODFhZTdlMTU1MDRjYTMyNWJmMGUzNGY3MTMzZjE4M2UzYjRiZWIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

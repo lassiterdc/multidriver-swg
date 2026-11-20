@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:5dd210f9ba15db31579ecbec19bddc7f4d0fdc4a51da075f4fda5ce2fff8bfc4",
+  "claims": [
+    {
+      "id": "claim_5fb84b4aaeac45109ab2925d87a17405",
+      "statement": "The whole-suite workflow invokes an unfiltered pytest run with --result-record and always attempts artifact upload, but root conftest only bootstraps imports rather than registering that recorder.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/whole-suite.yml#L27-L46",
+          "version": "repo-lines-v1:sha256:22a057190dada95d7b058352381583d2b156332a887e9522c4e27119f2034e9e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDgwMTU0ZWQ0MmZjNWM3NzliMTMzMTU3OGI1OGI4OWM4MDFlYWNlNzRmMjRjZDQ4ZWI0YTIzNTc5NDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiNDk0MDYyNDFjNWUxYWQyZTE1ZjI2OTE4MzUwMjk0ZmJmMWMwYzFhYjM3NDJiN2U3OWU3YzM4ZWMxNDEyNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMWQ3MGQ3MmJhZDIzMWQ0M2M1NzVhY2VmNjk0NjU4MGU0MzljODc5Nzk0ZWQyZWExZjRhNDAzNDAyNDUxNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://conftest.py",
+          "version": "repo-file-v1:sha256:4e3e3219478d49fcd6231ff6294996d6edbe07daa8b64a3e0c369e636c72eecd"
+        }
+      ]
+    },
+    {
+      "id": "claim_3f94abbae0ca4ba9847fe7c2f221de32",
+      "statement": "State check uses a marker-filtered subset, whereas the test dependency group pins the scientific/tooling environment and the whole-suite installation additionally uses hashed requirements.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/state-check.yml#L19-L31",
+          "version": "repo-lines-v1:sha256:49ba867f08fca9108475d68ddc86312a103d2e4fd282ee9803cba45f64825ba1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDgwMTU0ZWQ0MmZjNWM3NzliMTMzMTU3OGI1OGI4OWM4MDFlYWNlNzRmMjRjZDQ4ZWI0YTIzNTc5NDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllMGUxOGRmMDNjOTM2NGRkMGE0YTExNmRiNjQwYjkyNWIyNTBiNTViOGI1MGRiOWJhMmM2ZDkyYjgxOTZjMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMWQ3MGQ3MmJhZDIzMWQ0M2M1NzVhY2VmNjk0NjU4MGU0MzljODc5Nzk0ZWQyZWExZjRhNDAzNDAyNDUxNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/whole-suite.yml#L27-L39",
+          "version": "repo-lines-v1:sha256:fc4c260204a8fce6f7e5af6a002d125dd663457d38279cf2397ddd5225b5f4bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDgwMTU0ZWQ0MmZjNWM3NzliMTMzMTU3OGI1OGI4OWM4MDFlYWNlNzRmMjRjZDQ4ZWI0YTIzNTc5NDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYmU4NWYwYjIwODhmZGFiN2ZlOGIxNTg3YTU0ZjQxYjljZWM0ZDdmMjQ1YjIxNjFmNGQ5YTExYmQ5NTVlODgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMWQ3MGQ3MmJhZDIzMWQ0M2M1NzVhY2VmNjk0NjU4MGU0MzljODc5Nzk0ZWQyZWExZjRhNDAzNDAyNDUxNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxNDEyZmZlZmM5OTg4NjE2NjBkMGQwYzg2YmZhOGRmZmYwMTA1ZjhlMGIxNDdmZjU4NWQwNzkzZjM0NTNkN2IifQ"
+        },
+        {
+          "resource": "repo://pyproject.toml#L40-L69",
+          "version": "repo-lines-v1:sha256:838eeb32ec3d74689b14cba86587187f325c0fcc78650e2a8f5adc8bafffdd9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NDY5ZWIzODk4ZTA2ZWZhNDcxNGFmOTVmNTNkODkzZjc3MmRjODY4MWQyNGJhOWQ4ZTlkOWRjZTE0NmM3NWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE2ZTA5Zjc4YmEzMTZjMDMyNTY4MjEzYjg1NWVlNzU2ZTQxNTY1ZDkxOGYwOTUxOWM4MWZkNjIwZjQwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjYjM2MzI5NjBkZjdhYWYwMTg3NmQzZmZhZTk1MjEzNDE3MGVhOTdiMjdiNzkzODMxMmQxYjU2N2JiNjNiOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiYWZkN2I1N2M4NDlkMDQyNjg3Njk0NjZiNzdmZDhjNzRkNTFlMGM0OTAwYWUwOWRkZDhiMjAwZTFmYjAxMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_03d753d6fc67438db0e2ecb5a9162aa7",
+      "statement": "Root conftest prepends this checkout source only when needed and when PYTHONPATH does not explicitly name another copy, propagating the repair to child environments.",
+      "evidence": [
+        {
+          "resource": "repo://conftest.py#L11-L39",
+          "version": "repo-lines-v1:sha256:88d1c5aa597e6c3a867a027a04b4b332c84e23f97c75908e7a2f06e713cb908e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxMmJlOTlkM2E3NWQ1NTA2NTgxMDMyM2Y2Nzk4MGQwYzM0MGJkNTZlOTI1ZGVhYmU5YzI3ZjdlYmM4ZDZlZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiMmE5NGM3YjNhOWQwNTE2NTllNjJjNzFhZWNjZmM5NzhhODU4N2U0YmRjYmE1MjQ0ZGVjNWFiMDU4MGUyMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5ZjFiZmEyMjNiOGU0OGIwMTRmNzY1MjIxZWMxNDM0Zjk3NWNiMjVmNGVjMzYzMjkwNjcxNzk4NWIxMDY0MzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e64af90619f14d99a780d2544492550f",
+      "statement": "Install CI builds both distributions and checks highest and lowest-direct resolutions, with wheel public API checking in the highest job.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/install-check.yml#L30-L65",
+          "version": "repo-lines-v1:sha256:34256cadfe347844a7b3bf9f695dfe91418d79f80958865094af5c7d0ef798c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDgwMTU0ZWQ0MmZjNWM3NzliMTMzMTU3OGI1OGI4OWM4MDFlYWNlNzRmMjRjZDQ4ZWI0YTIzNTc5NDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyOWY0MWE5YjVkYThjZmJiZTE0M2RhMmI0YTUwNGQ1MDdjZjY2NDRiMGQ3OTc2NzI2OThjMjRlYjI5NWNmMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMWQ3MGQ3MmJhZDIzMWQ0M2M1NzVhY2VmNjk0NjU4MGU0MzljODc5Nzk0ZWQyZWExZjRhNDAzNDAyNDUxNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_00632feec693451baff252bab55adde3",
+      "statement": "Anonymization CI checks machine-path/public controls, count-only behavior and private identity input, failing when the carrier is absent while reporting secret findings without rejecting their count.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/anonymization-guard.yml#L57-L151",
+          "version": "repo-lines-v1:sha256:5afd42fc88a61cc0dc08de07a00e0b76744be0d7dbd4074fd5e982f4d7f4e133:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMjJlZTllNTg4YWExMTZiY2Y5MGFjMTRkMmExYTY0Y2RmNDI4YzI2NzMwZmRjYWU5ZjA2YWIwYTQxMTMzMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiZTBhYmExMDQ5YzM4ZjIxYjkxYWNhYmI5NGMxYzRlZDk0OGFiMmMyMGYzNTI4YzdmODE5NTU5NTU1OWJkZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViZGVjZjU4YTNjYWU3N2VhZjg2OGQ4YjA3MzUwYjNjMjJmODlhODAwZTg3MGRmYjM1M2I5N2MwNGVjZmY4MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_755e2eb2b2a24d529cb686f4ae736972",
+      "statement": "Release result admission requires passing complete records with no exclusion or narrowed collection but does not compare an embedded record commit identity.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/check_release_tag.py#L220-L262",
+          "version": "repo-lines-v1:sha256:a3f98956a56ae238886452fea66e70eaf333f97d97b785dcf1e0b99f354dc5ab:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2OGFjNzMzNTk1MTI4YmNlYjUwZDI0MWY5MDk5MTBkOTZmOGJiNDdkNDBkOGRkZGQ2OTFlNWY4NDQ5MjYyMzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiY2MyZTViMmU5YzYzY2ViYTZhZGUxZWU2ZWQzMmNiOGI1ZWQ1MWQ1NzVmZmJmM2IyZmM4ZGVjYTE1NTdlNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzMTgyZjc2NDZkMTUxMDVkZGRlNDA5ZDM2ZmRhZDMwYWEwZDcyN2I0YzA5NDkyMDliNWU0MjE5NzFjOTQ1N2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aa8c8f8268d0435fbaff0a8c5bd6b6c6",
+      "statement": "The declared pytest markers are state_check and conformance, while the precommit divergence hook refers to a test-tree module rather than an implementation in root conftest.",
+      "evidence": [
+        {
+          "resource": "repo://.pre-commit-config.yaml#L56-L63",
+          "version": "repo-lines-v1:sha256:b4c54a26e88ab3850dce584c8c71570a4b4461eb216dbaa2bdb2b3d6ed4e5cfe:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA1YWM3YTc4Y2U4ODNmYTE4YjcwN2U4MmYzNTVmNGRkNDQ5Y2ZlY2M3OTJmZWQxZjBkZDI4YWUzZjYwOTg1NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ4ZjgwYjVhNzNlODRiMjY2ZDQ5ZDc3ZGI1NDg1NzQzNjJlNzkxNjBjMDliZjQ2MDExMTJmM2JhZjNlY2RhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTA1YjI2NzE0Mjg0YjYyNWM3YTQyY2QwYThkYTVkNTM2Njk1ODNlZjZlZDA5NmQyNTEyODQwMjg3MDUwNWM3YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://conftest.py",
+          "version": "repo-file-v1:sha256:4e3e3219478d49fcd6231ff6294996d6edbe07daa8b64a3e0c369e636c72eecd"
+        },
+        {
+          "resource": "repo://pyproject.toml#L92-L99",
+          "version": "repo-lines-v1:sha256:10d65c4afa794ec5f51e6be5f2ca97561f56e57f5ad1937eb3b528d064555b79:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODY3NmU2NDE0NjVhNjU1MWU5ZTljZmZkN2ZhYTFlNmE0MmY5YjcyNDgwOTgxM2M5MDNkN2VkY2I1MmYzMDA2ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI0MzZmYzIxNmNjNjA0YmI3YjAwMjZkYWY5OTk5YWZlOGUxZjg4ZDY3MTAzNzE2Y2Q1Y2JjNTQ3OWY4Y2Y4MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDU4YTAwMWM3MjEwNGJhMDdmOGE3NjEzMGI0OWE3MjM2ZTdkOTM3MjNiMDQyZDNkN2E5YzVmMzdlMTc0OTcyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

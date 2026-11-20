@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:75a3aed4ab0109d749c6711e39aa0170e154317583ef0063584cb9903e50c9f4",
+  "claims": [
+    {
+      "id": "claim_d515cb6568914b7ea1753eed744250d3",
+      "statement": "The manually selected legacy corpus is pinned to stormy revision c74c8a4052efcbb1345981721532f462090d1a12 and records digests and dated upstream verification rather than certifying all scripts runnable.",
+      "evidence": [
+        {
+          "resource": "repo://_old_code_to_refactor/README.md#L3-L14",
+          "version": "repo-lines-v1:sha256:437b7e1e222efce760c226c48edb50e56ba3689586ac934cb81a94e5543dc7bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0NmMxNDk4YTQ1NjJkYTdiYzRlNTJiODY5MTZiOTI3Njg3ZWRhNjM3NDA2N2M3OTZkNTdhMGYxY2VjOWRiY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhNzg4ZDkwZWMzZDI4MTE1MmY4MDNmMmY0ZGJmODBiMjU3OWVmNTM1NGJkNzQxODhhOWU3MjgyM2YyNmIyZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwMjVlOGNiYTg2MTViOWEwZDhmOGExNzBmYmNmOTJjY2ZkNDU2NDNkNWM1MmNlOTdkM2JmMWE1MDQxMDkwM2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5ZjdmY2I0NGNiYTgyMDY0YWQ4YTg1NTBlODAwN2JmYmEyOGQ2Y2FlMWI3MmFjMmFmZTM4MzgzOTkzZTQwOGUifQ"
+        },
+        {
+          "resource": "repo://legacy_corpus_record.toml#L153-L171",
+          "version": "repo-lines-v1:sha256:1c1b889f30ebaea67669ee1cecd6b62c459aa09cc8d9daa672e5bba0860efb45:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMzc2ZWQwZjMzZTNmZDBjZjBmOGNhODRkZTI1MzAzNTBmMTA0MzVmOGU3YTFjYzRmYWFhZWQwM2ZiZDRkNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ODVkMDkwMmQ5YzIzOGVlYWQ4ZmZjYzJlNDc2ZWFmMTc0NDYyMzZkMTI1ZmNmZDQ4OGFiMzk0OWQ3YmEyMmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmZTIyOGRkYTRlZGI2Y2IzNjVjNzAyNzM1NDg5MTgzZGMwZTMxNDhmMjZjOTBiYTdhNzJhZjZiODNmOGU1YTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5OWM3YTk5N2Q4Zjc2MmYyNjIyYWY5YzZkMDc1NGYwY2NkMGE2ZmE3YTc1YTczMjcwMDA2Y2FkZjBkNTgyMGYifQ"
+        },
+        {
+          "resource": "repo://legacy_corpus_record.toml#L193-L233",
+          "version": "repo-lines-v1:sha256:933ef60fd2de13dfa92e829ea1187a21c4152fafafe0d6284ac438ee0da51688:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyOWZkMmI2M2FkMWQyNTlkNGI2N2IxMTcyNGNiN2JiYmNmOTYyNDE1ZmFjNzZlMTM2OTc2YjU4MWU5OTkzYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4ZGIwZTY1YmU1MDExNTE3MGE1MmIwMmY4NDdjOGEyODllNjFmYjMzYWYyMzJhYmJjNzM4YzZhY2RmZWFkZmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmZTIyOGRkYTRlZGI2Y2IzNjVjNzAyNzM1NDg5MTgzZGMwZTMxNDhmMjZjOTBiYTdhNzJhZjZiODNmOGU1YTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://legacy_corpus_record.toml#L7-L20",
+          "version": "repo-lines-v1:sha256:61a2fb10b8c4c3fb252b1e95f6e1e78955df76fc8d28535864043a6083df2407:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxOTA4MDFjZTJlNjMzODQ0N2E5Zjk4MWMyYTY3ODQ5ZWYwNDQ1M2E0ZWI5ODRiMjk2ZTEyM2MyMmZiMmIwMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1ZjhkNmJhZDY1YWUwNjNkYmZiNjllYzA3ZmUyN2NiNjQ5ZjQ3OTgxZDgzNTBjNDgwZTFlODI1NzllNDE4N2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzOTQxOGZmYjY2YTdjZmY4OTA2OTdmMjEyZGVjZjlmYTQwZDg2MDllNDA4Y2NkM2Y0YzFkZmRlNGRjYTU3ZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMjg2ODgwOWUzMWU1Mzk4YzVlZDI3ZjgyMzAzMGE1ZDQ1MmUzNGY3ODU0NTgzMTJmYjljMzQ2MWZlNzhkYWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4582161c0e474766baf5d866cf114367",
+      "statement": "The corpus has an MIT license and separate third-party attribution, while the toolkit metadata declares AGPL-3.0-or-later; acquisition work is assigned to hydro-fetch.",
+      "evidence": [
+        {
+          "resource": "repo://_old_code_to_refactor/LICENSE#L1-L13",
+          "version": "repo-lines-v1:sha256:29c71178e181881732031b2d5114f700e9dc4925e95f7420d6e0e25b7b4070bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2N2Y3YTJlMTlkZmE5ZGY5OWFmNzc0NTIwOTg1YTBlNTIxOTI1MjkzZWE1YjdlNzY3YWIwNjk2OWQwNmJmOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0ODU4MDY1ODM5ZTM0MTU0NjQ2NDBkYzMwZDYwMjJlYjQ2NDQzNDU2OWIyODdiN2YwZDVmZDRkYTBkMTUwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3ODliOTQzNWY2NDYzY2QyNDZlNzExNDRlODk2YzhmZTYxMzAxMGFmYzE5MmYxMjU0YTkxOTM3N2Q4NjdkZmQifQ"
+        },
+        {
+          "resource": "repo://_old_code_to_refactor/README.md#L20-L24",
+          "version": "repo-lines-v1:sha256:eb05b23e0420ee544900e9d7b2a6d7a93f6996db3393d3973991a873f796722d:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWE3MWZmZjAxZmZlZjIzNDAyYTRiZjQ3ZjU0NjFjZmFlMjE3ODNmYjYwOTIzNzE5OTkxMmZlMzNkMGYxMThjZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGE4ZWYxYjI2ZGU2MjE5NzUyM2ZkNjE2NDg3Zjk5NjY3YmExYTVjYmMwOWIzMmM5M2MwMDA3MDQ1MGU3MzczMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzNhMjRmYmJhOWJkOWUzN2ZkZDM1ZWJlZDA5YTRlZjFiYTRjNmZiZjgyNWQ2YTFmOTk1ZGMwYjFmNjAxN2YxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDY1NjM4ZjEwNzM4MjI0MjUzNmVjYjdjOTBmNTk3YmMzNjU5Njc4NzkyYjMxNDhiZGI3Mzk4MGJiOGQyYmM1MiJ9"
+        },
+        {
+          "resource": "repo://_old_code_to_refactor/README.md#L62-L64",
+          "version": "repo-lines-v1:sha256:e2d30f42e5087f4af3baf6853fa9689b314f12355a32b17decc2fdf4f7b89366:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjZiYWZkMTkzOTZjNmUzZDQ4MDI1NmViNGNjMzliNDRjMzgxYmU4ZmJkYzNhYzNiZGY0Nzg2OGE3ZmMxNjUwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjViYTYxMjg0ZTc5ZDMzYjFjMGMxOGVlMDkwNzIwMWU2ZmEzYmQyZWZmZTYyOTA0OWI2MjY4NTAwOWUzMzIwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmM5YTMxNGJkOTZjMmVlMGE4ZDhkN2FhODdhN2Y4Zjg0OTk2NWYxYTY4NWY5ZWQ5YmRmMmUxYjM2ZTc0ZWZhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://pyproject.toml#L21-L25",
+          "version": "repo-lines-v1:sha256:e0d36cae5791c6751438036420bbb9d78a292e448bd844c70e1236bba594e852:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJiZWFjZjc3MDQxMjA3NTEzNmE2MmMzMTExOTg2NWQ0MGNjZDI5NDA5Zjg0YTZkM2QzZmZhYTc1YjQwNzM4OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZhYjQ3MWNlNTk3OTAwMWVjNTFmOTc4OTNjYjdkYjU0OWQwNzQyZTE3OWIxN2U5MzBiNDNiYjlmM2FjZTVlOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjIzOTgyYWJjYmY1NjZmM2ZmYWI1MTEzNThjMWY1NGIxYjNkMDVhZmNiMGRhZTdjNTAxZWZjZDQzMDkzOTc0YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDE0NmNjYTFkYWZiZmJhMGY1ZjQzNGI3ZTJjMzZkMGEyNmQ2ZDcyYjc2MzViM2MyMjg4OTUwODU0NGYxZjZjNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2d10aedcea1c4115b7fe9777c0cdd3b2",
+      "statement": "Pairs register on import without wrapping callables, reject duplicate sides and invalid sides, and currently declare EXPECTED_PAIR_COUNT zero.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/pairs.py#L27-L72",
+          "version": "repo-lines-v1:sha256:c7505b6ee376bddbf5b4b699de4926a67407e66e48a55386708fdf317a30d254:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlNzg2NmM2MTE2NDQzNDc1ODM0MTBlN2MzM2E3M2M5MGRjNzdjNGJkN2MxYjM3NjZmZGI4ZGIxNmYyNDBmYzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxNGRlZGNkMGQxMzRmMzM5OGE4YzJlZDAxZTk5OGE0ODk5ZjM0ODBiNzA3YjdkYzMzYmRkOTI5ZjZhMzViNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2NmJjZGQ4Y2NhZGQ2NWI0NDM1MWJmYWNkZTZjZTY1ZjU4M2NhM2NjNTM3ZjBmY2Y1MDYxZWVlNjhkNzYzOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwMzA4Y2VhMzMyY2EyMmJkMzZkZThkMjkyMTI1MjY2YTJhZDJkMDAyMzhkZGY4MTZmZDkxZTI5MjAwNjA1N2EifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/pairs.py#L8-L19",
+          "version": "repo-lines-v1:sha256:12b7156a785df09845e12aee6290c293a8b07e9472c021668ac3e010ea576af7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0YWI4OTRiYzZhZDAxZjQ2NzZmZWRhYThmM2UwZjBjMGQ1NjVjM2U4ZDRiYzk1OGNmZjgxZTM5YzRhNjQ5NDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MWFmNTFiMjJiYzlmZTUyMzZkNDQxOTE2MzY5YmZkOTkzNzk2YWM2ZmUyZmI1ZTNiYWE1Mjk4OTkxYmQ3N2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0ZmMyZTE0YWYxZjFkMzEyMWJiYzMzNjY1YmMzNzFhYzUxMmE2NzE4MTc4YzExYTA0NzU3YmYwYzM3ZjRjZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_69f2ee2c4e8e439d98e352bbec3547d0",
+      "statement": "SideSelection defaults to current with immutable overrides; runtime dispatch checks the live registry and refuses unknown pairs or absent selected sides without fallback.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/dispatch.py#L119-L135",
+          "version": "repo-lines-v1:sha256:1c75a624f9959f5e07d78a4c57d85cab3de9054dc22ec470d051ffb89c7e3414:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0ZjU2YjgwNTVjYTRjYzllYzU2OWU4NTZjY2NiYzhlYzI2MTAwMGU3ODI3YjI1YTIyMjkwMDkwMTVjMzQwNTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhZDYwMTAxNDQ2YzIzYzgyM2M1MmU0YTMxY2JjYjNhZDZhZTBlZjM0NWYxNDk0Mjc0YWExODA3Y2RhMWYwOGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiYTdlMzZkZjU4ZjA1MjU2OWJmMDU0OWE1OTExNzNkNTNiOGIyM2I4MjY2ZjUzZDBkNDBhYThjMzg5NzNmOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/dispatch.py#L47-L110",
+          "version": "repo-lines-v1:sha256:05c40f28bf5c35e137825f0b3971095e136ee6cd7a8ac455429be23ce96c9091:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczODg3OTkwOGJiMTA0M2U0ZTZhMTFhNTExNTBlN2RlNWU4ZmM3MDA4NGFiMGJiYjQ2ZjhmZmY1MjU4ZjAyNGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzNjY5MDM4YmY5ZTZjOGJhMWRmYzA0ODMwNGI2NDU5ZmM5NDM4MjlhNTkxOTc4ZTQ4YWU5NDcwNDRkNzE4YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZWJlMzY3NmE5M2U1OGU5NjMxMGJmNGEyOGY4YzMzNjRhNWVmNTYwNWFhZWM4NmQzMjU5ZjU2YTJlOWQ0ZDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cdb876927d774addb1ee4e505b498750",
+      "statement": "Side records snapshot sorted validated choices for all registered pairs, distinguish empty from absent records, and attest selection rather than invocation; the module does not persist them.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/side_record.py#L3-L28",
+          "version": "repo-lines-v1:sha256:2393fecc15ef6c7c8bbe88660fe797b9e06db7f43863d2e4bcde586c134f1639:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2NDVjYWU4YWY1YWU3ZjA0NWM0NTQxY2FiNTVjYWY5ZTllOTc3MDVkMjRlZmE1NWNlNjJlZTg0YTE5MjFhMGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3ODBjYWQ4YWE1MmI4NTg4MDE1ZDJhZTVmZjI2MDE0YzRlNDZiZjZmMDhhYjBkN2E1MmJiYjRiMTUyYmM4MjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5OTk3N2MyYmRjYTZmNmFlNWY2ZWM2ZWQzOWY2NWYxYjRmNThlZjE0M2QyODM2YzU5MDQwYTc4NmM4MWY0NDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/side_record.py#L41-L81",
+          "version": "repo-lines-v1:sha256:1b884317ab98f8b4a88a29bb849ada19303bdf1b704fe86d0b5d927d84297556:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmNmNhN2E4MzQxMzgzZDI4OTdlOTcwZTNmMmQxMGJjMzg1MjE4MDVlNWFlZGFmMTNkMGI3ODJmZDA4YjlkOGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNTQxMmE0M2Y1ZWEyZGM4NDQ4OGI5YTkwOGY3MzZiMTA5NGFmNjYxYjNhZDdmZDEyZDljMGU3MGIwODA3MDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f52229d006b043ecb45263cd3d229283",
+      "statement": "The divergence ledger distinguishes pair agreement/divergence from unpaired departures, validates required reasons, kinds, future-pair constraints, and fingerprint form, but does not resolve units or verify fingerprints against code.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/divergence_ledger.py#L149-L169",
+          "version": "repo-lines-v1:sha256:8bea2457730f911ce02b48b783052a46ed70d0f074e2c7395fdbf633054fe7bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3MDI5ZjQ5NDZkYjBjYWU4M2Y4OTM1N2EwZDVmM2QyYTc2ZmJiZThmY2Y0YTk1NGUxNWE3OGNhOWY2MjY3NzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViYmYyNTA4MTJlZjU0YWE2MTU2MjI1MjY3ODg2Mzk2NTc4NTVlMTRhYmNhNmNhM2VlN2MxNTdjMDg4ODBmNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhZTNlODFjOWFmOGIxOTg4YjZjMmM4OTg0YmI1Nzc1MjU5MmViZmMxZmJmZjRiZDJlODlmNDI2ODU4MjYyNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiNWFhMDliNDUxYjI4M2FkZDE3NzI3N2JkZmNmNGRjZDk1NzQ3YzgxYmRhNGRmMTZjYmE0NzM5OTMyY2U3MzkifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/divergence_ledger.py#L3-L23",
+          "version": "repo-lines-v1:sha256:8586651f6b813ffa461e26607a00d9813411989ed96b17246ad6b2433f5ab10b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYmM2ZWNjYmE2NjQ0ZDg0MzMxOGVlMDdjYWUyMWFmY2RhOGUyNTUxMDcwZDI0ZGIwNjI1N2Q2YmIxYzUyYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2N2Q2ODM1YWQ2NTA1NWI5ZjAwOTllZWVlZDNjM2EzMDhiOTI2NTk2NDE4YTE4MGQ2ZTgwYmIzMTZhNTA5MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViMDhkYTU2YjEyYzkwMWM1ZjkzOWM1NGIyYWYxZmI4OGQzNmMyYjJjMGQ3NmQ2NzAyYjMwOWM3MTUxZGEzYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/divergence_ledger.py#L85-L140",
+          "version": "repo-lines-v1:sha256:f02b7adc6bdcb3d56f495d493967aac15ba2710794ba9832cc8c9d4974112d5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJlYzUzYTc4YjU4NjA3ODBkM2RhMzk2YjE3M2Q5OTZiMDRjNzQ5NjNkNjZiZTc1OTFmMTY1MjZkNWJiMThkN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViYmYyNTA4MTJlZjU0YWE2MTU2MjI1MjY3ODg2Mzk2NTc4NTVlMTRhYmNhNmNhM2VlN2MxNTdjMDg4ODBmNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0ZTJlOTIwMDY0Mjk5NWFlYzMyYmU3NzM3Y2U1YzM5MzEyOThlY2Y4YWVjZGI2Y2QxZDhhYzU2MmEwMTA0NjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA1MzcwNDM4NWM3ZmRmZmRiMTlkN2VjOWU1YjdkNzI2MjU5MDY4ZTk4YmE4MDNkNDViNDc0MTZlNTM4MjlkN2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_56e1d5bf078840eaace3ae065c3aa9ce",
+      "statement": "Current departure records describe planned rather than implemented corrections for numerical underflow, statistical tests, unseeded randomness, classification and overlap handling.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/divergence_ledger.toml#L20-L198",
+          "version": "repo-lines-v1:sha256:dcfbbe27235251049cc72b4cc4ab41fc48b87d431e113dc406e71bb52f52ad17:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIzYWM5YjRiYTJiYzM3Mzc4NGY0Nzg3NTZiMjllMzMyYmFhYmVkYjI1MmYzNjhiODY5N2MzNTZiZjMzZTVkNGE1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NmE3Mjc3MWY2ZTRiYmJlNzVjYjUyYzJmZGQ2ZWYwNTQyY2ZkMzczNThkZWQ5MTFkMjFjMjUwMzg4Y2UzMjZhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0MThkODUwNTc2YjM2NzU5ODc1MTk5ZTc5ZGE1MDQzMWZlYWIxNjU1YTAxNDM5YTI0NTkzM2M2YzEwZmZiZDc3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_0526c4e4d6674b03a48bb80f641ff773",
+      "statement": "Divergence reports reject malformed ledgers, show separate ledger/registered pair counts, sort entries deterministically, and omit finding-4 departures only when the future pair has both sides; emission timing and code-identity verification are outside the report.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/divergence_report.py#L129-L138",
+          "version": "repo-lines-v1:sha256:161057e610d007087295d096d35bc6d40f481a00dde1f994c9a0bdae67737f5c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2YmQwYzNlNzVmMWE3ZTJhN2FlNDM2ODJkMjFjNDg0ZTFlNDNlMmQxOWY4Zjk1NjdiZDk2NDhmMjE5ZGZjZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlOTJiOGUwYTYwYmMwMmU4M2JkZDgxYWZhYjI0ODliYzdkM2E4NTcyMGE0MTc1NzJkMzk3MTAyYTY4ZWRjMmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0OWQ5NTBlYWZiMDYxYzQxYjcyZjQ5ZDg1MzcyM2Q3ODQ2NTI2N2ZmNzA1NThlZTJlODlhMmI4Mjc4YmZkMzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0MTI4ZWJjMWI1OGVmZjc4MWNhM2RmY2FmYjM4ODhjODVjMmEyYTVlZGI3YWU5MDc4NGRjMTljZTczODNhYzAifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/divergence_report.py#L3-L34",
+          "version": "repo-lines-v1:sha256:c3207bc848361b55adbc3cb4c8849e6956f3167d99f80299e358e026a6b66289:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhYmYyZTAwODY0Y2FlNmE4ZTc3NzkxMTMwODI4NTYyZTkyYTZkOWZkYzliMjRmMGY3ZmUyNmRiY2QzOTc3OGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3MzlhNmU4YjA2OGNiZDY1NjU1ZmMyNzAyZDcxZTI2OTcwZmZjODM1Y2I1NDVkZmZmNWM0NGI3NWIxMDcyNjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyZjFiODFkYzZiOWM0MjYxNjY5ZjFlOTJkMTIwMzliNTg4Zjc0MTE5YzJhYjM5M2MxNWNmY2YzOTVlMWExYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/divergence_report.py#L76-L117",
+          "version": "repo-lines-v1:sha256:057200c192291e589289bdf2df2261786bc582b21773e10447f56e0b1b9cf0ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMWZiYzU5NjNiYmE0ZjZkNjc1NjAxOGE1YTQ5YWMxMGU5ZTY1NmM0NDk1NDkyNTU4NDAxNTEwOGFhYzYxMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkNzBiYjg4NWNiOTJiMWQxMGJlYTVmYTExNWU1ZWYxNzgxZmQ5Y2ZjOWY3NjE4M2ZlM2FhMTg0ZTllMmIxMmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlYjFlOTRkN2MzODAzNzRjYWI3MGU0MDQ1ZTZhZGZlOTJiMGEyOGQwMzM0ZGY4MmVlMWE3YjQ3ZDgyMjRhZTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMDdjYmI2MGY3YzkyMzFhM2QxZDNiNDhmZGM5Mzk4NmFkNzFhN2ZiMTRkMjc3NTBlNmFmNWRmMWZhZmY3MGIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

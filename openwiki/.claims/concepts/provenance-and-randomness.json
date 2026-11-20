@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:94265001f03c71fd656ae208b7668669c2d31cbdffb907c0d29d5abc86b55ac3",
+  "claims": [
+    {
+      "id": "claim_628e6972eb6544229c367b604960f85f",
+      "statement": "Producer identities serialize system, implementation and code version in implementation-identity:1; writer validation is limited while the reader rejects unknown fields, wrong format and empty/non-text fields but admits whitespace.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/provenance.py#L217-L330",
+          "version": "repo-lines-v1:sha256:befb15e9a3431ebcb3b7f932c57d4e1b07f91bc2c457d2a269be2d2c468baef7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1YWM3MWNhYTA2YmM3Zjg1OThlN2FiZWY1MTYxMmEwYzUzZmNmZjk2YTE1MThiZThlNThlZmE0YmJhYTExNjJiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzMGMxZjE4OGYxNDJlZDdhODI0NjgwYjIwNzE3MmM1NTE5YmM2MTRhNDhmZGE3Y2YxNjdlZGI4ZGRmNzk5NTZjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiM2RmMmFjZjA2ZThjM2YwM2M3MTM1YzZlOGFjNWE5Y2E1NDMyYWJlMDZhNzRhY2EwZmRkOWE1M2EwMDhmOTg3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/stubs.py#L51-L65",
+          "version": "repo-lines-v1:sha256:015fb5442f07504a91d4c2d92f0e008f1844b0cea6009d6bdd3b14864f6783ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwODNlOTc0ZjRjZmJiOTM3Mjc5NDc1ZmFlZDdlMDNiZjJiZmEwOGE5NDMwMmY2NjFlZjRjMWJlNTJmZGI0ZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3NjgwNzk5ZTM0M2FkNmM2Yzg1MzkxMzEzNGU4ZWFiMWVjM2U1NmY0NGZiYzQzN2U4NTNhYmNmMmFlNjJmYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_edd1b51b197a464793cdd90008405bb3",
+      "statement": "Provenance capture keeps caller mappings without deep immutability, and require_complete checks missing identities against an externally supplied exercised set rather than deriving the run.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/provenance.py#L118-L214",
+          "version": "repo-lines-v1:sha256:2e6aa865de82f1e97bf16fcebc7db2df5313d48482ef7052ad8befb71608ea9b:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMTAyYTE5YmE2NTQwZmFhMjNhMTQ4NTZkYmM0MTMyZTQ5MjFkYjA4OWM1NjA5NThjZGQ2ZDlkYTAwZjkyODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyODA4ZTY5MzI3NTY4NmY2NjFiMjI1ZTJkODQyZjg5YTMzMjNjNjJiYTIyYjg3ZjRhZDAxYWUxODI3ZmQyNDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_21ee4918834e425f83be68183cfc2abc",
+      "statement": "Normal target construction includes all outputs with selection or excludes selection readers and downstream consumers without it, retains attribution, and appends the final record; final provenance reads that final rule's input list without expanding it.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L101-L114",
+          "version": "repo-lines-v1:sha256:cf010045c7219cba0ee2e32ba12223684136a3f61644b79195a6fb27814825a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwYTg0ZWYwODBkZWNmMDMwOWU3NjQwZWE4NTQ5ZTBiMzljYWViNDU4MWJlYjIzYTdmNWE0NTcyZDE4OWI1OWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjYjZjYTY4NDdiNzQ0NjYzMTU3NmM5MTFkNDNhMmU5ZTBhYjdhOGFkNTUxNjhjM2I1NDFkZGM1NDQyOGFmZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYTc1NjY3ODJmN2Y5NjkxMDBmY2UwOTUxZmZkYzY4MzY4NjY1YTdmYTJlYjFlMmVjZDUxNzQ5YmJkOGUyZTMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L153-L175",
+          "version": "repo-lines-v1:sha256:a0c798d0d73d5cfcf0c06c5a76022fca6322dc3c136539bc2031cd24933b238f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJlMmQ2MDRkZmJkOTdjMWNiNjIyYjZiOWQ1M2U2ZjIzMGM4ZGU3OGUxOTUyYzU5Nzg1MDkyZDE5YTMzMmVmYTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiYWZlZDBlM2I0YzM3OWEzMTQ5OGNjZmU0MjI4NjFiM2IwZDU1MmU0NzdmYTk2ZGI3MmI4YmE1NmI3OTllZDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyODY3NjcwNGQzOTA0OWZkZmNjNDY3YzI4ZDg4NTYyOGEwNDY5M2FiNjQwZTkwNzBhNjFhYzBiNjFhMGU4Y2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2ZTBlOWVkOGU1ZWY2YjZjN2VkMDdjYmI5OTFmZTg1OThkZmI5OWI3M2QxYjRhYTI4MWM2ZTIzMjc3OTZiY2UifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L79-L115",
+          "version": "repo-lines-v1:sha256:1c7b718d1512fe2a99d7ae66454165a426d8c494c44c3fb1c5d0b3ec7d44583c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5ZWQzYzQ3ZWI4OTEzNDYxYTI3Nzg1ZWM5NGQzNDVmYmY3NWFhMTlkZGNiZWFlYTUzYWVmMGU3ZmEwMGJlZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwZjJiNzM2Yzk3YTg2OGRlNmIxZTk3NTU1NjZiNzEzYWRjODZmN2ExODliYWRkMTUwZThhNmY2MTQ3OTE1OGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyYjI1NzhkODVmMDU0N2ZhOTE3ZGE3YjE4ZDIwNzg5OTE4MjlhNTM4MmM3OTEyOGJlMTZmNmYxMDg4ZjdhYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMTgyMjYzNjU4NDQwNjYxNmQ5NDViMmVjNjc3ZDEyMjUxOWRkNjBkYjlhY2RiMzk1ZDgwYjYyYzJmOTJkNzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea8d6032460746e98ab9d4d59803dcda",
+      "statement": "Producer metadata must be completed format-version-6 JSON naming known graph rules; build_provenance reads producer identities, refuses ownership mismatches and missing identities, captures run-start inputs, and currently records no seeds.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L110-L190",
+          "version": "repo-lines-v1:sha256:62a18b0e66b4e3af5e41303cc3dd0f6b971ecdd25e25c6e2acec6cf4b6b863a4:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmOTUxMzUxNDJiZWFlYThiOWE1NTNhYTM4Y2FkMWVjZjdjNmRkMTA1YTdkOWUxOWI2NDQ2YzQ1YjI3MWJlMzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTlhM2YzYTUyMzdmY2IzZjAwOTZiNTA0ODgxNjU1MzA4YTQ4NmY3OGUwMDA4ZWU0NDE3NmZjZmU0MTUzZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzYjkwNGE4MWVmMWFkMzMxMTcwZDIyOTU0NDhmY2EyNDc2ZjIzMTNhYjE2NjUzNTY1OTJlMWMyMmVhMjNiMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmMmE2NzgxMWQ2MWRkZThiOWRiYTA3NjEzNDZiYzc3ZmE0ODlkNGZkYTUzNDVkMTVjMGIyZTNhODY5ZDdmZjcifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L229-L288",
+          "version": "repo-lines-v1:sha256:c01e42cf2486c03a6b0d74c19ff330f86932d6d482c0472f713490795a757138:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhNzZmMGJhMzhmMzI0OGNjMTRiMDg5MjFhN2IxN2RiNTAwZTZiYWViY2UzOWRlNDk2ZjkyNzk3MTkxOTVlMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4ZWNlNTQ2NGYxZDc3ZjJkYzFiNGYxNDQ1NDY0YmE2OTIxOGQwNjkyZjU0ZjY5ZjA4ZWQ1MTU1NTQ4ZDI3ZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmMWM1MGE3OThmNDJkMzYyZWUxNjcyMDE1N2NiZGY1YjJmM2RhNzBmMDVlYTJkMjZlMzg5ZTZkNGE0ZTI2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZTdhMmI0YWYwY2IzZTA1YjJmMDg2ZWE1NmE0ZDNjZWJjM2YyZTg3OWMwMzkzYWE1OTU5YWYyMDM3NzcyN2QifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L54-L56",
+          "version": "repo-lines-v1:sha256:adc58ec2b719af3df0656d51adc08324dd3522050e4212dee6b7bc10f46e6530:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTI2NjQzN2M4MTRjZDFkNzdkZmE5MTEzY2ZiY2ZiNGYxMjEyYmFiNjMzOWRjZWFhZjc2ZTY2YmJjOTVhY2I3YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2ExY2JkNDgzNTM1YTJmYmYyMDU0MDM4MjlmMzFlYmM2NjM0ZTI3MTA0MmRjNzM2OTgzNDI4Njk2MDc5ZTVlMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzIwMDgzMGI2NjU2MDUwYmJiODExNmY0ZWQyYTNlZTU4ZWJkYjA2MjdiMDAzNzM0Njg5YWMyZWY4N2EyZDI0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODRhZTFjZTRhMzc2YjA1MmY5NmM2MTdmMjg1NTU2ODUyY2MyODk1YmM2ZWUxMjkzY2Q0MjhlYWZhNzBhNDk5NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_98e2bc321cfd4589a97d935c214eeb35",
+      "statement": "Exercised producers include reused outputs; invocation_rules separately compares numeric metadata end times with the run-start file mtime, so old run-start records broaden the informational invocation window.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L11-L20",
+          "version": "repo-lines-v1:sha256:655e6b1e6bf78db387b3b4d76d0f957778aad3f5ae6299d1bb4baf469613d6e2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NGQxZGY3OWJlMzk0Njc1ZDRkNTUzNzMxNmNjMWY0MDEwZDQ0NzliOTJjNGFjYzQ1OTZmOThmZjVlZTI5ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzMGE4MWE0YzI4NzI2NjcxY2FmYzdiMWUyNDgwNmY0ZTcwM2NiY2M2YmEyMmFmMTA1MDUwNTViYmNhZjNmNzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4YjI1OWNkYzViYTczZjBkZmM2NjRiYjRmZjYxYTZkYmVhZGQwNmYzNmExNDkzZjA2ZWM4NTZhMGZmN2NkNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2YTY4MzlmZjVjNjM5Yzc5M2NjZTUyYWFkNDQ4OTY4MzU1ZGJiYjdlYTkyMDBlYTg1MDc2MTYzZmYxMDNhOWIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L193-L226",
+          "version": "repo-lines-v1:sha256:1de38a57c10dd39c3b912c91d558f7937dab90e7856257953285e5b04412ef78:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1NWNiNTIwYzMzYjA3Y2IzOTBmYzA0MzU3MTEzN2Y2YWExNjM1YjZlMWUxNjkzNzRkNjBhYmYzMmQ3YThmOTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMThmNDg1YTljNzVjNjNkYzU3NDlmNzczZGQ0NmUzNTIwMDkyMmE0YTMzN2JkNTdkZjAxNTEyMTA4MTkxMTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2ZWYyM2E1ZTQyNDQ3NmRhYjczMjJhNmY1N2QxY2ZlOTczMTkwZWRkOTMyNzA5ZDQzZDMyMTllMDIzOWEyMGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzYjllZjc3ZGVhYjViNzRjNGFkMTU1YjdhMDdjYzc3MDY0MWIyNmJiMWVlNjQ5Yzk1YmUyZGU0NzcyZGJmZjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2223ab59e72e4bbd9670c2f1ceaa2785",
+      "statement": "End-of-run provenance uses a closed seven-field end-of-run-provenance:1 JSON envelope containing inputs, seeds, identities, exercised systems, invocation rules and unchanged side record; its reader checks basic envelope shapes.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L291-L364",
+          "version": "repo-lines-v1:sha256:6f61311496e95a27d26f9222d84e0f605a2e2db1129bd5453c77e6d4273c6f74:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNzFiMWExMDg3Y2ZlNjlhOGE3YTJkMDRhMWEzOGVmNTFmNzMyM2RkYzY4NDZkNDQ1ZGEzYzI1OGViZGY5ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4ZTg3Nzg1MTlkZTdlMjFjZWFiYzViMjI2ZjMwMDM2NzA3YTNjMDk2ODg4MGE5MjA5MTk0NjVlZDA4MjQ1MzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiNzczOGI0NDI3ZGEyM2E5NzQ2MDIxOWFjOTE0ZTNmMTM5NWUzMjRlMDQ1NTAxMDUwYzI4MGJhMGI3MWE0ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/exercised_set.py#L61-L73",
+          "version": "repo-lines-v1:sha256:2091227eec8037a3df0ac443d9d83d0558c21221ac4c6acf5176fa9234fdfe7c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5Y2UwY2U1YTVhODM2MWEyODNkNTRjZDA0Mzc4Y2I1MjkyNWJjMTgzNzFlMDk0MTI1NzBjMGI4MGI5NmJjNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiNDFiZDBmMWVmZWQ2NjFkZDAxZDg2OTM2NjZhZjlkY2YyZmYyZjkwN2I5Y2RiYWJlZTg5YjhjNDFkYWJkOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzZTgzZTU1OWMxNGVlMmQ2NmNhNTlhMDBjMDdkNDlkYTVhZWUyNDhjNThhZjNiOWY0MmM5ZmQ3MzViOTYxYTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e1d1fd1768fb40cf897be0e09b0fbcee",
+      "statement": "The final record writer requires provenance context together or not at all, writes provenance before conditional pre_refactor divergence text/escaped HTML, and normal run-side selection currently uses current defaults.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/side_record.py#L16-L20",
+          "version": "repo-lines-v1:sha256:6b3512b8148370cf89013f76c76e96eff1ebc4843968d92760c61bb9d8ad51ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGE4ODhiZDA2ZjQwMTQyZjRlZjM3OTY2ZmI2MGJiMjRjNTk5ZjI1OTZhMmZkODA4ZTg2OGY4ZDAxYmFkYzM3OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDY3Y2ZlZjQ0ZmVlYmQwNWZiNzQyOWY2ZjEyNmIxYzI1MjE4YzFjNWE2NTBiMTE4ZWJkMWJiNzFiZDBiY2IzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzAxNzhhODc2OWVlZTE2NGE5N2M5MzhkOWNiOTQ2MmZjMjg2NGI2NjIxMDA1ZmU3Zjc1YzQ1MzRlZDY1NDJkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTMzNzMyM2U1YWQ5ODJjZWNmZGRjNjZmZDk2ZWFiYWJlNjFjNTBjNGFlYTlmMWU0ODZmMTZmNDJiZDA1MzE3NCJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/end_of_run.py#L66-L167",
+          "version": "repo-lines-v1:sha256:4726717b554e274f0a99f868192ea04b1882d1e3fc40512fe1d878ff6ac8390c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNzMxZGMyZWY3ZDhkZjc1YmI0MmNlZThmMzgwNTk5MjI2ODZhYmJiYmI1NWQxMWVlYjNhNmNkNDFhYjFlMjAwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzMGMxZjE4OGYxNDJlZDdhODI0NjgwYjIwNzE3MmM1NTE5YmM2MTRhNDhmZGE3Y2YxNjdlZGI4ZGRmNzk5NTZjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyZjY5MmRjNGJmNDRlNDMyYzczZTU4NWZlNWRmZGNlN2I5ZmMwZGY3YTJlYTFlNzUzY2Q3MmJhNmYzZTE0ZWU0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_bc18b56a8013439fa4dd933f5a1ec7b3",
+      "statement": "Report items require nonempty headings and admitted case-sensitive page-native suffixes; graph ownership supplies declared-output flags and Citation attribution while the local final rule flags divergence HTML.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L84-L114",
+          "version": "repo-lines-v1:sha256:82aed17198123f3db61454c1bb5a74b2b977fb166c13228d088d1ffc6bbc7d6e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZDRiOTMwMDNlNzk4YjM3ZDMwZjYwMzk0MTU4OGRmMWU5ZDZkNWUwNmNiY2IwZWI1ODlhZjc5M2E3YTgyYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzYmM4ODVmOGExOTM1YzE1Mzk1YzA2ZGYyYjMyYzJkNGMzOTAzYzBmMWJjZWUzMjI1NjMxZjE4MjY2NDA1MjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYTc1NjY3ODJmN2Y5NjkxMDBmY2UwOTUxZmZkYzY4MzY4NjY1YTdmYTJlYjFlMmVjZDUxNzQ5YmJkOGUyZTMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph.py#L155-L167",
+          "version": "repo-lines-v1:sha256:ebc4621a77f62e604f83068097446710104593d47ad460c501187111fef72763:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3OTM3N2Q2NjIwNTA5NjY1NzM1Nzk1MzFjNTA1ZDZjMzRlODc3OTAyNzgzM2ExMTUyZmI4OTBjMGI5YzE1OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmYzRiZjk0YjZlNWQyNjkyYWJiYTA0MmI5NGM3M2RlZTM1YjdjODEwODUzNjA2NTZiZWIxMDA1NmM5MzEzMmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2NTg1ZTQyODhhODY2M2ViOTkzMTEwNTdkNTU0NWI4ZGU0MWEwY2JkM2ZlODdkZmIwNTBjODgyYmM0ZDllZjIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph.py#L300-L305",
+          "version": "repo-lines-v1:sha256:4c7648f3c8d0a202aefc8fbbd0015539dac420d5198022beead0e6258826ba88:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmEyODI4Yzk4Nzk2NzIxODQ0ZGE4OWU3OGM4OTQ2MDFhYzY3OTJjNzJiYWNhZTNkNDQ3NjAzZTM0MjE2NWUzNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzAyYzQxNGI1NGNmODZkZmI0ZjkwZGZlN2Q3YmRiZmE2NjZiN2RkZGQzMmYxMjg2ZjIzMGE1YjUzMjQxODE4YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTAxMzE2MmJjMjhhYzRmYzZmNTBjNjQ0ZWVlZjcwMzI4NmRiZTFiODhkMzY3NTZiYTViNGMyODMxMzBkNGM3MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTk4YjA2M2Q5YjQ3ZTY1Mzc5NjI1NTcyY2NlMTk3NjY5ZDU3NjdlMTJjMThiZTA3NTY1MmI4Y2Q5ODFjZThkNSJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/report_items.py#L23-L79",
+          "version": "repo-lines-v1:sha256:5768e82bd1ff3e6b192043492dd06e1dedea087516dadc07f75b95c089862cd3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4MjIxOTBiYWU3OTU3YTczODBhZjU2N2E5MjMwM2IxY2RkNWI0MmY2YWJmMzRmODU5ODc5ODhjNjUzODQzNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjNDRlMjQyZGRkNDM5Zjg2NjNkZTI1NWJiMmRmNDAyZTVjZmVkOGFlZjE2NmY5NDY2YzkwMGExZWIzOTA0NDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwNWMwM2NhY2YxNDQ4YmQwZTU0ZmRiYjIyOWNlMTJmMzViZWRkODYzMjZlMzdjN2Q5ZTUwMjVmMjdjZGEwMmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2935b95da02d47178ee20fc46460a671",
+      "statement": "The randomness contract requires caller-owned rng without defaults or global generators; require_seed checks only parameter presence/default, not annotations, body fallbacks or callsite propagation, and the contract module draws nothing.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/provenance.py#L125-L130",
+          "version": "repo-lines-v1:sha256:5a557016807071a332f46cab2fe81ee7adb9b6d0d261a14107f2fac4cad955e1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDAwYTFjNjQ4ZjcwNDU0OWI1M2I4Y2QyZjFlYTE0MGFkMmViNmM5YTUyODIwM2JlZmZhNmM0NTJlZGUzY2MwMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTg1NWQwNTNjOWY2MDQyOGI3NTRmOWI1NWJjZjQ0MjZkNmQ4MWZkZTdmNGRiNDBkZjljNzY5ZTY0ZDRhOGVmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzU2NmU4M2E2NjBhMTk3MmI3Mjg0MDdjM2JkNTVlM2UxOGU2OWZmNTRkNGQzNWM2YzdhMmM2ZWRiYjc2YThmNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWVhNDcxODU1NWYzZTMwMmQ1NmIxMDQzNDQzNjQ5MGFlNWNkZmVmNjMyZjA5ZGIxNWJjNmQ5MTFiNDI4ZGIyMSJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/seed_contract.py#L3-L34",
+          "version": "repo-lines-v1:sha256:867ad9d92c1705f09a160a1ba32ff257457a1af86c479bbca772ad9c37b1e91e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2ZDMwODBlYTViYzM2ZTY1YThkNzlhZTI4N2QzNjNhMGJkM2Q4M2RiZGIyZmE1Zjk5MjlmMzUxOWU2MGI4NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOWQ2OTVmMmQ4ZDcxYTQ5ODg5YWUxNWFlOWM1NmZkMDhiODlkNDAzMTg1NDIwNjZjMzk5NThlN2VlNzQyZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMTMzYWE2ZTQ3MmE4NmQwMGM4NGVmNjUwODgzMDc2NGZiYzMyNGNkNzdjOWI2YjkxN2NkNGM0MmQ3NjI5NGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/seed_contract.py#L45-L95",
+          "version": "repo-lines-v1:sha256:e07eb52395fd2cec078f5cef46a5e7591a6e29376c27a6b27597e26efbe693f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhMjdmOTcyZTcxNTcxMTQxZmNmZjJmOTc1MjNjYjcwMmMxMTE4MWExYjQzYmYyYzVkNmUwMjFiNDY4M2YzNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNzk5YWEwNDJkMGEzOGJkNTA5Y2RmN2Q0ZDA2OWQwOTZkMjczMTYzODI2NmQwZDhkNzQ3MjAzZWFjYjhmNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

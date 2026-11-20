@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:e7e8987f57bd8fa7df068361db76f5eafc71e861a8963408c23e25d528862c70",
+  "claims": [
+    {
+      "id": "claim_6dbe67f7ce6a43a6b889651c6617e97d",
+      "statement": "Conformance classification validates a recorded diagnosis rather than comparing observed/expected values or deciding scientific intent.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/conformance/taxonomy.py#L109-L142",
+          "version": "repo-lines-v1:sha256:02fe39732087609e0d4d6ca056d7142ffc3899cb31827795f32ea5fa3bc80953:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjZTQzMTQzMzkzNTE3ZDRjMTdiMWI1ZmZiNTgwYjk4ODA0NTNkZjM5YTJhODc4ZDQ4NmNmNzdkNWEyN2MyYjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMjdmZmFhMjVjODZiNDlkNGQzNGY3NjJmOWY1NWU4NTc3YmY2ZDJkYjhkZjViZGVkODkxY2UyZjA1NjBhOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkMjM4MGI2ZGY3OTBjMzhmMWNiYzM0ZTZhYWUzMjYyM2MzNjJmZGQ2ZmM2YTZhNTRmYzE4YTZmMDNjMjJkYWIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/conformance/taxonomy.py#L175-L206",
+          "version": "repo-lines-v1:sha256:464699ad62a1ec87a11fc1df4b82178356d70cbb8ec238c8b252ad0336a76245:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiOGNlOTRlNTAyYTg2MzBmNzZhNjBlMDY2YzYwNjhkNjI0MTk2ZjBmOTU5MDE3MDEwZGZjNjI2NTY5NmM5MzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3ODc4ZTBhZTVlNDVjMjYwZWUzZmExM2E0Yzk0YTVhMDAzNjkzYjc1YTdkMjQ4NmM5ZGQxZWJhYzM5YjlhYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZThjOGJmYWQ4YWQ5ZTBiNzFmZmVkMDIzN2E2OGZlYjY1Yjc3MzU5ZDVlODg4ODg3MGU4NDZkMDVjMWM5MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwOWQ4N2U5MTUzMTU5NDg4OGEzMjVjNTNhYTViYjc1ZjU0NDU5OTc5MTI4OGY3YjMwZTBkNDFhNTFmMWE5NGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_45913df262d04e34a7021008a9211d65",
+      "statement": "The taxonomy defines nine repair-oriented divergence classes, with D1/D2 author-judged and D8/D9 derived in status.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/conformance/taxonomy.py#L40-L106",
+          "version": "repo-lines-v1:sha256:e7a584882c22084b397bb77e994a2ed767ab041990ddc5314c02d8a776ed173f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMjdjZjIwMTA2ZGU0NTA1ODA4ZWRlOTM2ODQwZjAyYjg1NDU2ZDA5YjllYzI1ZmYwMTRkZmY5YmMyNDRlMzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNGY4YTM1ZjQzOTdmOTQwMjNlM2JmNDQzZjU3ZTZmYmJjNWU4NDcwZTlhY2NhZDM0ODViMGUwMTQ1YWFiYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzMjZiNjg5ZDEzNjY5NGYyM2VjMDk5ZTk4Zjc5NmYxNWNjMmUzNmZmMDMyOWJmYWI1NWY4NDZlNmFlOGU5YjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwY2UzZjI0YWI0N2MyZjVhOWQzMzdmMzc3ZWQ4NTczZmE1NjU4NDA3NjQwMmYxYWYwNTRhM2RlZDYxOTQ2MmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e70a1dc721b34d0b84708549bcc264e4",
+      "statement": "Diagnosis validation rejects agreement, equation mismatch, binding/reachability conflicts, missing author judgement and blank evidence in that order; simultaneous cross-repo and unreachable cannot fit a single diagnosis.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/conformance/taxonomy.py#L175-L241",
+          "version": "repo-lines-v1:sha256:304dd5dafc8165032822446679ada44afb96211264f9aad9ba2ff1addce6a0cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiOGNlOTRlNTAyYTg2MzBmNzZhNjBlMDY2YzYwNjhkNjI0MTk2ZjBmOTU5MDE3MDEwZGZjNjI2NTY5NmM5MzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZThjOGJmYWQ4YWQ5ZTBiNzFmZmVkMDIzN2E2OGZlYjY1Yjc3MzU5ZDVlODg4ODg3MGU4NDZkMDVjMWM5MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZGQ4OTJmZmEzMDE1MjdhYzI1MWIxNDQ2NzNjNzcyMDQyMGVhOGRjZWVhZjBmMmUzY2Q0MDYwMDQ5MGUyZGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ef69ceec6d734d238f2c84b90d6a9128",
+      "statement": "Status materializes defects once, requires enum entries, forbids D8/D9 defects, and rejects conforming-with-defects or divergent-without-defects states.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/conformance/status.py#L70-L127",
+          "version": "repo-lines-v1:sha256:910df68c84781abdb30da155b2724f7e1bd18bfc5fbf49f301ac684f2a0647b2:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NzQ0NjYzYzBlYmIzZTUyYWE1Y2I1OGM2ZTIxNjUyMThhNTdlYTEyZGI2YTNlNzRjODE3MzhjMjEyNjljZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2NGEyOWY5NTA4MTFkM2UzNDU0MGUzMGQxZjQxN2JhNGE3ODNhMmY0MDdiMWRmNjA5NmE2YzNhMDY2ODRlMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwMjJjNjQ2YWYwMmI3MmY2NTIwY2Y5MGMxZDQ0MzcxNWY0ZGFlMjdiNGQzNDVjYmY5NmM0ZWIzZWUxMWY2ZjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bf7a16bde39a495e8eddba2a91500fd0",
+      "statement": "Divergent/unreachable verdicts and cross-repo bindings block; manuscript_binding returns NO_MANUSCRIPT_TEXT only for an empty span and otherwise leaves ownership undecided.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/conformance/status.py#L130-L159",
+          "version": "repo-lines-v1:sha256:8934dccc5082a1751226691f216778ab316c5c3e71b3ca306ebcf6c29e7ad8d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0MzkwYjY3OTdkMDNiYzUwM2E4NDQwZmQ1NGQ1ZTdmOWY3NjA4NGM5MDk0YjQ2Y2YzNjRjMGZkOTVjZThmMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxY2NhYjc5NTY2YWJhZjk5MGRiZDQwM2Y5ZGVkZWRhYjczNGMxN2Q5MDNmODFlZDBlMjYyN2U5ODQwOWUyNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2YzRiMDgxZTM2NDc0NjNkYzBiZjk0MmQ5YzEzY2U1MDAyMzQ0ZjY1NGU2MWRjMWIzMDdhZWI0NzY1NjcwZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_39592fbc9ad84a589152c6050de9e9ea",
+      "statement": "The pytest configuration declares a publication-math conformance marker but that declaration alone is not numerical equation coverage.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml#L92-L99",
+          "version": "repo-lines-v1:sha256:10d65c4afa794ec5f51e6be5f2ca97561f56e57f5ad1937eb3b528d064555b79:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODY3NmU2NDE0NjVhNjU1MWU5ZTljZmZkN2ZhYTFlNmE0MmY5YjcyNDgwOTgxM2M5MDNkN2VkY2I1MmYzMDA2ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI0MzZmYzIxNmNjNjA0YmI3YjAwMjZkYWY5OTk5YWZlOGUxZjg4ZDY3MTAzNzE2Y2Q1Y2JjNTQ3OWY4Y2Y4MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDU4YTAwMWM3MjEwNGJhMDdmOGE3NjEzMGI0OWE3MjM2ZTdkOTM3MjNiMDQyZDNkN2E5YzVmMzdlMTc0OTcyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

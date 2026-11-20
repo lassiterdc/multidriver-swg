@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:9f6b37821f45fbfaa2a853b68f63ce1b3d4036044042120fb8212f38f66e2bad",
+  "claims": [
+    {
+      "id": "claim_30ba7f5bb042492c86ae49c5ca2bd100",
+      "statement": "Tag admission checks matching project/citation versions, main ancestry, absence of tracked legacy sources and passing complete unscoped result fields; the record checker does not compare an embedded commit identity.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/check_release_tag.py#L134-L297",
+          "version": "repo-lines-v1:sha256:6fa6684545587b5e87a59318b4854bb94a20680f81da3677c24f1b3f5c005372:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlNGJhNGRjZTlkZTQwM2ZjODQyMTMxY2FmMjRkMzg0Yzk4OWU3YTQ5OTI1YmY5OWI0ZDhiYjUzYzA2Njg0NjdmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkMjIyZjgyOWNiNzQzMDQwYjBmNjgxNTMxOGZiZGNhMmNkNGUxODYwM2YxYTU5NjE4ZGJlOWNmM2NjM2NmN2U3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkZDk3Mzg2MWFjYjU3N2JlOTk3NmE3YjI4NTA2ZWRiOTY2ZTYwNmVmYmJhMmYyMjVlYWRkYzk3NDQxNmU3MzRmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzZDQxMzQwY2MyMzlhMTU5Y2U5YjYwMjJlOWY2MzIyODMyZTJlYWQ3NmNhZTllNDc1NGQyMTBlYjhmYjZkNWU4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_ae2c17c59ccc46a3b97dab1a30e8edd2",
+      "statement": "The release workflow orders whole-suite admission, build, install/lock/byte/licence checks, TestPyPI, PyPI and GitHub Release creation, retaining the admitted enumeration.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/publish.yml#L50-L318",
+          "version": "repo-lines-v1:sha256:53a62b6d9e4d6a81d23d8c86fc57e42a223b6e2cdd421882626793ebf64589f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjY5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlOTZkYzQ4MTQ5ZjVhODNkMWVkNmRiYjM5YmJjN2UyYjkwMmFhM2QzNGQ2YmQ1YWU0YjI5MWI2OGRmMGNhNzlhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI4ZTJkZDBhZjgwMTdiMTE3NzgxZTJhM2ViYWFhNzk5YTE3NjgzYzc1OTNmMmI3NmIxNWM0ZWZmYjE2ODQ0N2MwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4MjA3MjAzZGVkN2Y4YWU4MThiNDUyMDBjZDZmZjQ3MzJkNzg3NjRjZjZkMzBmMmJlNGI1ZjllZjk5MTE4ZmZjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_b2ec01b9b5414730a9c0af72ae3f6f8f",
+      "statement": "Release-state rows specify system-owned byte classes and release states, while source archive export exclusions differ from sdist pruning and wheel package data.",
+      "evidence": [
+        {
+          "resource": "repo://.gitattributes",
+          "version": "repo-file-v1:sha256:89663fff6f38d067b326ac540ef328c92d84e8e2ca21ea6742d49365f0bcf939"
+        },
+        {
+          "resource": "repo://MANIFEST.in",
+          "version": "repo-file-v1:sha256:976c1bfcb04f2cbd2a543323a376ff7de1f9c634866e4a5ff7555b346fff93fc"
+        },
+        {
+          "resource": "repo://pyproject.toml#L71-L83",
+          "version": "repo-lines-v1:sha256:b55700847b8afa95f2b37e6e2fe1ec04658bb1c856875bc9a9eea41db1c3febb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwOWMxODU5YzNmYTNhNTMyZDM2MjA3ZGZmOGM4NWQ4MjgzOWRiODczZGE5YjcxMTZkOTMxYTVhOTcyNjhiOGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzMWU0MDEyY2ExZmRjYjk0MGQzNWUyMTI0YWUxMjAxOTkyZDYwYjMwNTQ1ZjRkMTJlMzQ2MjRiMzRkNTMxZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjYjM2MzI5NjBkZjdhYWYwMTg3NmQzZmZhZTk1MjEzNDE3MGVhOTdiMjdiNzkzODMxMmQxYjU2N2JiNjNiOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiODUwZDA5MWFlODI4MTg0YWQ0YjAyYTliNjdkN2M1NGI0OGE4ZGI3ZTE1OWFhNzA1ZDk3YmMyMzA2MGFkNTQifQ"
+        },
+        {
+          "resource": "repo://release_state.toml",
+          "version": "repo-file-v1:sha256:b91123425ed338ebb5114f69f8063dfd37cc5dbd8dd678f0fc917179fa2caf21"
+        }
+      ]
+    },
+    {
+      "id": "claim_bd492f796dee4255883606298d1a5014",
+      "statement": "Lock rendering uses a fixed cutoff, Python 3.11 universal hashed resolution and test-group constraints to produce two fresh lock forms compared byte-for-byte.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml#L77-L83",
+          "version": "repo-lines-v1:sha256:cb411fe9a02547e4d614295aabfcedc64fa54a74b5f662d3742ba8a183abb294:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGY4ODQwYzA5YjFlZWQ4Yzg2YWQ2YWI2ODVkY2VjNDAwZDY5Nzk3NTdiYTBiNmY3MTJmNTkzNTFjY2FmNzA3OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMxZTQwMTJjYTFmZGNiOTQwZDM1ZTIxMjRhZTEyMDE5OTJkNjBiMzA1NDVmNGQxMmUzNDYyNGIzNGQ1MzFmYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmU0ZjE1OWIxMjE3OTIyNjMxMTlkMzI5ZjQ1NGIyNTQ1MTQ3OGQ1NjhkM2Q1YWI5ZDE1YTRhMDliZTc0ZmVmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmI4NTBkMDkxYWU4MjgxODRhZDRiMDJhOWI2N2Q3YzU0YjQ4YThkYjdlMTU5YWE3MDVkOTdiYzIzMDYwYWQ1NCJ9"
+        },
+        {
+          "resource": "repo://scripts/render_lock.py#L129-L186",
+          "version": "repo-lines-v1:sha256:7f01fc7b4deea1b9c61be3bd28158f433b8559daba4dfa87aa45bf738d23c790:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiZDRiZGE1MGZjMTQwYTYwYmFkYmI3MTMwMjk5NTYyZTZmOGY3ZDBhYzU4ODVlYjRhNmI5NzJmMmMyODYxYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjMGIzNmFmZGU0Y2NlNDQxNDYxYzZiNzQwMTFiZmFkNjI5NGUyZDZkZjcyZTM3ZDJiNmI1ZmE3MzRhNTFjMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3MzEwNzNkZTg2MjZlZmM0Y2VlZDA2YTc1NjZkY2RhOTI1ZjEyOGYxYmJmMzAwYWE3YTU0YTcyNzEzMTFkOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzMTgyZjc2NDZkMTUxMDVkZGRlNDA5ZDM2ZmRhZDMwYWEwZDcyN2I0YzA5NDkyMDliNWU0MjE5NzFjOTQ1N2IifQ"
+        },
+        {
+          "resource": "repo://scripts/render_lock.py#L74-L88",
+          "version": "repo-lines-v1:sha256:9d6f07f61e41737a4d0a997168d677a16f7af5f3f04bdac17f5a3ba82f148b27:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3OGJhNmJkN2ZkZDU1ZDQxNmQ1ZDU2ZTFjYjMwZDEyODA5ODI1ZDMxYTg2ZGYwYTVkMTIyYTFhZmQxOTkwZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiM2NkZjRlZGQyY2RmMWNlZDQwOWZkMTI0YmRhNTY4ZTgzMDJhNWJmMWQ3ZGU2OTlkZDk4ZDQ2MDk1NWZjZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0NjY4N2Y0ZDYzNWRlMGVjMWU2ZDdiOTIyYzc0OGIzMDBiNGVmNTQ0NjI4NTYyZDE3NDZiMmI4ZTg1NzhiODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxMjAxYTQwODg3YjYzYzYwYmRhOWY4MGRmMTU2NzgyMjEwNzI3Y2VhYTNhNjNkMTBmYzExMmI0MTQ5NDE4ZjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a48a3b606ea4c2db44ed44c0d6b7712",
+      "statement": "Toolkit metadata declares AGPL-3.0-or-later while README scopes MIT legacy sources and extractions separately; post-build checks require licence statements to agree with declared release terms.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/publish.yml#L223-L232",
+          "version": "repo-lines-v1:sha256:cd14e3e91221fd54415a3066027c15201b6c6fc8f8b9588d4eeb8bcba8a7d8ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlYTI2MDc1ZDhhMWViYzhmNWYyYzA5NDdiNDY2YzgyYmFlMmEwODE1OTFhM2I3ZjE1MjgyMDhkN2Y1YzhjNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3MzExN2QwZjdhZjc0N2Y5NmIyZDU1ODYwZjFhYTU4ZDgwNjA5NGM4OTA0MTFhM2I5N2QwNmZlNDcwMjZiMGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5ODBkYzllNjdmZTdiNjY3NzBlMDFmN2FhMmI5N2RlMWQ3OGI3OGQ0ZTIxZWMzYTcxYTg1Nzk3NDRlNjdkYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYTY4NjFiYzUzYmUwOWE4ZDNkMmU4YjdkNTBkNDcxZTliMTVhMWE1NTg4NjlhMmJiMzcxZGRkYjcyMDhmNzgifQ"
+        },
+        {
+          "resource": "repo://README.md#L25-L37",
+          "version": "repo-lines-v1:sha256:0d61874e5ddd8e750f7b6545db8fb36b5b37eeefbbc78ee8f48c7a9127fd6bbb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMzAwOTQzZjI2MmJhZTEwMDJkM2Q4ODRkOTU2ODFhYzNhOTUwODNlMTViNDQ4MWYxM2JiNjlkYjhlNThjNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1ZjY2ZjA5NDAxODg2NjNiYzA1MDRhNjJhMGI3N2M5NzBjYWVhODQ4Y2I0YTk2YzljNjljMDE4OGU5YmYwNGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlY2JmYjEzZDY5ZGRmOTY2OWVkNzcxNDczZDY5OWI0MjFlZWNjMGUwYTQ2ZjM4NmZlMGYwYTAwZjdmNGVjMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3ZjMyMDE4MmVhOWIxMGEzYTUxNDk5ZDliNWM2NzM5MWExNWNmYjVhZjQyMTkwZjFhY2I1NjIyNjU1YWFiMDkifQ"
+        },
+        {
+          "resource": "repo://pyproject.toml#L24-L25",
+          "version": "repo-lines-v1:sha256:47f4b6b6e53850090b45464a334487f571f2638a336dcbad6cf991cad0c8e289:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTJlYmQwZDVhYjllN2RlYTY0ZGJlYjVjMDRiMDljZjQ3ZmEzMmFlYTBmMTBiMDkyZTQ2MzczZWVjZWQzMDVkZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZhYjQ3MWNlNTk3OTAwMWVjNTFmOTc4OTNjYjdkYjU0OWQwNzQyZTE3OWIxN2U5MzBiNDNiYjlmM2FjZTVlOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGVhYzBhMTEwM2Y5MzMwN2E4M2UyZmMzYTc5ZDA3MTZlZDZmYWJkN2UwMzI1Mjc4NmI5YjNiNGVlMGM5MjhmOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDE0NmNjYTFkYWZiZmJhMGY1ZjQzNGI3ZTJjMzZkMGEyNmQ2ZDcyYjc2MzViM2MyMjg4OTUwODU0NGYxZjZjNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8b890ebea7a24e659f6c86c8c1abef33",
+      "statement": "Identifier recording waits for DOI/archive and digest-verified enumeration prerequisites before writing citation and release records; the workflow commits to develop and checks deposit licence afterwards.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/record-identifiers.yml#L45-L168",
+          "version": "repo-lines-v1:sha256:8fabebd75261ecd74853001c7906db665ffd48434174616a8ca08ee1cb51cce2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiOTczNDljNjZkNmI1MGNhNDlhZGIxMjA2YmZjNGE0ZGI4NDE3MTQ1NmZlMTc0MjQyM2Y4M2FkMjgxZGFmN2IyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI4NjlkNmI0YTA1Mzc1ZDVjNjc0NjE4MDc1ZTk5M2QyZmVhYTRlNTEwMGVkNWE5MjIzMjg5ZjFiYzhiMzc0MGMwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2YjY3OWQyNmU5MWI1NWFkMzQwZWE5YjZkMDk5YzU5YWIxYWVmZjA0ODVmYmM5Njk2YWQzMDVkNjg2OTE2YzA1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://CITATION.cff",
+          "version": "repo-file-v1:sha256:19e5f216d02fad82795d5c0b53183785bcf709ad6822b357644f3e3d3057feec"
+        },
+        {
+          "resource": "repo://scripts/record_identifiers.py#L327-L399",
+          "version": "repo-lines-v1:sha256:9affa2ac5af137ef6c84a860f6741d97af071b63a73d075844ecb4dcf50d8a7b:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NDBhYmY0ZDM3NmViNGUzYWUxZjNiZDU3Y2FhYjlhMTg1OGJlMjBjNTdlNzRmN2YwNGExOGQ1NTI4ZGZmMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MjMzYjNmZmVhMzJhMjNkZjUzMDY1MzQzNDhmMmRlZTc3NmE1YTZmNzRmYjUzMzE3NWRkYzUzOWE4ZmU0NjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2NTRlNWVkOWE0YTAxYWViNDgyYWNlYzJlOWY3NjZlYjIxZjg2MzRlODU2NTRhZjg2MGM5ZmQ0ZjFhZjM3MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNDEzNDBjYzIzOWExNTljZTliNjAyMmU5ZjYzMjI4MzJlMmVhZDc2Y2FlOWU0NzU0ZDIxMGViOGZiNmQ1ZTgifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:e34977a2c2b782d60070946bfc7b954467263e5b14d65ae3b15c53e343dac72e",
+  "claims": [
+    {
+      "id": "claim_c4346ea602ce43099f1716f0306ae7f8",
+      "statement": "Selection artifact validation does not fit or emit models; it requires an explicit TOML path, exact modelled-selection:1 rule and only rule/selection/dependence/stamp top-level fields.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L3-L9",
+          "version": "repo-lines-v1:sha256:a199ba0e6d4a2c7c9e7d1cea7e1b50ef5f19816b7fd0a44f687dc3ddf995404c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGZjMTQ0NGZmZTA2NjJhMGVhMjRmYTA3ZmU2MDlhM2RjMTU2YzQxM2ZhMDE2OGZkYWY0NjYwYjQzMGUxYTJlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjE0MmNiOWJmMjgzNjVjNmZhZGZhYmE2N2M2ZjVjZTBhYmI5NGVjYzE4MjdkODFhMTQyZGMyMWZmNTNjNjkxZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTAzZTViMjJhNzMwNWViODBjYTAzZjFkODY5MzhiNjQ2MjIzN2Y2ODcxYjJkYTRlMWRmYjRlNzU0Nzg4M2Y1OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODUxNTQ0OGFlODI4ZGUwN2I4ODU4MzdmYzJkMTY2Njk3N2JhMjFjYmU4NDRlYWI3MDhiMjk4YjZiN2VhOGY4NiJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L342-L406",
+          "version": "repo-lines-v1:sha256:ea8ffeb7775de4a5d213f024b0bc9204dbb990539a798960185521086db31302:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMGFkYTU0ZWE2NDVkODQwYzRlNWQ5YjgzMzU1Zjc2NDcyODhkZWIxNDU0MWUyMGU1YzJmNDNiODVlY2Y2MjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhNWU5NzYyZDdhYjUwNTc0Y2Y2YjgzMDQ0MzJkNDA1NGI4ZTI1MzFkMmM2MGViOTQ0NzgyZWQ3ZGI3MDRiMWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwNDVkOGE5YTJhOWViN2I4MTAwNzkxZGRlM2UxZGJiNTY3YzNlMjNiNWIxZjY5MjM5NGM0NmZhZWNlNDViZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwZTM2NGZlOGM1MjFkMzE4MTM1MWVkNTYwZTJjYmFmM2YwM2YzODFkMmQ5ZWIyYTAyYTk5ZTY2ZTI3MWQwNDgifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L805-L833",
+          "version": "repo-lines-v1:sha256:0ba37b9bea753465eaf2df06c0c58b106290e26749cfc0569a559ecbefa24b83:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NmVjNzg0MzViMjQzNDRmZjZiYzJjNzBiZWIyZjNjNjE3MzFhOTEyMWY3MzVkYzkzNzhmNGY0MTIyZGM4ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkMzNjYTliYjQ1YTE5Yzk0YzE3MjNiOGI0ZTQ3ZjRkYmYwOTU5M2RhZjFkNjU4ZmUyN2QyOTlhMmQ5NGI2N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjNTNhMmUwYWU4OWY2MjNhZWRhNGM2YTNmNmM5ZDI0MGZmMmQxNWFkNWEyM2JlNGFkYzRlOGM2MWRmZWYxNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bccca5e2c98147798e366e6b1926af30",
+      "statement": "Marginal identifiers have four ordered axes with charset-checked names and an ordered nonempty tuple of plus-joined transformation steps; immediate repeated steps fail, and selections preserve order while rejecting nontext, empty or duplicate entries.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L172-L183",
+          "version": "repo-lines-v1:sha256:a9a9e9d17ec14755fe09495058ba474bcac37ec39bf2c19671e463f158a21724:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZDhhM2FhNDBiOTk5ZDgwZWYyNjJjZmIzMWY4NzZlYzc4Zjg5ZjlhNGJhMDIzNjZkYjM0MzdmNzk5YzQ5YmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5MGJkNWM3MWJkMTNiMTY1N2UwMDY2ZjM1MmI1OGRiMTZlZGMwZDlkYmNhZjBkODY1ZTA5YzU0Nzc2M2ZlNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyYjI1NzhkODVmMDU0N2ZhOTE3ZGE3YjE4ZDIwNzg5OTE4MjlhNTM4MmM3OTEyOGJlMTZmNmYxMDg4ZjdhYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmOTliN2EwMGNjZTk0NjY5MTBjMmY1NTkwOGZhM2Q0ZTNmYjkyMWZmNmJhYjE0N2UzYjY2ZGUwMTM0YTkyZTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L218-L336",
+          "version": "repo-lines-v1:sha256:ac02b5e4d5299e08e7e1188ce6ae7413031d4d949bd67bde7b72fbf409be096e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJkMjNiMGM2NjM3NmJjOGRhMzY3MmI3YjBkMjQ3Yzc2YmY5MmJhMTdjMDEyOGVhOGY2OWU5ZTAzMmJiYTFjMWQwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNjhmNmE3Y2Y4YjJlYWI4NTM1NTgyMThlNDhmMDRjMjI0ZDM5YTI0YTBlNTJjZmQ3NTY2YTJjZjM0YTYwZmRlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiM2RmMmFjZjA2ZThjM2YwM2M3MTM1YzZlOGFjNWE5Y2E1NDMyYWJlMDZhNzRhY2EwZmRkOWE1M2EwMDhmOTg3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4MWFjNjI5NGZmNWI0ZmE0YThlZjgyZWU4ZWZlNTQ4NWQ2Y2JiNGQwYjg0ZjE5NmIyNWFkNjFhMDZiZjAzNTJkIn0"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L409-L476",
+          "version": "repo-lines-v1:sha256:2fb7aec7eedd901dcd2a192bf4f7f253244ad71de5c64b67adcb2936900a8f6d:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjNzgwZTQ5ZTFjNjE3NTUyY2I2YTc3NTE5NzRhZjk0MGZmOGIwYmRhMTJiYWZhYjI3MTZiYzBlODhlZmYxM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YzBjMzFlYjhhY2UwMmRiNjA1NmQyODU5Yjc3YWQ1YTQ2OWI5OWFjYmUzYTFhMzcxMzBiOGVjYjczOTRlNzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4NDkyYmQyNjJhNzRiODE3MDU2ZjY1NzVmOWFhMGVmNTY4ZWQwODhiMmJmZDJiYTFkNjEyZTRhZTc0MDhlNjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwY2UzZjI0YWI0N2MyZjVhOWQzMzdmMzc3ZWQ4NTczZmE1NjU4NDA3NjQwMmYxYWYwNTRhM2RlZDYxOTQ2MmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_59d4990d472b4beeba46fb6f9fe8ccde",
+      "statement": "Identifier grammar has no metric, fitted-parameter, scenario or estimation-method axis and no semantic vocabulary, so legal text can conceal metrics and legitimately different fits can collide.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L108-L117",
+          "version": "repo-lines-v1:sha256:142f3985f371718077b03e81d145e03b9e0003eed636170d62670e807d37be6a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiODA3MmVlZjEzZWU4YzAzYTk3ZjkxNmJkNjY0M2IwYWUzZTVmYzg1ZDI1ODk1MmIyYTk2ZmMzYzJkMmEyMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjYTdiODZkOGY5Y2I1MTJiZDM5OThiMTk2ZTk0NTBmZjY3Yzc3MzA0NjNiZmUwMmE2OWMzMDY0NjY4NDczNzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3MmI4YzRhNzQzNjQ1MmEzNzI1YmExMzgwYzJmOWMzYWEzNjYxZTA5NmY5Y2ZmYzQ4YTYzMjdkMTU4ZDUxZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L16-L45",
+          "version": "repo-lines-v1:sha256:b19e281dc646e9ace70342d09cc7e08758ea0d7c02be1aa2d3d85c2e0c804cc2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZDljYWZiMDQ4OWU0MDU1ODIxYjVkZjUxMzdkMjE0NDFmMzJkM2EzY2E4Yzg1NGVkMjE3YWE1Y2I2NjIyMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5MjkxNTIyYjlkYTZlNTA4NzliZWM1YzE5MTkxZDZlMDg1NzYyYTE5ZDhiOTA2OGYzOWM5NjJkMzE0YjkzOTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiZTVkNmUwMmI1NDliZmFhNDJkOGM1ZDdmOWE3MzQ3MmU0NjFjYTY4MjU1ZmM0M2EwNjFjZWQ2YWVmZmE4MDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxOTIyNjI5YTVlYWFmMjAwZDA2ZjFkOWNmMjdkOGFiNTQ3MWQ4YzZkZjZlNzhlYzA1OGQwNDAyMWQ1ZmU2YTAifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L445-L476",
+          "version": "repo-lines-v1:sha256:1475349c01471287e78a2dadd9722ab85abc0abc7af1c30cba33dd633c58abec:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkMjI4ZmJhMTdjMzgyOTE5M2VlNDAxNTgzMjRhMmQ1MDNiNmMxYjdhYTcxYjJhZDRlMzk5YTk3MzE1MTE5MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YzBjMzFlYjhhY2UwMmRiNjA1NmQyODU5Yjc3YWQ1YTQ2OWI5OWFjYmUzYTFhMzcxMzBiOGVjYjczOTRlNzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlYWJiZjZkNGM3Y2JkOGQzMDcxNDRkNGRiZTU0YWFlYmNkZGJhYjQzMTY2ODg5ZWEyYjVhMTM4ZTcxZWI4MWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwY2UzZjI0YWI0N2MyZjVhOWQzMzdmMzc3ZWQ4NTczZmE1NjU4NDA3NjQwMmYxYWYwNTRhM2RlZDYxOTQ2MmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_063bee8757e246459c3f4d555a07e2fd",
+      "statement": "Dependence selection requires nonempty entries with exactly event_class/marginals/structure/copula_families, unique event classes, at least two distinct ordered selected same-class marginals, and exactly d(d-1)/2 legal family names; repeating families is allowed.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L479-L566",
+          "version": "repo-lines-v1:sha256:436d4c72b871a2e7fb645709d1b84f0a4de240799cb069497b27dfa09ccbb384:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjZGNkZDgwYzI4OGY4MzZlNmUyY2UyNWQ2Y2NmMWJhYTBiMWE5YzUzZWU1N2M2ZDA2MmJkOTNiNDJiNzZkNjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2ODg0YWUwYzc4YmNhNGVkM2E5MjJmZmIwMGY3NDM4NDlmZDY4NDNhMDkwZjc3NTc4ZGZhOWJlMDNkYWJjMTcifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L696-L791",
+          "version": "repo-lines-v1:sha256:d604206396d9a7c90e38a0b2dc01136aabfdd160d3a124a80d356df0bf2e9a0a:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhZGUzYmE3Y2Q3YjY3NDIzZDllOWQ5NGI0YWUyYjFmYmY0MTUyYjlmNmQxNGE1ZTkzZWE2ODc0NDViMmEwNWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmNzFkZDhjYWVkMDNiYTg3YWNmOWRkZjJiMjViNTg2MzdiOTdmMDY3MDcxMTg2ZTVmNDQ3NTM5N2U2NTI4NzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1NzQzZWI1ZjI4MGEwNjI3NzQxYTY2YWRiMDdmZTJjNDBkODg0NDlmY2Q2ZGYyZjI4ZDYwY2Q5MjQyNTQyYWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_413b89e63c7c40ac83c4bf75ea7bf174",
+      "statement": "Dependence validation does not establish structure-to-edge conventions, vocabulary, or complete coverage of selected marginals/classes, and it cannot represent multiple alternative structures for one class.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L503-L506",
+          "version": "repo-lines-v1:sha256:47ebbe17c403db071397dd3eed86f8c3b7bd3351e7b7efd32d663c897779b0aa:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2I0YmFkOWM4NDg0NGQyZjY3MGU5ZGMzMmZjNzVhYTY4MmE5NTM3OTczYjA1MmFiNmFmZjM2YjAxOGFiODg1NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRiZjExYjFiNjM0ZjU2YjczMGMwM2U1ODQwYjM1ZDczYTFkM2VmMzEzZjM4NTBkOTJmMzQzOWQ5MWM5MzhiNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjliNzI2ODZkYTM3YjkzYjJkMDhhNWJmMzE1M2IyZjY2MjZmOTI2Y2ZiY2U0NGYxODhiNTExMGJkMTdkY2Y4NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWYxNGFiOTZlZWIxNzU3MTdmNDg1ZjFlZjlmMjJiMjBlNmNiNzc0NWE3OTMxZDUwOGUwYTNjOTk5ZTlkNDI5OCJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L729-L791",
+          "version": "repo-lines-v1:sha256:b3a4fca100481bdbbbcf6a7e104990c89c05b29f193ef71dcc536cb86e662d4e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0MGQ5ODQwYWEwZjA5ZDcyOThjNTJhMmYwMTQ1MGEwM2ZmZDE3MjJhZWVkM2JmMzQ2YjFkMDQ3MWRiNWRlNDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxM2ZjMGUyYjhkZWIwNGY5YzcxYzc0NmNmZWYxNmIyNTM5Njc5OGFlMWU1MTY1MDc2ZWM4ZDYyNzE4N2RhMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1NzQzZWI1ZjI4MGEwNjI3NzQxYTY2YWRiMDdmZTJjNDBkODg0NDlmY2Q2ZGYyZjI4ZDYwY2Q5MjQyNTQyYWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bbc8f8427b494607b761046801d43440",
+      "statement": "Stamps require exactly input/seed/identity tables with nonempty integer-not-boolean seeds and nonempty identities whose three text fields agree with the system key, but do not check seed sign, identity text nonemptiness, Git versions or exercised-system completeness.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L610-L612",
+          "version": "repo-lines-v1:sha256:00d6b11f6d54541b1b8382d3bb4c7c623566ba7b87b24c4dd031452940c8cbd5:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWViYmViZTczMjg5MThjNGJkMzFlNzA1NmQ5YTgyNjNkZTI5ZDFkOWM5NWVhYTQ1YWQ1ZWJjOWVhYjk1MTE1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU3MTY5Mjk0YTcxZDQ0ODViYzhkY2IwYzNmYTBhYmIxYmRkOTY4NTg2YTZhOGNmZmQxNTljZWE2YTFiZWNhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODE4YjdlMTExOGI0ZGQyMTUyYTMzYWFiMmQ1NzNmNzJmZTkzN2E2YjA2Mjk2ZWU4NjA5M2U3NDJmZDdmZDQ0NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTVhOGMzNTNhNTU2NGRmYTUyZjU4YWJlZWNhOWRjNjRmN2Q0ZGFiMGMxYTEyMDE3NGE3ODZlNGRlNmNiYTVkMSJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L626-L694",
+          "version": "repo-lines-v1:sha256:18e840fad486ae4f46713d15b125d09d77aaf62e130bdb1e65183ab5a684e072:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNWU0MTIwMTA4YTAxNjBhZGNmY2Q5M2MzOGU0MWNhODNjM2YyNjgxNjZjM2M5NTgxZjczMWU4Zjc5ZWNjZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3NGJiZWExODBmNTU5N2Q1N2ZjMTE0ZDM5ZDRjZGJmNDk3YjA4NDBmZDVlZjU5OTBhMzAzNDFjY2ZkNzkzZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5ZDFiMDY3ZmJkNDcxNDFhNjAwZTZkZTY2ZDQxZGUzM2ZiM2RhMjllOGRiMTMzZGVjOWNlM2Y3NDMxMmMwM2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c26ddfa22e7d457382af31741b0b8817",
+      "statement": "SelectionArtifact freezes nested stamp mappings/arrays before capture and retains validated values rather than the caller's mutable document.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L569-L587",
+          "version": "repo-lines-v1:sha256:1a5a9c4f53695fe6d4fde4d3a5316d683b3ebfdf192f3f6741633b4460abc315:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5MWZkYmIyOGE1ZWZmOTI3MWZhNTQ0ZWM1Y2Y4MWVlYmQ3OTliYzI0NTQ3MjRkMWMxNmE3M2E1MzFkOWFmYzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5M2ExMzA2MmYxMGVlNGYxMjE4ZDkzZTM3YTZmODFkMzQ2ZmYxMWVjN2U1NWRkNTQyZTJkMmQyZWYwNzExZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZGZiZjQ1M2Y3ZjFiZWJhYjcyODM2MWIwZjM5M2VlYjRjMWZiNjY4ZjllYTIyYjkxNmRhY2Y1ZGZmODFkODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4OTc3OWRhNjZmYWViZWU0YmNjNGQ1Mzk2MzllMDQyM2IzNDA3NzQxMjMxOWZhZDI1ODAyNTVkNWZmNDRiZjkifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L600-L604",
+          "version": "repo-lines-v1:sha256:c897637ecae0df051b33e61217df006005fe9cabfacf3ca8c9e4d9682248ddec:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGNlNTRmZTk1NTM2ZDFiNmFjMDFmYzNmZDQ2ZThlNjEwMzQwOTcyYjY2MDg4YWRmMzc2ODE4YzdlZDE0NzgwZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjEwZjk2MmI2ODc2Mjg3YzI4ZTUwZDY4MzU0OTFlZjIwN2NiZThkYmQyNTAxYmM5NmNkOGQyYzAxYjRjMWQ4MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGYyNzBiMTQwYzliNWI5MWIwYWE4NmQ5OWNjNjZiMDQzNzljMDc1Y2MzYTI4YTYyNWMzNmE5NjE0ZTY5ZDcwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2E2MjYzNzVmNjc5ODdmYTRiMmE4NzM0ZDhkOTk0NDgzOTVjYjg4MGQwMGNmOGRlMTk5NDI3ZWE2OTM5NTU5YiJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L793-L802",
+          "version": "repo-lines-v1:sha256:61d8215f26c286897e9ad76ff92e33fa0d51cd3315ee55d24fab431ff8d8b275:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyOTNmZjhmNGIwMTk2ZDdmZGQ0OTA0YTdiYmY0ZTAyNGM1NGM4ZDJkNjMyYzczYzY5ODA2MDk5NDg5MmMxYzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyNzI5ZDRlOTc4Yzg5ZWMyMmJkNmI2MzM2YzM4MGU0NjZmMjczY2U0ZmQzYzhmZTRkMDc4MTQzMjQyNDBkZTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxNmE1ZjgyNjQ4MDFjZGQ5OTFkOTE0ZGY0NGM0ODViZGE0OGIzMTEzZjk4OTcwM2ZhMGZmODAwODA5NDA1NTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0OWUxYmRhNTQzZTA1NDg5MTYxMjkxMWU3MTJmNTYzYThhYzUyYzg1ZTY2ZGYwZDZmOTg2MGI1MjE0ZTUzMTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ca710d55573447c9856265cb157f82ae",
+      "statement": "Preparation refuses automatic delegation, validates present selection files, and otherwise shortens targets by selection readers plus downstream consumers while retaining attribution/final record, recording present or kept-absent accordingly.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph.py#L223-L306",
+          "version": "repo-lines-v1:sha256:2e9ff2d4f274eb69ef80c268d28b9cfb557a7aea65b44890939b6426a15dd1f3:eyJzZWxlY3RlZExpbmVDb3VudCI6ODQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkNmI3NDEzZGY1NmY4YTY2MTFkM2ExMWRkM2ViMGI0ZDkwYzY2MTcyYTkxNWNlY2NlMjZlM2M0ZWM0MzU1YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3N2NjYWEyOGE3YjMyZjgwZTIwNDc5YTE2OGI5MWVkYmYxMTQyOWQ2MDQyNjU4NzNlNjUwYjk1YWQ4NmMwMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5OTRiYzYwZjMxNWIzNjQ3NjhiMjJmYWM3YTQwMDQ3YzYwZjBlMzAzMTZjMDFjNjE2OWY4MmU0YmU0NmM0MGEifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L149-L168",
+          "version": "repo-lines-v1:sha256:d1ec3f44c558afa890dd4d2b544d855a394d328319a9d83c7e563ae7b707b42b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5MzQyNmRiNmFiMWJkNDM3ZDljZDJlOTM5MDQ5Yjk2M2U0YjhmMGYzNGEzODNkMWU3Mzg4YjJkOTllYWFjZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViZWRiYTRlM2M3Mjc2MmEyZmRkYTdmN2EzMDE0MGUyMDYzN2E5MmRlZThkZDU0YjgwYTcxZGYxYjM5YThkOTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlMGM5OTI4NThiMGFiYjIwZTUyM2U2NzlkN2E2NTQ5MjdmMGQwNzkxMTg1MDc2OGY1NmFmMGU5MDQ2MzAzMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzY2JiZjFkMjJkNDJiNjcxZWQxYWI0YTZhOWRhNTZmM2RiYTE2MWIwZWFjNWU3ZGY5MDE3ZGEwZDc2YjAyZTEifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L198-L237",
+          "version": "repo-lines-v1:sha256:6cda8c8d1696a299b7f091fe7942972239d9d09a098fcf01c34cc2969c0cd01c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiZjU5Mjg5ZGVkMDcxZGE2N2ZkNWJlMzI5ZjFkYThkYWNiNWFhYTM4M2NmZTA0NTg0YzQ1M2EyMTVjMjE0MTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMWU3NzkwYzcyYmI3OTViZmJhYjBkZGQ1NzMzN2UyYWFiZDk4NzUyOTdlN2U5NDZlZGU1ODc3YWRlY2U3YTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhhMmI3ZDVjNDlkOTZhNGU4ZjliMDExMDVhNTU3NzE5YThmZGU0Y2QzM2Y5N2EyZTYzNzg5ZGNkNjNlMWUyMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L79-L115",
+          "version": "repo-lines-v1:sha256:1c7b718d1512fe2a99d7ae66454165a426d8c494c44c3fb1c5d0b3ec7d44583c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5ZWQzYzQ3ZWI4OTEzNDYxYTI3Nzg1ZWM5NGQzNDVmYmY3NWFhMTlkZGNiZWFlYTUzYWVmMGU3ZmEwMGJlZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwZjJiNzM2Yzk3YTg2OGRlNmIxZTk3NTU1NjZiNzEzYWRjODZmN2ExODliYWRkMTUwZThhNmY2MTQ3OTE1OGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyYjI1NzhkODVmMDU0N2ZhOTE3ZGE3YjE4ZDIwNzg5OTE4MjlhNTM4MmM3OTEyOGJlMTZmNmYxMDg4ZjdhYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMTgyMjYzNjU4NDQwNjYxNmQ5NDViMmVjNjc3ZDEyMjUxOWRkNjBkYjlhY2RiMzk1ZDgwYjYyYzJmOTJkNzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b63482ddaaa940ad9c6543edfbb2d6f9",
+      "statement": "Run-start JSON is a run-start:1 handoff carrying configuration, targets, nullable selection and judgement; delegated is schema-valid despite preparation refusing it, and schema validation does not establish file existence, graph membership or cross-field consistency.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L149-L157",
+          "version": "repo-lines-v1:sha256:2e1e25e7514b3819c6d512be9abd0c8f9fa690335f1dc4e31adec6dfe3c4f901:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjkzNDI2ZGI2YWIxYmQ0MzdkOWNkMmU5MzkwNDliOTYzZTRiOGYwZjM0YTM4M2QxZTczODhiMmQ5OWVhYWNkYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkwOWE1M2E2MThkMDI4ZTFkMzAwMGMwYTdhYmNlZWNiZTVmYjM3ZjRlNTExZWZlNDY2NDNmYWQ2ZTY2ODcyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGUwYzk5Mjg1OGIwYWJiMjBlNTIzZTY3OWQ3YTY1NDkyN2YwZDA3OTExODUwNzY4ZjU2YWYwZTkwNDYzMDMwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDc5ZTAxNDkzYjUyMzVlZDA2MDYyOGFhNzMzNDk3ZDEwZWUyMmRlMDEzMzMyODRjMjg2NTQ1NDllMDc1OWJiZiJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/run_start.py#L42-L53",
+          "version": "repo-lines-v1:sha256:109835c98def0c5839ea1634f0a16d992799973297994538a3145a6c9fa0e63b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NDY2NGNkNWFiNTQ0M2Q1ZDlmZjI5ZDFlOTAyNmZiZjFkMDZkZGE3OGY0YmI0OTFkZmE2YzlmMDg3Y2VjYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1NDBiZDlkN2M4NWZkZDI2NzY2Y2I2OTQzYmQxNWI3YzQwYzU5ZGQwYTgzZmQyMTlhNjAwODViMzAyYzYxYTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkYjIyNzdhMWUyYjA3YTA5OWQ2NWVkYjU4MTMyMTEwZTMzMGM0OTJlYzQwMDI5ODI3NDM5ZjQ5YzU4ODBiOWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmNDc0YzU0NjgxMTEwZWYwMDQ3ODI4M2JiZjFmODhiNmY1MDdjMDMyMGZiY2NhZjhkYjhkZjA1ODI0ZWI0NGEifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/run_start.py#L81-L129",
+          "version": "repo-lines-v1:sha256:9f324a31c013c770c6968a2e1779fbbc5d4a241fdd89e1a4c247475bb510ce51:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1NzA4MjAyNGFlYTMzOWQ4N2NmYjRmMDdhOGE0OTczNTA1ZDU5YzYwOGIzNTIwMWRhM2NhZmE0ZTQ2ZTg1ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjYmVkNDM5ZTc4YzY1ZDZhYWE0MDBjMzUzNzVlYzcyZjZjMDA3NjJhN2YyMThjZDQ0YzVkYjdkNzE4Njk2OGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmZGRiYjExZGEwM2I5MDMyYTIzOWM1MmU0YTcxNmU2NThiNTMwZmE2NGVlMzAxZWI0YzA1NjFmZDVmNDkwNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwNWE4ZWUzNzMwNDVmYzUzZWZmYThkMjY2Zjc1M2UyZWFjZmIwOTIyMDMyOGJlMzU3NDZiNTI0MzRlZmNlYmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8e7a30c5157b460f994ac02075061c15",
+      "statement": "SelectionArtifactError is the common refusal root with version, stamp and dependence subclasses retained by load_selection while it adds the document path.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L51-L62",
+          "version": "repo-lines-v1:sha256:dcdfe4578b15e6b048fc92b7fb191d5e7e09e9cd89ab9fd1111fa3d3acd37fbc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5YjI1MTQxZjMzZTgyYTQxMzYwOGYzYTU2MDgyMzcyOTk2ODJlMDAyOGE4Y2YxYzY4Njk5MTJlYWFlMmJmZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4YjcwYWE1YWRiMTFkZWVlMWM4NTVmZGM5M2NiMTZmM2JmMTQ5MmRhMzk2Mjg0MTE3ZmUwMTQ1OTZkM2FmNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMjg3NDJjMzdjNjM2MmQwMGEwOGMwMTZkZjkzZTIyODNmMzM4MDIxZGE2Y2MyOGUxNDdiNTNkOTU4NDc0ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2MzE3MDdjZTUyMGE0NjY5ODI2OWFkMGJjZjUxZWQ0ZmIzZTZjNzFhNjRhOTc3MGVmNGZiYTM0NDFiNDEzM2IifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/selection_artifact.py#L805-L833",
+          "version": "repo-lines-v1:sha256:0ba37b9bea753465eaf2df06c0c58b106290e26749cfc0569a559ecbefa24b83:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NmVjNzg0MzViMjQzNDRmZjZiYzJjNzBiZWIyZjNjNjE3MzFhOTEyMWY3MzVkYzkzNzhmNGY0MTIyZGM4ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkMzNjYTliYjQ1YTE5Yzk0YzE3MjNiOGI0ZTQ3ZjRkYmYwOTU5M2RhZjFkNjU4ZmUyN2QyOTlhMmQ5NGI2N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjNTNhMmUwYWU4OWY2MjNhZWRhNGM2YTNmNmM5ZDI0MGZmMmQxNWFkNWEyM2JlNGFkYzRlOGM2MWRmZWYxNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

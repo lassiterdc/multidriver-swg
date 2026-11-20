@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:eba1d38b639c5ebfc5741fe6ae59d9d1f199d0226ffafb75f77b24c622613fce",
+  "claims": [
+    {
+      "id": "claim_1221e6bc8c4e41a3a0d0a7caff5f9882",
+      "statement": "The CLI checks availability, configuration, launch binding and pre-run preparation before executing an engine or submission plan.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L221-L270",
+          "version": "repo-lines-v1:sha256:a46c080813bbea70c94149f85def82859e5e17b3985fbaa5bedaa542ef64c7f4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NmQzZWNlN2MxNzMwNmE1M2QxMDUwMTVkNGZmNTdiNWM0MGJhNDlmOGVkMTM1NTIwOWJhNmU1NTBlNGYyMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmNmM3ZDdmOGVjN2JhMDA2MTlmNjU2ZmU1OGU4OGI3MDU0YmUyNDU3OGMyYTFiMGYwZmZlMGY5NmY4MGIyZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxNGU0NmEyZDQwZWRiYzA4MWZlZTZhYzQ5ZjRhOWFmNzA5MzI3YjBjZjg0NTA1Y2ZjZjI4ZmIzYjViMjQ3NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1NDczM2EzN2UxNDEyNGE1NTVjYWE1NmIyYzllOTUwZTUzODFmMGY4YmYxMmE4YmQ5MDVjMTI5NDY4NGRlMTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3446a455cf1c44daac56a11035082101",
+      "statement": "Local and per-rule SLURM execution use engine plans; single-allocation mode builds a script with local execution over configured allocation CPUs and submits with sbatch --wait --parsable.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/modes.py#L216-L307",
+          "version": "repo-lines-v1:sha256:2d9bd8684fbff8a74c5d0a12541ea2831fca678a95f0e70e02599db88e8c17fa:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1YTFjZWU3ZmIwMDkxMGU4MzYzMzg2ZjJhYjFlMTA2ZDVhMjNjZmNiMjUxYjg2NGM1YTA5YzljZmM0MDA5MTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0OGYyMDhiNTNjMzYwOWViNzBiOGNlNmJkOTE4ZTg2MGMyODUzMTU3YTc0NGIyZjliOGU2NWJkNmM5ODljYTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5MjNmYTY5MmJjYmNhY2ZjMGVkOTIyYWU4OTQ5ZGI1ZmFiYjkwZGZlNzdhMjJkYzI0YTkzZjBmYTM0MDllYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyMGIzNTg0N2EwYWEwZWI2MmFhYTllYzZiMzQxMDQ2OGNlMTNmMjc2ZTFjNzIxMDA4ZDEwMWZkYjgyOGQ5M2MifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/modes.py#L77-L191",
+          "version": "repo-lines-v1:sha256:71d717187eaa5e3fd881711e07dc0b9c9fcf1eb139b0d45c372f5c76ca9f45d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4NThiYzFlYWJhMTQ3ZWE2MDM4YTAwMTBjZTk2NTIwNDE5ZTM2OTlmYmUzZWE1MGEwYjFhOGYzN2E1YjAwNjgyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzMGMxZjE4OGYxNDJlZDdhODI0NjgwYjIwNzE3MmM1NTE5YmM2MTRhNDhmZGE3Y2YxNjdlZGI4ZGRmNzk5NTZjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwMmIyNTc4ZDg1ZjA1NDdmYTkxN2RhN2IxOGQyMDc4OTkxODI5YTUzODJjNzkxMjhiZTE2ZjZmMTA4OGY3YWI1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjMDFjYmRkYWQ1NGUzYzBjMTNmY2YxZDRhNTM2NmRhMzE3YjI1OTFhMzdmNjFkNzc0NGY5MGYyMTk0OWYwMmVkIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_e5977a5503e9465b916227a1e20d71af",
+      "statement": "Engine environments remove SNAKEMAKE-prefixed variables and default empty BLAS guards; fixed engine options disable both profiles and request incomplete reruns and an after-run report.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L123-L170",
+          "version": "repo-lines-v1:sha256:12795f14d68569f50f9929cadcc30d54a219cc75602363ea68fefd4607955165:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyOTIxOWVjNzBhMmIzNTczNjkwMzgyNGNmMjA5ZmFhOGE3OTkzYWYwYWIyNGM4MmYyMTZmYzgwZmU3ODM4MTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3ZGI5NGI5ODc0MWU0N2YxMzlkYjVhNTdlYzQxZjI3YWEwYTE3MmIwOGQwNjQ3MWExNTY4MTUwODc3MWQ0MzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyYjczMWIxNDViOTA0NWFjOTc0YWFiYWI0YWMxZWE2NThkYjhiM2UwMzQwZmExZjc1YjFmNzdmYWM3MDM3YzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bf7dc7b6b9044004bee0ce5ebff9bbfc",
+      "statement": "Allocation plans use a fresh UUID log and script-side BLAS guards; submission classification uses nonempty stdout before a cluster suffix rather than a scheduler status query.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/modes.py#L179-L191",
+          "version": "repo-lines-v1:sha256:ff5b1aa738f423e43971cd12115209096a5dc264ece225ac5fddc5c75066b1f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczNzZiY2ZlN2M4ZDdlZWM4NTVlMDE5NzJjOTUwYzIyZWJmMDg4Yjc0MzE4ZDQ1MTQwYzEwZWRjOGY0MzBjZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3ZmI2OTY5MmMxMTYzYmM2M2Y1M2Y4MTk1MDRkZjkyMWY2YjEwNDA5M2UzZGZmNmYwM2JlNWE3OTdmZWRkYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwMWNiZGRhZDU0ZTNjMGMxM2ZjZjFkNGE1MzY2ZGEzMTdiMjU5MWEzN2Y2MWQ3NzQ0ZjkwZjIxOTQ5ZjAyZWQifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/modes.py#L226-L307",
+          "version": "repo-lines-v1:sha256:a2127a71231f617d6e3667789f4d9a86b6188ed299c12c86b05c16600ea0d47b:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4YjdhNzU0MGY5YjFhYjk0YzYxNmFjNzlhZmNmMTQxZDBjYmQ2NGUwNzU3YjEwY2YxY2NhMDljYjVjZDE5NDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0OGYyMDhiNTNjMzYwOWViNzBiOGNlNmJkOTE4ZTg2MGMyODUzMTU3YTc0NGIyZjliOGU2NWJkNmM5ODljYTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1NGNhYTllZGFkYzVlNjZkYTZkNDA1MmQ2NWMzNmZhNGQ2NDM3ZTBmZjdjY2RmYjU1NjMzYTEyNmIxODgwZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyMGIzNTg0N2EwYWEwZWI2MmFhYTllYzZiMzQxMDQ2OGNlMTNmMjc2ZTFjNzIxMDA4ZDEwMWZkYjgyOGQ5M2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d30458852a48432d99adc66994bb53db",
+      "statement": "Interrupt handling signals the local launched process group with bounded SIGINT, SIGTERM and SIGKILL shutdown; it does not explicitly cancel scheduler jobs.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L392-L492",
+          "version": "repo-lines-v1:sha256:9b9c3fa8372b21a9dd75a8291f4e54b3661850f47ba07266ba128a891ef1dbdc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwYzY4NDFlYmU2NTVmNTVhYzg4MjE0Mzk0MjlkZDIwMDhlZDBmODBhODVhMzU3YzAyODg4MjgzNTFjYThhODNkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiZjM2MWU1OTFhOTYwNWQ0MzY5OGZkYjQ4YmVjM2IwZDQ5NzJmZGQ2MjllMjZkYWM0N2Q5NzUzZjQ0OGE3ZjAyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0OWZhM2Q0MTA3OWYyNjg2ODYzODcxMzBlMWIzNjhmZjEyODFhNzRjM2ZjYzc4ZGZkMDY2ZTliODYxOWVlYzA5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2YmQ3NWJlMmIzZjFkYmUyOTVhNjZjZjY2MGFlOTQxNjdjYWMyODczMjY3MGYzMzEzMDRmYTlkMzJmZGQxZmNlIn0"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L98-L120",
+          "version": "repo-lines-v1:sha256:5045e9dfa21d746d2c6288587c511dccaffdbc50125d597316b9f3184df5da5f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkYTljZDJlOGU5ZDYzZWM5NWVlZDhlMGU3MzM5MjM1MDg5OTFiZDQzMzFmYjJmNjZmOTczZTY2NGFjNTBhMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmOTE2N2UwNTJhMDYxZGM2ZDRkMzcxMmYwMTJkYTVlNjA4Y2U5NGYzZWE4MTRmMjlkMWEzNmVhOGMzYTg2NmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZDdmMTNkZDg1MDFiNGViY2YxNWY5ODZlNTY2NmE0OWU5Y2IwODdjYzljZDBlNzBkMWNjZTQwMjc3MzBkNjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxODc1ZWMxZTAyZWQzY2U3Yzg5YmFhYTg2N2Q4Mzg4YTc5ODg2MTg5NTQ4NmZjY2MwZGM3ZmIyZmM3MmM4MzgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aaefe2662bdb442fbd26e89513700ed0",
+      "statement": "Lock recovery is operator-controlled, and failed allocation runs inspect only their own attempt log before printing the shell-quoted unlock invocation.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L173-L191",
+          "version": "repo-lines-v1:sha256:def83a42f2c076cc7e83067628d75b22b65df90bc85f12a645b8bd08b3151ad0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjMzZkYWUyMDA3NzcxYTM1NWMzZGNjZDE1MzUyZWVmZjdkZTIwZDYzZjJkMGQ5MjJjZmMyYTlhMTYzYzFhN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhODJlYmU5ZWQ0MDdjM2E2YmE0YjAwMzQyOTJiYWE1MmMxMWNlNWFlMjg2MTA3NDAyZGU0NzkyZWVlY2FjZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3ZGJmOGE0M2ZlMTViMWIxMjFkOTM0NDRlZTZmZTU5ZjllYWQ4N2UxNmY5ZTMyNmVkMGJlYmMyOWFkNzEwMTkifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L278-L355",
+          "version": "repo-lines-v1:sha256:e4d39c6ccd4b5c852d42fe6b369b56570692e91b850c9c6bbe67bc09c8fd765e:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyMmU5MDdhOTE1NWI1NTRlMzAzNGFhODY2ZmYwNDI3ZjQ3Y2FhZDE2ZmIwNDZkZGZmN2Y1MmNlNmY1MDA0ZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZGY5NDZhNDNhNmU2ODMxMDUzYWM0MGVlZjM1NGEwNjE3ZWVjMjhhODI1N2I5YWJiZDM3ZDdmYzY4YmE3OWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2M2JhZTU2MWJhODVmYzY4MDQwNzIwYjUxNTIzNWI1ZmI4MTA1ZmFlYzM1Y2M5NmM2YzM0NjY0OGM1MTkwODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlZGUzMmI4ZDk0MTM5N2NmNWY3MmU1MTM0MGQzMWRlYzhiNDMzZjM1NjhjNGJkMDU4YWE5NDdlOGE2ZjgzZTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2272bd65b8b94e018d74b417b4d5fc52",
+      "statement": "The CLI distinguishes refusal 2 from failed execution 3 and completion 0, but OS launch errors are not caught by the engine runner.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L194-L270",
+          "version": "repo-lines-v1:sha256:a181de8940a6da1e903b5464eef129eff01a4a3e53213549765f11d6142e4024:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiM2FhNzIzMDEyYWY3OTIxYTY2NjMyODU5ZDZkN2IyZDU0ZWY4NDJkYzEwOTY0NTZkNmNjMWUyMTEwOWZmYTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmNmM3ZDdmOGVjN2JhMDA2MTlmNjU2ZmU1OGU4OGI3MDU0YmUyNDU3OGMyYTFiMGYwZmZlMGY5NmY4MGIyZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1NDczM2EzN2UxNDEyNGE1NTVjYWE1NmIyYzllOTUwZTUzODFmMGY4YmYxMmE4YmQ5MDVjMTI5NDY4NGRlMTIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L304-L355",
+          "version": "repo-lines-v1:sha256:d4f61b95d7f0566dbaf44f518456aa7fe87e8a5966c80e9c2eeb785e3ab76bc6:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2Nzk1ODExZDI2ZGYxYjJkYmVjYmJlOGIxMmIzOWM2NDI4MTM5NTA2YjkxZTFjNTA3OWUwNTM0NjI1ZDIwMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZGY5NDZhNDNhNmU2ODMxMDUzYWM0MGVlZjM1NGEwNjE3ZWVjMjhhODI1N2I5YWJiZDM3ZDdmYzY4YmE3OWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkYjE0OTM1NWU3ZjY2NWViNWY0MTM4MWUxZGZhYWIzMjQ5NTEyOGMxMDllOTIyOWZmZjgyMjBlOGUzZmI4ODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlZGUzMmI4ZDk0MTM5N2NmNWY3MmU1MTM0MGQzMWRlYzhiNDMzZjM1NjhjNGJkMDU4YWE5NDdlOGE2ZjgzZTIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/cli.py#L392-L442",
+          "version": "repo-lines-v1:sha256:97a60302e8784203acac914c73b0d5099f1fe4471911fe5423250d22cf47f790:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjg0MWViZTY1NWY1NWFjODgyMTQzOTQyOWRkMjAwOGVkMGY4MGE4NWEzNTdjMDI4ODgyODM1MWNhOGE4M2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3ZDA4YWFiNWQ1ZWYzZDFjMzA3ZTZlOTI4ZjRlYTk0ZDJlYTliMGFjNzE1MDE0YzY5MTg3YTc4NTA1Y2Q1YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5ZmEzZDQxMDc5ZjI2ODY4NjM4NzEzMGUxYjM2OGZmMTI4MWE3NGMzZmNjNzhkZmQwNjZlOWI4NjE5ZWVjMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5NDIzYTFlMjFkOTgzYTRhNWFhM2FlYzYxZGIzNWY5ZWU3ZTM4MjA4NDY1OThiMzZlOTQxZDRhNmM3NTkyYzgifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

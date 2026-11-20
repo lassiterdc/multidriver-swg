@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ffc338751c8d462a537aa229847bee71e32b5f1b5a3e02e3bfff91a9f0808c0e",
+  "claims": [
+    {
+      "id": "claim_48fa5226c39b4124996fcbb343a37835",
+      "statement": "The package public module surface exposes conformance, dispatch, divergence ledger/report, pairs, run configuration, side record, and workflow.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/__init__.py#L5-L14",
+          "version": "repo-lines-v1:sha256:702e175bf40cace109f19c6060a2e6ffebcffcfff85eca4723e04dc6b84fc006:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkNGQ3N2EwYTU0MzZiZjIyYjBkOGM3ZmYyMGY3ZmY3N2M0ZjFjYjMyYzZhOGM5MWQ1MDJkODJjYTY2Njc2YjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE2ZTA5Zjc4YmEzMTZjMDMyNTY4MjEzYjg1NWVlNzU2ZTQxNTY1ZDkxOGYwOTUxOWM4MWZkNjIwZjQwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwMmM2MmRiYmJlMWM0MGQ2Y2UyN2RkODI2OThiNjljZGNhOTNlZGFkZDk5NjljZDljMzVjMjA4MmNlMjA1ODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_115a1f5ca96a4e2e8a450dad8bcef284",
+      "statement": "The fixed twelve-rule graph declares the artifact interfaces shown in the page, with all fixed reads produced by earlier rows; dependence, synthesis, and validation declare selection consumption.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph.py#L223-L306",
+          "version": "repo-lines-v1:sha256:2e9ff2d4f274eb69ef80c268d28b9cfb557a7aea65b44890939b6426a15dd1f3:eyJzZWxlY3RlZExpbmVDb3VudCI6ODQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkNmI3NDEzZGY1NmY4YTY2MTFkM2ExMWRkM2ViMGI0ZDkwYzY2MTcyYTkxNWNlY2NlMjZlM2M0ZWM0MzU1YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3N2NjYWEyOGE3YjMyZjgwZTIwNDc5YTE2OGI5MWVkYmYxMTQyOWQ2MDQyNjU4NzNlNjUwYjk1YWQ4NmMwMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5OTRiYzYwZjMxNWIzNjQ3NjhiMjJmYWM3YTQwMDQ3YzYwZjBlMzAzMTZjMDFjNjE2OWY4MmU0YmU0NmM0MGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_be6d07d2ebc6453dbbe3ab29d257f1ec",
+      "statement": "RuleSpec explicitly owns system and report declarations and rejects empty outputs, duplicate edges, self-reads, and invalid or duplicate report items.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph.py#L125-L167",
+          "version": "repo-lines-v1:sha256:f99378dcb7675b2a8b046a525bc729e0bb02f4f71612ee8f1f087cc690653528:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhMmY5ZjBiNThhMzljZmMyNzI3OWJkMmNiNmRlOWZjMzYzZWI0NTAxNjQ1NThmMmIyMDMxOTI4YjUxOTMyN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1MDE4YjQ5ZmFkOGEyNjE2MThhYzAwZjY3MjNjN2E2YWMxNTVkNWRmYmY3OTc0N2FkNjA4ZTM5NTMwYWZhNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2NTg1ZTQyODhhODY2M2ViOTkzMTEwNTdkNTU0NWI4ZGU0MWEwY2JkM2ZlODdkZmIwNTBjODgyYmM0ZDllZjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0453a0415f6343de970c4ead7459daff",
+      "statement": "The Snakefile prioritizes its checkout imports, validates graph start, and makes the run-start target list the first rule's dependencies.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L32-L57",
+          "version": "repo-lines-v1:sha256:ecb0d66e272bde1142a25911290305bfe99b67655664c39ef9a9b4ae819065ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1MTc1Nzc4NTFjNDg5ZTQ1YWJhZTI1OTEyNTZjNDA0MDRhMDVjNmQxOWNkNGQ1YWU3ZmQyMmIwMDg0Y2VjNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhMTA3MjJlOWY3NzlmMGE5OTg0Yjg0NmZmNzFmZGJkYThiM2YyYjJjYjliYWFlMDRiOWE3N2M5ZDI0NWJmODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzNDk4ZTljNWM1NDE3N2I4YTgxMGY0ZTIwMWQ0MDMzZWVhNmQzMGNmMTljNWI3MmMzZGY5ZGMwYzI1YTE3MDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkNDQyZDE0ZjBiMWNkMDM1Mzc5OTBkZTdmNjU5NGU3OThmMjU3NGYwODgzZDE3ZGY2ZmE2MDM0MTQ2NjU4ZWYifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L95-L98",
+          "version": "repo-lines-v1:sha256:4beac8c278ce23e725779f8844f4f1ffa811affb119bfe2145a895bcefcec0e8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2I0ZWQzNTExN2RjMGVmNmQyZjFjZjBmMjlkYmMxMDgwOTdjMzQxYWVhY2U5YTA1NDkyNGNlMTFiYTI4MGUwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA0MWE0Y2I2MDE0NGQ3MDkxNDA2YzRmNDY2ZTRmMmFhNTM3YzlkMDMwZjAyMGUxYzRiZTRlNDZlNDA4NTNmMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDNhYjExOWFiODNlMDQ1MGNiOGFhMGI1MmFiODc4MDk3MzAwNjIyZjA2YWNlNDc4MWZhMDNlYWUwNDJhMjIzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNThhMTc2NmE1ZWI3ZWRiYzZiYzRmNjQ4NTZhNThkOTlkODRjMjFiMjYxNjNiZDBmOWRlYjY0ZjlhOTI2MTg2MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a00f0d6d63e444608db261a3d223d4e1",
+      "statement": "Method attribution reads run targets excluding its own outputs and the final record, while end_of_run waits on all other targets and writes a record directory outside the scientific table.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L101-L114",
+          "version": "repo-lines-v1:sha256:cf010045c7219cba0ee2e32ba12223684136a3f61644b79195a6fb27814825a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwYTg0ZWYwODBkZWNmMDMwOWU3NjQwZWE4NTQ5ZTBiMzljYWViNDU4MWJlYjIzYTdmNWE0NTcyZDE4OWI1OWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjYjZjYTY4NDdiNzQ0NjYzMTU3NmM5MTFkNDNhMmU5ZTBhYjdhOGFkNTUxNjhjM2I1NDFkZGM1NDQyOGFmZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYTc1NjY3ODJmN2Y5NjkxMDBmY2UwOTUxZmZkYzY4MzY4NjY1YTdmYTJlYjFlMmVjZDUxNzQ5YmJkOGUyZTMifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L60-L74",
+          "version": "repo-lines-v1:sha256:7cf03f153504e6c125afbd70057a81948980e69c29f537a44c7bdb6269e88a79:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiZmE0OWMwOTVkNDA2OTZhMjYxYmFlNjIyY2EyZDRiOThmYWY4ZjdhODg5NzI5MjY4ODgzNTk4MDc3ZGQzOTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjYmU0OTdlY2FmZjllMjRmNmRkMDJjMGZjMDcyOWVhZTQyYjljZWRiYjE4MTZiODU5NTIxZDk0NmMzYjlkMzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkYjRlMGNhZDZlYTUzNWVhMWNlZjA3ZmI1MGFmYjRkNjk3MWE3NDY0YmRmMzg0ODEwMGQ3YjAxMzYyODk0OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkN2M3MTYxMGQyYzNkMjIyYTdmNDQ1NjBjOTM2MmQ2MmYwNDY0NDI0NzAyODk5MjM0YmVjYTE2NmY5N2UzYzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eff10deac0e44ba59b19a028143c161d",
+      "statement": "The renderer derives producer paths and report flags from GRAPH and binds rule and system through params to avoid late loop-variable ownership errors.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L117-L129",
+          "version": "repo-lines-v1:sha256:345b61fc6871ad24916afbbbfe7564aaccebe6eda56872ce7bbc0912aa8ad051:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MTE1MDIwZGMxMjYzOTVjN2E0ZmVkNDJmOWNhZGFjMzdiZGQ4NzNkNmNmOWNmN2I3ZTM2MjczYjk2OGEzNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MjRhMTlkODNjMmMwMjVjNTQ5ODRiZGQ1MmZjM2RhMjMzMjNkMTIyY2FjNzQ0OWUzOGJlZTg0NjM0YzRjYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzZGYyYWNmMDZlOGMzZjAzYzcxMzVjNmU4YWM1YTljYTU0MzJhYmUwNmE3NGFjYTBmZGQ5YTUzYTAwOGY5ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L56-L57",
+          "version": "repo-lines-v1:sha256:5801697ae28072fa71a7ed0d225151ff5c48947045557e69afecae7ab8bf375c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDc0MmU3ODg0NWViNzEyZmZmZDJhMTEyOTRmMTg2ZjIyMDdmYmU2YTA3MGM3MmM2MWFlMGI1ZDMyNzFmOTkzYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGExMDcyMmU5Zjc3OWYwYTk5ODRiODQ2ZmY3MWZkYmRhOGIzZjJiMmNiOWJhYWUwNGI5YTc3YzlkMjQ1YmY4MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTlkNGNmN2Q3ZTNiYmQ1OTc3ZGM5MDEwNmQ3ZGM2Y2M3N2RkMDlkZDQxZWExZmRiMWNjZmM3MmU1N2FlMGE2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmQ0NDJkMTRmMGIxY2QwMzUzNzk5MGRlN2Y2NTk0ZTc5OGYyNTc0ZjA4ODNkMTdkZjZmYTYwMzQxNDY2NThlZiJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L84-L92",
+          "version": "repo-lines-v1:sha256:45725b60843e3db7ca137ae3870f50b02246f6a421a05fcb1d9f8ae5d5fa64f2:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDlkNGI5MzAwM2U3OThiMzdkMzBmNjAzOTQxNTg4ZGYxZTlkNmQ1ZTA2Y2JjYjBlYjU4OWFmNzkzYTdhODJjMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWNiZTZkZjgzOWVmMGNmYjUzNGNmYmMzNzM5MWU4M2NiZGRjMTE2NWVlODM0NzEwNGU5YzgwYTVjYWVmNWEwMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDNiYzg4NWY4YTE5MzVjMTUzOTVjMDZkZjJiMzJjMmQ0YzM5MDNjMGYxYmNlZTMyMjU2MzFmMTgyNjY0MDUyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGJhNzU1NTc1OTc4YjkwZWQ3MjViMWY3ODIxZjdkYzY5ZjIyNGFjNDk1MzFkZmI4ZTNiNzFiMGE0NmIyMGM5MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_02f8e19f66ad442b88056d3280c13842",
+      "statement": "Every rendered scientific rule currently writes empty outputs and a side identity naming the supplied system, stub implementation, and running revision; the helper does not validate rule ownership.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/Snakefile#L117-L129",
+          "version": "repo-lines-v1:sha256:345b61fc6871ad24916afbbbfe7564aaccebe6eda56872ce7bbc0912aa8ad051:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MTE1MDIwZGMxMjYzOTVjN2E0ZmVkNDJmOWNhZGFjMzdiZGQ4NzNkNmNmOWNmN2I3ZTM2MjczYjk2OGEzNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MjRhMTlkODNjMmMwMjVjNTQ5ODRiZGQ1MmZjM2RhMjMzMjNkMTIyY2FjNzQ0OWUzOGJlZTg0NjM0YzRjYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzZGYyYWNmMDZlOGMzZjAzYzcxMzVjNmU4YWM1YTljYTU0MzJhYmUwNmE3NGFjYTBmZGQ5YTUzYTAwOGY5ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/stubs.py#L37-L65",
+          "version": "repo-lines-v1:sha256:fc70d53beb3a2d32be05ba44743babfe667689b75ea1587afb7d91edde87daff:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyOTgzM2ZlZjU3NzBiMDdmZjA5YWUxZGI0ODAxZWU2ZjRhY2ZkNGZiMzBlZDVlOGU0YTU3ODYxODFiMTVmNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiMDZiYjg1ZjRkZDdhM2U4MjRkMjI3OTdlOWMxMjczOTc0ODI1YTE5MDc4ZTgxOGM5N2FmZjgyZDNiODVjN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_70a564e932d34aeb83d8b4fe4f2a1eb0",
+      "statement": "Scientific implementations replace row/body interfaces rather than the shared rendering loop; downstream_of follows fixed transitive edges and excludes dynamic attribution edges.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph.py#L3-L8",
+          "version": "repo-lines-v1:sha256:50b48e18b95b6ad5e9517181409241003e8da15192d54de652b505f2a8c45e77:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODAzZjNmYzNjYWY4NmQ1MmU4ZThjNWYzYTc3MDRlMTUwODE0OGY4YmE5MjMyYzA3NTU3ZmVhNTM4MDE0NjVkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmI3MDlhYjAyY2VmMzZmMGViMGQ2MzUwY2VjOWFkNTEyYTVkNzQyNDllZWVhMzc4Y2IyNDU1NTBlN2JmZGNjZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzgxM2QxMzQwZGM1MDllM2EwZmVkZjc2N2FjM2E1MzI4NTZjOWJhYzM4Zjk1MGVlODQwM2NiNmQxZGYyMWFjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzA4ODMwOTcwYmUyYTczNWI5NTBjNzY0NzRiZTIyMWY5MWM1NGQ4MGE2NDljNWZmMWVkMmRmOWUxNzkxOTllMSJ9"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/graph.py#L328-L367",
+          "version": "repo-lines-v1:sha256:0ad998e98aaf63f32801cdfb5b6a47430bc9147752b4278075c1f6d5f8bd775c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NjZmNWIwOTI2NGMyYzA1MTE2ODJjY2IyZTE4OTYxMmQ4NzQ1YmM3MDZjMzkzNjk2NzhkMzAyYmM4OTRmOTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjZjE5NDBiMmFmNzk3OTY2ODJjNmYwMzk5OWY3NDFkZGNjODgwZDdkNjExN2RjMDU3ZTI2ZGZmMGFlYzU0YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYmE4OTI1MjM0OTY1MDBjNGRhMjk0MmY5MWYzMTFlMTAzZmE5MWQ1ZWViZDgyMDVhMDc2NTA0N2UzNzZlOWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2b426bbc16484600b9a8449a2b38c14c",
+      "statement": "The legacy directory is an input snapshot; its documented acquisition boundary assigns AORC, NCEI, MRMS averaging, and NOAA CO-OPS work to hydro-fetch rather than this refactor.",
+      "evidence": [
+        {
+          "resource": "repo://_old_code_to_refactor/README.md#L3-L5",
+          "version": "repo-lines-v1:sha256:35d22529778e0abdaf7961f7913b7e6e0184dfcb2f0cc380f54902155ff87892:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ2YzE0OThhNDU2MmRhN2JjNGU1MmI4NjkxNmI5Mjc2ODdlZGE2Mzc0MDY3Yzc5NmQ1N2EwZjFjZWM5ZGJjZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNjYzIwOWE5ZjkzZGM2MmYyMWRhZGFjOTcyYjI4YjMzMTEwMjM3ZGNhZjRhMTUyY2YxZTcyYWI3ODI0ZWVlOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDAyNWU4Y2JhODYxNWI5YTBkOGY4YTE3MGZiY2Y5MmNjZmQ0NTY0M2Q1YzUyY2U5N2QzYmYxYTUwNDEwOTAzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGQ4ODU2Mzk4MzNkODJhYzgzOTc5YzM3NzNhNWYyNzgyMTZjMjA1NDgxZjcwZDA1MjA5MTBiYWI0ZDQyOWIxNiJ9"
+        },
+        {
+          "resource": "repo://_old_code_to_refactor/README.md#L62-L64",
+          "version": "repo-lines-v1:sha256:e2d30f42e5087f4af3baf6853fa9689b314f12355a32b17decc2fdf4f7b89366:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjZiYWZkMTkzOTZjNmUzZDQ4MDI1NmViNGNjMzliNDRjMzgxYmU4ZmJkYzNhYzNiZGY0Nzg2OGE3ZmMxNjUwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjViYTYxMjg0ZTc5ZDMzYjFjMGMxOGVlMDkwNzIwMWU2ZmEzYmQyZWZmZTYyOTA0OWI2MjY4NTAwOWUzMzIwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmM5YTMxNGJkOTZjMmVlMGE4ZDhkN2FhODdhN2Y4Zjg0OTk2NWYxYTY4NWY5ZWQ5YmRmMmUxYjM2ZTc0ZWZhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}

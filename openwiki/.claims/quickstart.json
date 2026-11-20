@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:d8a26a8a062b2f640ec46b0049c562515e1c57500e58138f1775085b19e198e9",
+  "claims": [
+    {
+      "id": "claim_30ed17ffc58d4633a0e2df0f4b81ff63",
+      "statement": "Current compute stubs write empty declared artifacts and persist a stub implementation identity with the running revision, rather than computing weather.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/stubs.py#L1-L20",
+          "version": "repo-lines-v1:sha256:3b540b97aa7f51fc7b9c8f681078bcbdaa668e2d975f5c9ffcf671583ec10ccf:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzNTViOTdjOTdmN2ViMzhhMmRhY2I5MDM5NDA4NTJjNGRmZGEzN2ZmMGZiOWRjNWQ5MWE4ZDA4NzE1Mzc0MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlYzM2NDhlOWVhYmMzMzE0YTc5ZmNkMTRiNjU3OTkxZjEyNDdmM2I1MjRhNWU1MjAwY2RiY2I1MzkxMDhhM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYWY3NjM3Y2I2ZTdlNWRiODVkNjM0Mjc0NjAxNGRmMDQxY2NkNTU4YTkyMGIyOWViNmFjNzE5ZDdiYWY1YzIifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/stubs.py#L37-L65",
+          "version": "repo-lines-v1:sha256:fc70d53beb3a2d32be05ba44743babfe667689b75ea1587afb7d91edde87daff:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyOTgzM2ZlZjU3NzBiMDdmZjA5YWUxZGI0ODAxZWU2ZjRhY2ZkNGZiMzBlZDVlOGU0YTU3ODYxODFiMTVmNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiMDZiYjg1ZjRkZDdhM2U4MjRkMjI3OTdlOWMxMjczOTc0ODI1YTE5MDc4ZTgxOGM5N2FmZjgyZDNiODVjN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_81278dca6dfd4ad09b72b73466fb0802",
+      "statement": "The source package declares version 0.2.0.dev0 and AGPL-3.0-or-later; the README distinguishes the older PyPI 0.1.0 MIT release and separately licensed legacy material.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L11-L11",
+          "version": "repo-lines-v1:sha256:87f5d63ef37029cb111b9cda7f775b1c0ae9163f278db623e538da49ebe54cd4:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODdmNWQ2M2VmMzcwMjljYjExMWI5Y2RhN2Y3NzViMWMwYWU5MTYzZjI3OGRiNjIzZTUzOGRhNDllYmU1NGNkNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODdmNWQ2M2VmMzcwMjljYjExMWI5Y2RhN2Y3NzViMWMwYWU5MTYzZjI3OGRiNjIzZTUzOGRhNDllYmU1NGNkNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGJlNjA4MDY3MDJkZTMzYjFkMTM4YzQ5OGVkY2U1MzkxYjMyMGUyOTQ2NjZiYWRjYTE4OWQwODg1YzE1MWE4NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTIwNDk0MTA5MzJhN2I5NzhhNDBkZmU2MWIzMWI0ZjQ2MWE4MWExNjFhZTI0NzdmZWEwMjUyYTkzYzkzNzE2ZCJ9"
+        },
+        {
+          "resource": "repo://README.md#L25-L37",
+          "version": "repo-lines-v1:sha256:0d61874e5ddd8e750f7b6545db8fb36b5b37eeefbbc78ee8f48c7a9127fd6bbb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMzAwOTQzZjI2MmJhZTEwMDJkM2Q4ODRkOTU2ODFhYzNhOTUwODNlMTViNDQ4MWYxM2JiNjlkYjhlNThjNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1ZjY2ZjA5NDAxODg2NjNiYzA1MDRhNjJhMGI3N2M5NzBjYWVhODQ4Y2I0YTk2YzljNjljMDE4OGU5YmYwNGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlY2JmYjEzZDY5ZGRmOTY2OWVkNzcxNDczZDY5OWI0MjFlZWNjMGUwYTQ2ZjM4NmZlMGYwYTAwZjdmNGVjMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3ZjMyMDE4MmVhOWIxMGEzYTUxNDk5ZDliNWM2NzM5MWExNWNmYjVhZjQyMTkwZjFhY2I1NjIyNjU1YWFiMDkifQ"
+        },
+        {
+          "resource": "repo://pyproject.toml#L5-L25",
+          "version": "repo-lines-v1:sha256:daf35eb69873668e36547055936fae00439a21811f20b727554e06cf43e51bae:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwMmE4MWMzODM2ZWRlZjJkMGJhMTFkMjM1M2ZiNmRhYmM3NzcxNTBhN2NhODNlYTBkOWU5YTcwMzEzZmVhYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2YWI0NzFjZTU5NzkwMDFlYzUxZjk3ODkzY2I3ZGI1NDlkMDc0MmUxNzliMTdlOTMwYjQzYmI5ZjNhY2U1ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlYzE5YmFlMWQ0YjZhYzViMWU5MTQyMTVlN2QzMTVlZTI0YzMxYTI5MTdjZDAxMzEyYzEyZGExNmU2ZmZmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxNDZjY2ExZGFmYmZiYTBmNWY0MzRiN2UyYzM2ZDBhMjZkNmQ3MmI3NjM1YjNjMjI4ODk1MDg1NDRmMWY2YzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_554472fc7e2e4f459f37d3ae69f1353c",
+      "statement": "Source installation supports Python 3.11 or newer, editable installation, docs and hpc extras; runtime requirements include NumPy and pinned Snakemake, while hpc pins the Slurm executor plugin.",
+      "evidence": [
+        {
+          "resource": "repo://docs/installation.md#L10-L18",
+          "version": "repo-lines-v1:sha256:24d19b15a61c60df374b0fc917b173783d5e8494cfeb2e58e36735eeba554d34:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWM2ZGU5MDgyYjc4Mjg0MDI4ZWY1MGRmNmY1OTRjOTVhOTE2NzY4N2YwNzgyZmI2OGE5ZjI1MDI1YjIwN2JlNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODg1MWE1NGU5ZjJjNjE2NTQ4ODQ2MjQ5NGViNGUyNWJlN2JmZDk4ZTBmNmVhODdkY2RmYWU1YTc5MmFmZWU0MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWRlMDJhZTVjZjkwZGZmNDRhNzZlMTdiMzA2MDk3NmY3NmMyZDg3Y2ZlZDU3OGIxZDc2OTA2Yjg1ZTNiYzdkNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://pyproject.toml#L12-L38",
+          "version": "repo-lines-v1:sha256:7beebe682a42eb42d3e2b5db6f2ad14a85b820ffdb32ca58b2b1e9e7b539133f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyZTc4NWQyMzE2YmM2ZDJlZjkwMjA2N2UwMWE0ZWFjOGM1MTI5NDc2MTAxMDFlNGMzNDE1N2JjMmY4YzJlN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE2ZTA5Zjc4YmEzMTZjMDMyNTY4MjEzYjg1NWVlNzU2ZTQxNTY1ZDkxOGYwOTUxOWM4MWZkNjIwZjQwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZTI4MTg5Nzc3Zjg4NTVjOTA5OTUyYzYzZjY2ODNkOTI1NWRmOTdlMTUyMzcwNjA2ZWM2MjJjZGJjZDRlYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlYjMxY2FiMDgzMjI4MGJiNjZmZTFjNGM4YWY4ZjMxMTcyOGI2Zjk3OWYzNTQxOWNjYTllYmZlMWUwYTFiMjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_11ef5c29cd8a4b59810490b0a20171ac",
+      "statement": "Run admission requires the imported package to be the checkout's own source, the full commit to match the project declaration, and the checkout to be clean; ignored files do not dirty the gate and a tag is not revision authority.",
+      "evidence": [
+        {
+          "resource": "repo://docs/main-configuration.md#L101-L132",
+          "version": "repo-lines-v1:sha256:7dadc81d8d0b566a39587698331c3095b81cac5fb288150c3cf488dbc464f9c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4MmNjNjM2ZDEzZDRhZjg5ZDlkZDI4NWQzMTQ5YTI0Yzk4ODUyOTk2YWJjYWQwNWI2ZThmYjA4YTNjMTA5NzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlYTI3MzE1YWJiNWQxYjRjYzYzNzllNTljOTQzZTZlMTk1YzI1MTM0YmQ3Nzc1MGQ1MmExNWIyZmE2ZjAyOTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlY2JkMWFjZTA0OWQ4NTE2NDZmNzhmZWExODdlM2ZiMzFjYjQzYTk4Y2ZjNTFjOGU0NDk0NzEzNWFjODQ2ZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0YTFlYjQ2MzA4OWRlMjVhYmIwNDE1MzJiYmU1ZTRlMzVmZWVmZjkzZjEzMDRlM2Y2NDMyNWI1YzY0N2RkYWQifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/run_configuration/revision_gate.py#L1-L46",
+          "version": "repo-lines-v1:sha256:07ab85f4e59ef672be4026bc5185f19d3a156c7e16e65ff5ac579ec75fa0cb8d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjMDEzNmIyZjg1MTYyZGRlNzg4OTNkNjFiMTMzNWM1MGY2MzhkYjFhNzc3MTg0ZWE5OTUwZDAxNDFkNzNlNzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5ODcyNzU2NWMzYzFjOGNlZDhmOGI1MDkyNzVhNDRmYjQzMzNhYjkxMGE0ZWIwOTVlNzc1N2Q3ZDliMGYxOTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3Mzc2YmU5ZDMxMjE3ZjY1YWYxMzIxYTA2ZDY5NDkzMDBkMDJlMzVjMmEzM2EwNjg3M2QwZDhmNjFmYjUyNTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ae8de2e6e3e8412eb5c5eecce645be64",
+      "statement": "An operator supplies external main configuration and bindings, including all three run_output, project_directory and selection keys; binding keys are quoted whole dotted keys with absolute values rather than unresolved placeholders.",
+      "evidence": [
+        {
+          "resource": "repo://docs/estate-bindings.md#L27-L46",
+          "version": "repo-lines-v1:sha256:3627ddddf5f78b0b8df69c2552db6ec26d6d23b2fd0fdfe20af9bcd6a7595c3f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OTEyN2NkOWNhMDA3YjJmZDNkMWYxMWZiMWM3OWRkYTAzMGE1YjkxMDliNzMyNzdlMzU0ZGFlZDgxMmI2ODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlZmQwZjAzMjAxNDAzM2UxMzdlYWRkZGNlNjg2YjFkYTA2NzNlMDVjZmQ0NDBjN2UyYjE1OTczMWY0MDllNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3ZTVmYWE0ZjU4Y2Q0MWI5Yjg4MTNjZTc0NmMxNWRiM2NjMzAyMDk5OGFhNWQ0NTgyZWE3ODljYTRlMGRiYmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlNzhlN2JlZTIyYjVlNmVkMTM3OTRhNjIzZWQ5OWUzNWI3NWI5NTRjM2YzYWE2YTdlMGNlNDhlMDI2M2E2MzIifQ"
+        },
+        {
+          "resource": "repo://docs/estate-bindings.md#L88-L101",
+          "version": "repo-lines-v1:sha256:b151ae74b9c36ed606b6fb3a074404105885e3399381fcc7741b0f3099057b7c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjZTUxOWM0Yzk3YmJiZjYxYTY2YzQ5Mjg1NzI0ZGIzMjY0NjMyNzY0YTM4MWJkZGJmZjBkMmYwMTRmYWI4NGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzOTI5MmUwMmRlY2FhODQ2ZGIyMTU4MTU4OGEyNjU4Mjk2ZWQ2YmViOGIwMWMyNjg5ODgyY2QzYTUwMDJkOTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1NjM2ZDliMjQwNTY5YTlhMjM0ZDhhZjZjNzNiNTlhZDM3NjdjMDM3OGVkYTM0MmE5YzUyYjhiYzA5YTNlYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjMmVjYzE4NmUyNjhjMGQ2YTM3YWM3NDMzMzU2Yzc5OThiMjNiMmYwNjBiMjQ0Mjg2ZDY2ZWVkNTMyY2NlZjgifQ"
+        },
+        {
+          "resource": "repo://docs/main-configuration.md#L3-L11",
+          "version": "repo-lines-v1:sha256:73b311fc41e8e1a671dcbfc12bf137bf370724ec45d675ff40f0bc1a370e2113:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDY0MWMyNWQ5NTcwODM3ZWVmOWRkMjM3NzlhNzZlYTc4YTFhMjNhMmMzMjJkMDczNjcyNmNiNTExMWQyZTlhZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWY3MjA1N2JmMjU1NmZlN2RiZmNlOWQ1MjIwMTU4NTY1OGYyOWNhMDM5MzY1NWViMWJmOTdkNjZmOGM1ZmU4YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRkYTc4ZjZjMWU2ZDEyZGM5M2VhYmE2YjU5Y2I4MjcxMmUxYmI2Nzc4ZmMyZWU4OWM5YTczMzQ1MWUyODFlNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQ4MTg1OWRmZDUyMmU2ZGQwNTRiN2Y0MGQzZmE5YTg5Yjc5MjU1MzgwNmQ0YTdiZGYwMjkxYWYwNTQ0MWMzNyJ9"
+        },
+        {
+          "resource": "repo://docs/main-configuration.md#L31-L49",
+          "version": "repo-lines-v1:sha256:2eeb90a49202310c0e49dd2030260500529bd1dc6feb450ee71a9ced7dd32cba:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjYjQ2OTZjZjU5NGQ0OWEwMzBjNWUyODA0OGNjM2FlMGM5Nzg2OWFlNjYxNTUzZDllMDU1ODU2NzFkODFjYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkNTI2YTczNzI3YzBkMmViZTAwZGYxNWFjNjg2MTE0YTUxNDI2MGM2MDZlZmRhZmFkZGVmOWM1NTUyMjM3NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2ZTA0NjAyOTgyMjI1MTg2NmJmZDkzNDQ2NGYyYWExOWM3ZWE4NWU0ZjNjZTg0NWUzMzNmNTJjODAyZmQzMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0OGIyMGYzOGM1ZjgzM2JiMjBiYWFkZWY0NTRlNGFiMGQ2ODljNzgyYjhlMmUxZmQ1YTVmYjE2MmQ3NWZjN2EifQ"
+        },
+        {
+          "resource": "repo://docs/main-configuration.md#L86-L99",
+          "version": "repo-lines-v1:sha256:0317f4e414a7799074221f488434e6dd7696f988af00a1d9e043bcfeda5948aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2YWE4ODZlZDE2YjdjMGFkMDZiMjc4NDMyMDIyNzk2NDBlODVlNjU5MDQ3M2VmYTkxMzA1YzMxOWNmZTgzMjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzNDljYjFlYzM5YTIyYjM4ZTVhM2QwZTUyOWUzZTBkOTM2ZjE0NzM2ZDM1ZjlmYTRmMTQ5OGExZmQ2NjM3NjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmOTRkYTlmM2UwYjM4YmIxMWZlMjJjZTM4ZDM0MTNiMzdhMmI4YmMwYjBhOGJjODE2OWE1MTZiZTQ1ZjQxNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3YWY4ZGRjYzAzNjZlODhjNTE2ZmEwZmM4NmI1NGNjYzJmOTkwYzI3OGI2YmJkMDU0NjYzZTFhMWY0Y2JlODgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a700ebb4dbd840c794860cd0d9e61a90",
+      "statement": "Preparation resolves all three estate keys, rejects configured automatic selection, validates a present selection, and writes run_start.json in the run-output directory; selection absence supports a shorter graph.",
+      "evidence": [
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L131-L195",
+          "version": "repo-lines-v1:sha256:9b300e5274f35d687ced54c8817953142e376c46b3cd2cc533112c62d118f7ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkMTc3MjQ1OThmMDhjM2I2YTQ1NDE1NTAwYzQ2NTRhNDBmYjhlZDJmMzEwNjVmODdlNzhiMTM4Y2NhMzY3MmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2ZGExMzE2YmI4ODhiZTJhZGE1NGFjNWZmMzM0MDE5ZDFiNmY4NjVhOGRhYjk2N2QyODExMDEyNjgxODUwMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmODdlYjU4ZmVkYjBiNTI4MDNkOTBmNTM4MDAxOGJmYjM0YjIxMjIyMjgyMTY2MGI5OWE1Mzg4NGVlYmNiNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwZGQ3ZTlhYzVkOTg3MWY5Y2M3NzljMWQxNzlhYTQwZjhlNTBlOThiOWMwMjkxMGRhOWJhMjE3NTI3OWI3MTUifQ"
+        },
+        {
+          "resource": "repo://src/multidriver_swg/workflow/pre_run.py#L79-L115",
+          "version": "repo-lines-v1:sha256:1c7b718d1512fe2a99d7ae66454165a426d8c494c44c3fb1c5d0b3ec7d44583c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5ZWQzYzQ3ZWI4OTEzNDYxYTI3Nzg1ZWM5NGQzNDVmYmY3NWFhMTlkZGNiZWFlYTUzYWVmMGU3ZmEwMGJlZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwZjJiNzM2Yzk3YTg2OGRlNmIxZTk3NTU1NjZiNzEzYWRjODZmN2ExODliYWRkMTUwZThhNmY2MTQ3OTE1OGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyYjI1NzhkODVmMDU0N2ZhOTE3ZGE3YjE4ZDIwNzg5OTE4MjlhNTM4MmM3OTEyOGJlMTZmNmYxMDg4ZjdhYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMTgyMjYzNjU4NDQwNjYxNmQ5NDViMmVjNjc3ZDEyMjUxOWRkNjBkYjlhY2RiMzk1ZDgwYjYyYzJmOTJkNzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2c6c18169ab949a4b34fd9a9c66caa25",
+      "statement": "The console or module command accepts one configuration argument; modes change launch behavior rather than computation, and exit bands distinguish completion (0), pre-execution refusal or unaccepted submission (2), and execution or accepted-job failure or interruption (3).",
+      "evidence": [
+        {
+          "resource": "repo://docs/usage.md#L29-L57",
+          "version": "repo-lines-v1:sha256:b47483a236a065ee2717acdae21293191da769eb116cbed5c632532ae42234c3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjZDczOGE4MzA4MzhjN2RkYzQ1YjE2NmI0MGJiYzQ5Yjk2MzhiOWQ2Njc2NjNjODI3MmZmNjBjOGNlNmNjMzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0MmViNmFhOTAzYWNlZmQwYzg4MGM0N2E1MDkzMmQwOGFjNGY2ZTliNWQ0YmQ1MjkxMDQ1NzdiN2ViYjZlMTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyYWZlZGM5N2Y3ODM2MmI2ODk2ZjZiODNhN2E4NTVkMzA5ODRhNWYxNzJmMWE2MzM1OWEwODBjMDViNzQ4ZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiNjNiY2RkMTAyMWFjZjI2YmRkODVjNThhZGMxMTUwOWU4Mjc5NjI0YTZjMmMyZjEzMzM3MWMzMDVmYjQ4MmEifQ"
+        },
+        {
+          "resource": "repo://docs/usage.md#L3-L11",
+          "version": "repo-lines-v1:sha256:90c4eb068553556b187c39b061de55cbcc6daf3dd299f957e3bfcb61583f7dfb:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRkODljMTlkYzVkZjc5MTcyMDgzYzc2ODNkODQyZDgzYWMxMWE2ODk1NDI0MTNkMmY5MTY4ODBhZDgyY2U4ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWQ3ZDczYTM3ODljMjNlMTM5YjgxNTQ3MWQ0MjE5ZDBkYTlhNWE2ZmQwYjIwODA0YTlmYzlkOWUxODJlMTVkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2MzNjdkYjA5Y2ZkZjk4YTQ0MGMxMTA4YzNjMmQ0M2RjMDEzMWYzNTM3NWFlNjk0NzM5NTY2ZGQwNmZkOWQyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjFlYjNkMmQxMGRkYzVkMmVhMmNiNmQ1YTZiNGRiM2UyOWM3MTFlOGM3ZDU2OTU4ZWRiZmFiY2U5ZDdjOTNmMCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-20T07:54:33.693Z"
+  }
+}
