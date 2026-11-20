@@ -16,6 +16,11 @@ it puts this directory's grandparent, `tests`, at the head of the import path. `
 `multidriver_swg` package, and the package is already imported by the time that line runs, so the import
 still resolves through the root this file inserted.
 
+One input is read: `measurement/licence_required.json`, when it exists. Its list of `"{event_class}.{statistic}"`
+strings becomes the stub licence's required entries, so the toolkit's own graph can be made to stop after its
+licence. The setting is made at every parse, so the driver and each scheduler job agree on it. It is test
+material; production code reads no such file.
+
 The `measurement` directory is relative to the engine's working directory, which is the run output.
 """
 
@@ -34,9 +39,12 @@ while _SOURCE_ROOT in sys.path:
     sys.path.remove(_SOURCE_ROOT)
 sys.path.insert(0, _SOURCE_ROOT)
 
+from multidriver_swg.workflow import stubs  # noqa: E402
 from multidriver_swg.workflow.graph_start import require_graph_start  # noqa: E402
 
 _MEASUREMENT = Path("measurement")
+
+_LICENCE_REQUIRED = _MEASUREMENT / "licence_required.json"
 
 
 def _where():
@@ -60,6 +68,9 @@ _started = time.perf_counter()
 require_graph_start()
 _seconds = time.perf_counter() - _started
 _append("parses.jsonl", {**_where(), "seconds": _seconds})
+
+if _LICENCE_REQUIRED.is_file():
+    stubs.LICENCE_REQUIRED_ENTRIES = tuple(json.loads(_LICENCE_REQUIRED.read_text(encoding="utf-8")))
 
 
 def _handler(name):
