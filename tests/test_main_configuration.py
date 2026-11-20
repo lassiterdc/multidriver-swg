@@ -35,6 +35,7 @@ from multidriver_swg.run_configuration.main_configuration import (
     MainConfiguration,
     MainConfigurationError,
     SlurmConfiguration,
+    VersionStackingConfiguration,
 )
 from multidriver_swg.run_configuration.path_resolver import PathKey, PathResolutionError
 
@@ -401,16 +402,17 @@ def test_an_unnamed_top_level_key_is_refused(tmp_path: Path) -> None:
         pytest.param("judgement", "threshold", id="judgement"),
         pytest.param("local", "threads", id="local"),
         pytest.param("slurm", "queue", id="slurm"),
+        pytest.param("version_stacking", "rerun", id="version_stacking"),
     ],
 )
 def test_an_unnamed_key_inside_a_named_table_is_refused(tmp_path: Path, table: str, key: str) -> None:
-    """Property: a key the form does not name inside `[judgement]`, `[local]` or `[slurm]` is refused, naming the table and the key.
+    """Property: a key the form does not name inside `[judgement]`, `[local]`, `[slurm]` or `[version_stacking]` is refused, naming the table and the key.
 
-    Class: one extra key in each of the three tables the form names.
+    Class: one extra key in each of the four tables the form names.
     Why it is required: the closed key set of the top level does not reach inside the tables, and a
     setting written into one of them is exactly the value its author expects to be read.
     What kills it: validating the top-level keys only.
-    Second correct implementation: one closed-set check applied to each table; the same three documents
+    Second correct implementation: one closed-set check applied to each table; the same four documents
     are refused.
     """
     document = _document()
@@ -422,7 +424,7 @@ def test_an_unnamed_key_inside_a_named_table_is_refused(tmp_path: Path, table: s
     assert table in message
 
 
-@pytest.mark.parametrize("table", ["judgement", "local", "slurm"])
+@pytest.mark.parametrize("table", ["judgement", "local", "slurm", "version_stacking"])
 def test_a_named_table_that_is_not_a_table_is_refused(tmp_path: Path, table: str) -> None:
     """Property: a named table given as a scalar is refused, naming the field.
 
@@ -589,6 +591,7 @@ def test_the_module_docstring_states_the_two_commitments() -> None:
     assert "[judgement]" in docstring
     assert "[local]" in docstring
     assert "[slurm]" in docstring
+    assert "[version_stacking]" in docstring
     assert "MainConfigurationError" in docstring
 
 
@@ -662,3 +665,69 @@ def test_a_slurm_table_missing_a_connection_field_is_refused_in_a_local_run_too(
     message = _refused(tmp_path, _document(slurm={"partition": "compute", "time_minutes": 60}))
 
     assert "'slurm.account'" in message
+
+
+def test_an_absent_version_stacking_table_is_the_refusing_default_and_a_present_one_is_read(tmp_path: Path) -> None:
+    """Property: with no `[version_stacking]` table the configuration holds no rerun rule and refuses mixed versions; a present table is read value for value.
+
+    Class: the conforming document without the table, with a full table, and with an empty one.
+    Why it is required: the refusal is the default and the override an explicit act, so an absent table must
+    mean "no rerun, no override"; and the two values the pre-run step and the command read must arrive as
+    written, in order.
+    What kills it: a default of `true`, a loader that drops the table, or one that sorts the rule names.
+    Second correct implementation: a table read through any helper; the same three configurations result.
+    """
+    absent = MainConfiguration.load(_written(tmp_path, _document()))
+    assert absent.version_stacking == VersionStackingConfiguration()
+    assert absent.version_stacking.rerun_rules == ()
+    assert absent.version_stacking.allow_mixed_versions is False
+
+    present = MainConfiguration.load(
+        _written(
+            tmp_path,
+            _document(
+                version_stacking={
+                    "rerun_rules": ["observed_record_assembly", "marginal_distribution_fitting"],
+                    "allow_mixed_versions": True,
+                }
+            ),
+        )
+    )
+    assert present.version_stacking == VersionStackingConfiguration(
+        rerun_rules=("observed_record_assembly", "marginal_distribution_fitting"), allow_mixed_versions=True
+    )
+
+    empty = MainConfiguration.load(_written(tmp_path, _document(version_stacking={})))
+    assert empty.version_stacking == VersionStackingConfiguration()
+
+
+@pytest.mark.parametrize(
+    ("table", "field_name"),
+    [
+        pytest.param({"rerun_rules": "observed_record_assembly"}, "version_stacking.rerun_rules", id="text-list"),
+        pytest.param({"rerun_rules": 7}, "version_stacking.rerun_rules", id="integer-list"),
+        pytest.param({"rerun_rules": [7]}, "version_stacking.rerun_rules", id="non-text-name"),
+        pytest.param({"rerun_rules": [""]}, "version_stacking.rerun_rules", id="empty-name"),
+        pytest.param({"rerun_rules": ["a", "  "]}, "version_stacking.rerun_rules", id="blank-name"),
+        pytest.param({"allow_mixed_versions": "true"}, "version_stacking.allow_mixed_versions", id="text-flag"),
+        pytest.param({"allow_mixed_versions": 1}, "version_stacking.allow_mixed_versions", id="integer-flag"),
+    ],
+)
+def test_a_version_stacking_value_of_the_wrong_kind_is_refused_naming_its_field(
+    tmp_path: Path, table: dict[str, object], field_name: str
+) -> None:
+    """Property: a rule list that is not a list of non-empty text and a flag that is not a boolean are each refused, naming the field in the configuration's spelling, from a file and by construction.
+
+    Class: a list given as text or a number, three malformed names, and the flag as text and as `1`.
+    Why it is required: `1` is a Python `int` that is also truthy, so an unchecked flag would admit mixed
+    versions on a value the writer did not mean as a boolean; a text list would iterate by character and name
+    rules that do not exist.
+    What kills it: `bool(value)` instead of a type test, or iterating a string as a list.
+    Second correct implementation: validation in the loader only; the construction half would then be red.
+    """
+    message = _refused(tmp_path, _document(version_stacking=table))
+
+    assert repr(field_name) in message
+
+    with pytest.raises(MainConfigurationError):
+        VersionStackingConfiguration(**table)  # type: ignore[arg-type]

@@ -55,7 +55,7 @@ from multidriver_swg.run_configuration.revision_gate import (
 )
 from multidriver_swg.run_configuration.selection_artifact import SelectionArtifactError, load_selection
 from multidriver_swg.workflow.end_of_run import END_OF_RUN_RECORD
-from multidriver_swg.workflow.graph import GRAPH, downstream_of, judgement_rules, rule_named
+from multidriver_swg.workflow.graph import GRAPH, GraphLookupError, downstream_of, judgement_rules, rule_named
 from multidriver_swg.workflow.run_start import RUN_START_FILE, RunStart
 
 # The declaration's fixed file name inside the project directory, as the configuration module's contract
@@ -126,7 +126,11 @@ def prepare_run(configuration: MainConfiguration, configuration_path: str | Path
     Raises `PreRunError` naming the file or field every refusal acts on: a binding document that cannot be
     read or does not bind one of the three keys; a projection whose revision declaration cannot be read; a
     revision gate refusal; a selection artifact the artifact's own reader refuses; a configuration that
-    names an automatic-selection procedure; and an unwritable run output.
+    names an automatic-selection procedure; a `version_stacking.rerun_rules` name the rule table does not
+    hold; and an unwritable run output.
+
+    The record carries the configuration's `version_stacking.allow_mixed_versions`. The rule list is not
+    recorded: its one reader is the command, which reads the configuration at every invocation.
     """
     keys = _resolved_keys(configuration)
     run_output = keys["run_output"]
@@ -143,6 +147,15 @@ def prepare_run(configuration: MainConfiguration, configuration_path: str | Path
             "model choice cannot be prepared; remove the field to keep the judgement stage"
         )
 
+    for name in configuration.version_stacking.rerun_rules:
+        try:
+            rule_named(name)
+        except GraphLookupError as error:
+            raise PreRunError(
+                f"the configuration's version_stacking.rerun_rules names {name!r}, which is not a rule of the "
+                f"workflow: {error}"
+            ) from error
+
     targets = compute_targets(selection_present=selection_present, delegated=False)
 
     _require_declared_revision(project_directory)
@@ -153,6 +166,7 @@ def prepare_run(configuration: MainConfiguration, configuration_path: str | Path
         targets=targets,
         selection=str(selection_path) if selection_present else None,
         judgement="present" if selection_present else "kept-absent",
+        allow_mixed_versions=configuration.version_stacking.allow_mixed_versions,
     )
     try:
         record.write(run_output / RUN_START_FILE)

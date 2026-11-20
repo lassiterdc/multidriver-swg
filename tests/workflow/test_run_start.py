@@ -65,7 +65,7 @@ def _written(tmp_path: Path, document: object) -> Path:
 
 
 def test_a_conforming_record_round_trips_through_the_file(tmp_path: Path) -> None:
-    """Property: `write` then `read_run_start` returns an equal record, the file holds exactly the five keys, and the version literal is first.
+    """Property: `write` then `read_run_start` returns an equal record, the file holds exactly the six keys, and the version literal is first.
 
     Class: a conforming record with a selection and the `present` state.
     Why it is required: the record is the only channel from the preparing step to every engine parse, so a
@@ -82,7 +82,14 @@ def test_a_conforming_record_round_trips_through_the_file(tmp_path: Path) -> Non
 
     assert read_run_start(path) == record
     document = json.loads(path.read_text(encoding="utf-8"))
-    assert list(document) == ["format", "main_configuration", "targets", "selection", "judgement"]
+    assert list(document) == [
+        "format",
+        "main_configuration",
+        "targets",
+        "selection",
+        "judgement",
+        "allow_mixed_versions",
+    ]
     assert document["format"] == RUN_START_RULE
     assert path.read_text(encoding="utf-8").endswith("\n")
 
@@ -104,7 +111,7 @@ def test_the_record_is_frozen_and_its_targets_are_a_tuple() -> None:
 
 
 def test_the_form_constants_are_the_file_name_the_literal_and_the_three_states() -> None:
-    """Property: the module publishes `run_start.json`, `run-start:1` and the three judgement states.
+    """Property: the module publishes `run_start.json`, `run-start:2` and the three judgement states.
 
     Class: the three module constants.
     Why it is required: two parties spell the file name and the version literal — the preparer writes,
@@ -113,8 +120,27 @@ def test_the_form_constants_are_the_file_name_the_literal_and_the_three_states()
     Second correct implementation: constants at any position; the values decide.
     """
     assert RUN_START_FILE == "run_start.json"
-    assert RUN_START_RULE == "run-start:1"
+    assert RUN_START_RULE == "run-start:2"
     assert JUDGEMENT_STATES == EXPECTED_STATES
+
+
+def test_the_mixed_versions_flag_defaults_to_refusal_and_round_trips_when_set(tmp_path: Path) -> None:
+    """Property: a record built without `allow_mixed_versions` refuses mixed versions, and a record carrying true reads back true.
+
+    Class: a record with the field defaulted, and the same record with it true, through the file.
+    Why it is required: the field is last and defaulted so every existing construction keeps working; the
+    default must be the refusing one, and the admitting value must survive the file the engine parse reads.
+    What kills it: a default of true, or a reader that drops the key and rebuilds the record with the default.
+    Second correct implementation: a required field with every caller passing it; the default check would
+    then change, the round trip would not.
+    """
+    assert _record().allow_mixed_versions is False
+
+    path = tmp_path / RUN_START_FILE
+    _record(allow_mixed_versions=True).write(path)
+
+    assert read_run_start(path).allow_mixed_versions is True
+    assert json.loads(path.read_text(encoding="utf-8"))["allow_mixed_versions"] is True
 
 
 def test_an_absent_file_is_left_to_the_operating_system(tmp_path: Path) -> None:
@@ -165,13 +191,14 @@ def test_a_file_that_is_not_one_conforming_object_is_refused_naming_it(
 @pytest.mark.parametrize(
     "overrides",
     [
-        pytest.param({"format": "run-start:2"}, id="another-version"),
+        pytest.param({"format": "run-start:1"}, id="the-previous-version"),
         pytest.param({"format": _ABSENT}, id="absent-format"),
         pytest.param({"unexpected": 1}, id="unnamed-key"),
         pytest.param({"main_configuration": _ABSENT}, id="absent-configuration"),
         pytest.param({"targets": _ABSENT}, id="absent-targets"),
         pytest.param({"selection": _ABSENT}, id="absent-selection"),
         pytest.param({"judgement": _ABSENT}, id="absent-judgement"),
+        pytest.param({"allow_mixed_versions": _ABSENT}, id="absent-mixed-versions"),
     ],
 )
 def test_a_wrong_version_an_unnamed_key_or_an_absent_field_is_refused(
@@ -179,13 +206,13 @@ def test_a_wrong_version_an_unnamed_key_or_an_absent_field_is_refused(
 ) -> None:
     """Property: a version other than the literal, a key the form does not name, and each omitted field raise `RunStartError` naming the failing key.
 
-    Class: the version literal, one unnamed key, and the five fields omitted one at a time.
+    Class: the version literal, one unnamed key, and the six fields omitted one at a time.
     Why it is required: the header makes a later form change loud, an unnamed key is a fact its writer
     believes is read, and an omitted field is one the parse cannot recover — three different repairs, all
     reaching the same exception text.
     What kills it: reading only the keys the reader needs, or defaulting an absent field.
     Second correct implementation: a closed key set plus per-field presence checks in either order; the
-    same seven documents are refused.
+    same eight documents are refused.
     """
     path = _written(tmp_path, _document(**overrides))
 
@@ -210,6 +237,8 @@ def test_a_wrong_version_an_unnamed_key_or_an_absent_field_is_refused(
         pytest.param({"targets": ("/absolute.json",)}, "targets", id="absolute-target"),
         pytest.param({"targets": ("",)}, "targets", id="empty-target"),
         pytest.param({"judgement": "deferred"}, "judgement", id="unknown-state"),
+        pytest.param({"allow_mixed_versions": "yes"}, "allow_mixed_versions", id="text-mixed-versions"),
+        pytest.param({"allow_mixed_versions": 1}, "allow_mixed_versions", id="integer-mixed-versions"),
     ],
 )
 def test_a_field_outside_the_form_is_refused_by_construction_and_by_read(
@@ -218,12 +247,12 @@ def test_a_field_outside_the_form_is_refused_by_construction_and_by_read(
     """Property: each malformed value is refused both by direct construction and by the file reader, with the field named.
 
     Class: a relative or non-text configuration path, the same for the selection, four malformed target
-    collections, and a judgement state outside the three.
+    collections, a judgement state outside the three, and a mixed-versions flag that is not a boolean.
     Why it is required: the construct is public, so validating only in `read_run_start` would leave a
     hand-built record unchecked; and each value asks for a different repair.
     What kills it: absolute-path checks only on one path field, a targets check that only tests emptiness,
     or a judgement membership test that accepts any text.
-    Second correct implementation: the checks in a classmethod used by both routes; the same nine values
+    Second correct implementation: the checks in a classmethod used by both routes; the same eleven values
     are refused.
     """
     document = _record().to_document()
@@ -256,7 +285,7 @@ def test_the_module_docstring_states_the_three_commitments() -> None:
     """
     docstring = run_start.__doc__ or ""
 
-    assert "One file, one versioned object, five fields" in docstring
+    assert "One file, one versioned object, six fields" in docstring
     assert "The record is written by the run's preparation and READ by every engine parse" in docstring
     assert "A record that does not parse as the form is refused naming the field" in docstring
     assert "write" in docstring

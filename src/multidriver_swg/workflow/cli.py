@@ -65,6 +65,7 @@ from multidriver_swg.workflow.modes import (
     SubmissionPlan,
     engine_arguments,
     launch_plan,
+    rerun_arguments,
     run_output_directory,
     submission_band,
 )
@@ -145,6 +146,7 @@ def engine_command(configuration: MainConfiguration, *, run_output: Path) -> lis
     The fixed options are this command's, in the order the shape states: the engine as a module of THIS
     interpreter, the workflow file, the run output as its working directory, both profile channels closed,
     `--rerun-incomplete` so a partial output left by a killed engine does not stop the next attempt, the
+    rules the configuration's `[version_stacking]` table asks to rebuild (`modes.rerun_arguments`), the
     mode's options, and the report written after a successful run. The mode's options come from
     `modes.engine_arguments`, which reads the configuration and nothing else.
 
@@ -163,6 +165,7 @@ def engine_command(configuration: MainConfiguration, *, run_output: Path) -> lis
         "--workflow-profile",
         "none",
         "--rerun-incomplete",
+        *rerun_arguments(configuration),
         *engine_arguments(configuration),
         "--report",
         str(run_output / REPORT_FILE),
