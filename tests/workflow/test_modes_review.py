@@ -465,7 +465,7 @@ def test_allocation_lock_refusal_preserves_lock_and_prints_operator_recourse(tmp
     locks = estate.run_output / ".snakemake" / "locks"
     locks.mkdir(parents=True)
     lock = locks / "0.output.lock"
-    content = "observed_record_assembly/observed_record.json\n"
+    content = "observed_record_pre_selection/pre_selection.json\n"
     lock.write_text(content)
     completed = subprocess.run(
         [sys.executable, "-m", "multidriver_swg.workflow", str(estate.configuration)],
@@ -508,7 +508,7 @@ def test_second_attempt_failing_before_engine_never_borrows_first_attempt_recour
     locks = estate.run_output / ".snakemake" / "locks"
     locks.mkdir(parents=True)
     lock = locks / "0.output.lock"
-    lock.write_text("observed_record_assembly/observed_record.json\n")
+    lock.write_text("observed_record_pre_selection/pre_selection.json\n")
     command = [sys.executable, "-m", "multidriver_swg.workflow", str(estate.configuration)]
     first = subprocess.run(command, env=environment, capture_output=True, text=True, timeout=30)
     assert first.returncode == 3, first.stderr

@@ -55,7 +55,7 @@ from multidriver_swg.run_configuration.revision_gate import (
 )
 from multidriver_swg.run_configuration.selection_artifact import SelectionArtifactError, load_selection
 from multidriver_swg.workflow.end_of_run import END_OF_RUN_RECORD
-from multidriver_swg.workflow.graph import GRAPH, downstream_of, judgement_rules
+from multidriver_swg.workflow.graph import GRAPH, downstream_of, judgement_rules, rule_named
 from multidriver_swg.workflow.run_start import RUN_START_FILE, RunStart
 
 # The declaration's fixed file name inside the project directory, as the configuration module's contract
@@ -106,26 +106,13 @@ def compute_targets(*, selection_present: bool, delegated: bool) -> tuple[str, .
 
     kept = [rule for rule in GRAPH if rule.name not in excluded]
     targets = [f"{rule.name}/{output}" for rule in kept for output in rule.outputs]
-    attribution = _rule_for_name(ATTRIBUTION_RULE)
+    attribution = rule_named(ATTRIBUTION_RULE)
     targets.extend(
         f"{attribution.name}/{output}"
         for output in attribution.outputs
         if f"{attribution.name}/{output}" not in targets
     )
     return (*targets, END_OF_RUN_RECORD)
-
-
-def _rule_for_name(name: str):
-    """Return the row named `name`, refusing a name the table does not hold.
-
-    The graph module's public lookup is over the owning SYSTEM, which is the field a consumer of an
-    identity asks by. This step asks by RULE name for one row — the attribution rule — and derives the row
-    from the table rather than restating its system or its output.
-    """
-    for rule in GRAPH:
-        if rule.name == name:
-            return rule
-    raise PreRunError(f"the rule table holds no rule named {name!r}")
 
 
 def prepare_run(configuration: MainConfiguration, configuration_path: str | Path) -> RunStart:

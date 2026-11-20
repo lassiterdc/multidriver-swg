@@ -29,10 +29,13 @@ from tests.workflow.conftest import ToolkitCopy
 
 PROJECT = "smoke.run"
 
-# The paths an absent selection with the judgement kept builds: the six pre-choice rules, the attribution
-# rule, and the end-of-run record last, in table order. Hand-computed from the table, not from the
-# implementation.
+# The paths an absent selection with the judgement kept builds: the three rows before the merge, the merge
+# and the five pre-choice rules, the attribution rule, and the end-of-run record last, in table order.
+# Hand-computed from the table, not from the implementation.
 KEPT_TARGETS = (
+    "observed_record_pre_selection/pre_selection.json",
+    "per_source_event_selection/per_source_event_sets.json",
+    "observed_record_licence/licence.json",
     "observed_record_assembly/observed_record.json",
     "combined_event_identification/event_set.json",
     "marginal_distribution_fitting/candidate_marginals.json",
@@ -150,9 +153,9 @@ def test_the_pure_target_function_takes_exactly_the_two_facts() -> None:
 
 
 def test_an_absent_selection_keeps_the_pre_choice_rows_and_the_attribution_row() -> None:
-    """Property: `compute_targets(selection_present=False, delegated=False)` is exactly the six pre-choice rows' outputs plus the attribution row's.
+    """Property: `compute_targets(selection_present=False, delegated=False)` is exactly the kept rows' outputs plus the attribution row's.
 
-    Class: the kept-absent branch, over the stub graph's twelve rows.
+    Class: the kept-absent branch, over the stub graph's fifteen rows.
     Why it is required: this is the cut the run makes when no selection exists — every rule that neither
     reads the selection nor is downstream of a reader, plus the row whose inputs are that list — and a
     wrong cut either strands a rule or builds the judgement branch with nothing to read.

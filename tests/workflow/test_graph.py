@@ -1,4 +1,4 @@
-"""Check the run's rule table: the twelve rows, their order, their edges and the four functions over them.
+"""Check the run's rule table: the fifteen rows, their order, their edges and the functions over them.
 
 Each check here is written against a form the defect takes when the table stops being the single
 statement of the graph: a row whose system is derived from its name instead of carried as a field, an
@@ -30,13 +30,16 @@ from multidriver_swg.workflow.graph import (
     downstream_of,
     judgement_rules,
     output_classes,
-    rule_for_system,
+    rule_named,
 )
 
-# The twelve owning systems, in execution order, as the approved rows state them. Kept as a tuple so the
+# The owning system of each of the fifteen rows, in execution order, as the approved rows state them. Kept as a tuple so the
 # order is asserted too: a table reordered without its edges moving would invert an edge and still hold
 # every name.
 EXPECTED_SYSTEMS = (
+    "observed-record-assembly",
+    "combined-event-identification",
+    "observed-record-assembly",
     "observed-record-assembly",
     "combined-event-identification",
     "marginal-distribution-fitting",
@@ -56,9 +59,30 @@ EXPECTED_SYSTEMS = (
 # the table cannot see a value that changed while every property still holds, and this test can.
 EXPECTED_ROWS = (
     (
-        "observed_record_assembly",
+        "observed_record_pre_selection",
         "observed-record-assembly",
         (),
+        False,
+        ("pre_selection.json",),
+    ),
+    (
+        "per_source_event_selection",
+        "combined-event-identification",
+        ("pre_selection.json",),
+        False,
+        ("per_source_event_sets.json",),
+    ),
+    (
+        "observed_record_licence",
+        "observed-record-assembly",
+        ("per_source_event_sets.json",),
+        False,
+        ("licence.json",),
+    ),
+    (
+        "observed_record_assembly",
+        "observed-record-assembly",
+        ("licence.json",),
         False,
         ("observed_record.json",),
     ),
@@ -182,20 +206,20 @@ OUTPUT_CLASS = "Run reports, figures and outputs small enough to track"
 IDENTITY_CLASS = "Run provenance records"
 
 
-def test_the_table_carries_the_twelve_systems_each_exactly_once() -> None:
-    """Property: the graph's systems are the twelve named systems, in execution order, each exactly once.
+def test_the_table_carries_fifteen_rows_over_the_twelve_systems() -> None:
+    """Property: the graph's rows are the fifteen named rows' systems in execution order, and they cover exactly the twelve systems.
 
-    Class: the twelve-system population the approved table closes over.
+    Class: the fifteen-row population the approved table closes over.
     Why it is required: the rule-to-system mapping is a field, so the systems are the graph's coverage
-    of the run's compute systems; a duplicate would mean two rules claim one system's outputs, and a
-    missing one would mean a system the run never builds.
-    What kills it: dropping a row, adding a thirteenth, or reordering the tuple — all three change the
+    of the run's compute systems; two systems own several rows, and a missing system would be one the
+    run never builds.
+    What kills it: dropping a row, adding a sixteenth, or reordering the tuple — all three change the
     sequence this test compares.
     Second correct implementation: a set comparison plus a length check per system; the same three
     defects are refused.
     """
     assert tuple(rule.system for rule in GRAPH) == EXPECTED_SYSTEMS
-    assert len(GRAPH) == 12
+    assert len(GRAPH) == 15
     assert len(set(EXPECTED_SYSTEMS)) == 12
 
 
@@ -249,17 +273,16 @@ def test_every_declared_output_is_unique_across_the_graph() -> None:
     assert len(outputs) == len(set(outputs))
 
 
-def test_no_row_is_local_and_the_target_rule_is_not_a_row() -> None:
-    """Property: every row's `local` flag is false, and no row is named `all`.
+def test_the_target_rule_is_not_a_row() -> None:
+    """Property: no row is named `all`.
 
     Class: the whole table.
     Why it is required: the workflow file's target rule is the graph's one local rule, and it is
-    rendered by the file rather than carried here; a row named `all` or flagged local would be a second
-    statement of that decision inside the table.
-    What kills it: setting `local=True` on a row, or adding the target rule to `GRAPH`.
-    Second correct implementation: any traversal asserting the two facts; they are order-blind.
+    rendered by the file rather than carried here; a row named `all` would be a second statement of
+    that decision inside the table.
+    What kills it: adding the target rule to `GRAPH`.
+    Second correct implementation: any traversal asserting the fact; it is order-blind.
     """
-    assert all(rule.local is False for rule in GRAPH)
     assert "all" not in {rule.name for rule in GRAPH}
 
 
@@ -334,36 +357,35 @@ def test_a_rule_and_the_table_are_frozen() -> None:
         GRAPH[0].name = "renamed"  # type: ignore[misc]
 
 
-def test_rule_for_system_returns_the_owning_row_for_every_system() -> None:
-    """Property: `rule_for_system` returns the row whose system field equals the argument, for all twelve systems.
+def test_rule_named_returns_the_named_row_for_every_row() -> None:
+    """Property: `rule_named` returns the row whose name equals the argument, for every row of the table.
 
-    Class: the twelve systems the table holds.
-    Why it is required: the mapping is a field rather than a convention, so the lookup must read the
-    field; a lookup by rule name would pass wherever the two happen to agree and fail on a renamed row,
-    which is the case the field exists for.
-    What kills it: looking up `rule.name` instead of `rule.system`, or returning the first row.
+    Class: the fifteen rows the table holds, three of them sharing one system and two another.
+    Why it is required: a system may own several rows, so the lookup must read the NAME; a lookup by
+    system would return the first row of a multi-row system for every one of its rows.
+    What kills it: looking up `rule.system` instead of `rule.name`, or returning the first row.
     Second correct implementation: a dictionary built once from the table; the same rows are returned.
     """
     for rule in GRAPH:
-        assert rule_for_system(rule.system) is rule
+        assert rule_named(rule.name) is rule
 
 
-def test_rule_for_system_refuses_a_system_the_table_does_not_hold() -> None:
-    """Property: a system name outside the table raises `GraphLookupError` whose message names the systems the table holds.
+def test_rule_named_refuses_a_name_the_table_does_not_hold() -> None:
+    """Property: a name outside the table raises `GraphLookupError` whose message names the rules the table holds.
 
-    Class: a misspelling of a held system, and a name no system resembles.
+    Class: a misspelling of a held name, and a name no rule resembles.
     Why it is required: the caller is usually holding the misspelling, so a message repeating it back
     withholds the one fact that recovers the call.
     What kills it: returning `None`, or raising `KeyError` with only the argument in the message.
     Second correct implementation: an explicit membership check before a dictionary lookup; the same
-    refusal carries the held systems.
+    refusal carries the held names.
     """
     with pytest.raises(GraphLookupError) as caught:
-        rule_for_system("observed-record-assemblyy")
+        rule_named("observed_record_licensee")
 
     message = str(caught.value)
-    assert "observed-record-assemblyy" in message
-    assert "observed-record-assembly" in message
+    assert "observed_record_licensee" in message
+    assert "'observed_record_licence'" in message
 
 
 @pytest.mark.parametrize(("name", "expected"), sorted(EXPECTED_DOWNSTREAM.items()))
@@ -454,7 +476,7 @@ def test_the_module_docstring_states_the_three_commitments() -> None:
     assert "The table is the single statement of step order and of data dependency" in docstring
     assert "The rule-to-system mapping is a FIELD of the row, never a naming convention" in docstring
     assert "A rule that reads the run's selection artifact says so with its own field" in docstring
-    for name in ("rule_for_system", "output_classes", "downstream_of", "judgement_rules"):
+    for name in ("rule_named", "output_classes", "downstream_of", "judgement_rules"):
         assert name in docstring
     assert "implementation_identity.json" in docstring
 
@@ -476,7 +498,7 @@ def test_the_workflow_package_reexports_the_graph_surface() -> None:
         "downstream_of",
         "judgement_rules",
         "output_classes",
-        "rule_for_system",
+        "rule_named",
     ):
         assert name in workflow.__all__
         assert getattr(workflow, name) is getattr(graph, name)
