@@ -433,7 +433,7 @@ def test_a_full_run_names_the_twelve_systems_with_the_copys_commit(
 
     assert completed.returncode == 0, completed.stderr
     document = read_provenance(estate.run_output / END_OF_RUN_RECORD / PROVENANCE_FILE)
-    assert document["exercised_systems"] == sorted(SYSTEM_OF.values())
+    assert document["exercised_systems"] == sorted(set(SYSTEM_OF.values()))
     identities = document["identities"]
     assert isinstance(identities, dict)
     assert {entry["implementation"] for entry in identities.values()} == {"stub"}
@@ -520,4 +520,4 @@ def test_a_second_command_style_run_lists_only_rebuilt_rules_while_every_produce
     rebuilt |= {rule.name for rule in downstream_of("marginal_distribution_fitting")}
     assert document["invocation_rules"] == [rule.name for rule in GRAPH if rule.name in rebuilt]
     assert "observed_record_assembly" not in document["invocation_rules"]  # type: ignore[operator]
-    assert document["exercised_systems"] == sorted(SYSTEM_OF.values())
+    assert document["exercised_systems"] == sorted(set(SYSTEM_OF.values()))
