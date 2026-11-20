@@ -248,4 +248,4 @@ def test_the_record_the_step_writes_for_an_absent_selection_is_accepted_at_parse
     built = {path.name for path in estate.run_output.iterdir() if path.is_dir() and (path / IDENTITY_FILE).is_file()}
     assert built == {target.split("/", 1)[0] for target in record.targets if target != END_OF_RUN_RECORD}
     assert (estate.run_output / END_OF_RUN_RECORD).is_dir()
-    assert len(built) == 7
+    assert len(built) == 10

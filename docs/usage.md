@@ -99,6 +99,19 @@ neither file and the report shows no divergence item.
 The record directory is the rule's declared output, so a second invocation that finds every target up to
 date does not rewrite it.
 
+## A run that stops after the licence
+
+The run's rule table holds one checkpoint, the licence rule of the observed-record system. After the licence
+has been written, the run reads it together with the run's selection: when the licence requires a fit — an
+event class and a statistic, written `{event_class}.{statistic}` — that the selection does not hold, the run
+ends after the licence with its report and its end-of-run record and exits 0. The rules that lie downstream
+of the licence do not run, and the method-attribution rule still does, so the report keeps its citation
+section and `provenance.json` names exactly the systems whose rules ran.
+
+To continue, add the missing fit to the selection and run the command again on the same output. The second
+run builds the merge rule and every rule after it and does not run the rules before the licence again.
+The shipped graph's licence requires nothing, so a run of the shipped graph never stops.
+
 ## A run left locked by an interrupted engine
 
 A killed engine leaves lock files that hold only file names, so nothing can tell whether an engine is still

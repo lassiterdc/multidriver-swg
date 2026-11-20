@@ -1,6 +1,6 @@
 """The stub body: a rule that computes nothing, writes its declared outputs, and persists its identity.
 
-The graph's twelve rules exist so the run's shape is real before any system computes: the engine orders
+The graph's fifteen rules exist so the run's shape is real before any system computes: the engine orders
 them by their declared edges, each job produces its declared artifacts, and every job records which system
 produced them. A stub is therefore not an empty body — it is the body that makes those three facts true
 without computing anything.
@@ -18,20 +18,30 @@ reader of any artifact can tell which checkout's stubs wrote it.
 The declared output's CONTENT is deliberately empty: the stub computes nothing, and the artifact's
 existence is what the graph orders on and what a later system's plan replaces. Writing a plausible payload
 here would be an invented result that a reader could mistake for one.
+
+The one exception is the licence: its stub writes the document the stop reads, a `required_entries` list
+taken from a module constant that is empty in the shipped graph.
 """
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable
 from pathlib import Path
 
 from multidriver_swg.run_configuration.provenance import ImplementationIdentity, persist_identity
 from multidriver_swg.run_configuration.revision_gate import running_revision
 from multidriver_swg.workflow.graph import IDENTITY_FILE
+from multidriver_swg.workflow.ruling_stop import REQUIRED_ENTRIES_KEY
 
 # The implementation name every stub records. A literal rather than a parameter: the stub is one
 # implementation for every rule, and a per-rule spelling would let two stubs claim different code.
 STUB_IMPLEMENTATION = "stub"
+
+# The entries the stub licence requires, as `"{event_class}.{statistic}"` strings. Empty in the shipped
+# graph, so the shipped graph never stops. A test or the cluster probe sets it in its own copy or process;
+# no environment variable, configuration key or file is read by production code to change it.
+LICENCE_REQUIRED_ENTRIES: tuple[str, ...] = ()
 
 
 def write_stub_outputs(rule_name: str, system: str, declared_outputs: Iterable[str]) -> None:
@@ -63,3 +73,14 @@ def write_stub_outputs(rule_name: str, system: str, declared_outputs: Iterable[s
             code_version=running_revision(),
         ),
     )
+
+
+def write_licence_stub(path: str | Path) -> None:
+    """Write the stub licence at `path`: the document whose `required_entries` list is `LICENCE_REQUIRED_ENTRIES`.
+
+    The constant is read when this function runs, so a test or a probe that sets it before the engine
+    parses and runs the workflow file changes what the checkpoint writes, and the shipped constant is
+    empty. The write replaces the empty file the stub body created for the licence's declared output.
+    """
+    document = {REQUIRED_ENTRIES_KEY: list(LICENCE_REQUIRED_ENTRIES)}
+    Path(path).write_text(json.dumps(document), encoding="utf-8")

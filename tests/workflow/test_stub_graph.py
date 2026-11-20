@@ -31,6 +31,9 @@ ALL_TARGETS = tuple(f"{rule.name}/{output}" for rule in GRAPH for output in rule
 # its own reads and everything they transitively read. The four rows NOT listed are downstream of it or
 # on a branch it does not need, and the check asserts they stayed unbuilt.
 GENERATOR_VALIDATION_ANCESTORS = {
+    "observed_record_pre_selection",
+    "per_source_event_selection",
+    "observed_record_licence",
     "observed_record_assembly",
     "combined_event_identification",
     "marginal_distribution_fitting",
