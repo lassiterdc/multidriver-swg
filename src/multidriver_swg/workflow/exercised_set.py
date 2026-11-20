@@ -60,7 +60,7 @@ METADATA_FORMAT_VERSION = 6
 # silently misread by an older reader.
 PROVENANCE_FILE = "provenance.json"
 
-PROVENANCE_RULE = "end-of-run-provenance:1"
+PROVENANCE_RULE = "end-of-run-provenance:2"
 
 _PROVENANCE_KEYS = (
     "format",
@@ -70,6 +70,8 @@ _PROVENANCE_KEYS = (
     "exercised_systems",
     "invocation_rules",
     "side_record",
+    "rule_identities",
+    "mixed_systems",
 )
 
 _IDENTITY_KEYS = ("implementation", "code_version")
@@ -226,6 +228,80 @@ def invocation_rules(working_directory: Path, producers: Mapping[str, str]) -> t
     return tuple(rule.name for rule in GRAPH if rule.name in started)
 
 
+def rule_identities(working_directory: Path, producers: Mapping[str, str]) -> dict[str, ImplementationIdentity]:
+    """Return the identity each producing rule persisted, in table order: the one reader of the persisted identities.
+
+    `producers` is what `producing_rules` returns. For each distinct producing rule the identity is read
+    from `{working_directory}/{rule}/implementation_identity.json`, the file the rule wrote beside its
+    outputs. An unreadable file is refused with `ExercisedSetError` naming the rule and the file, because
+    the system that produced the rule's outputs is then unnamed; and an identity whose `system` is not the
+    row's owning system is refused, because the file says which system produced the rule's output, and a
+    rule row and an identity that disagree describe two different runs.
+
+    The result is keyed by RULE, not by system: a system may own several rules, and two of them may have
+    been built at different commits, so a mapping keyed by system would silently keep one of them.
+    """
+    systems = {rule.name: rule.system for rule in GRAPH}
+    producing = set(producers.values())
+    identities: dict[str, ImplementationIdentity] = {}
+    for rule_name in (rule.name for rule in GRAPH if rule.name in producing):
+        identity_path = working_directory / rule_name / IDENTITY_FILE
+        try:
+            identity = read_identity(identity_path)
+        except OSError as error:
+            raise ExercisedSetError(
+                f"rule {rule_name!r}: its identity file {identity_path} cannot be read, so the system that "
+                f"produced its outputs is unnamed: {error}"
+            ) from error
+        if identity.system != systems[rule_name]:
+            raise ExercisedSetError(
+                f"rule {rule_name!r}: its identity file {identity_path} names the system {identity.system!r}, but "
+                f"the graph's row for the rule gives {systems[rule_name]!r}"
+            )
+        identities[rule_name] = identity
+    return identities
+
+
+def mixed_systems(rule_identities: Mapping[str, ImplementationIdentity]) -> tuple[str, ...]:
+    """Return, sorted, every system whose rules' identities are not all equal: the one derivation of the mixed set.
+
+    The identities are grouped by the owning system of each rule's graph row. A system with one rule, or
+    whose rules persisted equal identities, is not mixed. A rule name the graph does not hold is refused,
+    because it names no system to group under.
+    """
+    systems = {rule.name: rule.system for rule in GRAPH}
+    grouped: dict[str, set[ImplementationIdentity]] = {}
+    for rule_name, identity in rule_identities.items():
+        if rule_name not in systems:
+            raise ExercisedSetError(f"{rule_name!r} is not a row of the graph, so its identity names no system")
+        grouped.setdefault(systems[rule_name], set()).add(identity)
+    return tuple(sorted(system for system, identities in grouped.items() if len(identities) > 1))
+
+
+def _mixed_refusal(
+    working_directory: Path, system: str, rule_identities: Mapping[str, ImplementationIdentity]
+) -> ExercisedSetError:
+    """Return the refusal naming two rules of `system` with unequal identities, both identity files and the override."""
+    rules = [rule.name for rule in GRAPH if rule.system == system and rule.name in rule_identities]
+    first = rules[0]
+    second = next(rule for rule in rules if rule_identities[rule] != rule_identities[first])
+
+    def describe(rule: str) -> str:
+        identity = rule_identities[rule]
+        return (
+            f"rule {rule!r} ({working_directory / rule / IDENTITY_FILE}: implementation {identity.implementation!r}, "
+            f"code version {identity.code_version!r})"
+        )
+
+    return ExercisedSetError(
+        f"system {system!r} was built at mixed versions: {describe(first)} and {describe(second)} persisted "
+        "unequal identities, so the run's record would name one identity for outputs two builds produced; "
+        "set allow_mixed_versions = true in the [version_stacking] table of the main configuration to record "
+        "every rule's identity and name the mixed systems instead, or rebuild every rule of the system at one "
+        "version"
+    )
+
+
 def build_provenance(
     working_directory: Path,
     targets: Iterable[str],
@@ -235,11 +311,15 @@ def build_provenance(
     """Return the run's provenance record, built from the identities its producers persisted.
 
     `targets` is the end-of-run rule's own input list. Each target's producing rule is read from the
-    engine's metadata, each producing rule's identity from the file it persisted beside its outputs, and the
-    record is captured from those identities and then checked complete against the exercised set read from
-    the same records. An identity whose `system` is not the row's owning system is refused: the file says
-    which system produced the rule's output, and a rule row and an identity that disagree describe two
-    different runs.
+    engine's metadata, each producing rule's identity from the file it persisted beside its outputs
+    (`rule_identities`), and the record is captured from those identities and then checked complete
+    against the exercised set read from the same records.
+
+    When one system's rules persisted unequal identities (`mixed_systems`), the run is refused with
+    `ExercisedSetError` naming two of that system's rules with unequal identities, both identity files and
+    `allow_mixed_versions`, unless `run_start.allow_mixed_versions` is true. Under the override the record's
+    entry for each system is the identity of its rule latest in the graph's table order, and the workflow's
+    provenance file carries every rule's identity beside it (`write_provenance`).
 
     `side_record` is checked to be a `SideRecord` and is not captured here. The provenance file carries it
     under its own key, written unaltered by `write_provenance`, so capturing it also as an input would state
@@ -255,24 +335,13 @@ def build_provenance(
         )
     target_list = list(targets)
     producers = producing_rules(working_directory, target_list)
-    systems = {rule.name: rule.system for rule in GRAPH}
+    persisted = rule_identities(working_directory, producers)
+    mixed = mixed_systems(persisted)
+    if mixed and not run_start.allow_mixed_versions:
+        raise _mixed_refusal(working_directory, mixed[0], persisted)
 
-    identities: dict[str, ImplementationIdentity] = {}
-    for rule_name in dict.fromkeys(producers.values()):
-        identity_path = working_directory / rule_name / IDENTITY_FILE
-        try:
-            identity = read_identity(identity_path)
-        except OSError as error:
-            raise ExercisedSetError(
-                f"rule {rule_name!r}: its identity file {identity_path} cannot be read, so the system that "
-                f"produced its outputs is unnamed: {error}"
-            ) from error
-        if identity.system != systems[rule_name]:
-            raise ExercisedSetError(
-                f"rule {rule_name!r}: its identity file {identity_path} names the system {identity.system!r}, but "
-                f"the graph's row for the rule gives {systems[rule_name]!r}"
-            )
-        identities[identity.system] = identity
+    systems = {rule.name: rule.system for rule in GRAPH}
+    identities = {systems[rule_name]: identity for rule_name, identity in persisted.items()}
 
     record = capture(
         inputs={
@@ -295,14 +364,18 @@ def write_provenance(
     exercised: Iterable[str],
     invocations: Iterable[str],
     side_record: SideRecord,
+    rule_identities: Mapping[str, ImplementationIdentity] | None = None,
+    mixed_systems: Iterable[str] = (),
 ) -> None:
-    """Write the provenance file at `path`: the record, the exercised systems, this invocation's rules, and the side record.
+    """Write the provenance file at `path`: the record, the exercised systems, this invocation's rules, the side record and every rule's identity.
 
     One JSON object whose keys are `format`, `inputs`, `seeds`, `identities` (each system's implementation
-    and code version), `exercised_systems` (sorted), `invocation_rules` and `side_record`. The side record is
-    `side_record.as_mapping()`, unaltered, because the side-record contract requires a provenance record
-    that carries its content to carry exactly that mapping. The file is written whole and replaces whatever
-    held the path.
+    and code version), `exercised_systems` (sorted), `invocation_rules`, `side_record`, `rule_identities`
+    and `mixed_systems` (sorted). The side record is `side_record.as_mapping()`, unaltered, because the
+    side-record contract requires a provenance record that carries its content to carry exactly that
+    mapping. `rule_identities` is each producing rule's implementation and code version, keyed by rule, or
+    `null` when the caller passed none, which means "not recorded by this caller"; `mixed_systems` lists the
+    systems whose rules' identities differ. The file is written whole and replaces whatever held the path.
     """
     document = {
         "format": PROVENANCE_RULE,
@@ -315,6 +388,13 @@ def write_provenance(
         "exercised_systems": sorted(exercised),
         "invocation_rules": list(invocations),
         "side_record": side_record.as_mapping(),
+        "rule_identities": None
+        if rule_identities is None
+        else {
+            rule: {"implementation": identity.implementation, "code_version": identity.code_version}
+            for rule, identity in rule_identities.items()
+        },
+        "mixed_systems": sorted(mixed_systems),
     }
     path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
 
@@ -323,11 +403,11 @@ def read_provenance(path: Path) -> dict[str, object]:
     """Return the provenance file's one JSON object, refusing a document outside the form with the key and the file named.
 
     The refusals: a file that is not UTF-8 JSON or not one object; a key the form does not name, or one of
-    the seven it does name that is absent; a `format` other than `PROVENANCE_RULE`; and a key whose value is
+    the nine it does name that is absent; a `format` other than `PROVENANCE_RULE`; and a key whose value is
     not the kind the form gives it (a mapping for `inputs`, `seeds`, `identities` and `side_record` — each
-    identity a mapping of exactly an implementation and a code version — and a list of text for
-    `exercised_systems` and `invocation_rules`). This is the form's only reader, so a consumer never parses
-    the file itself.
+    identity a mapping of exactly an implementation and a code version — a mapping of such identities or
+    `null` for `rule_identities`, and a list of text for `exercised_systems`, `invocation_rules` and
+    `mixed_systems`). This is the form's only reader, so a consumer never parses the file itself.
     """
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
@@ -351,14 +431,20 @@ def read_provenance(path: Path) -> dict[str, object]:
     for key in ("inputs", "seeds", "identities", "side_record"):
         if not isinstance(document[key], dict):
             raise ExercisedSetError(f"provenance file {path} key {key!r} is {document[key]!r}, not a mapping")
-    for key in ("exercised_systems", "invocation_rules"):
+    for key in ("exercised_systems", "invocation_rules", "mixed_systems"):
         value = document[key]
         if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
             raise ExercisedSetError(f"provenance file {path} key {key!r} is {value!r}, not a list of text")
-    for system, identity in document["identities"].items():
-        if not isinstance(identity, dict) or tuple(sorted(identity)) != tuple(sorted(_IDENTITY_KEYS)):
-            raise ExercisedSetError(
-                f"provenance file {path} key 'identities' entry {system!r} is {identity!r}: each identity is "
-                "a mapping of exactly " + " and ".join(repr(name) for name in _IDENTITY_KEYS)
-            )
+    rule_identities_value = document["rule_identities"]
+    if rule_identities_value is not None and not isinstance(rule_identities_value, dict):
+        raise ExercisedSetError(
+            f"provenance file {path} key 'rule_identities' is {rule_identities_value!r}, neither a mapping nor null"
+        )
+    for key in ("identities", "rule_identities"):
+        for name, identity in (document[key] or {}).items():
+            if not isinstance(identity, dict) or tuple(sorted(identity)) != tuple(sorted(_IDENTITY_KEYS)):
+                raise ExercisedSetError(
+                    f"provenance file {path} key {key!r} entry {name!r} is {identity!r}: each identity is "
+                    "a mapping of exactly " + " and ".join(repr(identity_key) for identity_key in _IDENTITY_KEYS)
+                )
     return document

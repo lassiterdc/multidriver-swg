@@ -20,7 +20,7 @@ from multidriver_swg.workflow.graph import (
     downstream_of,
     judgement_rules,
     output_classes,
-    rule_for_system,
+    rule_named,
 )
 
 __all__ = [
@@ -30,5 +30,5 @@ __all__ = [
     "downstream_of",
     "judgement_rules",
     "output_classes",
-    "rule_for_system",
+    "rule_named",
 ]

@@ -16,9 +16,11 @@ check the code against them rather than against a paraphrase:
     No tracked toolkit file holds a machine-specific value: the configuration states every value the run reads from this machine, and the toolkit's only route to it is a path the caller supplies.
 
 The form is five top-level fields — `rule`, `estate_root`, `bindings`, `project` and `mode` — plus up
-to three tables: `[judgement]`, which carries the procedure a run may delegate the model choice to;
-`[local]`, which carries a local launch's core count; and `[slurm]`, which carries a cluster
-connection and the two HPC modes' limits.
+to four tables: `[judgement]`, which carries the procedure a run may delegate the model choice to;
+`[local]`, which carries a local launch's core count; `[slurm]`, which carries a cluster
+connection and the two HPC modes' limits; and `[version_stacking]`, which carries the rules a run
+rebuilds at the running toolkit commit and whether a system whose rules were built at different
+commits is admitted.
 
 The refusals are the mechanism, not an error-reporting detail. An operator holding a refused
 configuration has to repair one field of a file they cannot see from inside the toolkit, so every
@@ -43,6 +45,9 @@ What the module deliberately does NOT do, because each would be a second source 
 - It does not enumerate legal procedure names for `judgement.automatic_selection`, legal partitions,
   legal accounts, or estate domains and projects. Those vocabularies are the estate's, and a
   toolkit-side list would make every new value a toolkit release.
+- It does not check the rule names in `version_stacking.rerun_rules` against the workflow's rule table.
+  The module does not import the workflow graph, so a name is held as text and the pre-run step, which
+  knows the table, refuses a name the table does not hold.
 
 Not established: that the file was authored on the machine the run is on, or that the project it
 names is the project the estate means. The file carries no machine field by design — its machine
@@ -73,13 +78,25 @@ PATH_KEY_KINDS = ("run_output", "project_directory", "selection")
 
 # The closed key set of each table the form names. A key outside its set is refused, because a setting
 # this form does not name is one its writer believes is live while nothing reads it.
-_TOP_LEVEL_KEYS = ("rule", "estate_root", "bindings", "project", "mode", "judgement", "local", "slurm")
+_TOP_LEVEL_KEYS = (
+    "rule",
+    "estate_root",
+    "bindings",
+    "project",
+    "mode",
+    "judgement",
+    "local",
+    "slurm",
+    "version_stacking",
+)
 
 _JUDGEMENT_KEYS = ("automatic_selection",)
 
 _LOCAL_KEYS = ("cores",)
 
 _SLURM_KEYS = ("partition", "account", "time_minutes", "jobs", "cpus_per_task")
+
+_VERSION_STACKING_KEYS = ("rerun_rules", "allow_mixed_versions")
 
 # A project is `domain.project`: exactly two segments. The segment RULES are the path-key grammar's
 # own, and they are asked of `PathKey` below rather than restated here, so a key this configuration
@@ -180,6 +197,36 @@ class SlurmConfiguration:
 
 
 @dataclass(frozen=True)
+class VersionStackingConfiguration:
+    """The `[version_stacking]` table: which rules a run rebuilds, and whether mixed toolkit commits are admitted.
+
+    A run at a new toolkit commit leaves every rule whose rendered text did not change as it was, so the
+    outputs it keeps carry the earlier commit. This table is how a user asks for the mix on purpose:
+
+    - `rerun_rules` — the names of rules the command passes to the engine as rules to rebuild in every
+      run, whatever the engine thinks is up to date. Empty by default. The list is read at EVERY run, so a
+      name left in it is rebuilt again by each later run until it is removed. Names are held as text;
+      whether each is a row of the rule table is the pre-run step's question.
+    - `allow_mixed_versions` — whether the end-of-run step admits a system whose rules persisted unequal
+      identities. `False` by default: the run is then refused, naming the two rules. `True` records every
+      rule's identity and names the mixed systems instead.
+
+    Whether two commits are compatible is the user's judgement; this type records the choice and decides
+    nothing about it.
+
+    Not established: that a rule name exists, or that rebuilding it leaves a coherent set of outputs.
+    """
+
+    rerun_rules: tuple[str, ...] = ()
+    allow_mixed_versions: bool = False
+
+    def __post_init__(self) -> None:
+        """Store the rule names as a tuple, then refuse a name that is not non-empty text and a flag that is not a boolean."""
+        object.__setattr__(self, "rerun_rules", _name_list_value(self.rerun_rules, "version_stacking.rerun_rules"))
+        _boolean_value(self.allow_mixed_versions, "version_stacking.allow_mixed_versions")
+
+
+@dataclass(frozen=True)
 class MainConfiguration:
     """One validated run configuration: where the estate is, what the project is, and how to launch.
 
@@ -214,6 +261,7 @@ class MainConfiguration:
     judgement: JudgementConfiguration = field(default_factory=JudgementConfiguration)
     local: LocalConfiguration | None = None
     slurm: SlurmConfiguration | None = None
+    version_stacking: VersionStackingConfiguration = field(default_factory=VersionStackingConfiguration)
 
     def __post_init__(self) -> None:
         """Refuse a value outside the form, then the fields the chosen mode requires but this one omits."""
@@ -293,6 +341,11 @@ class MainConfiguration:
             raise MainConfigurationError(
                 f"field 'slurm' is {self.slurm!r}: the form's [slurm] table is a SlurmConfiguration, so "
                 "a value of another kind carries settings nothing reads"
+            )
+        if not isinstance(self.version_stacking, VersionStackingConfiguration):
+            raise MainConfigurationError(
+                f"field 'version_stacking' is {self.version_stacking!r}: the form's [version_stacking] table is "
+                "a VersionStackingConfiguration, so a value of another kind carries settings nothing reads"
             )
 
     def _validated_mode_requirements(self) -> None:
@@ -397,6 +450,7 @@ class MainConfiguration:
             judgement=_judgement_configuration(document),
             local=_local_configuration(document),
             slurm=_slurm_configuration(document),
+            version_stacking=_version_stacking_configuration(document),
         )
 
 
@@ -420,6 +474,30 @@ def _positive_integer_value(value: object, field_name: str) -> int:
         raise MainConfigurationError(
             f"field {field_name!r} is {value!r}: it is a positive integer — at least 1 — and a boolean, a "
             "text value, a float or a number below one is not a limit any scheduler can honour"
+        )
+    return value
+
+
+def _name_list_value(value: object, field_name: str) -> tuple[str, ...]:
+    """Return `value` as a tuple of non-empty rule names, refusing a non-list or a non-text entry under `field_name`."""
+    if isinstance(value, str) or not isinstance(value, list | tuple):
+        raise MainConfigurationError(
+            f"field {field_name!r} is {value!r}: it is a list of rule names, and a value of another kind "
+            "names no rule to rebuild"
+        )
+    for index, name in enumerate(value):
+        if not isinstance(name, str) or not name.strip():
+            raise MainConfigurationError(
+                f"field {field_name!r} entry {index} is {name!r}: a rule is named by non-empty text"
+            )
+    return tuple(value)
+
+
+def _boolean_value(value: object, field_name: str) -> bool:
+    """Return `value` as a boolean, refusing anything else under `field_name` in the configuration's spelling."""
+    if not isinstance(value, bool):
+        raise MainConfigurationError(
+            f"field {field_name!r} is {value!r}: it is true or false, and a value of another kind names neither choice"
         )
     return value
 
@@ -531,4 +609,18 @@ def _slurm_configuration(document: Mapping[str, object]) -> SlurmConfiguration |
         time_minutes=_required_integer(declared, "time_minutes", "slurm.time_minutes"),
         jobs=_optional_integer(declared, "jobs", "slurm.jobs"),
         cpus_per_task=_optional_integer(declared, "cpus_per_task", "slurm.cpus_per_task"),
+    )
+
+
+def _version_stacking_configuration(document: Mapping[str, object]) -> VersionStackingConfiguration:
+    """Return the `[version_stacking]` table as a configuration, or the default table when it is absent."""
+    declared = _table(document, "version_stacking", "version_stacking")
+    if declared is None:
+        return VersionStackingConfiguration()
+    _require_named_keys(declared, _VERSION_STACKING_KEYS, label="'version_stacking' table")
+    return VersionStackingConfiguration(
+        rerun_rules=_name_list_value(declared.get("rerun_rules", ()), "version_stacking.rerun_rules"),
+        allow_mixed_versions=_boolean_value(
+            declared.get("allow_mixed_versions", False), "version_stacking.allow_mixed_versions"
+        ),
     )

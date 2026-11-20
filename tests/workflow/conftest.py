@@ -23,7 +23,7 @@ import os
 import shutil
 import subprocess
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import pytest
@@ -108,18 +108,71 @@ def write_record(
     judgement: str = "present",
     selection: str | None = None,
     configuration: Path | None = None,
+    allow_mixed_versions: bool = False,
 ) -> Path:
     """Write a conforming run-start record into the estate's run output and return its path."""
     document = {
-        "format": "run-start:1",
+        "format": "run-start:2",
         "main_configuration": str(configuration or estate.configuration),
         "targets": list(targets),
         "selection": selection,
         "judgement": judgement,
+        "allow_mixed_versions": allow_mixed_versions,
     }
     path = estate.run_output / RUN_START_FILE
     path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
     return path
+
+
+def commit_all(repository: Path, message: str) -> str:
+    """Commit every change in `repository` and return the new commit id."""
+    _git(repository, "add", "-A")
+    _git(repository, "commit", "-q", "-m", message)
+    return _git(repository, "rev-parse", "HEAD")
+
+
+def advance_commit(toolkit: ToolkitCopy, estate: Estate) -> ToolkitCopy:
+    """Commit a change the engine does not see in any rule's text, and make the estate declare the new commit.
+
+    The change is a comment line at the end of `stubs.py`, a callee of every rule body: the engine's code
+    trigger reads the rendered `run:` text, so no rule is rebuilt by the new commit alone, while every
+    identity a rule persists afterwards carries the new commit.
+    """
+    stubs_file = toolkit.package / "workflow" / "stubs.py"
+    stubs_file.write_text(
+        stubs_file.read_text(encoding="utf-8") + f"\n# a later commit, made after {toolkit.commit}\n",
+        encoding="utf-8",
+    )
+    commit = commit_all(toolkit.root, "a later commit")
+    (estate.project_directory / "toolkit_revision.toml").write_text(
+        f'rule = "toolkit-revision:1"\ncommit = "{commit}"\n', encoding="utf-8"
+    )
+    return replace(toolkit, commit=commit)
+
+
+def bind_three_keys(estate: Estate, selection: Path) -> None:
+    """Rewrite the estate's binding document so it binds the three keys the pre-run step resolves."""
+    estate.bindings.write_text(
+        'rule = "path-bindings:1"\n\n[paths]\n'
+        f'"{PROJECT}.project_directory" = "{estate.project_directory}"\n'
+        f'"{PROJECT}.run_output" = "{estate.run_output}"\n'
+        f'"{PROJECT}.selection" = "{selection}"\n',
+        encoding="utf-8",
+    )
+
+
+def write_version_stacking(
+    estate: Estate, *, rerun_rules: tuple[str, ...] = (), allow_mixed_versions: bool = False
+) -> None:
+    """Replace the configuration's `[version_stacking]` table with one holding the given values."""
+    text = estate.configuration.read_text(encoding="utf-8")
+    text = text.split("\n[version_stacking]", 1)[0].rstrip("\n") + "\n"
+    text += (
+        "\n[version_stacking]\n"
+        f"rerun_rules = {json.dumps(list(rerun_rules))}\n"
+        f"allow_mixed_versions = {'true' if allow_mixed_versions else 'false'}\n"
+    )
+    estate.configuration.write_text(text, encoding="utf-8")
 
 
 def run_engine(

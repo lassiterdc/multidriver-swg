@@ -761,7 +761,7 @@ def test_an_allocation_lock_refusal_is_band_3_with_the_unlock_recourse(
     locks = estate.run_output / ".snakemake" / "locks"
     locks.mkdir(parents=True)
     lock = locks / "0.output.lock"
-    lock.write_text("observed_record_assembly/observed_record.json\n")
+    lock.write_text("observed_record_pre_selection/pre_selection.json\n")
     # The allocation's payload writes the engine's refusal into the log the plan chose, then exits 2 — the
     # exit an accepted submission gives when its job failed. The real engine's own refusal is captured the
     # same way; the reviewer's node drives it end to end.
@@ -780,7 +780,7 @@ def test_an_allocation_lock_refusal_is_band_3_with_the_unlock_recourse(
     err = capsys.readouterr().err
     assert unlock_command(estate.run_output) in err
     assert "--unlock" in err
-    assert lock.read_text() == "observed_record_assembly/observed_record.json\n"
+    assert lock.read_text() == "observed_record_pre_selection/pre_selection.json\n"
 
 
 def test_a_previous_attempts_log_never_supplies_a_fresh_attempts_recourse(

@@ -35,7 +35,7 @@ EXPECTED_PUBLIC_NAMES = {
     "downstream_of",
     "judgement_rules",
     "output_classes",
-    "rule_for_system",
+    "rule_named",
 }
 
 # The names a table module must never reach: file and stream access, a path library, and an output call.

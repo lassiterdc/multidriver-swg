@@ -7,13 +7,16 @@ refuses a parse that has no valid run-start record or whose executing checkout i
 
 `all` is written here by hand and comes FIRST, because the engine's default target is the first rule it
 reads: with `all` defined after the rendering loop the engine builds the first rendered rule and exits 0
-having built one step of the run. Its input is the run-start record's target list, read once at parse, so
-a shortened run needs no edit to this file.
+having built one step of the run. Its input is `run_targets`, the one function that states the run's
+post-checkpoint target list: the run-start record's targets, or, when the licence requires an entry the
+selection lacks, the targets that do not lie downstream of the licence. The licence row is the table's one
+checkpoint, rendered as an engine checkpoint, so the function is evaluated after it has run and a stopped
+run needs no edit to this file.
 
 `end_of_run` is written by hand too, and comes after `all` and before the rendering loop. It is the run's
-one output-bearing final rule: its input is every target of the run-start record other than its own record,
-its output is the record DIRECTORY, and it is local so it runs where the engine's metadata store is. It
-computes nothing, so it is not a row of the table; the table holds the run's compute systems.
+one output-bearing final rule: its input is `run_targets` other than its own record, its output is the
+record DIRECTORY, and it is local so it runs where the engine's metadata store is. It computes nothing,
+so it is not a row of the table; the table holds the run's compute systems.
 
 Every other rule is rendered by ONE loop over `GRAPH`. The row supplies the rule's name, its inputs, its
 declared outputs and the owning system, which is bound into `params` so the body reads it at job time
@@ -24,11 +27,12 @@ report shows is read from the row and never from a list kept here.
 Inputs are the producing row's PATH for each name the row reads: the table names an artifact by its file
 name, and every artifact lives under its producing rule's directory, so the mapping from name to path is
 derived from the table rather than restated. `method_attribution` is the one row whose inputs are the
-run's target list instead, minus its own output and minus the end-of-run record: it attributes every
-artifact the run built, a shortened run must not make it wait for one that was never built, and waiting on
-the record would wait on the rule that waits on it.
+run's post-checkpoint target list instead, minus its own output and minus the end-of-run record: it
+attributes every artifact the run built, a shortened run must not make it wait for one that was never
+built, and waiting on the record would wait on the rule that waits on it.
 """
 
+import json
 import sys
 from pathlib import Path
 
@@ -41,6 +45,7 @@ while _SOURCE_ROOT in sys.path:
     sys.path.remove(_SOURCE_ROOT)
 sys.path.insert(0, _SOURCE_ROOT)
 
+from multidriver_swg.run_configuration.selection_artifact import load_selection  # noqa: E402
 from multidriver_swg.workflow.end_of_run import (  # noqa: E402
     END_OF_RUN_RECORD,
     run_side_record,
@@ -49,7 +54,8 @@ from multidriver_swg.workflow.end_of_run import (  # noqa: E402
 from multidriver_swg.workflow.graph import GRAPH  # noqa: E402
 from multidriver_swg.workflow.graph_start import require_graph_start  # noqa: E402
 from multidriver_swg.workflow.report_items import DIVERGENCE  # noqa: E402
-from multidriver_swg.workflow.stubs import write_stub_outputs  # noqa: E402
+from multidriver_swg.workflow.ruling_stop import missing_entries, required_entries, stop_targets  # noqa: E402
+from multidriver_swg.workflow.stubs import write_licence_stub, write_stub_outputs  # noqa: E402
 
 RUN_START = require_graph_start()
 
@@ -57,20 +63,46 @@ RUN_START = require_graph_start()
 PRODUCERS = {output: f"{spec.name}/{output}" for spec in GRAPH for output in spec.outputs}
 
 
-def rendered_inputs(spec):
-    """Return the paths `spec` reads: the producing rule's path per declared read, or the run's targets for the attribution row.
+def run_targets(wildcards):
+    """Return the paths the run builds after the licence: the run-start record's targets, or the stopped run's shorter list.
 
-    The attribution row reads the run's target list, minus its own output and minus the end-of-run record:
-    the record is the final rule's output, that rule waits on the attribution row, and an attribution row
-    waiting on the record would be a cycle no execution order satisfies.
+    The engine evaluates this once the checkpoint has run. It reads the licence the checkpoint wrote and
+    the run's selection; when the selection lacks an entry the licence requires, the run ends after the
+    licence and builds the targets that do not lie downstream of it. `all`, `end_of_run` and the
+    attribution row each derive their inputs from this one list, so the post-checkpoint list is stated
+    once.
     """
-    if spec.name == "method_attribution":
-        own_directory = f"{spec.name}/"
+    licence = Path(checkpoints.observed_record_licence.get().output[0])
+    required = required_entries(json.loads(licence.read_text(encoding="utf-8")))
+    selection = None if RUN_START.selection is None else load_selection(RUN_START.selection)
+    if missing_entries(required, selection):
+        return list(stop_targets(RUN_START.targets))
+    return list(RUN_START.targets)
+
+
+def attribution_inputs(spec):
+    """Return the input function of the attribution row: the run's post-checkpoint targets, minus its own output and the end-of-run record.
+
+    The record is the final rule's output, that rule waits on the attribution row, and an attribution row
+    waiting on the record would be a cycle no execution order satisfies. The row's own directory is
+    removed because a rule cannot read its own output.
+    """
+    own_directory = f"{spec.name}/"
+
+    def inputs(wildcards):
         return [
             target
-            for target in RUN_START.targets
+            for target in run_targets(wildcards)
             if not target.startswith(own_directory) and target != END_OF_RUN_RECORD
         ]
+
+    return inputs
+
+
+def rendered_inputs(spec):
+    """Return the paths `spec` reads: the producing rule's path per declared read, or the input function for the attribution row."""
+    if spec.name == "method_attribution":
+        return attribution_inputs(spec)
     return [PRODUCERS[read] for read in spec.reads]
 
 
@@ -94,13 +126,13 @@ def rendered_outputs(spec):
 
 rule all:
     input:
-        list(RUN_START.targets)
+        run_targets
     localrule: True
 
 
 rule end_of_run:
     input:
-        [target for target in RUN_START.targets if target != END_OF_RUN_RECORD]
+        lambda wildcards: [target for target in run_targets(wildcards) if target != END_OF_RUN_RECORD]
     output:
         report(directory(END_OF_RUN_RECORD), patterns=["{name}.html"], category=DIVERGENCE)
     localrule: True
@@ -115,15 +147,33 @@ rule end_of_run:
 
 
 for spec in GRAPH:
-    rule:
-        name:
-            spec.name
-        input:
-            rendered_inputs(spec)
-        output:
-            rendered_outputs(spec)
-        params:
-            system=spec.system,
-            rule_name=spec.name,
-        run:
-            write_stub_outputs(params.rule_name, params.system, list(output))
+    # The checkpoint row and every other row carry the same directives; the engine needs the `checkpoint:`
+    # keyword for the one row whose output the target function reads, and `rule:` for the rest. The body
+    # of the checkpoint writes the stub's declared output and then the licence document over it.
+    if spec.checkpoint:
+        checkpoint:
+            name:
+                spec.name
+            input:
+                rendered_inputs(spec)
+            output:
+                rendered_outputs(spec)
+            params:
+                system=spec.system,
+                rule_name=spec.name,
+            run:
+                write_stub_outputs(params.rule_name, params.system, list(output))
+                write_licence_stub(Path(output[0]))
+    else:
+        rule:
+            name:
+                spec.name
+            input:
+                rendered_inputs(spec)
+            output:
+                rendered_outputs(spec)
+            params:
+                system=spec.system,
+                rule_name=spec.name,
+            run:
+                write_stub_outputs(params.rule_name, params.system, list(output))

@@ -14,12 +14,15 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import time
 from base64 import urlsafe_b64encode
 from pathlib import Path
 
 import pytest
 
+import multidriver_swg.workflow.pre_run as pre_run
+from multidriver_swg.run_configuration.main_configuration import MainConfiguration
 from multidriver_swg.run_configuration.provenance import ImplementationIdentity, persist_identity
 from multidriver_swg.side_record import SideRecord
 from multidriver_swg.workflow.end_of_run import END_OF_RUN_RECORD, write_end_of_run_record
@@ -31,13 +34,25 @@ from multidriver_swg.workflow.exercised_set import (
     build_provenance,
     exercised_systems,
     invocation_rules,
+    mixed_systems,
     producing_rules,
     read_provenance,
+    rule_identities,
     write_provenance,
 )
 from multidriver_swg.workflow.graph import GRAPH, IDENTITY_FILE, downstream_of
-from multidriver_swg.workflow.run_start import RUN_START_FILE, RunStart
-from tests.workflow.conftest import Estate, ToolkitCopy, write_record
+from multidriver_swg.workflow.modes import rerun_arguments
+from multidriver_swg.workflow.pre_run import prepare_run
+from multidriver_swg.workflow.run_start import RUN_START_FILE, RunStart, read_run_start
+from tests.workflow.conftest import (
+    Estate,
+    ToolkitCopy,
+    advance_commit,
+    bind_three_keys,
+    run_engine,
+    write_record,
+    write_version_stacking,
+)
 
 ALL_TARGETS = tuple(f"{rule.name}/{output}" for rule in GRAPH for output in rule.outputs)
 
@@ -91,21 +106,24 @@ def _write_record(working_directory: Path, target: str, **fields: object) -> Pat
     return path
 
 
-def _write_identity(working_directory: Path, rule_name: str, *, system: str | None = None) -> None:
+def _write_identity(
+    working_directory: Path, rule_name: str, *, system: str | None = None, code_version: str = "abc123"
+) -> None:
     directory = working_directory / rule_name
     directory.mkdir(parents=True, exist_ok=True)
     persist_identity(
         directory / IDENTITY_FILE,
-        ImplementationIdentity(system=system or SYSTEM_OF[rule_name], implementation="stub", code_version="abc123"),
+        ImplementationIdentity(system=system or SYSTEM_OF[rule_name], implementation="stub", code_version=code_version),
     )
 
 
-def _run_start(targets: tuple[str, ...] = (FIRST_TARGET,)) -> RunStart:
+def _run_start(targets: tuple[str, ...] = (FIRST_TARGET,), *, allow_mixed_versions: bool = False) -> RunStart:
     return RunStart(
         main_configuration="/estate/run.toml",
         targets=targets,
         selection=None,
         judgement="kept-absent",
+        allow_mixed_versions=allow_mixed_versions,
     )
 
 
@@ -329,7 +347,7 @@ def test_a_side_record_of_the_wrong_kind_is_refused_before_any_read(tmp_path: Pa
 
 
 def test_the_provenance_file_round_trips_and_carries_the_side_record_unaltered(tmp_path: Path) -> None:
-    """Property: the file holds the seven keys, sorted exercised systems, and exactly `side_record.as_mapping()`.
+    """Property: the file holds the nine keys, sorted exercised systems, exactly `side_record.as_mapping()`, and a null rule-identity record when the caller passed none.
 
     Class: a synthetic run written through `write_provenance` and read through `read_provenance`.
     Why it is required: the side-record contract says a carrying record holds the mapping unaltered.
@@ -356,10 +374,204 @@ def test_the_provenance_file_round_trips_and_carries_the_side_record_unaltered(t
     assert document["invocation_rules"] == ["observed_record_assembly"]
     assert document["seeds"] == {}
     assert set(document["identities"]) == set(document["exercised_systems"])
+    assert document["rule_identities"] is None
+    assert document["mixed_systems"] == []
+
+
+def test_a_provenance_file_written_with_the_two_keywords_carries_every_rule_identity_and_the_mixed_systems(
+    tmp_path: Path,
+) -> None:
+    """Property: `write_provenance` given `rule_identities` and `mixed_systems` writes each rule's implementation and code version keyed by rule, and the mixed systems sorted; the reader returns both.
+
+    Class: a synthetic run whose pre-selection row carries another code version, written with the override.
+    Why it is required: the record's `identities` hold one entry per system, so the file's own
+    `rule_identities` is the only place the rule-level identities survive; a writer that dropped the
+    keywords would leave the override recording nothing.
+    What kills it: ignoring the keywords, writing the mixed systems in the order given, or keying the
+    mapping by system.
+    Second correct implementation: another JSON layout with the same keys; the document is the check.
+    """
+    targets = (
+        "observed_record_pre_selection/pre_selection.json",
+        "observed_record_licence/licence.json",
+        "observed_record_assembly/observed_record.json",
+    )
+    _synthetic_run(tmp_path, targets)
+    _write_identity(tmp_path, "observed_record_pre_selection", code_version="older")
+    side = SideRecord({})
+    record = build_provenance(tmp_path, targets, _run_start(targets, allow_mixed_versions=True), side)
+    producers = producing_rules(tmp_path, targets)
+    persisted = rule_identities(tmp_path, producers)
+    path = tmp_path / PROVENANCE_FILE
+
+    write_provenance(
+        path,
+        record,
+        exercised=exercised_systems(producers),
+        invocations=(),
+        side_record=side,
+        rule_identities=persisted,
+        mixed_systems=("z-system", *mixed_systems(persisted)),
+    )
+    document = read_provenance(path)
+
+    assert document["rule_identities"] == {
+        "observed_record_pre_selection": {"implementation": "stub", "code_version": "older"},
+        "observed_record_licence": {"implementation": "stub", "code_version": "abc123"},
+        "observed_record_assembly": {"implementation": "stub", "code_version": "abc123"},
+    }
+    assert document["mixed_systems"] == ["observed-record-assembly", "z-system"]
+
+
+ORA_TARGETS = (
+    "observed_record_pre_selection/pre_selection.json",
+    "observed_record_licence/licence.json",
+    "observed_record_assembly/observed_record.json",
+)
+
+
+def test_two_rules_of_one_system_with_equal_identities_pass_with_one_identity_and_no_mixed_system(
+    tmp_path: Path,
+) -> None:
+    """Property: three rules of `observed-record-assembly` persisting equal identities give one identity for the system, an empty mixed set and the rules' identities keyed by rule in table order.
+
+    Class: three records and three identity files of one system, all at one code version.
+    Why it is required: an equal pair is the ordinary case of a system owning several rules, so the
+    refusal must fire on a difference and never on the count of rules.
+    What kills it: refusing a system because it has several rules, or keeping the identities keyed by system
+    so the count of rules is invisible.
+    Second correct implementation: grouping by system before or after reading; the same outputs result.
+    """
+    _synthetic_run(tmp_path, ORA_TARGETS)
+    producers = producing_rules(tmp_path, ORA_TARGETS)
+
+    persisted = rule_identities(tmp_path, producers)
+    record = build_provenance(tmp_path, ORA_TARGETS, _run_start(ORA_TARGETS), SideRecord({}))
+
+    assert list(persisted) == ["observed_record_pre_selection", "observed_record_licence", "observed_record_assembly"]
+    assert mixed_systems(persisted) == ()
+    assert set(record.identities) == {"observed-record-assembly"}
+    assert record.identities["observed-record-assembly"].code_version == "abc123"
+
+
+def test_unequal_identities_of_one_system_are_refused_naming_both_rules_both_files_and_the_override(
+    tmp_path: Path,
+) -> None:
+    """Property: a system whose rules persisted unequal code versions is refused, the message naming two of its rules, both identity files and `allow_mixed_versions`; the same files are admitted under the override.
+
+    Class: the pre-selection row at an older code version and the licence and merge rows at a newer one.
+    Why it is required: before this refusal the last rule read silently replaced the others, so a record
+    named one version for outputs two builds produced; the message is the operator's only route to the
+    override, so each fact it must carry is asserted.
+    What kills it: keying identities by system without comparing, a message naming one rule or no file, or a
+    refusal that ignores the run-start record's flag.
+    Second correct implementation: comparing identities pairwise or by set size; the same refusal arises.
+    """
+    _synthetic_run(tmp_path, ORA_TARGETS)
+    _write_identity(tmp_path, "observed_record_pre_selection", code_version="older")
+
+    with pytest.raises(ExercisedSetError) as caught:
+        build_provenance(tmp_path, ORA_TARGETS, _run_start(ORA_TARGETS), SideRecord({}))
+
+    message = str(caught.value)
+    assert "observed-record-assembly" in message
+    assert "observed_record_pre_selection" in message
+    assert "observed_record_licence" in message
+    assert str(tmp_path / "observed_record_pre_selection" / IDENTITY_FILE) in message
+    assert str(tmp_path / "observed_record_licence" / IDENTITY_FILE) in message
+    assert "'older'" in message
+    assert "allow_mixed_versions" in message
+
+    record = build_provenance(tmp_path, ORA_TARGETS, _run_start(ORA_TARGETS, allow_mixed_versions=True), SideRecord({}))
+
+    assert record.identities["observed-record-assembly"].code_version == "abc123"
+
+
+def test_the_system_entry_is_the_identity_of_the_rule_latest_in_table_order_whichever_target_comes_first(
+    tmp_path: Path,
+) -> None:
+    """Property: under the override the record's entry for a mixed system is the identity of its rule latest in the table, not the one whose target is listed last.
+
+    Class: the merge row at a distinct version and the pre-selection row at the common one, targets listed in
+    reverse table order.
+    Why it is required: the entry used to be whichever rule was read last, and the read order followed the
+    target list; the table order is the stated rule and must not depend on how a caller lists targets.
+    What kills it: letting the target order decide, or choosing the earliest rule.
+    Second correct implementation: sorting the rules by table position before assigning; the same entry.
+    """
+    _synthetic_run(tmp_path, ORA_TARGETS)
+    _write_identity(tmp_path, "observed_record_assembly", code_version="merge-version")
+
+    record = build_provenance(
+        tmp_path,
+        tuple(reversed(ORA_TARGETS)),
+        _run_start(ORA_TARGETS, allow_mixed_versions=True),
+        SideRecord({}),
+    )
+
+    assert record.identities["observed-record-assembly"].code_version == "merge-version"
+
+
+def test_mixed_systems_groups_by_the_rows_system_and_lists_the_unequal_ones_sorted() -> None:
+    """Property: `mixed_systems` lists, sorted, the systems with two unequal rule identities and no other, and refuses a rule the table does not hold.
+
+    Class: identities of two systems, one with an unequal pair and one with an equal pair, plus an unknown rule.
+    Why it is required: this is the one derivation of the mixed set, read by the refusal and by the file, so
+    the two cannot disagree only if it groups by the row's system and compares identities.
+    What kills it: grouping by implementation, comparing code versions across systems, or answering for an
+    unknown rule name.
+    Second correct implementation: counting distinct identities per system; the same tuple.
+    """
+
+    def identity(system: str, version: str) -> ImplementationIdentity:
+        return ImplementationIdentity(system=system, implementation="stub", code_version=version)
+
+    persisted = {
+        "per_source_event_selection": identity("combined-event-identification", "a"),
+        "combined_event_identification": identity("combined-event-identification", "b"),
+        "observed_record_pre_selection": identity("observed-record-assembly", "a"),
+        "observed_record_licence": identity("observed-record-assembly", "a"),
+        "marginal_distribution_fitting": identity("marginal-distribution-fitting", "c"),
+    }
+
+    assert mixed_systems(persisted) == ("combined-event-identification",)
+    assert mixed_systems({}) == ()
+    with pytest.raises(ExercisedSetError, match="no_such_rule"):
+        mixed_systems({"no_such_rule": identity("x", "a")})
+
+
+def test_rule_identities_refuses_an_unreadable_file_and_a_file_naming_another_system(tmp_path: Path) -> None:
+    """Property: the one reader of persisted identities refuses a missing identity file and a file naming another system, each naming the rule and the file.
+
+    Class: one rule with no identity file, and one whose file claims a neighbouring system.
+    Why it is required: the reader moved out of `build_provenance`, and the loop's two refusals are what the
+    record's honesty rests on, so they are asserted at the reader itself.
+    What kills it: skipping a rule whose file is absent, or comparing the file's system with nothing.
+    Second correct implementation: reading in any order; the two refusals are the check.
+    """
+    producers = {"a/one.json": "dependence_modelling"}
+
+    with pytest.raises(ExercisedSetError, match=r"dependence_modelling.*implementation_identity\.json"):
+        rule_identities(tmp_path, producers)
+
+    _write_identity(tmp_path, "dependence_modelling", system="timeseries-synthesis")
+    with pytest.raises(ExercisedSetError, match="timeseries-synthesis"):
+        rule_identities(tmp_path, producers)
 
 
 @pytest.mark.parametrize(
-    "breakage", ["extra_key", "missing_key", "format", "not_object", "identity_shape", "list_kind"]
+    "breakage",
+    [
+        "extra_key",
+        "missing_key",
+        "format",
+        "not_object",
+        "identity_shape",
+        "list_kind",
+        "rule_identity_shape",
+        "rule_identities_kind",
+        "mixed_systems_kind",
+    ],
 )
 def test_the_reader_refuses_a_document_outside_the_form(tmp_path: Path, breakage: str) -> None:
     """Property: an extra key, a missing key, another format, a non-object, a malformed identity or a wrong-kind list each refuse naming the file.
@@ -379,6 +591,8 @@ def test_the_reader_refuses_a_document_outside_the_form(tmp_path: Path, breakage
         "exercised_systems": ["s"],
         "invocation_rules": [],
         "side_record": {},
+        "rule_identities": None,
+        "mixed_systems": [],
     }
     assert isinstance(document, dict)
     if breakage == "extra_key":
@@ -386,13 +600,19 @@ def test_the_reader_refuses_a_document_outside_the_form(tmp_path: Path, breakage
     elif breakage == "missing_key":
         del document["seeds"]
     elif breakage == "format":
-        document["format"] = "end-of-run-provenance:2"
+        document["format"] = "end-of-run-provenance:1"
     elif breakage == "not_object":
         document = [1]
     elif breakage == "identity_shape":
         document["identities"] = {"s": {"implementation": "stub"}}
     elif breakage == "list_kind":
         document["exercised_systems"] = "s"
+    elif breakage == "rule_identity_shape":
+        document["rule_identities"] = {"observed_record_assembly": {"implementation": "stub"}}
+    elif breakage == "rule_identities_kind":
+        document["rule_identities"] = ["observed_record_assembly"]
+    elif breakage == "mixed_systems_kind":
+        document["mixed_systems"] = "s"
     path.write_text(json.dumps(document), encoding="utf-8")
 
     with pytest.raises(ExercisedSetError) as caught:
@@ -433,7 +653,7 @@ def test_a_full_run_names_the_twelve_systems_with_the_copys_commit(
 
     assert completed.returncode == 0, completed.stderr
     document = read_provenance(estate.run_output / END_OF_RUN_RECORD / PROVENANCE_FILE)
-    assert document["exercised_systems"] == sorted(SYSTEM_OF.values())
+    assert document["exercised_systems"] == sorted(set(SYSTEM_OF.values()))
     identities = document["identities"]
     assert isinstance(identities, dict)
     assert {entry["implementation"] for entry in identities.values()} == {"stub"}
@@ -520,4 +740,159 @@ def test_a_second_command_style_run_lists_only_rebuilt_rules_while_every_produce
     rebuilt |= {rule.name for rule in downstream_of("marginal_distribution_fitting")}
     assert document["invocation_rules"] == [rule.name for rule in GRAPH if rule.name in rebuilt]
     assert "observed_record_assembly" not in document["invocation_rules"]  # type: ignore[operator]
-    assert document["exercised_systems"] == sorted(SYSTEM_OF.values())
+    assert document["exercised_systems"] == sorted(set(SYSTEM_OF.values()))
+
+
+def _prepare(estate: Estate, toolkit: ToolkitCopy, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Run the pre-run step against `toolkit` as the command would, writing the run-start record."""
+    monkeypatch.setattr(pre_run, "running_package_directory", lambda: toolkit.package)
+    prepare_run(MainConfiguration.load(estate.configuration), estate.configuration)
+
+
+def _command_run(toolkit: ToolkitCopy, estate: Estate, cache_root: Path) -> subprocess.CompletedProcess[str]:
+    """Run the engine over `toolkit` with the options the command adds after `--rerun-incomplete`: the rerun list.
+
+    The command's own argument list names the checkout's `Snakefile`, so the copy's is substituted here;
+    the rerun list itself is the command's one function, `modes.rerun_arguments`, read from the estate's
+    configuration as the command reads it.
+    """
+    configuration = MainConfiguration.load(estate.configuration)
+    return run_engine(
+        toolkit,
+        estate,
+        cache_root=cache_root,
+        extra_arguments=("--rerun-incomplete", *rerun_arguments(configuration)),
+    )
+
+
+def _stacking_estate(estate: Estate) -> None:
+    """Bind the three keys with the selection file absent, so the run builds the kept-absent list."""
+    bind_three_keys(estate, estate.project_directory / "selection.toml")
+
+
+def _versions_by_system(document: dict[str, object]) -> dict[str, str]:
+    """Return each system's recorded code version from a provenance document."""
+    identities = document["identities"]
+    assert isinstance(identities, dict)
+    return {system: entry["code_version"] for system, entry in identities.items()}
+
+
+def test_a_misspelt_rerun_rule_is_refused_by_the_pre_run_step_and_the_override_is_recorded(
+    estate: Estate, monkeypatch: pytest.MonkeyPatch, toolkit_copy: ToolkitCopy
+) -> None:
+    """Property: a `rerun_rules` name the table does not hold refuses the pre-run step naming the table's rules, and `allow_mixed_versions` reaches the run-start record.
+
+    Class: one configuration naming a misspelt rule, one naming a real rule with the override on.
+    Why it is required: a name passed to `--forcerun` that is no rule is an engine error after the command
+    has written its record, or worse a silent no-rebuild; the pre-run step is where the table is known. The
+    record is the only channel by which the engine's final rule learns the override.
+    What kills it: skipping the check, checking against a list kept elsewhere, or dropping the flag when
+    the record is built.
+    Second correct implementation: a check inside the configuration module; it does not import the table, so
+    the refusal would then arrive as another class and this check would change.
+    """
+    _stacking_estate(estate)
+    write_version_stacking(estate, rerun_rules=("observed_record_assemblyy",))
+
+    with pytest.raises(pre_run.PreRunError) as caught:
+        _prepare(estate, toolkit_copy, monkeypatch)
+    assert "observed_record_assemblyy" in str(caught.value)
+    assert "observed_record_assembly'" in str(caught.value)
+    assert not (estate.run_output / RUN_START_FILE).exists()
+
+    write_version_stacking(estate, rerun_rules=("observed_record_assembly",), allow_mixed_versions=True)
+    _prepare(estate, toolkit_copy, monkeypatch)
+
+    assert read_run_start(estate.run_output / RUN_START_FILE).allow_mixed_versions is True
+
+
+def test_rerunning_one_rule_stacks_two_commits_across_systems_and_needs_no_override(
+    tmp_path: Path, toolkit_copy: ToolkitCopy, estate: Estate, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Property: a second commit with `rerun_rules = ["marginal_distribution_fitting"]` rebuilds that rule and its dependants at the new commit, keeps the rest at the first, exits 0, and lists no mixed system.
+
+    Class: a full kept-absent run at the first commit, then a second commit and a run whose rerun list names one rule.
+    Why it is required: stacking across systems must stay honest and unrefused, because each system's
+    identity comes from its own rule; the refusal is for one system with two versions only.
+    What kills it: refusing any two code versions in one record, or a rerun list that rebuilds nothing.
+    Second correct implementation: any engine option that forces the same rules; the recorded versions decide.
+    """
+    _stacking_estate(estate)
+    first_commit = toolkit_copy.commit
+    _prepare(estate, toolkit_copy, monkeypatch)
+    first = _command_run(toolkit_copy, estate, tmp_path / "cache")
+    assert first.returncode == 0, first.stderr
+
+    toolkit = advance_commit(toolkit_copy, estate)
+    write_version_stacking(estate, rerun_rules=("marginal_distribution_fitting",))
+    _prepare(estate, toolkit, monkeypatch)
+    second = _command_run(toolkit, estate, tmp_path / "cache")
+
+    assert second.returncode == 0, second.stderr
+    document = read_provenance(estate.run_output / END_OF_RUN_RECORD / PROVENANCE_FILE)
+    versions = _versions_by_system(document)
+    assert versions["marginal-distribution-fitting"] == toolkit.commit
+    assert versions["observed-record-assembly"] == first_commit
+    assert set(versions.values()) == {first_commit, toolkit.commit}
+    assert document["mixed_systems"] == []
+
+
+def test_rerunning_the_merge_row_is_refused_by_default_recorded_under_the_override_and_repeated_by_the_next_run(
+    tmp_path: Path, toolkit_copy: ToolkitCopy, estate: Estate, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Property: rebuilding only the merge row at a second commit leaves two systems with two versions, which the end-of-run rule refuses naming the rules, the files and the override; with the override it exits 0 listing both systems and every rule's identity; a third run at the same commit rebuilds the merge row again.
+
+    Class: a full kept-absent run, a second commit, then three runs on one output: override off, override on, override on again.
+    Why it is required: this is the whole of version stacking through the engine — the refusal's message
+    reaching the operator, the record the override writes, and the stickiness of a rerun list that is read
+    at every run.
+    What kills it: an end-of-run rule that does not read the run-start record's flag, a provenance file
+    holding one identity per system only, or a rerun list consumed by the first run that reads it.
+    Second correct implementation: a different forced set; the mixed systems and identities would then
+    differ and this check would change with it.
+    """
+    _stacking_estate(estate)
+    first_commit = toolkit_copy.commit
+    _prepare(estate, toolkit_copy, monkeypatch)
+    first = _command_run(toolkit_copy, estate, tmp_path / "cache")
+    assert first.returncode == 0, first.stderr
+
+    toolkit = advance_commit(toolkit_copy, estate)
+    write_version_stacking(estate, rerun_rules=("observed_record_assembly",))
+    _prepare(estate, toolkit, monkeypatch)
+    refused = _command_run(toolkit, estate, tmp_path / "cache")
+
+    assert refused.returncode != 0
+    output = refused.stdout + refused.stderr
+    assert "combined-event-identification" in output
+    assert "per_source_event_selection" in output
+    assert "combined_event_identification" in output
+    assert "allow_mixed_versions" in output
+    assert str(estate.run_output / "per_source_event_selection" / IDENTITY_FILE) in output
+    assert str(estate.run_output / "combined_event_identification" / IDENTITY_FILE) in output
+
+    write_version_stacking(estate, rerun_rules=("observed_record_assembly",), allow_mixed_versions=True)
+    _prepare(estate, toolkit, monkeypatch)
+    allowed = _command_run(toolkit, estate, tmp_path / "cache")
+
+    assert allowed.returncode == 0, allowed.stderr
+    document = read_provenance(estate.run_output / END_OF_RUN_RECORD / PROVENANCE_FILE)
+    assert document["mixed_systems"] == ["combined-event-identification", "observed-record-assembly"]
+    rule_identity_document = document["rule_identities"]
+    assert isinstance(rule_identity_document, dict)
+    versions_by_rule = {rule: entry["code_version"] for rule, entry in rule_identity_document.items()}
+    for rule in ("observed_record_pre_selection", "per_source_event_selection", "observed_record_licence"):
+        assert versions_by_rule[rule] == first_commit
+    assert versions_by_rule["observed_record_assembly"] == toolkit.commit
+    assert versions_by_rule["combined_event_identification"] == toolkit.commit
+    versions = _versions_by_system(document)
+    assert versions["observed-record-assembly"] == toolkit.commit
+
+    time.sleep(1.1)
+    _prepare(estate, toolkit, monkeypatch)
+    again = _command_run(toolkit, estate, tmp_path / "cache")
+
+    assert again.returncode == 0, again.stderr
+    repeated = read_provenance(estate.run_output / END_OF_RUN_RECORD / PROVENANCE_FILE)
+    assert "observed_record_assembly" in repeated["invocation_rules"]  # type: ignore[operator]
+    assert "observed_record_pre_selection" not in repeated["invocation_rules"]  # type: ignore[operator]

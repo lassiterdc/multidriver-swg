@@ -1,4 +1,4 @@
-"""The run's rule table: twelve stub rules, each naming its owning system and the artifacts it reads and writes.
+"""The run's rule table: fifteen stub rules, each naming its owning system and the artifacts it reads and writes.
 
 A workflow's step order and its data dependencies are one fact stated twice whenever the order lives in
 the file and the edges live in each rule's body. This module states both once: `GRAPH` is a tuple of
@@ -16,9 +16,17 @@ against them rather than against a paraphrase:
 
     A rule that reads the run's selection artifact says so with its own field, so the set of such rules is computed from the table and never listed anywhere.
 
-The functions over the table are `rule_for_system`, which answers by the row's owning system;
-`downstream_of`, which answers a row's transitive consumers; `judgement_rules`, which answers which rows
-read the selection artifact; and `output_classes`, which lists every artifact with the register's class.
+The functions over the table are `rule_named`, which answers by the row's name; `downstream_of`, which
+answers a row's transitive consumers; `judgement_rules`, which answers which rows read the selection
+artifact; and `output_classes`, which lists every artifact with the register's class. A system's rules
+are read by filtering `GRAPH` on the `system` field: a system may own several rows, so no lookup by
+system exists.
+
+One row is the run's CHECKPOINT: `RuleSpec.checkpoint` marks the licence row, the point after which the
+run may stop because the selection lacks an entry a later stage needs. Exactly one row sets it, and every
+row that reads the selection is downstream of it, so the stop always precedes a stage that needs an entry.
+Both facts are properties of the constant table, checked by tests rather than by code that re-checks a
+constant at every import.
 
 What the run's report shows is a field of the row too: `RuleSpec.report_items` names the declared outputs
 the report presents and the heading each appears under, so the workflow file flags an artifact by reading
@@ -26,7 +34,7 @@ the row and no second list of what a run publishes exists. The conventions an it
 non-empty heading and a page-native file — live in `report_items`, which this module imports and which
 imports nothing back, so the row carries its items and the conventions stay one statement.
 
-The table holds the twelve rows the run's fixed graph states, and it deliberately does NOT hold the workflow
+The table holds the fifteen rows the run's fixed graph states, and it deliberately does NOT hold the workflow
 file's target rule: `all` is the file's first rule and its input is the run's own target list, so its
 dependencies are the run's rather than the table's. Nor does the table hold the run-start record, the
 engine options or any body: those are the workflow file's and the command's, and a body that reads this
@@ -35,7 +43,7 @@ table is what makes the split safe.
 `method_attribution` is the row whose `reads` is EMPTY because its inputs are computed, and that emptiness
 is a statement rather than an omission: DR-2 gives it every declared output of every rule in the run's
 target list, so its inputs are computed from the run-start record at render time and a shortened run still
-attributes exactly what ran. The first row, `observed_record_assembly`, also has no reads, because nothing
+attributes exactly what ran. The first row, `observed_record_pre_selection`, also has no reads, because
 precedes it. Every other row's reads are fixed and precede it in the tuple, which is why a target list
 computed from this table is buildable in order.
 
@@ -59,7 +67,7 @@ from multidriver_swg.workflow.report_items import CITATION, ReportItem
 
 # The two artifact classes, copied verbatim from the estate register's `Name` column. A declared output
 # and an identity file are different KINDS of artifact, so the class is a property of the kind and is
-# stated once here rather than per row: twelve rows repeating one string would be twelve chances to
+# stated once here rather than per row: fifteen rows repeating one string would be fifteen chances to
 # mistype it, and the listing is what the register's owner matches.
 _OUTPUT_CLASS = "Run reports, figures and outputs small enough to track"
 
@@ -72,7 +80,7 @@ IDENTITY_FILE = "implementation_identity.json"
 
 
 class GraphLookupError(Exception):
-    """A lookup by a name the table does not hold: a missing rule name or a missing owning system.
+    """A lookup by a name the table does not hold: a missing rule name, or a name no row carries.
 
     Deliberately NOT `KeyError`: a `KeyError` renders its message inside repr quotes, and the message
     here is the reader's recovery path — the names the table does hold.
@@ -85,8 +93,8 @@ class RuleSpec:
 
     - `name` — the rule's name, which is also the directory its outputs live under.
     - `system` — the compute system that owns the rule. A FIELD, never a convention derived from the
-      name, so a rename cannot silently move ownership and a consumer asking for a system's rule gets
-      the row rather than a string match.
+      name, so a rename cannot silently move ownership; a system may own several rows, so the field is
+      read off a row and never resolves to one.
     - `reads` — the declared outputs of OTHER rows this rule reads, by file name. Empty means no fixed
       input: either the rule is first (nothing precedes it) or its inputs are computed at render time,
       which is `method_attribution`'s one case.
@@ -99,9 +107,9 @@ class RuleSpec:
     - `reads_selection` — whether the rule consumes the run's recorded model selection. A property of
       the row rather than a list elsewhere, because the set of consumers moves whenever a compute
       system's plan gives it a reason to read the selection.
-    - `local` — whether the rule must run on the driver rather than in a job. NO row sets it: `all` is
-      the graph's one local rule and the workflow file renders it, so the field exists for a later row
-      that needs it rather than for a convention every row carries.
+    - `checkpoint` — whether the rule is the run's checkpoint: the one row after which the run may stop
+      because its selection lacks an entry a later stage needs. Exactly one row of the table sets it,
+      which a test over the constant states; the workflow file renders that row as an engine checkpoint.
 
     Frozen, so a table a consumer holds cannot be edited into a graph no reader checked. A row with no
     declared output is refused, because a rule that writes nothing cannot be a step another rule reads;
@@ -128,7 +136,7 @@ class RuleSpec:
     outputs: tuple[str, ...] = ()
     report_items: tuple[ReportItem, ...] = ()
     reads_selection: bool = False
-    local: bool = False
+    checkpoint: bool = False
 
     def __post_init__(self) -> None:
         """Store the name and item collections as tuples, then refuse a row whose names are empty, repeated, or whose inputs include its own output."""
@@ -220,13 +228,34 @@ def _name_tuple(value: object, rule: str, role: str) -> tuple[str, ...]:
     return names
 
 
-# The twelve rules, in execution order. Every `reads` entry names a declared output of an EARLIER row,
+# The fifteen rules, in execution order. Every `reads` entry names a declared output of an EARLIER row,
 # which is the whole of the ordering guarantee: a consumer can build the tuple's rows in order and never
 # wait for an artifact a later row produces.
 GRAPH: tuple[RuleSpec, ...] = (
     RuleSpec(
+        name="observed_record_pre_selection",
+        system="observed-record-assembly",
+        outputs=("pre_selection.json",),
+    ),
+    RuleSpec(
+        name="per_source_event_selection",
+        system="combined-event-identification",
+        reads=("pre_selection.json",),
+        outputs=("per_source_event_sets.json",),
+    ),
+    # The run's one checkpoint: the engine evaluates the rows after it only once this row has run, and the
+    # workflow file's target function reads its output to decide whether the run stops here.
+    RuleSpec(
+        name="observed_record_licence",
+        system="observed-record-assembly",
+        reads=("per_source_event_sets.json",),
+        outputs=("licence.json",),
+        checkpoint=True,
+    ),
+    RuleSpec(
         name="observed_record_assembly",
         system="observed-record-assembly",
+        reads=("licence.json",),
         outputs=("observed_record.json",),
     ),
     RuleSpec(
@@ -306,22 +335,21 @@ GRAPH: tuple[RuleSpec, ...] = (
 )
 
 
-def rule_for_system(system: str) -> RuleSpec:
-    """Return the row whose `system` is `system`, refusing a name the table does not hold.
+def rule_named(name: str) -> RuleSpec:
+    """Return the row named `name`, refusing a name the table does not hold.
 
-    The lookup is over the FIELD rather than over the rule's name, which is the point of the mapping
-    being a field: a consumer asking "which rule does this system own" gets the row without deriving a
-    name, and a row whose name and system diverge is still found.
+    The lookup is over the rule's NAME, which is how every consumer addresses a rule: a system may own
+    several rows, so the owning system does not identify one. The row's `system` stays a field a reader
+    of the row asks for, never a key a lookup resolves.
 
-    The refusal lists the systems the table holds, because a caller has usually misspelled one of them
-    and a message carrying only the misspelling is the fact the caller already had.
+    The refusal lists the names the table holds, because a caller has usually misspelled one of them and
+    a message carrying only the misspelling is the fact the caller already had.
     """
     for rule in GRAPH:
-        if rule.system == system:
+        if rule.name == name:
             return rule
     raise GraphLookupError(
-        f"no rule owns the system {system!r}: the systems the table holds are "
-        + ", ".join(repr(rule.system) for rule in GRAPH)
+        f"no rule is named {name!r}: the rules the table holds are " + ", ".join(repr(rule.name) for rule in GRAPH)
     )
 
 
@@ -383,8 +411,8 @@ def output_classes() -> tuple[tuple[str, str, str], ...]:
     Each row contributes its declared outputs in their declared order, then its identity file, so the
     listing is deterministic and one reader can diff two runs' listings line by line. An identity file
     is listed beside the outputs rather than omitted because it is an artifact the run writes and the
-    register classifies; it is not a row FIELD because every row's is the same file name, and twelve
-    copies of one constant would be twelve chances to spell it differently.
+    register classifies; it is not a row FIELD because every row's is the same file name, and fifteen
+    copies of one constant would be fifteen chances to spell it differently.
     """
     listing: list[tuple[str, str, str]] = []
     for rule in GRAPH:

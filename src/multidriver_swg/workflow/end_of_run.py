@@ -40,7 +40,9 @@ from multidriver_swg.workflow.exercised_set import (
     build_provenance,
     exercised_systems,
     invocation_rules,
+    mixed_systems,
     producing_rules,
+    rule_identities,
     write_provenance,
 )
 from multidriver_swg.workflow.report_items import DIVERGENCE
@@ -128,7 +130,9 @@ def write_end_of_run_record(
 
     The provenance file is written BEFORE the divergence files, so a refusal of an incomplete record leaves
     no report that describes a run the record cannot back. It is the exercised set read from the engine's
-    metadata (`exercised_set`), refused when a producer's identity is missing.
+    metadata (`exercised_set`), refused when a producer's identity is missing, or when one system's rules
+    persisted unequal identities and the run-start record does not carry `allow_mixed_versions`. The file
+    lists every producing rule's identity and the mixed systems, the same grouping that decided the refusal.
 
     When `side_record.ran_pre_refactor` is false, no divergence file is written, and the true statement
     that the run used no legacy function is the file's absence.
@@ -148,12 +152,15 @@ def write_end_of_run_record(
     if working_directory is not None and targets is not None and run_start is not None:
         target_list = list(targets)
         producers = producing_rules(working_directory, target_list)
+        persisted = rule_identities(working_directory, producers)
         write_provenance(
             record_directory / PROVENANCE_FILE,
             build_provenance(working_directory, target_list, run_start, side_record),
             exercised=exercised_systems(producers),
             invocations=invocation_rules(working_directory, producers),
             side_record=side_record,
+            rule_identities=persisted,
+            mixed_systems=mixed_systems(persisted),
         )
 
     if not side_record.ran_pre_refactor:
