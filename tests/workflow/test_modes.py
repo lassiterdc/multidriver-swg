@@ -11,6 +11,7 @@ below assert that refusal as the state of this build rather than pretending an e
 
 from __future__ import annotations
 
+import dataclasses
 import os
 import shlex
 import subprocess
@@ -19,11 +20,13 @@ from pathlib import Path
 
 import pytest
 
+import multidriver_swg.workflow.cli as cli
 import multidriver_swg.workflow.modes as modes
 from multidriver_swg.run_configuration.main_configuration import (
     LocalConfiguration,
     MainConfiguration,
     SlurmConfiguration,
+    VersionStackingConfiguration,
 )
 from multidriver_swg.workflow.modes import (
     BAND_COMPLETED,
@@ -33,6 +36,7 @@ from multidriver_swg.workflow.modes import (
     allocation_engine_arguments,
     engine_arguments,
     engine_batch_script,
+    rerun_arguments,
     submission_arguments,
     submission_band,
     write_engine_batch_script,
@@ -515,3 +519,57 @@ def test_a_space_separated_format_returns_the_requested_columns_in_order(tmp_pat
     assert spaced.stdout.strip() == "COMPLETED|23045000"
     assert short.stdout.strip() == "23045000|COMPLETED"
     assert accounts.stdout.splitlines() == ["allocation"]
+
+
+def _with_rerun_rules(configuration: MainConfiguration, *rules: str) -> MainConfiguration:
+    """Return `configuration` with `[version_stacking] rerun_rules` set to `rules`."""
+    return dataclasses.replace(configuration, version_stacking=VersionStackingConfiguration(rerun_rules=rules))
+
+
+@pytest.mark.parametrize("mode", ["local", "batch_job", "1_job_many_srun_tasks"])
+def test_the_rerun_list_is_the_forcerun_option_followed_by_the_names_in_every_mode(mode: str) -> None:
+    """Property: `rerun_arguments` is `("--forcerun", *names)` for a non-empty list in each mode, and `()` for an empty one.
+
+    Class: one configuration per mode, with two names and with none.
+    Why it is required: the engine takes the rules to rebuild from `--forcerun`, and an empty `--forcerun`
+    with no name would ask it to rebuild everything, so the empty list must pass nothing at all.
+    What kills it: always emitting `--forcerun`, emitting the names in another order, or reading the mode.
+    Second correct implementation: any tuple builder reading the same field; the two values are the check.
+    """
+    configuration = _configuration(mode)
+
+    assert rerun_arguments(configuration) == ()
+    assert rerun_arguments(_with_rerun_rules(configuration, "observed_record_assembly", "method_attribution")) == (
+        "--forcerun",
+        "observed_record_assembly",
+        "method_attribution",
+    )
+
+
+def test_the_engine_command_and_the_allocation_script_carry_the_same_rerun_list_after_rerun_incomplete() -> None:
+    """Property: the engine argument list of `local` and `batch_job` and the allocation script's engine line each hold `--rerun-incomplete` immediately followed by the rerun list, and none holds `--forcerun` for an empty list.
+
+    Class: the three modes with two rule names, and the same three with an empty list.
+    Why it is required: all three modes must rebuild the same rules, so a mode that left the list out would
+    stack versions in one mode and not in the others; and a run naming no rule must change no argument list.
+    What kills it: adding the list to `cli.engine_command` only, or to `engine_arguments` (which the
+    allocation mode refuses), or passing it when empty.
+    Second correct implementation: both lists built from one option tuple; the same three positions result.
+    """
+    names = ("observed_record_assembly", "method_attribution")
+    for mode in ("local", "batch_job"):
+        configuration = _with_rerun_rules(_configuration(mode), *names)
+        command = cli.engine_command(configuration, run_output=Path("/runs/one"))
+        start = command.index("--rerun-incomplete")
+        assert command[start + 1 : start + 4] == ["--forcerun", *names]
+        assert "--forcerun" not in cli.engine_command(_configuration(mode), run_output=Path("/runs/one"))
+
+    allocation = _with_rerun_rules(_configuration("1_job_many_srun_tasks"), *names)
+    line = engine_batch_script(allocation, snakefile="/checkout/Snakefile", run_output="/runs/one").splitlines()[-1]
+    words = shlex.split(line)
+    start = words.index("--rerun-incomplete")
+    assert words[start + 1 : start + 4] == ["--forcerun", *names]
+    empty = engine_batch_script(
+        _configuration("1_job_many_srun_tasks"), snakefile="/checkout/Snakefile", run_output="/runs/one"
+    ).splitlines()[-1]
+    assert "--forcerun" not in empty

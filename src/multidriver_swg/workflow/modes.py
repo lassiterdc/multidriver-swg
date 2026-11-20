@@ -114,6 +114,22 @@ def engine_arguments(configuration: MainConfiguration) -> tuple[str, ...]:
     )
 
 
+def rerun_arguments(configuration: MainConfiguration) -> tuple[str, ...]:
+    """Return the engine options that rebuild the rules the configuration's `[version_stacking]` table names.
+
+    `("--forcerun", *rules)` when `rerun_rules` is non-empty and `()` when it is empty, so a run that names
+    no rule passes the engine nothing. The same tuple is added to the engine argument list of `local` and
+    `batch_job` (`cli.engine_command`) and to the engine line of the allocation's batch script
+    (`engine_batch_script`), so all three modes rebuild the same rules.
+
+    The list is read from the configuration at every invocation and nothing is remembered between runs, so a
+    rule left in the table is rebuilt again by every later run until it is removed. The names are checked
+    against the rule table by the pre-run step, not here.
+    """
+    rules = configuration.version_stacking.rerun_rules
+    return ("--forcerun", *rules) if rules else ()
+
+
 def allocation_engine_arguments(configuration: MainConfiguration) -> tuple[str, ...]:
     """Return the engine options the allocation's batch script passes inside the job.
 
@@ -151,8 +167,9 @@ def engine_batch_script(
     stays the script's last line, so the line a reader checks is the line the engine sees.
 
     Every path in the body is shell-quoted, because the script runs under a shell and a run output may
-    carry a space. The report pair is included: an allocation run is a run, and its report is the same
-    artifact a local run leaves.
+    carry a space, and so is every rule name of `rerun_arguments`, which the engine line carries after
+    `--rerun-incomplete` exactly as the engine command does. The report pair is included: an allocation
+    run is a run, and its report is the same artifact a local run leaves.
     """
     assert configuration.slurm is not None and configuration.slurm.cpus_per_task is not None
     slurm = configuration.slurm
@@ -170,6 +187,7 @@ def engine_batch_script(
             "--profile none",
             "--workflow-profile none",
             "--rerun-incomplete",
+            *(shlex.quote(argument) for argument in rerun_arguments(configuration)),
             *allocation_engine_arguments(configuration),
             "--report",
             report,

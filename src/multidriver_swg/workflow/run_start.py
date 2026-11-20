@@ -8,7 +8,7 @@ reads it back validated, and refuses anything that is not the form, naming the f
 
 The three commitments this module implements, in its own words:
 
-    One file, one versioned object, five fields: the version literal, the configuration path, the target list, the selection path or null, and the judgement state.
+    One file, one versioned object, six fields: the version literal, the configuration path, the target list, the selection path or null, the judgement state, and whether a system built at mixed toolkit commits is admitted.
 
     The record is written by the run's preparation and READ by every engine parse, so a field the record omits is a fact the parse cannot recover.
 
@@ -39,7 +39,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path, PurePath
 
-RUN_START_RULE = "run-start:1"
+RUN_START_RULE = "run-start:2"
 
 # The file name the engine's working directory holds. It is a constant because TWO parties state it: the
 # step that prepares the run writes it, and every parse reads it, and a spelling that drifted between the
@@ -50,7 +50,7 @@ RUN_START_FILE = "run_start.json"
 # is present, or it is absent and the judgement stage is kept, or the run delegates the choice.
 JUDGEMENT_STATES = ("present", "kept-absent", "delegated")
 
-_FIELDS = ("format", "main_configuration", "targets", "selection", "judgement")
+_FIELDS = ("format", "main_configuration", "targets", "selection", "judgement", "allow_mixed_versions")
 
 
 class RunStartError(Exception):
@@ -73,6 +73,11 @@ class RunStart:
     - `selection` — the ABSOLUTE path of the run's recorded model selection, or `None` when the run has
       none. The absence is a state the target list branches on, so it is `None` rather than an empty string.
     - `judgement` — one of `JUDGEMENT_STATES`.
+    - `allow_mixed_versions` — whether the end-of-run step admits a system whose rules persisted unequal
+      implementation identities, copied from the main configuration's `[version_stacking]` table by the
+      pre-run step. Last and defaulted, so a record built without it is one that refuses mixed versions.
+      The table's `rerun_rules` is deliberately not recorded: its one reader is the command, which reads
+      the configuration at every invocation, so a copy here would be a second statement of one fact.
 
     Frozen, so a record a parse holds cannot be edited into one the preparer never wrote. The record is
     written WHOLE and never appended to, so a repeated write replaces the answer rather than accumulating
@@ -86,6 +91,7 @@ class RunStart:
     targets: tuple[str, ...]
     selection: str | None
     judgement: str
+    allow_mixed_versions: bool = False
 
     def __post_init__(self) -> None:
         """Refuse a path that is not absolute as the field requires, a target that is not relative, and a judgement state outside the three."""
@@ -119,6 +125,12 @@ class RunStart:
                 "on which of the three the run is in"
             )
 
+        if not isinstance(self.allow_mixed_versions, bool):
+            raise RunStartError(
+                f"field 'allow_mixed_versions' is {self.allow_mixed_versions!r}: it is true or false, because "
+                "the end-of-run step either admits a system built at mixed toolkit commits or refuses it"
+            )
+
     def to_document(self) -> dict[str, object]:
         """Return the record as the one JSON object the file carries, the version literal first."""
         return {
@@ -127,6 +139,7 @@ class RunStart:
             "targets": list(self.targets),
             "selection": self.selection,
             "judgement": self.judgement,
+            "allow_mixed_versions": self.allow_mixed_versions,
         }
 
     def write(self, path: str | Path) -> None:
@@ -150,11 +163,12 @@ def read_run_start(path: str | Path) -> RunStart:
     channel to the operator is an exception's text:
 
     - the file cannot be decoded as UTF-8, or is not valid JSON, or is not one JSON object;
-    - a key the form does not name is present, or one of the five is absent — the closed key set is what
+    - a key the form does not name is present, or one of the six is absent — the closed key set is what
       makes a misspelled field loud instead of silently absent;
     - `format` is not the literal `RUN_START_RULE`;
     - `main_configuration` or `selection` is present but not absolute text, `targets` is not a non-empty
-      array of relative paths, or `judgement` is outside its three states.
+      array of relative paths, `judgement` is outside its three states, or `allow_mixed_versions` is not a
+      boolean.
 
     A file that does not exist raises the operating system's error rather than this refusal, so a gate can
     distinguish "the preparer never wrote one" from "it wrote one this form refuses" without parsing a
@@ -220,6 +234,7 @@ def read_run_start(path: str | Path) -> RunStart:
             targets=tuple(raw_targets),
             selection=document["selection"],
             judgement=document["judgement"],
+            allow_mixed_versions=document["allow_mixed_versions"],
         )
     except RunStartError as error:
         raise RunStartError(f"run-start record {target}: {error}") from error

@@ -134,7 +134,7 @@ def test_a_missing_record_is_refused_before_any_job_runs(toolkit_copy: ToolkitCo
 @pytest.mark.parametrize(
     ("document", "expected"),
     [
-        pytest.param({"format": "run-start:2"}, "format", id="wrong-version"),
+        pytest.param({"format": "run-start:3"}, "format", id="wrong-version"),
         pytest.param({"unexpected": 1}, "unexpected", id="unnamed-key"),
         pytest.param({"targets": []}, "targets", id="empty-targets"),
     ],

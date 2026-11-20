@@ -88,7 +88,10 @@ in this invocation, and which side of each registered pair the run selected. A r
 only the systems of the targets it built. The list of systems is cumulative: an output left from an earlier
 invocation counts its producer, so a re-run that rebuilt one step still names every producer, and only the
 list of rules that ran in this invocation is smaller. The record is refused, and the run fails, when a
-producer left no identity or one that names another system. It carries no seeds yet, because no step draws one.
+producer left no identity or one that names another system, and when one system's rules left identities
+that differ (see [Rebuilding chosen rules at a new toolkit commit](#rebuilding-chosen-rules-at-a-new-toolkit-commit)).
+It also lists the identity of every producing rule and the systems whose rules differ. It carries no seeds
+yet, because no step draws one.
 
 When the run used the legacy side of a registered pair, the record carries the divergence report: a text
 file (`divergence_report.txt`) and an HTML rendering of the same text (`divergence_report.html`). The HTML
@@ -111,6 +114,33 @@ section and `provenance.json` names exactly the systems whose rules ran.
 To continue, add the missing fit to the selection and run the command again on the same output. The second
 run builds the merge rule and every rule after it and does not run the rules before the licence again.
 The shipped graph's licence requires nothing, so a run of the shipped graph never stops.
+
+## Rebuilding chosen rules at a new toolkit commit
+
+A run at a new toolkit commit rebuilds only the rules whose text changed; a commit that changes only code a
+rule calls rebuilds nothing, and every output the run keeps carries the commit it was built at. To rebuild
+chosen rules at the running commit and keep the others, add a `[version_stacking]` table to the main
+configuration:
+
+```toml
+[version_stacking]
+rerun_rules = ["observed_record_assembly"]
+allow_mixed_versions = true
+```
+
+`rerun_rules` names rules of the workflow; the command passes them to the engine as rules to rebuild, in
+every mode, and the rules downstream of them rebuild too. A name the workflow does not hold is refused
+before anything starts, naming the rules it holds. The list is read at every run, so a rule left in it is
+rebuilt again by every later run until it is removed.
+
+A system can own several rules, and rebuilding some of them leaves that system with outputs from two
+commits. By default the run is refused at its end, naming two of the system's rules, their identity files
+and `allow_mixed_versions`: one identity cannot name outputs two builds produced. Setting
+`allow_mixed_versions = true` admits the run. `provenance.json` then lists the identity of every producing
+rule beside the systems that are mixed, and its entry for each system is the identity of that system's rule
+that comes last in the rule table. Two commits are compatible only if you say so by setting it: the toolkit
+records what was kept and what was rebuilt and judges nothing. Rules of different systems may differ in
+version without the setting, because each system's identity comes from its own rules.
 
 ## A run left locked by an interrupted engine
 
